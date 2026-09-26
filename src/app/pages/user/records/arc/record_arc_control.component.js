@@ -105,13 +105,14 @@ function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, current
             const LIST = [
                 { name: 'Arquitectónicos', v: 0, c: 0 },
                 { name: 'Georreferenciado', v: 1, c: 1 },
-                { name: 'Loteo', v: 2, c: 2 },
+                { name: 'Reloteo', v: 2, c: 2 },
                 { name: 'Parcelación', v: 3, c: 3 },
                 { name: 'Seguridad Humana (J y K)', v: 4, c: 4 },
                 { name: 'Subdivisión', v: 5, c: 5 },
                 { name: 'Topográficos', v: 6, c: 6 },
                 { name: 'Urbanístico General', v: 7, c: 7 },
                 { name: 'Urbanísticos', v: 8, c: 8 },
+                { name: 'Movimiento de tierras', v: 10, c: 9 },
             ]
 
             return <>
@@ -134,7 +135,10 @@ function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, current
                             <option value="2" className="text-warning">NO APLICA</option>
                         </select> </div>
                     </div>
-                })}</>
+                })}
+                <input type="hidden" name="blue_prints_values" id="blue_prints_values_9"
+                    defaultValue={_VALUE_ARRAY[9] ?? ''} />
+                </>
         }
         let _COMPONENT_CONTROL = () => {
             const json = _GET_STEP_TYPE_JSON('arc_control');

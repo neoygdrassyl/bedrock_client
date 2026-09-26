@@ -12,6 +12,7 @@ import RichTextEditor from '@/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
 import { splitValue } from '../../shared/expediente-documental.utils';
+import ObservationPanel from '../../../../components/ObservationPanel';
 
 function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);
@@ -68,13 +69,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
         let _COMPONENT_1 = () => {
             let values = _GET_STEP_TYPE('s33', 'value');
             return <>
-                <div className="row">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Antecedentes del proyecto</label>
-                        </div>
-                    </div>
-
+                <ObservationPanel title="Antecedentes del proyecto" collapsible={false}>
                     <RichTextEditor
                         value={values[0]}
                         hiddenName="s_33_values"
@@ -86,23 +81,18 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                         onSave={() => {setSaveState(prev => ({...prev, ant: '1'})); manage_ra_33(true, 'ant')}}
                     />
                     <label>{_SAVING_STATE(saveState.ant)}</label>
-                </div>
+                </ObservationPanel>
 
-                <div className="row">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Descripción del proyecto radicado</label>
-                        </div>
-                    </div>
-                    <textarea className="input-group" rows="4" disabled value={_GET_CHILD_1().description} style={{ backgroundColor: 'gainsboro' }}></textarea>
-                </div>
+                <ObservationPanel
+                    title="Descripción del proyecto radicado"
+                    collapsible={false}
+                    textareaProps={{
+                        readOnly: true,
+                        value: _GET_CHILD_1().description,
+                    }}
+                />
 
-                <div className="row">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Descripción del proyecto Arquitectónica</label>
-                        </div>
-                    </div>
+                <ObservationPanel title="Descripción del proyecto Arquitectónica" collapsible={false}>
                     <RichTextEditor
                         value={values[1]}
                         hiddenName="s_33_values"
@@ -114,7 +104,7 @@ function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVer
                         onSave={() => {setSaveState(prev => ({...prev, desc: '1'})); manage_ra_33(true, 'desc')}}
                     />
                     <label>{_SAVING_STATE(saveState.desc)}</label>
-                </div>
+                </ObservationPanel>
             </>
         }
 

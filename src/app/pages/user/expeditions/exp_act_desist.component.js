@@ -710,7 +710,7 @@ const restoreDocs = useCallback(() => {
                                             )
                                         }
                                         >
-                                        Mostrar {sortIcon(sortLD.key === "show", sortLD.dir)}
+                                        Incluir {sortIcon(sortLD.key === "show", sortLD.dir)}
                                         </button>
                                     </th>
                                     </tr>
@@ -806,7 +806,7 @@ const restoreDocs = useCallback(() => {
                                                 id={`ldoc_${id}_show`}
                                                 className="form-check-input"
                                                 type="checkbox"
-                                                aria-label="Mostrar documento"
+                                                aria-label="Incluir documento en el PDF"
                                                 style={tightChk}
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
@@ -827,8 +827,8 @@ const restoreDocs = useCallback(() => {
                                 </table>
                             </div>
                             <div className="card-footer bg-body-secondary py-2 small text-muted">
-                                Usa el check (columna derecha) para mostrar/ocultar. Los demás
-                                cambios se guardarán al confirmar.
+                                Diligencia Folios para incluir el documento en el PDF. Desmarca
+                                Incluir si deseas excluirlo manualmente.
                             </div>
                             </div>
                         </div>
@@ -968,7 +968,7 @@ const restoreDocs = useCallback(() => {
                                             )
                                             }
                                         >
-                                            Mostrar {sortIcon(sortDocs.key === "show", sortDocs.dir)}
+                                            Incluir {sortIcon(sortDocs.key === "show", sortDocs.dir)}
                                         </button>
                                         </th>
                                     </tr>
@@ -1042,7 +1042,7 @@ const restoreDocs = useCallback(() => {
                                                 <input
                                                 className="form-check-input"
                                                 type="checkbox"
-                                                aria-label="Mostrar documento"
+                                                aria-label="Incluir documento en el PDF"
                                                 style={tightChk}
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
@@ -1063,8 +1063,8 @@ const restoreDocs = useCallback(() => {
                                 </div>
 
                                 <div className="card-footer bg-body-secondary py-2 small text-muted">
-                                Usa el check (columna derecha) para mostrar/ocultar. Los cambios se
-                                guardan al confirmar en la pantalla principal.
+                                Diligencia Folios para incluir el documento en el PDF. Desmarca
+                                Incluir si deseas excluirlo manualmente.
                                 </div>
                             </div>
                             </div>

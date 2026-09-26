@@ -1,5 +1,7 @@
 import { addDecimalPoints, dateParser } from '../../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 
 function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
@@ -91,8 +93,8 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     </div>
                     <div className="col-6 p-1">
                         {_ARRAY[6] > 0
-                            ? <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[6]).path + "/" + _FIND_6(_ARRAY[6]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
+                            ? <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2"
+                                onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath(_FIND_6(_ARRAY[6]).path, _FIND_6(_ARRAY[6]).filename), _FIND_6(_ARRAY[6]).filename)}><Icon name="cloud-download-alt" size={16} /></button>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
                 </div>
@@ -102,8 +104,8 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     </div>
                     <div className="col-6 p-1">
                         {_ARRAY[7] > 0
-                            ? <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[7]).path + "/" + _FIND_6(_ARRAY[7]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
+                            ? <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2"
+                                onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath(_FIND_6(_ARRAY[7]).path, _FIND_6(_ARRAY[7]).filename), _FIND_6(_ARRAY[7]).filename)}><Icon name="cloud-download-alt" size={16} /></button>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 
@@ -114,8 +116,8 @@ function FUN_PLANING_DATA({ translation, swaMsg, globals, currentItem }) {
                     </div>
                     <div className="col-6 p-1">
                         {_ARRAY[8] > 0
-                            ? <a className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2" target="_blank"
-                                href={import.meta.env.VITE_API_URL + '/files/' + _FIND_6(_ARRAY[8]).path + "/" + _FIND_6(_ARRAY[8]).filename} ><Icon name="cloud-download-alt" size={16} /></a>
+                            ? <button type="button" className="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-7 px-2"
+                                onClick={() => downloadProtectedFileWithFeedback(buildProtectedFilePath(_FIND_6(_ARRAY[8]).path, _FIND_6(_ARRAY[8]).filename), _FIND_6(_ARRAY[8]).filename)}><Icon name="cloud-download-alt" size={16} /></button>
                             : <label className="fw-bold">SIN DOCUMENTO</label>}
                     </div>
 

@@ -7,6 +7,7 @@ import { infoCud } from '../../../../components/jsons/vars';
 import FunService from '../../../../services/fun.service';
 import { Icon } from '@/components/icon';
 import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
         // DATA GETTERS
@@ -413,8 +414,10 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/sign/" + "Valla " + id_public + " tamaño " + size + ".pdf");
+                        const filename = `Valla ${id_public} tamaño ${size}.pdf`;
+                        const download = downloadProtectedPdf(`/pdf/sign/${encodeURIComponent(filename)}`, filename);
                         swalClose();
+                        return download;
                     } else {
 
                     }

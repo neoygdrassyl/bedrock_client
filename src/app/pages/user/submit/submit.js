@@ -494,6 +494,7 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                             refreshList={refreshList}
                             closeModal={toggle}
                             currentId={currentId}
+                            requestOptions={list}
                             edit />
                     </div>
                 </Modal>
@@ -518,7 +519,8 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                         <SUBTMIT_MANAGE
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             refreshList={refreshList}
-                            closeModal={toggle_new} />
+                            closeModal={toggle_new}
+                            requestOptions={list} />
                     </div>
                 </Modal>
 

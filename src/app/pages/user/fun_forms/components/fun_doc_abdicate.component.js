@@ -5,6 +5,7 @@ import Icon from '@/components/icon';
 import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -327,7 +328,8 @@ export default function FUN_D_ABDICATE(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/expdocresabd/" + "INFORMACIÓN LIENCIA RENUNCIADO DE TÉRMINOS " + currentItem.id_public + ".pdf");
+                    const filename = `INFORMACIÓN LIENCIA RENUNCIADO DE TÉRMINOS ${currentItem.id_public}.pdf`;
+                    return downloadProtectedPdf(`/pdf/expdocresabd/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }

@@ -16,6 +16,21 @@ import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/sw
 import { DOCUMENT_ORIGIN_STATE } from '../shared/expediente-documental.constants';
 import { LegacyModal } from '@/components/legacy-modal';
 import MissingDocumentsModal from './MissingDocumentsModal.jsx';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+import { buildProtectedFilePath, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+
+function downloadDocument(source, filename) {
+    if (!source) return Promise.resolve();
+    const protectedPath = toProtectedApiPath(source);
+    if (protectedPath) return downloadProtectedFileWithFeedback(protectedPath, filename);
+    const link = document.createElement('a');
+    link.href = source;
+    link.download = filename;
+    link.rel = 'noopener noreferrer';
+    link.click();
+    return Promise.resolve();
+}
 
 function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList, activePanel = 'physical', digitalCount = 0, digitalDocuments = [], onPanelChange, renderDigitalPanel }) {
     const [lists, setLists] = useState(0);
@@ -216,8 +231,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         }) || null;
     };
 
-    const getScanPreviewUrl = (documentItem) => documentItem?.previewUrl || (documentItem?.path && documentItem?.filename ? `/api/files/${documentItem.path}/${encodeURIComponent(documentItem.filename)}?inline=1` : '');
-    const getScanDownloadUrl = (documentItem) => documentItem?.downloadUrl || (documentItem?.path && documentItem?.filename ? `/api/files/${documentItem.path}/${encodeURIComponent(documentItem.filename)}` : '');
+    const getScanPreviewUrl = (documentItem) => documentItem?.previewUrl || (documentItem?.path && documentItem?.filename ? `${buildProtectedFilePath(documentItem.path, documentItem.filename)}?inline=1` : '');
+    const getScanDownloadUrl = (documentItem) => documentItem?.downloadUrl || (documentItem?.path && documentItem?.filename ? buildProtectedFilePath(documentItem.path, documentItem.filename) : '');
 
     const openScanPreview = (documentItem) => {
         if (!getScanPreviewUrl(documentItem)) {
@@ -1358,14 +1373,14 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                 <p className="mb-0 truncate text-sm text-muted-foreground">{scanPreviewDocument?.filename || scanPreviewDocument?.description || 'Documento escaneado'}</p>
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
-                                {downloadUrl ? <a className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted" href={downloadUrl} target="_blank" rel="noreferrer"><Icon name="FileCheck" size={14} /> Descargar</a> : null}
+                                {downloadUrl ? <button type="button" className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted" onClick={() => downloadDocument(downloadUrl, scanPreviewDocument?.filename || 'documento')}><Icon name="FileCheck" size={14} /> Descargar</button> : null}
                                 <Button type="button" variant="outline" size="sm" className="h-8 px-2" onClick={() => setScanPreviewDocument(null)}>
                                     <Icon name="XCircle" size={14} /> Cerrar
                                 </Button>
                             </div>
                         </div>
                         <div className="min-h-0 flex-1 bg-muted/30 p-3">
-                            {previewUrl ? <iframe title="Previsualización del escaneado" src={previewUrl} className="h-full min-h-[520px] w-full rounded-lg border border-border bg-background" /> : <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-border bg-background text-sm text-muted-foreground">Previsualización no disponible.</div>}
+                            {previewUrl ? <ProtectedDocumentPreview title="Previsualización del escaneado" source={previewUrl} className="h-full min-h-[520px] w-full rounded-lg border border-border bg-background" /> : <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-border bg-background text-sm text-muted-foreground">Previsualización no disponible.</div>}
                         </div>
                     </section>
                 </LegacyModal>

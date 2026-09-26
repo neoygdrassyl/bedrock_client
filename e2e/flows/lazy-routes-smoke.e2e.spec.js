@@ -54,6 +54,7 @@ const PRIVATE_LAZY_ROUTES = [
   { path: '/ventanilla', label: 'SUBMIT' },
   { path: '/mensajes', label: 'Mail' },
   { path: '/calendario', label: 'Appointments' },
+  { path: '/calendario-laboral', label: 'BusinessCalendarPage' },
   { path: '/archivo', label: 'ARCHIVE' },
   { path: '/publicaciones', label: 'Publish' },
   { path: '/nomenclatura', label: 'NOMENCLATURE' },

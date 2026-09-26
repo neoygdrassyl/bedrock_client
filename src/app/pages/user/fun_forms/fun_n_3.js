@@ -7,6 +7,9 @@ import { dateParser } from '../../../components/customClasses/typeParse';
 import VIZUALIZER from '../../../components/vizualizer.component';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) => {
     const [isNew, setIsNew] = useState(false);
@@ -79,36 +82,38 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _alerts_array = _alerts_info;
             _alerts_array = _alerts_array.split(',');
             let _ALERT = [];
-            for (var i = 0; i < _alerts_array.length; i++) {
+            for (let i = 0; i < _alerts_array.length; i++) {
+                const documentId = _alerts_array[i].split('&')[2];
+                const supportDocument = _FIND_6(documentId);
+                const downloadSupport = () => downloadProtectedFileWithFeedback(
+                    buildProtectedFilePath(supportDocument.path, supportDocument.filename),
+                    supportDocument.filename,
+                );
                 if (_alerts_array[i].includes("ALERT_1")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico:
-                        <a target="_blank"
-                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Pediódico:
+                        <button type="button" onClick={downloadSupport}>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio:
-                        <a target="_blank"
-                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Radio:
+                        <button type="button" onClick={downloadSupport}>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web:
-                        <a target="_blank"
-                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Pagina Web:
+                        <button type="button" onClick={downloadSupport}>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
                         <br />
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico:
-                        <a target="_blank"
-                            href={import.meta.env.VITE_API_URL + '/files/' + _alerts_array[i].split('&')[2].path + "/" + _alerts_array[i].split('&')[2].filename} >
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></a>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Físico:
+                        <button type="button" onClick={downloadSupport}>
+                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
                     </>);
                 }
             }
@@ -395,9 +400,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         return (<>
             <fieldset className="p-3">
-                <legend className="my-2 px-3 Collapsible" id="funn_3">
-                    <label className="app-p lead text-center fw-normal">3. Información de Vecinos Colindantes</label>
-                </legend>
+                <FunUpdateSectionLegend id="funn_3" step="3">Información de Vecinos Colindantes</FunUpdateSectionLegend>
                 <div className="form-check ms-5">
                     <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">

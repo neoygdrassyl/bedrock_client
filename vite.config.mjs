@@ -159,6 +159,7 @@ export default defineConfig(({ mode, command }) => {
   // Build
     build: {
       outDir: 'build',
+      emptyOutDir: true,
       sourcemap: false,
       rollupOptions: {
         output: {
@@ -200,9 +201,6 @@ export default defineConfig(({ mode, command }) => {
 
           // Gantt chart (frappe)
             if (/frappe-gantt/.test(id)) return 'vendor-gantt';
-
-          // PDF viewer (separate from pdf generator)
-            if (/pdf-viewer-reactjs/.test(id)) return 'vendor-pdf-viewer';
 
           // Spreadsheet
             if (/react-spreadsheet/.test(id)) return 'vendor-spreadsheet';

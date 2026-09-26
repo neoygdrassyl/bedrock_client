@@ -1,7 +1,7 @@
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import DataTable from '@/components/data-table-bridge';
+import { useEffect, useState } from 'react';
 const profs = [
     ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
     ['ARQUITECTO PROYECTISTA'],
@@ -13,7 +13,10 @@ const profs = [
 ]
 
 function RECORD_ENG_PROFESIONALS(props) {
-        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB, requestUpdate } = props;
+        const { translation, swaMsg, globals, _FUN_52, _FUN_6, currentItem, currentRecord, profs, useCB, requestUpdateRecord } = props;
+        const [checkedRoles, setCheckedRoles] = useState([]);
+        const [isSaving, setIsSaving] = useState(false);
+        const [selectionError, setSelectionError] = useState('');
 
         // DATA GETTERS
         /*  ROLES LIST
@@ -50,6 +53,12 @@ function RECORD_ENG_PROFESIONALS(props) {
             }
             return []
         }
+        useEffect(() => {
+            const step = (currentRecord?.record_eng_steps || []).find(item => item.id_public === 'cb_profs');
+            const checks = String(step?.check || '').split(';');
+            setCheckedRoles(profs.map((_, index) => checks[index] === '1'));
+            setSelectionError('');
+        }, [currentRecord, profs]);
         //  DATA CONVERTES
         let _FIND_PROFESIOANL = (_role) => {
             for (var i = 0; i < _FUN_52.length; i++) {
@@ -153,17 +162,16 @@ function RECORD_ENG_PROFESIONALS(props) {
             ? 'border-accent/20 bg-accent/10 text-accent'
             : 'border-destructive/20 bg-destructive/10 text-destructive';
         const buildProfessionalRows = () => {
-            const checks = _GET_STEP_TYPE('cb_profs', 'check');
-
             return profs.map((roles, index) => {
                 const role = resolveRole(roles);
                 const professional = _FIND_PROFESIOANL(role);
 
                 return {
                     id: `${role}-${index}`,
+                    index,
                     role,
                     professional,
-                    checked: checks[index] == 1,
+                    checked: Boolean(checkedRoles[index]),
                     statusText: professional ? 'DILIGENCIADO' : 'SIN DILIGENCIAR',
                 };
             });
@@ -174,7 +182,8 @@ function RECORD_ENG_PROFESIONALS(props) {
                 omit: !useCB,
                 minWidth: '56px',
                 cell: (row) => <input className="form-check-input" type="checkbox" value={row.role} name="cb_profs"
-                    defaultChecked={row.checked || false} onChange={() => manage_step()} />
+                    checked={row.checked} disabled={!row.professional || isSaving}
+                    onChange={(event) => manage_step(row.index, event.target.checked)} />
             },
             {
                 name: 'ROL',
@@ -218,60 +227,44 @@ function RECORD_ENG_PROFESIONALS(props) {
         ]
 
         // APIS
-        let manage_step = (e) => {
-            if (e) e.preventDefault();
-            var formData = new FormData();
+        let manage_step = (index, checked) => {
+            const previousChecks = checkedRoles;
+            const nextChecks = checkedRoles.map((value, currentIndex) => currentIndex === index ? checked : value);
+            const values = profs.map(roles => resolveRole(roles));
 
-            let checks = [];
-            let values = [];
-            var html = document.getElementsByName('cb_profs');
-            for (var i = 0; i < html.length; i++) {
-                checks.push(html[i].checked ? 1 : 0)
-                values.push(html[i].value)
+            if (!currentRecord?.id) {
+                setSelectionError('No fue posible guardar la selección porque el informe estructural no está disponible.');
+                return;
             }
-            formData.set('check', checks.join(';'));
-            formData.set('value', values.join(';'));
 
-            formData.set('version', 1);
+            setCheckedRoles(nextChecks);
+            setSelectionError('');
+            var formData = new FormData();
+            formData.set('check', nextChecks.map(value => value ? 1 : 0).join(';'));
+            formData.set('value', values.join(';'));
+            formData.set('version', currentRecord.version);
             formData.set('recordEngId', currentRecord.id);
             formData.set('id_public', 'cb_profs');
-            save_step('cb_profs', false, formData);
+            save_step('cb_profs', formData, previousChecks);
 
         }
-        let save_step = (_id_public, useSwal, formData) => {
+        let save_step = (_id_public, formData, previousChecks) => {
             var STEP = LOAD_STEP(_id_public);
+            const request = STEP.id
+                ? RECORD_ENG_SERVICE.update_step(STEP.id, formData)
+                : RECORD_ENG_SERVICE.create_step(formData);
 
-            if (useSwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            if (STEP.id) {
-                RECORD_ENG_SERVICE.update_step(STEP.id, formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            requestUpdate(currentItem.id);
-                        } else {
-                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    });
-            }
-            else {
-                RECORD_ENG_SERVICE.create_step(formData)
-                    .then(response => {
-                        if (response.data === 'OK') {
-                            if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                            requestUpdate(currentItem.id);
-                        } else {
-                            if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                    });
-            }
+            setIsSaving(true);
+            request
+                .then(response => {
+                    if (response.data !== 'OK') throw new Error('La API no confirmó el guardado.');
+                    requestUpdateRecord?.(currentItem.id);
+                })
+                .catch(() => {
+                    setCheckedRoles(previousChecks);
+                    setSelectionError('No fue posible guardar la selección. Se restauró el estado anterior.');
+                })
+                .finally(() => setIsSaving(false));
         }
         return (
             <div className="record_ph_profesional_evaluation container space-y-3">
@@ -291,6 +284,7 @@ function RECORD_ENG_PROFESIONALS(props) {
                     className="data-table-component"
                     noHeader
                 />
+                {selectionError ? <p className="mb-0 text-sm text-destructive" role="alert">{selectionError}</p> : null}
             </div >
         );
 }

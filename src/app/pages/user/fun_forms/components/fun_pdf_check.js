@@ -7,6 +7,8 @@ import { dateParser } from '../../../../components/customClasses/typeParse';
 import dayjs from 'dayjs';
 import { cities, domains, domains_number } from '../../../../components/jsons/vars';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -231,7 +233,9 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         // if (m_2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funcheckflat";
         if (m_2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/funcheckflat2022";
 
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         var _child = null;

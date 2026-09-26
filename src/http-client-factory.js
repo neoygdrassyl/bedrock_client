@@ -1,6 +1,31 @@
 import axios from "axios";
 import { captureDovelaHttpError } from "@/app/utils/errorReporting";
 
+// Binary requests (blob/arraybuffer) receive their error body undecoded; turn
+// a JSON payload back into an object so callers can read the server message.
+async function parseBinaryJson(data) {
+  try {
+    let text = '';
+    const isArrayBuffer = data instanceof ArrayBuffer
+      || Object.prototype.toString.call(data) === '[object ArrayBuffer]';
+    if (isArrayBuffer) {
+      text = new TextDecoder().decode(data);
+    } else if (data instanceof Blob) {
+      text = typeof data.text === 'function'
+        ? await data.text()
+        : await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result || ''));
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(data);
+          });
+    }
+    return text ? JSON.parse(text) : data;
+  } catch {
+    return data;
+  }
+}
+
 // Shared factory for Dovela axios clients. Every client reports errors to
 // telemetry. `attachAuth` marks a client as belonging to the main API's trust
 // domain: it gates both sending the app JWT (leaking it to a third-party host
@@ -29,10 +54,13 @@ export function createDovelaHttpClient({ baseURL, headers, attachAuth = true } =
   // dead session, and must stay on the login page so the user sees it.
   http.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
       const isCanceledRequest = axios.isCancel(error) || error?.code === 'ERR_CANCELED';
       if (!isCanceledRequest && !error?.config?.skipDovelaErrorCapture) {
         captureDovelaHttpError(error);
+      }
+      if (error?.response?.status === 401) {
+        error.response.data = await parseBinaryJson(error.response.data);
       }
       const isLoginRequest = (error?.config?.url || '').replace(/^\/+/, '') === 'login';
       if (attachAuth && error.response && error.response.status === 401 && !isLoginRequest) {

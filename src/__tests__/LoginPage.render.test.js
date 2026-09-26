@@ -15,18 +15,6 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-vi.mock('react-google-recaptcha', () => {
-  const React = require('react');
-  const ReCAPTCHA = ({ ref, sitekey, size }) => {
-    React.useImperativeHandle(ref, () => ({
-      execute: () => Promise.resolve('mock-token'),
-      reset: vi.fn(),
-    }));
-    return <div data-testid="recaptcha-mock" data-sitekey={sitekey} data-size={size} />;
-  };
-  return { default: ReCAPTCHA };
-});
-
 vi.mock('@/app/services/custom.service', () => ({
   __esModule: true,
   default: {
@@ -85,7 +73,6 @@ vi.mock('../http-common', () => ({
 import LoginPage from '@/app/pages/auth/LoginPage';
 import CustomsDataService from '@/app/services/custom.service';
 
-const originalCaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML;
 const routerFutureFlags = {
   v7_startTransition: true,
   v7_relativeSplatPath: true,
@@ -102,11 +89,6 @@ function renderLogin() {
 describe('LoginPage (redesigned)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = 'test-site-key';
-  });
-
-  afterEach(() => {
-    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = originalCaptchaSiteKey;
   });
 
   it('renders email and password inputs', () => {
@@ -140,36 +122,12 @@ describe('LoginPage (redesigned)', () => {
     expect(logos.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('passes the configured site key to the invisible recaptcha', () => {
+  it('does not mount recaptcha in the login form', () => {
     renderLogin();
-    expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-sitekey', 'test-site-key');
-    expect(screen.getByTestId('recaptcha-mock')).toHaveAttribute('data-size', 'invisible');
-  });
-
-  it('submits directly on localhost even when recaptcha is configured', async () => {
-    renderLogin();
-
-    fireEvent.change(screen.getByLabelText(/correo/i), { target: { value: 'ada@example.com' } });
-    fireEvent.change(screen.getByLabelText(/contraseña/i), { target: { value: 'secret123' } });
-    fireEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }));
-
-    await waitFor(() => {
-      expect(CustomsDataService.appLoginCompatible).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('does not mount recaptcha when the site key is missing', () => {
-    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '';
-
-    renderLogin();
-
     expect(screen.queryByTestId('recaptcha-mock')).not.toBeInTheDocument();
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('submits the login even when the site key is missing', async () => {
-    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '';
-
+  it('submits credentials directly', async () => {
     renderLogin();
 
     fireEvent.change(screen.getByLabelText(/correo/i), { target: { value: 'ada@example.com' } });
@@ -179,7 +137,5 @@ describe('LoginPage (redesigned)', () => {
     await waitFor(() => {
       expect(CustomsDataService.appLoginCompatible).toHaveBeenCalledTimes(1);
     });
-
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });

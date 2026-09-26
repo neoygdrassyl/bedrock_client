@@ -5,6 +5,7 @@ import { SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_A
 import UU from "../../../components/jsons/UU.json"
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 export default function ZONE_USE_COMPONENT(props) {
     const { translation, swaMsg, globals, id, refresh, setrRfresh } = props;
@@ -114,7 +115,8 @@ export default function ZONE_USE_COMPONENT(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/zone_use/" + "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf");
+                    const filename = "CONCEPTO DE USO DEL SUELO " + (item.id_out ?? '') + ".pdf";
+                    return downloadProtectedPdf(`/pdf/zone_use/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
@@ -432,4 +434,3 @@ export default function ZONE_USE_COMPONENT(props) {
         </>
     );
 }
-

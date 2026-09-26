@@ -17,6 +17,8 @@ import RichTextEditor from '@/components/rich-text-editor';
 import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
 import ObservationPanel from '../../../../components/ObservationPanel';
+import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -78,7 +80,9 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
         if (Number(model) === 2021) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra";
         if (Number(model) >= 2022) formUrl = import.meta.env.VITE_API_URL + "/pdf/recordarcextra2022";
 
-        var formPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
+        var formPdfResponse = await requestProtectedArrayBufferWithFeedback(toProtectedApiPath(formUrl) || formUrl);
+        if (!formPdfResponse) return;
+        var formPdfBytes = formPdfResponse.data;
         var pdfDoc = await PDFDocument.load(formPdfBytes);
 
         let page = pdfDoc.getPage(0)
@@ -371,21 +375,20 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
 
             return <>
                 <div className="row">
-                    <div className='row  border border-dark bg-primary text-primary-foreground fwb-bold py-1 mx-0 mt-3'>
-                        <div className='col'>
-                            <label>Observaciones finales del Proyecto</label>
-                        </div>
+                    <div className="col-12">
+                        <ObservationPanel title="Observaciones finales del Proyecto" collapsible={false}>
+                            <RichTextEditor
+                                value={_CHILD.detail}
+                                hiddenId="r_a_38_1"
+                                maxLength={8000}
+                                minHeight={180}
+                                placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
+                                uploadFile={uploadRichTextImage}
+                                onBlur={() => save_ra_38(false)}
+                                onSave={() => save_ra_38(true)}
+                            />
+                        </ObservationPanel>
                     </div>
-                    <RichTextEditor
-                        value={_CHILD.detail}
-                        hiddenId="r_a_38_1"
-                        maxLength={8000}
-                        minHeight={180}
-                        placeholder="Registre observaciones finales, conclusiones e imágenes de soporte"
-                        uploadFile={uploadRichTextImage}
-                        onBlur={() => save_ra_38(false)}
-                        onSave={() => save_ra_38(true)}
-                    />
                 </div>
             </>
         }
@@ -881,7 +884,8 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/recordarc/" + "INFORME ARQUITECTONICO " + currentItem.id_public + ".pdf");
+                        const filename = `INFORME ARQUITECTONICO ${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/recordarc/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

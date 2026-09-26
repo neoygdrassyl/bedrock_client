@@ -207,7 +207,7 @@ describe('RecordsLaw — Render', () => {
     expect(container.firstChild).toBeTruthy();
   });
 
-  test('record_law_review opens the total observations panel when it has content and toggles it', async () => {
+  test('record_law_review toggles total observations panel from a collapsed trigger', async () => {
     const user = userEvent.setup();
     const recordWithHistoricObservations = {
       ...baseRecord,
@@ -227,13 +227,22 @@ describe('RecordsLaw — Render', () => {
     const panel = container.querySelector('#law-total-observations-panel');
     const resumeTextarea = container.querySelector('#law-total-observations-panel textarea[readonly]');
 
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(panel).toHaveAttribute('aria-hidden', 'false');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(panel).toHaveAttribute('aria-hidden', 'true');
+    expect(panel).not.toHaveClass('op__content--open');
     expect(resumeTextarea).toBeTruthy();
     expect(resumeTextarea).not.toHaveAttribute('name', 's_flaw_values');
-    // The textarea is labelled by the trigger, whose name carries the hint too.
-    expect(resumeTextarea).toHaveAccessibleName(/OBSERVACIONES TOTALES/);
+    expect(resumeTextarea).toHaveAccessibleName('OBSERVACIONES TOTALES toque para ver observaciones');
+    expect(resumeTextarea).toHaveAttribute('tabindex', '-1');
+
+    await user.click(trigger);
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(panel).toHaveAttribute('aria-hidden', 'false');
+    expect(panel).toHaveClass('op__content--open');
     expect(resumeTextarea).not.toBeDisabled();
+    expect(resumeTextarea).toHaveClass('op__textarea', 'op__textarea--readonly');
+    expect(resumeTextarea).not.toHaveAttribute('tabindex', '-1');
     expect(resumeTextarea.value).toContain('Observacion documental');
     expect(resumeTextarea.value).toContain('Observacion del formulario');
     expect(resumeTextarea.value).toContain('Observacion de publicidad');
@@ -242,10 +251,7 @@ describe('RecordsLaw — Render', () => {
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(panel).toHaveAttribute('aria-hidden', 'true');
-
-    await user.click(trigger);
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(panel).toHaveAttribute('aria-hidden', 'false');
+    expect(panel).not.toHaveClass('op__content--open');
+    expect(resumeTextarea).toHaveAttribute('tabindex', '-1');
   });
 });

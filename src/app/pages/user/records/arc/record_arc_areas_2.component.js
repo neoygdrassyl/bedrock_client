@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { EditableDataGrid } from '@/components/editable-data-grid';
 
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
 import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
@@ -152,49 +153,10 @@ export default function RECORD_ARC_AREAS_2(props) {
     var [openConfig, setOc] = useState(false);
     var [tagsH, setTagH] = useState([]);
     var [tagsE, setTagE] = useState([]);
-    const gridRef = useRef(null);
-    const didDragSelectRef = useRef(false);
-    const [selectedRange, setSelectedRange] = useState(null);
-    const [dragAnchor, setDragAnchor] = useState(null);
-    const [editingCell, setEditingCell] = useState(null);
-    const [colWidths, setColWidths] = useState([]);
     const [saveError, setSaveError] = useState('');
     const areaSaveBatchRef = useRef(0);
     const hasLocalAreaChangesRef = useRef(false);
     const loadedRecordIdRef = useRef(null);
-
-    let _MEASURE_TEXT = (text, fontSize = 12.8) => {
-        try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-            return ctx.measureText(String(text ?? '')).width;
-        } catch {
-            return String(text ?? '').length * 7;
-        }
-    };
-
-    useEffect(() => {
-        if (!Array.isArray(Header) || Header.length === 0) return;
-        const PADDING = 16;
-        const MIN_COL_0 = 40;
-        const MIN_COL_REST = 70;
-        const widths = Header.map((h, colIdx) => {
-            if (colIdx === 0) return MIN_COL_0;
-            let max = _MEASURE_TEXT(h) + PADDING * 2;
-            if (Array.isArray(data)) {
-                data.forEach((row) => {
-                    if (!Array.isArray(row)) return;
-                    const cell = row[colIdx];
-                    if (!cell) return;
-                    const w = _MEASURE_TEXT(cell.value) + PADDING * 2;
-                    if (w > max) max = w;
-                });
-            }
-            return Math.max(max, MIN_COL_REST);
-        });
-        setColWidths(widths);
-    }, [Header, data]);
 
     useEffect(() => {
         if (currentRecord.record_arc_33_areas != null) {
@@ -998,306 +960,26 @@ export default function RECORD_ARC_AREAS_2(props) {
         manage_areas(newData);
     }
     // ******************************* JSX ***************************** // 
-    let _handleCellEdit = (rowIdx, cellName, cellId, newValue) => {
-        let changes = [{
-            previousCell: { name: cellName, ref: cellId },
-            newCell: { text: newValue },
-        }];
-        change_areas(changes);
-    };
-
-    let _GET_ROW_REF = (row, rowIdx) => {
-        if (!Array.isArray(row)) return 'cell_' + rowIdx;
-        return row[0]?.id || 'cell_' + rowIdx;
-    }
-
-    let _NORMALIZE_RANGE = (range) => {
-        if (!range) return null;
-        return {
-            startRow: Math.min(range.startRow, range.endRow),
-            endRow: Math.max(range.startRow, range.endRow),
-            startCol: Math.min(range.startCol, range.endCol),
-            endCol: Math.max(range.startCol, range.endCol),
-        };
-    }
-
-    let _IS_CELL_SELECTED = (rowIdx, colIdx) => {
-        let range = _NORMALIZE_RANGE(selectedRange);
-        if (!range) return false;
-        return rowIdx >= range.startRow && rowIdx <= range.endRow && colIdx >= range.startCol && colIdx <= range.endCol;
-    }
-
-    let _IS_ACTIVE_CELL = (rowIdx, colIdx) => {
-        return selectedRange?.startRow === rowIdx && selectedRange?.startCol === colIdx;
-    }
-
-    let _BUILD_CHANGES = (entries) => {
-        return entries.filter((entry) => {
-            if (!Number.isInteger(entry.rowIdx) || !Number.isInteger(entry.colIdx)) return false;
-            let row = data[entry.rowIdx];
-            let cell = row?.[entry.colIdx];
-            if (!cell || cell.readOnly || !cell.name) return false;
-            return true;
-        }).map((entry) => {
-            let row = data[entry.rowIdx];
-            let cell = row[entry.colIdx];
-            return {
-                previousCell: { name: cell.name, ref: _GET_ROW_REF(row, entry.rowIdx) },
-                newCell: { text: entry.value },
-            };
-        });
-    }
-
-    let _GET_SELECTED_TEXT = () => {
-        let range = _NORMALIZE_RANGE(selectedRange);
-        if (!range) return '';
-
-        return data.slice(range.startRow, range.endRow + 1).map((row) => {
-            let safeRow = Array.isArray(row) ? row : [];
-            return safeRow.slice(range.startCol, range.endCol + 1).map((cell) => cell?.value ?? '').join('\t');
-        }).join('\n');
-    }
-
-    let _PASTE_SELECTED_TEXT = (text) => {
-        let range = _NORMALIZE_RANGE(selectedRange);
-        if (!range || !text) return;
-
-        let values = text.replace(/\r/g, '').split('\n').filter((row, index, source) => row || index < source.length - 1).map((row) => row.split('\t'));
-        if (!values.length) return;
-
-        let changes = _BUILD_CHANGES(values.flatMap((rowValues, rowOffset) => rowValues.map((value, colOffset) => ({
-            rowIdx: range.startRow + rowOffset,
-            colIdx: range.startCol + colOffset,
-            value,
-        }))));
-
-        if (!changes.length) return;
-        change_areas(changes);
-    }
-
-    let _CLEAR_SELECTED_CELLS = () => {
-        let range = _NORMALIZE_RANGE(selectedRange);
-        if (!range) return;
-
-        let changes = _BUILD_CHANGES(Array.from({ length: range.endRow - range.startRow + 1 }, (_, rowOffset) => {
-            return Array.from({ length: range.endCol - range.startCol + 1 }, (_, colOffset) => ({
-                rowIdx: range.startRow + rowOffset,
-                colIdx: range.startCol + colOffset,
-                value: '',
-            }));
-        }).flat());
-
-        if (!changes.length) return;
-        change_areas(changes);
-    }
-
-    let _ACTIVATE_CELL = (rowIdx, colIdx) => {
-        gridRef.current?.focus();
-        setSelectedRange({ startRow: rowIdx, endRow: rowIdx, startCol: colIdx, endCol: colIdx });
-    }
-
-    let _HANDLE_GRID_KEY_DOWN = (event) => {
-        if (editingCell) return;
-        if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) return;
-
-        if ((event.key === 'Delete' || event.key === 'Backspace') && selectedRange) {
-            event.preventDefault();
-            _CLEAR_SELECTED_CELLS();
-            return;
-        }
-
-        if (event.key === 'Enter' && selectedRange) {
-            let cell = data[selectedRange.startRow]?.[selectedRange.startCol];
-            if (!cell || cell.readOnly) return;
-            event.preventDefault();
-            setEditingCell({ row: selectedRange.startRow, col: selectedRange.startCol });
-        }
-    }
-
-    let _HANDLE_CELL_MOUSE_DOWN = (event, rowIdx, colIdx) => {
-        if (event.button !== 0) return;
-        event.preventDefault();
-        didDragSelectRef.current = false;
-        setEditingCell(null);
-        _ACTIVATE_CELL(rowIdx, colIdx);
-        setDragAnchor({ row: rowIdx, col: colIdx });
-    }
-
-    let _HANDLE_CELL_MOUSE_ENTER = (rowIdx, colIdx) => {
-        if (!dragAnchor) return;
-        didDragSelectRef.current = true;
-        setSelectedRange({ startRow: dragAnchor.row, startCol: dragAnchor.col, endRow: rowIdx, endCol: colIdx });
-    }
-
-    let _HANDLE_CELL_CLICK = (event, rowIdx, colIdx) => {
-        if (didDragSelectRef.current) {
-            didDragSelectRef.current = false;
-            return;
-        }
-
-        gridRef.current?.focus();
-        if (event.shiftKey && selectedRange) {
-            setSelectedRange({
-                startRow: selectedRange.startRow,
-                startCol: selectedRange.startCol,
-                endRow: rowIdx,
-                endCol: colIdx,
-            });
-            return;
-        }
-
-        _ACTIVATE_CELL(rowIdx, colIdx);
-
-        const cell = data[rowIdx]?.[colIdx];
-        if (cell && !cell.readOnly) {
-            setEditingCell({ row: rowIdx, col: colIdx });
-        }
-    }
-
-    let _HANDLE_CELL_DOUBLE_CLICK = (rowIdx, colIdx, isReadOnly) => {
-        if (isReadOnly) return;
-        _ACTIVATE_CELL(rowIdx, colIdx);
-        setEditingCell({ row: rowIdx, col: colIdx });
-    }
-
     let _COMPONENT_TABLE_2 = () => {
-        const safeData = Array.isArray(data) ? data : [];
-        const safeHeader = Array.isArray(Header) ? Header : [];
+        const textColumns = ['Sótano/Piso', 'ID Plano', 'Escala', 'Nivel N', 'Uso Principal'];
+        const columns = (Array.isArray(Header) ? Header : []).map((header, index) => ({
+            id: String(index),
+            header,
+            sticky: index < 2,
+            align: index === 0 ? 'center' : textColumns.includes(header) ? 'left' : 'right',
+            width: index === 0
+                ? 48
+                : Math.max(88, Math.min(200, String(header || '').length * 7 + 36)),
+        }));
 
-        return (
-            <div
-                ref={gridRef}
-                className='ovx'
-                style={{ overflowX: 'auto', userSelect: editingCell ? 'text' : 'none' }}
-                tabIndex={0}
-                onMouseUp={() => setDragAnchor(null)}
-                onMouseLeave={() => setDragAnchor(null)}
-                onKeyDown={_HANDLE_GRID_KEY_DOWN}
-                onCopy={(event) => {
-                    let text = _GET_SELECTED_TEXT();
-                    if (!text) return;
-                    event.preventDefault();
-                    event.clipboardData.setData('text/plain', text);
-                }}
-                onPaste={(event) => {
-                    if (editingCell) return;
-                    let text = event.clipboardData.getData('text/plain');
-                    if (!text) return;
-                    event.preventDefault();
-                    _PASTE_SELECTED_TEXT(text);
-                }}
-            >
-                <table className='table table-bordered table-sm' style={{ minWidth: colWidths.length ? colWidths.reduce((a, b) => a + b, 0) : safeHeader.length * 100, tableLayout: 'fixed' }}>
-                    <thead>
-                        <tr>
-                            {safeHeader.map((h, i) => (
-                                <th key={'th_' + i}
-                                    style={{
-                                        width: colWidths[i] ?? (i === 0 ? 40 : 100),
-                                        position: i < 2 ? 'sticky' : undefined,
-                                        left: i === 0 ? 0 : i === 1 ? (colWidths[0] ?? 40) : undefined,
-                                        zIndex: i < 2 ? 2 : undefined,
-                                        background: '#f8f9fa',
-                                        whiteSpace: 'nowrap',
-                                        fontSize: '0.8rem',
-                                    }}
-                                    className='text-center'
-                                >
-                                    {h}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {safeData.map((row, rowIdx) => {
-                            const safeRow = Array.isArray(row) ? row : [];
-                            return (
-                                <tr key={'row_' + rowIdx}>
-                                    {safeRow.map((cell, colIdx) => {
-                                        const isReadOnly = cell.readOnly || false;
-                                        const cellValue = cell.value != null ? String(cell.value) : '';
-                                        const cellId = _GET_ROW_REF(safeRow, rowIdx);
-                                        const cellName = cell.name || '';
-                                        const isSelected = _IS_CELL_SELECTED(rowIdx, colIdx);
-                                        const isActive = _IS_ACTIVE_CELL(rowIdx, colIdx);
-                                        const isEditing = editingCell?.row === rowIdx && editingCell?.col === colIdx && !isReadOnly;
-
-                                        return (
-                                            <td key={'cell_' + rowIdx + '_' + colIdx}
-                                                data-arc-row={rowIdx}
-                                                data-arc-col={colIdx}
-                                                style={{
-                                                    width: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
-                                                    position: colIdx < 2 ? 'sticky' : undefined,
-                                                    left: colIdx === 0 ? 0 : colIdx === 1 ? (colWidths[0] ?? 40) : undefined,
-                                                    zIndex: colIdx < 2 ? 1 : undefined,
-                                                    background: isSelected ? 'rgba(37, 99, 235, 0.14)' : isReadOnly ? 'gainsboro' : '#fff',
-                                                    color: cell.color || undefined,
-                                                    fontSize: '0.8rem',
-                                                    padding: '2px 4px',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'nowrap',
-                                                    minWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
-                                                    maxWidth: colWidths[colIdx] ?? (colIdx === 0 ? 40 : 100),
-                                                    outline: isActive ? '2px solid #2563eb' : undefined,
-                                                    outlineOffset: isActive ? '-2px' : undefined,
-                                                    cursor: isReadOnly ? 'default' : 'cell',
-                                                }}
-                                                className={`${cell.className || ''} ${isSelected ? 'arc-areas-selection-cell' : ''} ${isActive ? 'arc-areas-selection-active' : ''}`.trim()}
-                                                onMouseDown={(event) => _HANDLE_CELL_MOUSE_DOWN(event, rowIdx, colIdx)}
-                                                onMouseEnter={() => _HANDLE_CELL_MOUSE_ENTER(rowIdx, colIdx)}
-                                                onClick={(event) => _HANDLE_CELL_CLICK(event, rowIdx, colIdx)}
-                                                onDoubleClick={() => _HANDLE_CELL_DOUBLE_CLICK(rowIdx, colIdx, isReadOnly)}
-                                            >
-                                                {isEditing ? (
-                                                    <input
-                                                        type='text'
-                                                        autoFocus
-                                                        defaultValue={cellValue}
-                                                        style={{
-                                                            width: '100%',
-                                                            border: 'none',
-                                                            outline: 'none',
-                                                            background: 'transparent',
-                                                            color: 'inherit',
-                                                            fontSize: 'inherit',
-                                                            padding: 0,
-                                                        }}
-                                                        onFocus={(e) => e.target.select()}
-                                                        onBlur={(e) => {
-                                                            if (e.target.value !== cellValue) {
-                                                                _handleCellEdit(rowIdx, cellName, cellId, e.target.value);
-                                                            }
-                                                            setEditingCell(null);
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                e.target.blur();
-                                                            }
-                                                            if (e.key === 'Escape') {
-                                                                e.preventDefault();
-                                                                setEditingCell(null);
-                                                                gridRef.current?.focus();
-                                                            }
-                                                        }}
-                                                    />
-                                                ) : isReadOnly ? (
-                                                    <span>{cellValue}</span>
-                                                ) : (
-                                                    <span>{cellValue}</span>
-                                                )}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        );
+        return <EditableDataGrid
+            ariaLabel="Información de áreas arquitectónicas"
+            columns={columns}
+            rows={Array.isArray(data) ? data : []}
+            getRowId={(row, rowIdx) => row?.[0]?.id || 'cell_' + rowIdx}
+            onCellsCommit={change_areas}
+            emptyMessage="No hay áreas registradas"
+        />;
     }
     let _COMPONENT_BTNS = () => {
         return <>
@@ -1388,49 +1070,41 @@ export default function RECORD_ARC_AREAS_2(props) {
                         <div className='col-6 mb-1'>
                             <label className='mx-2 fw-bold'>Usar Áreas Modalidad:</label>
                             {type_check.map((val, i) => {
-                                return <>
-                                    <div className="form-check form-check-inline">
+                                return <div key={val} className="form-check form-check-inline">
                                         <input className="form-check-input my-0" type="checkbox" name="type_cb"
                                             defaultChecked={child_1_cb[i]} onChange={() => manage_step(false, 'f1')} />
                                         <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
-                                </>
                             })}
                         </div>
                         <div className='col-6 mb-1'>
                             <label className='mx-2 fw-bold'>Usar Áreas descontadas:</label>
                             {destory_check.map((val, i) => {
-                                return <>
-                                    <div className="form-check form-check-inline">
+                                return <div key={val} className="form-check form-check-inline">
                                         <input className="form-check-input my-0" type="checkbox" name="destroy_cb"
                                             defaultChecked={destroy_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
-                                </>
                             })}
                         </div>
                         <div className='col-6'>
                             <label className='mx-2  fw-bold'>Usar Unidades nuevas:</label>
                             {units_check.map((val, i) => {
-                                return <>
-                                    <div className="form-check form-check-inline">
+                                return <div key={val} className="form-check form-check-inline">
                                         <input className="form-check-input my-0" type="checkbox" name="units_cb"
                                             defaultChecked={units_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
-                                </>
                             })}
                         </div>
                         <div className='col-6'>
                             <label className='mx-2  fw-bold'>Usar Áreas nuevas:</label>
                             {units_a_check.map((val, i) => {
-                                return <>
-                                    <div className="form-check form-check-inline">
+                                return <div key={val} className="form-check form-check-inline">
                                         <input className="form-check-input my-0" type="checkbox" name="units_a_cb"
                                             defaultChecked={units_a_cb[i] === 'true'} onChange={() => manage_step()} />
                                         <h5 className="form-check-label fw-normal" htmlFor="inlineCheckbox1">{val}</h5>
                                     </div>
-                                </>
                             })}
                         </div>
                     </div>
@@ -1502,7 +1176,7 @@ export default function RECORD_ARC_AREAS_2(props) {
 
         new_data = old_data.map((od, rowIdx) => {
             if (!Array.isArray(od)) return od;
-            let rowRef = _GET_ROW_REF(od, rowIdx);
+            let rowRef = od?.[0]?.id || 'cell_' + rowIdx;
             return od.map(cell => {
                 let newCell = {};
                 let findCell = changes.find(f => cell.name === f.previousCell.name && rowRef === f.previousCell.ref)

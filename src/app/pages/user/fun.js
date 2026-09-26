@@ -1166,7 +1166,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             const canEdit = row.state != 101 && row.state <= 200;
             const isPH = regexChecker_isPh(row, true);
             const showStructuralReport = shouldUseStructuralReport(row, row.version, { isPropertyHorizontal: isPH });
-            const canAssign = window.user.id == 1 || window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 6;
+            const activeUser = window.user || {};
+            const canAssign = activeUser.id == 1 || activeUser.roleId == 1 || activeUser.roleId == 3 || activeUser.roleId == 6;
             const stopRowClick = (event) => {
                 event?.stopPropagation?.();
             };

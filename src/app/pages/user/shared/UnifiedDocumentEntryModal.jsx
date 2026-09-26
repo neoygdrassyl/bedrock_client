@@ -1,10 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+import { toProtectedApiPath } from '@/app/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { DOCUMENT_ORIGIN_META, DOCUMENT_ORIGIN_STATE } from './expediente-documental.constants';
 import { buildDocumentDownloadUrl, buildDocumentPreviewUrl } from './expediente-documental.utils';
 
 const EMPTY_EVALUATION_TEXT = 'Evaluación documental pendiente de definir para esta entrada.';
+
+function downloadDocument(source, filename) {
+    if (!source) return Promise.resolve();
+    const protectedPath = toProtectedApiPath(source);
+    if (protectedPath) return downloadProtectedFileWithFeedback(protectedPath, filename);
+    const link = document.createElement('a');
+    link.href = source;
+    link.download = filename;
+    link.rel = 'noopener noreferrer';
+    link.click();
+    return Promise.resolve();
+}
 
 function getEntryTitle(entry) {
     return [entry?.documentName, entry?.documentCode].filter(Boolean).join(' · ') || 'Documento sin nombre';
@@ -257,9 +272,9 @@ function UnifiedDocumentEntryModal({
                         <p className="mb-2 font-semibold text-foreground">Resultado de evaluación</p>
                         <p className="mb-0">{selectedEntry?.evaluationSummary?.status || EMPTY_EVALUATION_TEXT}</p>
                     </div> : <>
-                        {previewUrl ? <iframe
+                        {previewUrl ? <ProtectedDocumentPreview
                             title={`Vista previa ${selectedEntry?.documentName || 'documento'}`}
-                            src={previewUrl}
+                            source={previewUrl}
                             className="h-[54vh] w-full rounded-xl border border-border bg-muted"
                         /> : <div className="rounded-xl border border-dashed border-border bg-muted/20 p-5 text-center text-sm text-muted-foreground">
                             Esta entrada no tiene archivo digital para previsualizar.
@@ -268,7 +283,7 @@ function UnifiedDocumentEntryModal({
                             <Button type="button" variant="outline" size="sm" aria-label="Ver archivo previsualizado en pantalla completa" onClick={() => setIsPreviewFullscreen(true)}>
                                 <Icon name="expand-arrows-alt" size={14} /> Pantalla completa
                             </Button>
-                            {downloadUrl ? <Button type="button" variant="outline" size="sm" aria-label="Descargar archivo previsualizado" onClick={() => window.open(downloadUrl, '_blank', 'noopener,noreferrer')}>
+                            {downloadUrl ? <Button type="button" variant="outline" size="sm" aria-label="Descargar archivo previsualizado" onClick={() => downloadDocument(downloadUrl, selectedEntry?.filename || 'documento')}>
                                  <Icon name="Download" size={14} /> Descargar archivo
                              </Button> : null}
                          </div> : null}
@@ -289,9 +304,9 @@ function UnifiedDocumentEntryModal({
                     </Button>
                 </div>
                 <div className="min-h-0 flex-1 overflow-hidden p-4">
-                    <iframe
+                    <ProtectedDocumentPreview
                         title={`Vista completa ${selectedEntry?.documentName || 'documento'}`}
-                        src={previewUrl}
+                        source={previewUrl}
                         className="h-full min-h-[calc(100vh-10rem)] w-full rounded-xl border border-border bg-muted"
                     />
                 </div>

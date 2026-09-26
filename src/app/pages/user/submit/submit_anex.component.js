@@ -11,6 +11,7 @@ import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../sha
 import DataTable from '@/components/data-table-bridge';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 const getInitialDigitalDoc = () => ({
     code: '',
@@ -316,7 +317,8 @@ function SUBMIT_ANEX({ swaMsg, currentItem, refreshList: propRefreshList, refres
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/pdf/submit/" + "Control Ingreso Documentos " + currentItem.id_public + ".pdf");
+                        const filename = "Control Ingreso Documentos " + currentItem.id_public + ".pdf";
+                        return downloadProtectedPdf(`/pdf/submit/${encodeURIComponent(filename)}`, filename);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                     }

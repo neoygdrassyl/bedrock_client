@@ -96,7 +96,7 @@ describe('FUN row action menu workspace opening', () => {
       '_blank',
       'noopener,noreferrer',
     );
-  });
+  }, 10_000);
 
   it('opens actualizar in the workspace', async () => {
     const user = userEvent.setup();

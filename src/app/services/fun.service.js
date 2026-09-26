@@ -20,7 +20,7 @@ class UserslDataService {
     return http.get(`/${route}/getall/clocks`);
   }
   getSearch(field, string) {
-    return http.get(`/${route}/getsearch/${field}&${string}`);
+    return http.get(`/${route}/getsearch/${encodeURIComponent(field)}&${encodeURIComponent(string)}`);
   }
   getclock(id, state) {
     return http.get(`/${route}/getclock/${id}&${state}`);
@@ -30,6 +30,41 @@ class UserslDataService {
   }
   get(id) {
     return http.get(`/${route}/${id}`);
+  }
+  getIdentificationUpdateStatus(id, version) {
+    return http.get(`/${route}/${id}/identification-update-status`, { params: { version } });
+  }
+  getIdentificationChangeLog(id, version) {
+    return http.get(`/${route}/${id}/identification-change-log`, { params: { version } });
+  }
+  getIdentificationReceiptStatus(id, version) {
+    return http.get(`/${route}/${id}/identification-receipt-status`, { params: { version } });
+  }
+  getPropertyChangeLog(id, version) {
+    return dedupeGet(`${route}:property-change-log:${id}:${version}`, () => (
+      http.get(`/${route}/${id}/property-change-log`, { params: { version } })
+    ));
+  }
+  updateIdentificationChangeLog(id, data) {
+    return http.put(`/${route}/identification-change-log/${id}`, data);
+  }
+  deleteIdentificationChangeLog(id) {
+    return http.delete(`/${route}/identification-change-log/${id}`);
+  }
+  updatePropertyChangeLog(id, data) {
+    return http.put(`/${route}/property-change-log/${id}`, data);
+  }
+  deletePropertyChangeLog(id) {
+    return http.delete(`/${route}/property-change-log/${id}`);
+  }
+  getDailyHistory(id) {
+    return http.get(`/${route}/${id}/history`);
+  }
+  captureDailyHistory(id) {
+    return http.post(`/${route}/${id}/history/capture`);
+  }
+  updateDailyHistoryObservation(historyId, observation) {
+    return http.put(`/${route}/history/${historyId}/observation`, { observation });
   }
   getFun6(id) {
     return http.get(`/${route}/fun6/${id}`);
@@ -52,11 +87,21 @@ class UserslDataService {
   get_fun1(id_public) {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
-  get_fun_IdPublic(id_public) {
-    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}`, () => http.get(`/${route}/get/idpublic/${id_public}`));
+  get_fun_IdPublic(id_public, config) {
+    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
+    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}:${captureMode}`, () => (
+      config
+        ? http.get(`/${route}/get/idpublic/${id_public}`, config)
+        : http.get(`/${route}/get/idpublic/${id_public}`)
+    ));
   }
-  getSummaryByIdPublic(id_public) {
-    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}`, () => http.get(`/${route}/get/summary/${id_public}`));
+  getSummaryByIdPublic(id_public, config) {
+    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
+    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}:${captureMode}`, () => (
+      config
+        ? http.get(`/${route}/get/summary/${id_public}`, config)
+        : http.get(`/${route}/get/summary/${id_public}`)
+    ));
   }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);
@@ -178,6 +223,9 @@ class UserslDataService {
   create_fun4(data) {
     return http.post(`/${route}/fun4`, data);
   }
+  create_fun4Technical(data) {
+    return http.post(`/${route}/fun4technical`, data);
+  }
   create_fun51(data) {
     return http.post(`/${route}/fun51`, data);
   }
@@ -293,6 +341,9 @@ class UserslDataService {
   }
   delete_4(id) {
     return http.delete(`/${route}/fun4d/${id}`);
+  }
+  delete_4Technical(id) {
+    return http.delete(`/${route}/fun4technicald/${id}`);
   }
   delete_51(id) {
     return http.delete(`/${route}/fun51d/${id}`);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import ReCAPTCHA from 'react-google-recaptcha';
 import CustomsDataService from '@/app/services/custom.service';
 import DataSerive from '@/app/services/data.service';
 import { infoCud } from '@/app/components/jsons/vars';
@@ -17,12 +16,9 @@ import { swalError } from '@/app/utils/swalAdapter';
 export default function LoginPage({ signin }) {
   useTranslation();
   const navigate = useNavigate();
-  const recaptchaRef = React.useRef(null);
   const credentialsRef = React.useRef({ email: '', password: '' });
   const submittingRef = React.useRef(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const recaptchaSiteKey = import.meta.env.VITE_GOOGLE_CAPTCHA_HTML?.trim();
-  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
   const from = { pathname: '/dashboard' };
 
@@ -120,30 +116,10 @@ export default function LoginPage({ signin }) {
 
     submittingRef.current = true;
     setIsSubmitting(true);
-    let captchaTimer;
     try {
-      if (!isLocalhost && recaptchaSiteKey) {
-        if (!recaptchaRef.current) throw new Error('Captcha not ready');
-        recaptchaRef.current.reset();
-        const token = await Promise.race([
-          recaptchaRef.current.executeAsync(),
-          new Promise((_, reject) => {
-            captchaTimer = setTimeout(() => reject(new Error('Captcha timeout')), 15000);
-          }),
-        ]);
-        clearTimeout(captchaTimer);
-        if (!token) throw new Error('Captcha verification failed');
-      }
+      // performLogin reports its own failures; this only guards double submits.
       await performLogin();
-    } catch {
-      swalError({
-        title: 'VERIFICACIÓN NO DISPONIBLE',
-        text: 'La verificación de seguridad no respondió. Intente nuevamente.',
-        footer: 'Compruebe que su navegador permita cargar Google reCAPTCHA.',
-      });
     } finally {
-      clearTimeout(captchaTimer);
-      recaptchaRef.current?.reset();
       submittingRef.current = false;
       setIsSubmitting(false);
     }
@@ -263,14 +239,6 @@ export default function LoginPage({ signin }) {
             >
               {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
             </button>
-
-            {recaptchaSiteKey ? (
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                size="invisible"
-                sitekey={recaptchaSiteKey}
-              />
-            ) : null}
           </form>
 
           {/* Footer branding */}

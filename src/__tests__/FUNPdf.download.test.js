@@ -2,11 +2,12 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-const { swalErrorMock, swalLoadingMock, swalCloseMock, pdfLoadMock } = vi.hoisted(() => ({
+const { swalErrorMock, swalLoadingMock, swalCloseMock, pdfLoadMock, requestProtectedArrayBufferMock } = vi.hoisted(() => ({
   swalErrorMock: vi.fn(),
   swalLoadingMock: vi.fn(),
   swalCloseMock: vi.fn(),
   pdfLoadMock: vi.fn(),
+  requestProtectedArrayBufferMock: vi.fn(),
 }));
 
 vi.mock('../app/utils/swalAdapter', () => ({
@@ -27,6 +28,11 @@ vi.mock('pdf-lib', () => ({
 vi.mock('../app/components/customClasses/typeParse', () => ({
   dateParser: (value) => value ?? '',
   getJSONFull: () => ({}),
+}));
+
+vi.mock('@/app/utils/pdfDownload', () => ({
+  requestProtectedArrayBuffer: requestProtectedArrayBufferMock,
+  toProtectedApiPath: (value) => value.replace(String(import.meta.env.VITE_API_URL || ''), ''),
 }));
 
 vi.mock('../app/components/jsons/vars', async () => {
@@ -90,7 +96,7 @@ describe('FUN_PDF download flow', () => {
     swalLoadingMock.mockClear();
     swalCloseMock.mockClear();
     pdfLoadMock.mockReset();
-    vi.stubGlobal('fetch', vi.fn());
+    requestProtectedArrayBufferMock.mockReset();
   });
 
   test('shows the missing model alert instead of throwing a ReferenceError', async () => {
@@ -111,9 +117,7 @@ describe('FUN_PDF download flow', () => {
   test('uses 2026 template when project date is after March 15, 2026', async () => {
     const stopAfterContextSetup = new Error('stop-after-context-setup');
 
-    fetch.mockResolvedValue({
-      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
-    });
+    requestProtectedArrayBufferMock.mockResolvedValue({ data: new ArrayBuffer(8) });
 
     pdfLoadMock.mockResolvedValue({
       getPage: vi.fn(() => {
@@ -125,7 +129,7 @@ describe('FUN_PDF download flow', () => {
     const clickHandler = getReactClickHandler(button);
 
     await expect(clickHandler()).rejects.toBe(stopAfterContextSetup);
-    expect(fetch).toHaveBeenCalledWith(`${import.meta.env.VITE_API_URL}/pdf/funflat2026`);
+    expect(requestProtectedArrayBufferMock).toHaveBeenCalledWith('/pdf/funflat2026');
     expect(pdfLoadMock).toHaveBeenCalledTimes(1);
   });
 });

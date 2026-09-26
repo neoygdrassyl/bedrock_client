@@ -3,6 +3,7 @@
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { rmSync } from 'node:fs';
 
 const [, , modeArg = 'production', ...flags] = process.argv;
 const validModes = new Set(['development', 'production']);
@@ -26,6 +27,9 @@ if (shouldAnalyze) {
 } else if (env.VITE_BUILD_ANALYZE === undefined) {
   env.VITE_BUILD_ANALYZE = 'false';
 }
+
+const buildDir = path.resolve(import.meta.dirname, '..', 'build');
+rmSync(buildDir, { recursive: true, force: true });
 
 const result = spawnSync(
   process.execPath,

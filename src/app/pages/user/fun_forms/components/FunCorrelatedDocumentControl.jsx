@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+
 import FUNService from '../../../../services/fun.service';
 import {
     buildCorrelatedRequirementRows,
@@ -171,9 +173,9 @@ function DetailPanel({ row, selectedEntryId, onSelectEntry, onClose }) {
                     </div>
 
                     {previewUrl ? (
-                        <iframe
+                        <ProtectedDocumentPreview
                             title={`Previsualización documental ${selectedEntry.name}`}
-                            src={previewUrl}
+                            source={previewUrl}
                             className="h-[min(64vh,40rem)] min-h-[22rem] w-full rounded-lg border border-border bg-muted/20"
                         />
                     ) : (

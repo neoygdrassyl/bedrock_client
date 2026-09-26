@@ -98,7 +98,7 @@ export const CHECKLIST_HIERARCHY = Object.freeze([
       {
         id: '6.6.profesional',
         note: '* Deben presentarse firmados y rotulados por profesional idóneo',
-        codes: ['6601', '6602', '6603', '6604', '6605', '911'],
+        codes: ['6601', '6602', '6603', '6604', '6605'],
       },
       {
         id: '6.6.revision',

@@ -83,13 +83,16 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
     const setItem_RecordArc = useCallback(() => {
         RECORD_ENG_SERVICE.findIdRelated(currentId)
             .then(response => {
-                if (response.data.length < 1) {
+                const records = Array.isArray(response.data) ? response.data : [];
+                const recordForCurrentVersion = records.find((record) => Number(record.version) === Number(currentVersion));
+
+                if (!recordForCurrentVersion) {
                     setCurrentRecord(null);
                     setCurrentVersionR(null);
                     setLoaded(true);
                 } else {
-                    setCurrentRecord(response.data[0]);
-                    setCurrentVersionR(response.data[0].version);
+                    setCurrentRecord(recordForCurrentVersion);
+                    setCurrentVersionR(recordForCurrentVersion.version);
                     setLoaded(true);
                 }
             })
@@ -97,13 +100,15 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                 console.log(e);
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
-    }, [currentId, swaMsg]);
+    }, [currentId, currentVersion, swaMsg]);
 
     const requestUpdateRecord = (id) => {
         RECORD_ENG_SERVICE.findIdRelated(id)
             .then(response => {
-                setCurrentRecord(response.data[0]);
-                setCurrentVersionR(response.data[0].version);
+                const records = Array.isArray(response.data) ? response.data : [];
+                const recordForCurrentVersion = records.find((record) => Number(record.version) === Number(currentVersion));
+                setCurrentRecord(recordForCurrentVersion || null);
+                setCurrentVersionR(recordForCurrentVersion?.version || null);
                 setLoaded(true);
             })
             .catch(e => {
@@ -366,7 +371,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                         _FUN_6={_GET_CHILD_6()}
                                         currentItem={currentItem}
                                         currentRecord={currentRecord}
-                                        requestUpdate={requestUpdate}
+                                        requestUpdateRecord={requestUpdateRecord}
                                         useCB
                                         profs={[
                                             ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
@@ -711,7 +716,8 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <fieldset className="p-3">
                                     <div className="text-center">
-                                        <Button size="sm" onClick={() => new_record_eng()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
+                                        <p className="mb-3 text-sm text-muted-foreground">No existe informe estructural para la versión {currentVersion}.</p>
+                                        {Number(currentVersion) === 1 ? <Button size="sm" onClick={() => new_record_eng()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button> : null}
                                     </div>
                                 </fieldset>
 

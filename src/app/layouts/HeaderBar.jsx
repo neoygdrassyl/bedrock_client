@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/components/theme-provider';
-import { Sun, Moon, LogOut, Search, ChevronRight, FileText, UserCircle2, AlertTriangle } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, CalendarDays, ChevronRight, FileText, UserCircle2, AlertTriangle } from 'lucide-react';
 import { Icon } from '@/components/icon';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { requestDovelaErrorReport } from '@/app/utils/errorReporting';
@@ -140,6 +140,23 @@ export function HeaderBar({ user, onLogout }) {
           </span>
         ))}
       </nav>
+
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to="/calendario-laboral"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground no-underline transition-colors hover:bg-muted hover:text-foreground"
+              aria-label="Abrir calendario laboral"
+            >
+              <CalendarDays className="h-3.5 w-3.5" />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={4} className="text-xs">
+            Calendario laboral
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {/* Search trigger */}
       <button

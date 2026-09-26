@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 export default function FUN_D_CONTROL_2(props) {
     const { currentItem, swaMsg, requestUpdate } = props
@@ -245,7 +246,8 @@ export default function FUN_D_CONTROL_2(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     swalClose();
-                    window.open(import.meta.env.VITE_API_URL + "/pdf/controlcheck_2/" + "Hoja de control inventario - " + currentItem.id_public + ".pdf");
+                    const filename = `Hoja de control inventario - ${currentItem.id_public}.pdf`;
+                    return downloadProtectedPdf(`/pdf/controlcheck_2/${encodeURIComponent(filename)}`, filename);
                 } else {
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                 }

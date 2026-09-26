@@ -2,6 +2,8 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { SubmitPage } from '../pages/submit.page';
 
+test.use({ viewport: { width: 1920, height: 1080 } });
+
 /**
  * E2E: Ventanilla Unica (Single-Window Filing)
  *

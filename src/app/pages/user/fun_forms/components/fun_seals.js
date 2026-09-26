@@ -6,6 +6,7 @@ import sealService from '../../../../services/seal.service';
 import CustomService from '../../../../services/custom.service';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 
 function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion }) {
         const [currentSeal, setCurrentSeal] = useState(null);
@@ -199,11 +200,13 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                 .then(response => {
                     if (response.data === 'OK') {
                         swalClose();
-                        window.open(import.meta.env.VITE_API_URL + "/seal/" + "Sello_" + id_request + ".pdf");
+                        const filename = `Sello_${id_request}.pdf`;
+                        const download = downloadProtectedPdf(`/seal/${encodeURIComponent(filename)}`, filename);
                         document.getElementById("app-form").reset();
                         formData = new FormData();
                         retrieveSeal(currentItem.id_public);
                         swalClose();
+                        return download;
                     } else {
                         
                     }

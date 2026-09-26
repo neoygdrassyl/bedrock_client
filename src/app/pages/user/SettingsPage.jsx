@@ -41,7 +41,8 @@ const NAV_ITEMS = [
 ];
 
 const RETIRED_SETTINGS_TABS = new Set([
-  'alarmas', 'catalogo-documental', 'configuracion-actuaciones', 'revision-documentos',
+  'alarmas', 'catalogo-documental', 'configuracion-actuaciones', 'requisitos-documentales',
+  'revision-documentos',
 ]);
 
 function formatLastLogin(value) {
