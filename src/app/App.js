@@ -63,7 +63,6 @@ const ZONE_USE = lazy(() => import('./pages/user/zone_use/zone_use.page'));
 const SETTINGS = lazy(() => import('./pages/user/SettingsPage'));
 const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'));
 const SIMULADOR = lazy(() => import('./pages/user/simulador'));
-const DOCUMENTOS_SIMULATOR = lazy(() => import('./pages/user/simulador/documentos/DocumentosSimulatorPage'));
 const BUSINESS_CALENDAR = lazy(() => import('./pages/user/business-calendar/BusinessCalendarPage'));
 
 const loadingFallbackItems = Array.from({ length: 8 }, (_, index) => `route-loading-card-${index + 1}`);
@@ -284,9 +283,7 @@ export default function App() {
                       <Route path="/simulador" element={
                         <SIMULADOR translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
                       } />
-                      <Route path="/simulador/documentos" element={
-                        <DOCUMENTOS_SIMULATOR translation={titleT} globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} />
-                      } />
+                      <Route path="/simulador/documentos" element={<Navigate to="/configuracion?tab=configuracion-documental" replace />} />
                       <Route path="/simulador/legal" element={<LEGAL_FLOW_GUIDE />} />
                       <Route path="/calculadora" element={
                         <Liquidator globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} versioni="2024" hideInfo useSelector />

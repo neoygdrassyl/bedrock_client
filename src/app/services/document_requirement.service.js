@@ -1,32 +1,8 @@
 import http from '../../http-common';
 
 const ROUTE = 'document-requirements';
-const READABLE_PREVIEW_STATUSES = new Set(['published', 'draft']);
-
-function buildStatusQuery(status) {
-  if (!status) return '';
-  return `?status=${encodeURIComponent(status)}`;
-}
-
-function getPreviewStatus(payload = {}, options = {}) {
-  const requestedStatus = options.status || payload?.configStatus || payload?.status || 'published';
-  return READABLE_PREVIEW_STATUSES.has(requestedStatus) ? requestedStatus : 'published';
-}
 
 class DocumentRequirementService {
-  getConfig(status = 'published') {
-    return http.get(`/${ROUTE}/config${buildStatusQuery(status)}`);
-  }
-
-  previewRequirements(payload = {}, options = {}) {
-    const status = getPreviewStatus(payload, options);
-    const requestConfig = options.signal ? { signal: options.signal } : undefined;
-    return http.post(`/${ROUTE}/preview${buildStatusQuery(status)}`, {
-      ...payload,
-      configStatus: status,
-    }, requestConfig);
-  }
-
   getCentralConfigurations() {
     return http.get(`/${ROUTE}/central/configurations`);
   }

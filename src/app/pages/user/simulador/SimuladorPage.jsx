@@ -3,11 +3,11 @@ import { Icon } from '@/components/icon';
 
 const SIMULATOR_OPTIONS = [
   {
-    title: 'Documentos y requisitos',
-    description: 'Simula los documentos aplicables por tipo de actuación, trámite, modalidad, uso y condición del predio.',
-    path: '/simulador/documentos',
+    title: 'Configuración documental',
+    description: 'Consulta las publicaciones documentales vigentes de Dovela Central.',
+    path: '/configuracion?tab=configuracion-documental',
     icon: 'FileCheck',
-    badge: 'Principal',
+    badge: 'Dovela Central',
     tone: 'primary',
   },
   {
@@ -39,17 +39,17 @@ export default function SimuladorPage() {
                 Simulador
               </h1>
               <p className="mb-0 max-w-3xl text-sm leading-6 text-muted-foreground">
-                Accede a herramientas de simulación para anticipar requisitos documentales y revisar el flujo jurídico sin modificar expedientes.
+                Accede a la configuración documental de Dovela Central y a la guía jurídica sin modificar expedientes.
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="badge rounded-pill text-bg-light border">Sin persistencia</span>
-            <span className="badge rounded-pill text-bg-light border">Cálculo local</span>
+            <span className="badge rounded-pill text-bg-light border">Dovela Central</span>
           </div>
         </div>
         <div className="px-4 py-3 text-xs leading-5 text-muted-foreground">
-          La simulación de Documentos/Requisitos es el flujo principal. Legal reutiliza la guía existente para conservar la lógica actual.
+          La configuración documental se gestiona desde Dovela Central. Legal reutiliza la guía existente.
         </div>
       </header>
 

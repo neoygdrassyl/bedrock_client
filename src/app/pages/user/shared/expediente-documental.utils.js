@@ -590,6 +590,57 @@ export const LEGAL_FORM_SOURCE_LABELS = {
     insufficient_inputs: 'Insumos insuficientes',
 };
 
+// Synthetic source used when the backend rejects the legacy reader because the
+// expediente is already managed by the Dovela Central documentary configuration.
+export const LEGAL_FORM_CANONICAL_PROJECT_SOURCE = 'canonical_project';
+
+// Sources returned by the legacy missing-documents endpoint when Legal y debida
+// forma cannot be evaluated (no Dovela Central snapshot, or no FUN actuation yet),
+// plus the synthetic canonical-project source mapped from a 409 response.
+export const LEGAL_FORM_NOT_EVALUABLE_SOURCES = Object.freeze([
+    'central_snapshot_unconfigured',
+    'fun_actuation_missing',
+    LEGAL_FORM_CANONICAL_PROJECT_SOURCE,
+]);
+
+export const LEGAL_FORM_NOT_EVALUABLE_MESSAGE = 'Este expediente no tiene configuración documental de Dovela Central. La evaluación de Legal y debida forma está disponible en «Documentos (new)» después de activarlo.';
+
+export const LEGAL_FORM_CANONICAL_PROJECT_MESSAGE = 'Este expediente se gestiona con la configuración documental de Dovela Central. Consulte y reciba sus documentos en «Documentos (new)».';
+
+export function isLegalFormNotEvaluable(result) {
+    const source = String(result?.source || '').trim().toLowerCase();
+    return LEGAL_FORM_NOT_EVALUABLE_SOURCES.includes(source);
+}
+
+export function getLegalFormNotEvaluableMessage(source) {
+    const normalizedSource = String(source || '').trim().toLowerCase();
+    if (normalizedSource === LEGAL_FORM_CANONICAL_PROJECT_SOURCE) {
+        return LEGAL_FORM_CANONICAL_PROJECT_MESSAGE;
+    }
+    return LEGAL_FORM_NOT_EVALUABLE_SOURCES.includes(normalizedSource) ? LEGAL_FORM_NOT_EVALUABLE_MESSAGE : '';
+}
+
+// Maps a failed missing-documents request to a synthetic not-evaluable result when
+// the backend closed the legacy reader for a canonical project (HTTP 409 +
+// CANONICAL_LEGACY_WRITE_FORBIDDEN). Returns null for any other error.
+export function mapMissingDocumentsError(error) {
+    const response = error?.response;
+    if (Number(response?.status) !== 409) {
+        return null;
+    }
+    if (response?.data?.error?.code !== 'CANONICAL_LEGACY_WRITE_FORBIDDEN') {
+        return null;
+    }
+    return {
+        source: LEGAL_FORM_CANONICAL_PROJECT_SOURCE,
+        snapshotId: null,
+        configVersionId: null,
+        summary: { totalRequirements: 0, present: 0, missing: 0, pendingScan: 0, notApplicable: 0 },
+        requirements: [],
+        missingDocuments: [],
+    };
+}
+
 const INTERNAL_REPORT_VR_VALUES = new Set(['eng', 'arq', 'arc', 'jur', 'law', 'est']);
 
 export function isInternalReportVr(value) {
@@ -782,6 +833,8 @@ export function summarizeLegalFormRequirements(result = {}) {
         sourceLabel: LEGAL_FORM_SOURCE_LABELS[source] || source || 'Sin fuente',
         sourceMessage: getLegalFormSourceMessage(source),
         showSourceWarning: ['no_snapshot', 'insufficient_inputs'].includes(source),
+        notEvaluable: LEGAL_FORM_NOT_EVALUABLE_SOURCES.includes(source),
+        notEvaluableMessage: getLegalFormNotEvaluableMessage(source),
         totalRequired: Number.isFinite(totalFromSummary)
             ? totalFromSummary
             : requirements.filter((requirement) => Boolean(normalizeLegalFormStatus(requirement?.status))).length,

@@ -3,26 +3,17 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
-  previewRequirementsMock,
   updateVersionMock,
   createVersionMock,
   swalLoadingMock,
   swalSuccessMock,
   swalErrorMock,
 } = vi.hoisted(() => ({
-  previewRequirementsMock: vi.fn(),
   updateVersionMock: vi.fn(),
   createVersionMock: vi.fn(),
   swalLoadingMock: vi.fn(),
   swalSuccessMock: vi.fn(),
   swalErrorMock: vi.fn(),
-}));
-
-vi.mock('@/app/services/document_requirement.service.js', () => ({
-  __esModule: true,
-  default: {
-    previewRequirements: previewRequirementsMock,
-  },
 }));
 
 vi.mock('../../../services/fun.service', () => ({
@@ -79,20 +70,6 @@ const baseCurrentItem = {
   fun_law: { id: 81, new_type: true },
 };
 
-const previewResponse = {
-  data: {
-    configVersion: 8,
-    status: 'published',
-    requiredDocuments: [
-      { code: '6601', label: 'Documento técnico backend', groupKey: 'construccion', groupLabel: 'Construcción' },
-    ],
-    matchedRules: [
-      { key: 'rule-construction', groupKey: 'construccion', documentCodes: ['6601'], conditionSummary: 'tipoAny=D' },
-    ],
-    diagnostics: [],
-  },
-};
-
 function renderActualizar(props = {}) {
   return render(
     <FUN_NEWVERSION
@@ -113,7 +90,6 @@ describe('FUN_NEWVERSION version save', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
-    previewRequirementsMock.mockResolvedValue(previewResponse);
     updateVersionMock.mockResolvedValue({ data: 'OK' });
     createVersionMock.mockResolvedValue({ data: 'OK' });
   });

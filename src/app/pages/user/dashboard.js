@@ -293,7 +293,7 @@ function Dashboard() {
       title: 'Simulador',
       description: 'Herramientas de consulta previa sin modificar expedientes',
       items: [
-        { title: 'Documentos', icon: 'FileText', desc: 'Simula requisitos por actuación, trámite y modalidad', link: '/simulador/documentos' },
+        { title: 'Documentos', icon: 'FileText', desc: 'Consulta y administra la configuración documental de Dovela Central', link: '/configuracion?tab=configuracion-documental' },
         { title: 'Legal', icon: 'Gavel', desc: 'Revisa la guía jurídica existente del flujo legal', link: '/simulador/legal' },
       ],
     },

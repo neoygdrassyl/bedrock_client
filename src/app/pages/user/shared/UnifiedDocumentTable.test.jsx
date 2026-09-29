@@ -144,4 +144,36 @@ describe('UnifiedDocumentTable Legal y Debida Forma', () => {
     expect(within(notice).getByText(/sin snapshot/i)).toBeInTheDocument();
     expect(within(notice).getByText(/no se infieren todos los documentos/i)).toBeInTheDocument();
   });
+  it.each([
+    ['central_snapshot_unconfigured', /no tiene configuración documental de Dovela Central/i],
+    ['fun_actuation_missing', /no tiene configuración documental de Dovela Central/i],
+    ['canonical_project', /se gestiona con la configuración documental de Dovela Central/i],
+  ])('muestra una nota neutral sin KPI ni código crudo cuando la fuente es %s', (source, expectedNote) => {
+    render(
+      <UnifiedDocumentTable
+        entries={baseEntries}
+        loading={false}
+        canManage={false}
+        onAddDocument={vi.fn()}
+        onEditEntry={vi.fn()}
+        onSaveDigitalEntry={vi.fn()}
+        onDeleteEntry={vi.fn()}
+        vrList={[]}
+        legalFormResult={{ source, snapshotId: null, configVersionId: null, requirements: [], missingDocuments: [], summary: { totalRequirements: 0, present: 0, missing: 0, pendingScan: 0, notApplicable: 0 } }}
+        legalFormLoading={false}
+        legalFormError=""
+      />,
+    );
+
+    const note = screen.getByRole('note');
+    expect(note).toHaveTextContent(expectedNote);
+    expect(note).toHaveTextContent('Documentos (new)');
+    expect(screen.queryByText('Modo evaluación legal y debida forma')).not.toBeInTheDocument();
+    expect(screen.queryByText('Presentes')).not.toBeInTheDocument();
+    expect(screen.queryByText('Faltantes')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pendientes escaneo')).not.toBeInTheDocument();
+    expect(screen.queryByText(source)).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByText('Documento de identidad digital')).toBeInTheDocument();
+  });
 });
