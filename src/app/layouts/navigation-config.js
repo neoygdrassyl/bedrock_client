@@ -102,7 +102,7 @@ const NAV_ITEMS = [
     route: '/simulador',
     roles: [],
     children: [
-      { id: 'simulador-documentos', label: 'Documentos', route: '/simulador/documentos', icon: 'FileText' },
+      { id: 'simulador-documentos', label: 'Documentos', route: '/configuracion?tab=configuracion-documental', icon: 'FileText' },
       { id: 'simulador-legal', label: 'Legal', route: '/simulador/legal', icon: 'Gavel' },
     ],
   },
@@ -131,7 +131,7 @@ const ROUTE_PRELOADERS = {
   '/normas': () => import('../pages/user/norms/norms.page'),
   '/uso-suelo': () => import('../pages/user/zone_use/zone_use.page'),
   '/simulador': () => import('../pages/user/simulador'),
-  '/simulador/documentos': () => import('../pages/user/simulador/documentos/DocumentosSimulatorPage'),
+  '/simulador/documentos': () => import('../pages/user/SettingsPage'),
   '/simulador/legal': () => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'),
   '/configuracion': () => import('../pages/user/SettingsPage'),
 };

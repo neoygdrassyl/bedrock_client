@@ -70,7 +70,7 @@ vi.mock('../app/pages/user/fun_forms/fun_g', () => ({ __esModule: true, default:
 vi.mock('../app/pages/user/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_n', () => ({ __esModule: true, default: () => <div data-testid="module-actualizar" /> }));
 vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
-vi.mock('../app/pages/user/expediente_documental/FunDocumentalNew.jsx', () => ({ __esModule: true, default: ({ traditionalContent }) => documentaryMode.canonical ? <div data-testid="canonical-entry" /> : traditionalContent || <div data-testid="module-documentos-new" /> }));
+vi.mock('../app/pages/user/expediente_documental/FunDocumentalNew.jsx', () => ({ __esModule: true, default: () => documentaryMode.canonical ? <div data-testid="canonical-entry" /> : <div data-testid="module-documentos-new" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({ __esModule: true, default: () => <div data-testid="module-publicidad" /> }));
 vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
 vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
@@ -111,11 +111,19 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     getSummaryByIdPublicMock.mockResolvedValue({ data: null });
   });
 
-  it.each(['documentos', 'documentos-new'])('resolves canonical origin before mounting legacy modules at %s', async (section) => {
+  it('resolves canonical origin inside documentos-new without mounting the legacy module', async () => {
     documentaryMode.canonical = true;
-    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection={section} />);
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="documentos-new" />);
     expect(await screen.findByTestId('canonical-entry')).toBeInTheDocument();
     expect(screen.queryByTestId('module-documentos')).not.toBeInTheDocument();
+  });
+
+  it('keeps documentos as the pure legacy module even for canonical origins', async () => {
+    documentaryMode.canonical = true;
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="documentos" />);
+    expect(await screen.findByTestId('module-documentos')).toBeInTheDocument();
+    expect(screen.queryByTestId('canonical-entry')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('module-documentos-new')).not.toBeInTheDocument();
   });
 
   afterEach(() => {

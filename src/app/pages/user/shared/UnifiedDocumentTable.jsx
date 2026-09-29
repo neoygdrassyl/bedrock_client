@@ -9,6 +9,7 @@ import {
     DOCUMENT_PREVIEW_MEDIUM,
     INTERNAL_REPORT_VR_FILTER,
     LEGAL_FORM_FILTER,
+    LEGAL_FORM_NOT_EVALUABLE_MESSAGE,
     buildDocumentTableRows,
     decorateDocumentTableRowsWithLegalForm,
     filterDocumentTableRows,
@@ -208,7 +209,9 @@ function UnifiedDocumentTable({
 }) {
     const legalSummary = useMemo(() => summarizeLegalFormRequirements(legalFormResult), [legalFormResult]);
     const hasLegalData = Boolean(legalFormLoading || legalFormError || legalSummary.source || legalSummary.totalRequired);
+    const legalNotEvaluable = !legalFormLoading && !legalFormError && legalSummary.notEvaluable;
     const [legalMode, setLegalMode] = useState(hasLegalData);
+    const showLegalEvaluation = legalMode && hasLegalData && !legalNotEvaluable;
     const [filters, setFilters] = useState({ document: '', vr: '', mediums: [], statuses: [], legalForm: LEGAL_FORM_FILTER.ALL });
     const [page, setPage] = useState(1);
     const [modalState, setModalState] = useState({ open: false, mode: 'history', group: null });
@@ -260,7 +263,7 @@ function UnifiedDocumentTable({
     return <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-1 flex-wrap items-center gap-2 text-xs">
-                {legalMode && hasLegalData ? <>
+                {showLegalEvaluation ? <>
                         <KpiFilterButton
                             className={getLegalFormToneClass(LEGAL_FORM_FILTER.PRESENT)}
                             title="Filtrar documentos presentes"
@@ -316,7 +319,7 @@ function UnifiedDocumentTable({
                         <Icon name="plus" size={13} /> Añadir
                     </Button> : null}
             </div>
-            {hasLegalData ? <Switch
+            {hasLegalData && !legalNotEvaluable ? <Switch
                 id="legal-mode-switch"
                 checked={legalMode}
                 onChange={toggleLegalMode}
@@ -324,7 +327,11 @@ function UnifiedDocumentTable({
             /> : null}
         </div>
 
-        {legalMode && hasLegalData ? <div className="space-y-2">
+        {legalNotEvaluable ? <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground" role="note">
+            {legalSummary.notEvaluableMessage || LEGAL_FORM_NOT_EVALUABLE_MESSAGE}
+        </div> : null}
+
+        {showLegalEvaluation ? <div className="space-y-2">
             {legalFormLoading ? <div className="rounded-lg border border-border bg-background/70 px-3 py-2 text-sm text-muted-foreground" role="status" aria-live="polite">
                 Consultando Legal y Debida Forma...
             </div> : null}

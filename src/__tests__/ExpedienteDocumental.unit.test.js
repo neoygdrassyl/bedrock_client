@@ -14,6 +14,7 @@ import {
     filterDocumentTableRows,
     filterUnifiedDocumentRows,
     groupDocumentEntries,
+    mapMissingDocumentsError,
     normalizeVentanillaDocs,
     summarizeLegalFormRequirements,
     summarizeUnifiedDocumentRows,
@@ -459,5 +460,66 @@ describe('expediente-documental utils', () => {
         });
 
         expect(suggestion).toBe('1. Solicitar Formulario único nacional.\n2. Digitalizar o cargar Certificado de libertad físico.');
+    });
+});
+
+describe('mapMissingDocumentsError', () => {
+    const canonicalError = {
+        response: {
+            status: 409,
+            data: {
+                schemaVersion: 'dovela-backoffice/documentary-error/v1',
+                error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN', message: 'Legacy reader closed' },
+            },
+        },
+    };
+
+    it('maps a canonical-project 409 to a synthetic not-evaluable result', () => {
+        const result = mapMissingDocumentsError(canonicalError);
+        expect(result).toMatchObject({ source: 'canonical_project', requirements: [], missingDocuments: [] });
+
+        const summary = summarizeLegalFormRequirements(result);
+        expect(summary.notEvaluable).toBe(true);
+        expect(summary.notEvaluableMessage).toMatch(/se gestiona con la configuración documental de Dovela Central/i);
+        expect(buildMissingDocumentsSuggestionText(result)).toBe('');
+    });
+
+    it.each([
+        ['a 409 with another error code', { response: { status: 409, data: { error: { code: 'OTHER_CONFLICT' } } } }],
+        ['a 500 with the canonical code', { response: { status: 500, data: { error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN' } } } }],
+        ['a network error without response', new Error('Network Error')],
+        ['an undefined error', undefined],
+    ])('returns null for %s', (_label, error) => {
+        expect(mapMissingDocumentsError(error)).toBeNull();
+    });
+
+    it('keeps the original not-evaluable message for unconfigured sources', () => {
+        const summary = summarizeLegalFormRequirements({ source: 'central_snapshot_unconfigured' });
+        expect(summary.notEvaluableMessage).toMatch(/no tiene configuración documental de Dovela Central/i);
+    });
+});
+
+describe('documentary command transport', () => {
+    it('sends strict JSON documentary commands despite the shared multipart default', async () => {
+        const { vi } = await import('vitest');
+        vi.resetModules();
+        const post = vi.fn().mockResolvedValue({ data: {} });
+        const put = vi.fn().mockResolvedValue({ data: {} });
+        vi.doMock('../http-common', () => ({ default: { get: vi.fn(), post, put, patch: vi.fn() } }));
+        const api = await import('../app/services/documentaryOperations.service');
+        const command = { expectedInputRevision: 0, idempotencyKey: 'key', reason: 'Reason' };
+        await api.activateDocumentaryProject(1, command);
+        await api.changeDocumentaryConfiguration(1, command);
+        await api.saveDocumentaryInputs(1, command);
+        await api.refreshDocumentaryRequirements(1, command);
+        await api.createCanonicalSubmit(1, command);
+        await api.saveCanonicalControl(1, 10, 20, command);
+        const calls = [...post.mock.calls, ...put.mock.calls];
+        expect(calls).toHaveLength(6);
+        calls.forEach(([, body, config]) => {
+            expect(body).toBe(command);
+            expect(config?.headers?.['Content-Type']).toBe('application/json');
+        });
+        vi.doUnmock('../http-common');
     });
 });

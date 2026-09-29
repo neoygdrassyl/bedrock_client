@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';
-import { buildDocumentEntriesFromLegacyData, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
+import { buildDocumentEntriesFromLegacyData, mapMissingDocumentsError, normalizeVentanillaDocs } from '../shared/expediente-documental.utils';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
 function fileKey(file) {
@@ -146,6 +146,12 @@ function FUN_6_VIEW({
                 setMissingDocumentsLoaded(true);
             })
             .catch((error) => {
+                const notEvaluableResult = mapMissingDocumentsError(error);
+                if (notEvaluableResult) {
+                    setMissingDocumentsResult(notEvaluableResult);
+                    setMissingDocumentsLoaded(true);
+                    return;
+                }
                 console.warn('No fue posible consultar Legal y Debida Forma.', error);
                 setMissingDocumentsResult(null);
                 setMissingDocumentsError('No fue posible consultar Legal y Debida Forma.');

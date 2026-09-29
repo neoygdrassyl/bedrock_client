@@ -167,4 +167,75 @@ describe('FUN_DOC_CONFIRM_INCOMPLETE', () => {
     expect(screen.getByText(/Sugerencia calculada/i)).toBeInTheDocument();
     expect(screen.getByText('1. Digitalizar o cargar Certificado de libertad físico.')).toBeInTheDocument();
   });
+  it.each(['central_snapshot_unconfigured', 'fun_actuation_missing'])('muestra una nota informativa sin error cuando la fuente %s no es evaluable', async (source) => {
+    getMissingDocumentsMock.mockResolvedValue({
+      data: {
+        source,
+        snapshotId: null,
+        configVersionId: null,
+        summary: { totalRequirements: 0, present: 0, missing: 0, pendingScan: 0, notApplicable: 0 },
+        requirements: [],
+        missingDocuments: [],
+      },
+    });
+
+    render(
+      <FUN_DOC_CONFIRM_INCOMPLETE
+        currentItem={buildCurrentItem()}
+        currentVersion={1}
+        edit={false}
+        requestUpdate={vi.fn()}
+        swaMsg={swaMsg}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByRole('note')).toHaveTextContent(/no tiene configuración documental de Dovela Central/i));
+    expect(screen.queryByText('No fue posible consultar Legal y Debida Forma.')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sugerencia calculada/i)).not.toBeInTheDocument();
+    expect(document.getElementById('geni_missing').value).toBe('');
+  });
+  it('muestra la nota de Dovela Central sin error cuando el backend cierra el lector legado (409 canónico)', async () => {
+    getMissingDocumentsMock.mockRejectedValue({
+      response: {
+        status: 409,
+        data: {
+          schemaVersion: 'dovela-backoffice/documentary-error/v1',
+          error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN', message: 'Legacy reader closed' },
+        },
+      },
+    });
+
+    render(
+      <FUN_DOC_CONFIRM_INCOMPLETE
+        currentItem={buildCurrentItem()}
+        currentVersion={1}
+        edit={false}
+        requestUpdate={vi.fn()}
+        swaMsg={swaMsg}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByRole('note')).toHaveTextContent(/se gestiona con la configuración documental de Dovela Central/i));
+    expect(screen.getByRole('note')).toHaveTextContent('Documentos (new)');
+    expect(screen.queryByText('No fue posible consultar Legal y Debida Forma.')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sugerencia calculada/i)).not.toBeInTheDocument();
+    expect(document.getElementById('geni_missing').value).toBe('');
+  });
+
+  it('mantiene el error para otros conflictos 409', async () => {
+    getMissingDocumentsMock.mockRejectedValue({ response: { status: 409, data: { error: { code: 'OTHER_CONFLICT' } } } });
+
+    render(
+      <FUN_DOC_CONFIRM_INCOMPLETE
+        currentItem={buildCurrentItem()}
+        currentVersion={1}
+        edit={false}
+        requestUpdate={vi.fn()}
+        swaMsg={swaMsg}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByText('No fue posible consultar Legal y Debida Forma.')).toBeInTheDocument());
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+  });
 });

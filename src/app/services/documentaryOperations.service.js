@@ -4,6 +4,8 @@ import { validateDocumentaryView, validateDocumentaryReceipt } from '../pages/us
 const ROOT = '/fun/documentary/v1';
 const projectUrl = (id) => `${ROOT}/projects/${documentaryProjectId(id)}`;
 const fail = () => { throw new Error('La respuesta no corresponde al expediente o a su publicación.'); };
+// The shared client defaults to multipart; documentary commands are strict JSON contracts.
+const JSON_BODY = { headers: { 'Content-Type': 'application/json' } };
 export async function getDocumentaryOrigin({ fun0Id, submitId }, signal) {
   const url = submitId ? `${ROOT}/submits/${documentaryProjectId(submitId)}/source` : `${projectUrl(fun0Id)}/source`;
   const { data } = await http.get(url, { signal });
@@ -30,10 +32,10 @@ export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
   return (await http.post(`${projectUrl(fun0Id)}/documents`, body)).data;
 }
 export async function saveCanonicalControl(fun0Id, rowId, controlId, command) {
-  return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/controls/${documentaryProjectId(controlId)}`, command)).data;
+  return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/controls/${documentaryProjectId(controlId)}`, command, JSON_BODY)).data;
 }
 export async function createCanonicalSubmit(fun0Id, command) {
-  return (await http.post(`${projectUrl(fun0Id)}/submits`, command)).data;
+  return (await http.post(`${projectUrl(fun0Id)}/submits`, command, JSON_BODY)).data;
 }
 export async function getCanonicalVersions(fun0Id, row, afterId = 0) {
   const { data } = await http.get(`${projectUrl(fun0Id)}/documents/${row.receivedDocumentRowId}/versions`, { params: { afterId, limit: 25 } });
@@ -56,10 +58,10 @@ export async function getCanonicalHistory(fun0Id, afterEventId=0, limit=25) {
 }
 export async function getDocumentaryGovernance(fun0Id, signal) {return (await http.get(`${projectUrl(fun0Id)}/governance`,{signal})).data;}
 export async function getDocumentaryConfigurationOptions(configurationId,signal) {return (await http.get(`${ROOT}/configurations/${documentaryProjectId(configurationId)}/options`,{signal})).data;}
-export async function activateDocumentaryProject(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/activation`,command)).data;}
-export async function changeDocumentaryConfiguration(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/configuration`,command)).data;}
-export async function saveDocumentaryInputs(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/inputs`,command)).data;}
-export async function refreshDocumentaryRequirements(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/requirements/refresh`,command)).data;}
+export async function activateDocumentaryProject(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/activation`,command,JSON_BODY)).data;}
+export async function changeDocumentaryConfiguration(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/configuration`,command,JSON_BODY)).data;}
+export async function saveDocumentaryInputs(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/inputs`,command,JSON_BODY)).data;}
+export async function refreshDocumentaryRequirements(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/requirements/refresh`,command,JSON_BODY)).data;}
 export function appendDocumentarySourceCommand(formData, root) {
   if (root?.documentConfigurationId == null) return formData;
   if (!Number.isInteger(root.documentaryInputRevision)) throw new Error('Recargue el expediente antes de guardar su versión.');

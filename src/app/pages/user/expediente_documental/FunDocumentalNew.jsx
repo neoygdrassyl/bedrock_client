@@ -180,13 +180,8 @@ function ProjectDocumentaryWorkspace(props) {
       {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={origin.publication.configurationId} origin={origin} canManage={props.canManage} onOriginChange={source.refresh} /> : null}
       {origin && origin.mode !== 'canonical' && props.canManage ? <DocumentaryGovernance origin={origin} canManage onSaved={source.refresh} onConflict={source.refresh} /> : null}
       {origin?.mode === 'central-linked' ? <details><summary className="cursor-pointer py-2 text-sm">Consultar catálogo publicado en Central</summary><PublishedDocumentCatalogue origin={origin} /></details> : null}
-      {origin?.mode === 'traditional' && props.traditionalContent ? <>
-        {props.traditionalContent}
-        <details><summary className="cursor-pointer py-2 text-sm">Resumen de recepción documental</summary><LegacyDocumentalWorkspace {...props} onOriginChange={source.refresh} /></details>
-      </> : null}
-      {origin?.mode === 'central-linked' || (origin?.mode === 'traditional' && !props.traditionalContent)
+      {origin?.mode === 'central-linked' || origin?.mode === 'traditional'
         ? <LegacyDocumentalWorkspace {...props} centralLinked={origin.mode === 'central-linked'} onOriginChange={source.refresh} /> : null}
-      {origin?.mode === 'central-linked' && props.traditionalContent ? <details><summary className="cursor-pointer py-2 text-sm">Documentos de la operación anterior</summary>{props.traditionalContent}</details> : null}
     </div>
   );
 }
