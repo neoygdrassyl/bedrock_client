@@ -469,7 +469,7 @@ describe('documentary command transport', () => {
         const command = { expectedInputRevision: 0, idempotencyKey: 'key', reason: 'Reason' };
         await api.activateDocumentaryProject(1, command);
         await api.changeDocumentaryConfiguration(1, command);
-        await api.saveDocumentaryInputs(1, command);
+        await api.returnDocumentaryProjectToLegacy(1, command);
         await api.refreshDocumentaryRequirements(1, command);
         await api.createCanonicalSubmit(1, command);
         await api.saveCanonicalControl(1, 10, 20, command);

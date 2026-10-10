@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { documentaryError } from '@/app/services/documentary.service';
 import { getCanonicalDocuments, getCanonicalVersions, downloadCanonicalFile, receiveCanonicalDocument, saveCanonicalControl, createCanonicalSubmit, updateCanonicalEvidence, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
-import { DocumentaryGovernance } from './DocumentaryGovernance';
+import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal.jsx';
 
 const fieldClass = 'mt-1 block min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 const effectLabels = { complies: 'Cumple', does_not_comply: 'No cumple', not_applicable: 'No aplica', no_decision: 'Sin decisión', pending: 'Pendiente', stale: 'Requiere nueva revisión', review_unavailable: 'Revisión no disponible', no_configured_controls: 'Sin controles configurados', unreviewed: 'Pendiente de revisión' };
@@ -175,14 +175,21 @@ function AuditHistory({origin}){
     {page?.events.map(event=><article key={event.id} className="space-y-2 border-l border-border pl-3 text-sm"><p>{event.eventType} · {event.occurredAt} · usuario {event.actorId}</p><p>{event.reason}</p>{event.receivedDocumentRowId?[event.beforeJson?.manifest,event.afterJson?.manifest].filter(Boolean).map((manifest,index)=><div key={`${event.id}:${index}`}><p>Evidencia {manifest.evidenceRevision}</p><DocumentFiles origin={origin} receipt={{id:event.receivedDocumentRowId,files:manifest.files}} onError={setError}/></div>):null}</article>)}{page&&!page.events.length?<p className="text-sm">No hay eventos documentales.</p>:null}<ErrorMessage error={error}/></details>;
 }
 
-function RequirementSummary({view}){
+function RequirementSummary({view,fun0Id,onRefreshed}){
   const summary=view.satisfaction;
-  return <details className="space-y-2 rounded-md border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Requisitos y recepción</summary><p className="text-sm">{summary?.allRequirementsSatisfied===true?'Los requisitos conocidos tienen recepción. Esto no constituye aprobación de controles.':summary?.allRequirementsSatisfied===false?'Hay requisitos pendientes de recepción.':'La evaluación está incompleta o pendiente de actualizar; no se presume completitud.'}</p>
+  const [missingOpen,setMissingOpen]=useState(false);
+  // Reloading the workspace unmounts this summary, so it waits until the modal closes.
+  const evaluationRefreshed=useRef(false);
+  function closeMissing(){setMissingOpen(false);if(evaluationRefreshed.current){evaluationRefreshed.current=false;onRefreshed?.();}}
+  return <details className="space-y-2 rounded-md border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Requisitos y recepción</summary>
+    <Button type="button" variant="outline" size="sm" onClick={()=>setMissingOpen(true)}>Ver faltantes</Button>
+    <MissingDocumentsModal open={missingOpen} fun0Id={fun0Id} onClose={closeMissing} onRefreshed={()=>{evaluationRefreshed.current=true;}}/>
+    <p className="text-sm">{summary?.allRequirementsSatisfied===true?'Los requisitos conocidos tienen recepción. Esto no constituye aprobación de controles.':summary?.allRequirementsSatisfied===false?'Hay requisitos pendientes de recepción.':'La evaluación está incompleta o pendiente de actualizar; no se presume completitud.'}</p>
     <ul className="space-y-1 text-sm">{(view.requirements?.documents||[]).map(document=><li key={document.catalogueId||document.code}>{document.code} · {document.name} · {document.standaloneRequired?'Obligatorio independiente':document.required?'Requerido':'Alternativa o complementario'}</li>)}</ul>
     {(summary?.groups||[]).map(group=><p key={group.code} className="text-sm">{group.code} · {group.mode==='at_least_one'?'Al menos uno':group.mode==='all'?'Todos':'Complementario'} · {group.status==='satisfied'?'Recibido':group.status==='not_applicable'?'No aplicable':'Pendiente'}</p>)}</details>;
 }
 
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onOriginChange }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId }) {
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
   const [result, setResult] = useState(null);
@@ -211,8 +218,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
     <ErrorMessage error={current?.error || fileError} />
     {!current ? <p role="status" className="text-sm text-muted-foreground">Consultando documentos del expediente…</p> : null}
     {view ? <>
-      <DocumentaryGovernance key={`governance:${requestKey}`} origin={origin} view={view} canManage={canManage&&!view.readOnly} onSaved={(message,changed)=>{refresh(message);if(changed)onOriginChange?.();}} onConflict={conflict}/>
-      <RequirementSummary view={view}/>
+      <RequirementSummary view={view} fun0Id={origin.project.fun0Id} onRefreshed={()=>refresh('Evaluación de requisitos actualizada.')}/>
       {view.readOnly ? <p role="status" className="text-sm text-muted-foreground">La consulta está disponible. La recepción y la revisión requieren habilitar las capacidades pendientes del servidor.</p> : null}
       {!submitMatches ? <p role="status" className="text-sm text-muted-foreground">Este VR aún no tiene vínculo operativo con el expediente. No se pueden registrar documentos en él.</p> : null}
       {view.warnings.length ? <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">{view.warnings.map((warning) => <li key={warning.code}>{warning.code.startsWith('REQUIREMENTS_') ? 'Los requisitos están pendientes de evaluación o actualización; la recepción no confirma que el expediente esté completo.' : warning.code === 'NO_CONFIGURED_CONTROLS' ? 'Esta publicación no tiene controles configurados. No se presume cumplimiento.' : warning.message}</li>)}</ul> : null}

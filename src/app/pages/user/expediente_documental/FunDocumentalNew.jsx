@@ -1,17 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
-import { Scale, Settings2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import ProjectDocumentConfigurationPanel from '../document_requirements/ProjectDocumentConfigurationPanel';
+import { useCallback, useId, useState } from 'react';
+import DataService from '@/app/services/data.service';
+import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
+import { cn } from '@/lib/utils';
 import UnifiedDocumentEntryModal from '../shared/UnifiedDocumentEntryModal';
 import { useExpedienteDocumental } from './hooks/useExpedienteDocumental';
-import { useCentralProjectLegalForm } from './hooks/useCentralProjectLegalForm';
 import { DocumentalWorkspaceHeader } from './ui/organisms/DocumentalWorkspaceHeader';
 import { DocumentalReviewTable } from './ui/organisms/DocumentalReviewTable';
-import { LegalFormControls } from './ui/organisms/LegalFormControls';
-import { LegalFormVrDialog } from './ui/organisms/LegalFormVrDialog';
 import { useDocumentaryOrigin } from './hooks/useDocumentaryOrigin';
-import { DocumentaryOriginStatus, PublishedDocumentCatalogue } from './ui/organisms/DocumentaryOriginStatus';
+import { DocumentaryOriginStatus } from './ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from './ui/organisms/CanonicalDocumentaryWorkspace';
 import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
 
@@ -19,63 +15,18 @@ function LegacyDocumentalWorkspace({
   currentId,
   currentPublic,
   canManage = false,
-  centralLinked = false,
-  onOriginChange,
 }) {
-  const [legalFormDialogOpen, setLegalFormDialogOpen] = useState(false);
-  const [draftLegalFormVr, setDraftLegalFormVr] = useState('');
-
-  const centralProject = useCentralProjectLegalForm({ currentPublic: centralLinked ? currentPublic : null });
-  const centralDocumentMetadata = Array.isArray(centralProject.projectContext?.documentCatalog)
-    ? centralProject.projectContext.documentCatalog
-    : Array.isArray(centralProject.projectContext?.requirements?.documents)
-      ? centralProject.projectContext.requirements.documents
-      : [];
-  const authoritativeVrOptions = Array.isArray(centralProject.projectContext?.legalForm?.options)
-    ? centralProject.projectContext.legalForm.options
-    : [];
   const documental = useExpedienteDocumental({
     funId: currentId,
     idRelated: currentPublic,
     canManage,
-    documentMetadata: centralDocumentMetadata,
-    authoritativeVrOptions,
   });
-  const canEditLegalForm = canManage && Boolean(centralProject.projectContext);
-  const effectiveLegalFormVr = centralProject.selectedVr
-    || centralProject.defaultVr
-    || documental.latestVr;
-  const hasApplicableLegalControls = useMemo(() => (
-    (centralProject.legalForm?.controls || []).some((document) => (document.controls || []).length > 0)
-  ), [centralProject.legalForm]);
-
-  const openLegalFormDialog = useCallback(() => {
-    centralProject.clearSaveError();
-    setDraftLegalFormVr(centralProject.defaultVr);
-    setLegalFormDialogOpen(true);
-  }, [centralProject]);
 
   const handleRowAction = useCallback((row, action) => {
     if (action === 'history' || action === 'evaluation') {
       documental.entrySheet.openWith(row, action);
-      return;
     }
-
-    if (action === 'legal-form' && canEditLegalForm) openLegalFormDialog();
-  }, [canEditLegalForm, documental.entrySheet, openLegalFormDialog]);
-
-  const handleConfigurationChange = useCallback(() => {
-    onOriginChange?.();
-    centralProject.refresh();
-    documental.refresh();
-  }, [centralProject, documental, onOriginChange]);
-
-  const saveLegalFormVr = useCallback(async (vrIdPublic) => {
-    const saved = await centralProject.saveSelection(vrIdPublic);
-    if (!saved) return;
-    setLegalFormDialogOpen(false);
-    documental.refresh();
-  }, [centralProject, documental]);
+  }, [documental.entrySheet]);
 
   return (
     <section className="space-y-3" aria-labelledby="documental-workspace-title">
@@ -83,18 +34,6 @@ function LegacyDocumentalWorkspace({
         currentPublic={currentPublic}
         summary={documental.summary}
         loading={documental.loading}
-        configuration={canManage ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="ghost" size="icon" aria-label="Configuración documental del expediente" title="Configuración documental del expediente">
-                <Settings2 className="h-4 w-4" aria-hidden="true" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-[420px] max-w-[90vw] max-h-[70vh] overflow-y-auto p-0">
-              <ProjectDocumentConfigurationPanel currentPublic={currentPublic} compact onConfigurationChange={handleConfigurationChange} />
-            </PopoverContent>
-          </Popover>
-        ) : null}
       />
 
       <div className="space-y-3">
@@ -120,29 +59,6 @@ function LegacyDocumentalWorkspace({
           onRowAction={handleRowAction}
         />
 
-        {hasApplicableLegalControls ? (
-          <section className="space-y-3 border-t border-border pt-4" aria-labelledby="legal-form-section-title">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 id="legal-form-section-title" className="text-sm font-semibold text-foreground">Legal y debida forma</h2>
-                <p className="text-xs text-muted-foreground">Controles aplicables a los documentos de este expediente.</p>
-              </div>
-              {canEditLegalForm ? (
-                <Button type="button" variant="outline" size="sm" disabled={!centralProject.options.length} onClick={openLegalFormDialog}>
-                  <Scale aria-hidden="true" />
-                  Seleccionar VR
-                </Button>
-              ) : null}
-            </div>
-            <LegalFormControls
-              controls={centralProject.legalForm?.controls || []}
-              selectedVr={effectiveLegalFormVr}
-              canManage={canEditLegalForm}
-              saving={centralProject.saving}
-              onSave={centralProject.saveReview}
-            />
-          </section>
-        ) : null}
       </div>
       <UnifiedDocumentEntryModal
         open={documental.entrySheet.open}
@@ -152,36 +68,124 @@ function LegacyDocumentalWorkspace({
         onClose={documental.entrySheet.close}
       />
 
-      <LegalFormVrDialog
-        open={legalFormDialogOpen}
-        options={centralProject.options}
-        value={draftLegalFormVr}
-        selectedVr={centralProject.selectedVr}
-        sourceLabel={centralProject.sourceLabel}
-        saving={centralProject.saving}
-        error={centralProject.saveError}
-        onOpenChange={(open) => {
-          setLegalFormDialogOpen(open);
-          if (!open) centralProject.clearSaveError();
-        }}
-        onValueChange={setDraftLegalFormVr}
-        onSave={saveLegalFormVr}
-      />
     </section>
+  );
+}
+
+const TAB_DOCUMENTS = 'documents';
+const TAB_CONFIGURATION = 'configuration';
+const TABS = [
+  { key: TAB_DOCUMENTS, label: 'Documentos' },
+  { key: TAB_CONFIGURATION, label: 'Configuración documental' },
+];
+const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
+
+function DocumentaryTabs({ idPrefix, active, onChange }) {
+  const tabId = (key) => `${idPrefix}-tab-${key}`;
+  function handleKeyDown(event) {
+    const index = TABS.findIndex((tab) => tab.key === active);
+    let next = null;
+    if (event.key === 'ArrowRight') next = TABS[(index + 1) % TABS.length];
+    else if (event.key === 'ArrowLeft') next = TABS[(index - 1 + TABS.length) % TABS.length];
+    else if (event.key === 'Home') next = TABS[0];
+    else if (event.key === 'End') next = TABS[TABS.length - 1];
+    if (!next) return;
+    event.preventDefault();
+    onChange(next.key);
+    document.getElementById(tabId(next.key))?.focus();
+  }
+  return (
+    <div role="tablist" aria-label="Secciones del módulo documental" className="flex overflow-x-auto border-b border-border" onKeyDown={handleKeyDown}>
+      {TABS.map((tab) => {
+        const selected = tab.key === active;
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            id={tabId(tab.key)}
+            aria-selected={selected}
+            aria-controls={`${idPrefix}-panel-${tab.key}`}
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onChange(tab.key)}
+            className={cn(
+              'whitespace-nowrap border-0 border-b-2 bg-transparent px-4 py-2.5 text-sm font-medium transition-colors',
+              selected
+                ? 'border-b-primary text-primary'
+                : 'border-b-transparent text-muted-foreground hover:border-b-border hover:text-foreground',
+            )}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
 function ProjectDocumentaryWorkspace(props) {
   const source = useDocumentaryOrigin({ fun0Id: props.currentId });
   const { origin } = source;
+  const idPrefix = useId();
+  const [activeTab, setActiveTab] = useState(TAB_DOCUMENTS);
+  // Bumped after a configuration command so the Documentos tab and the selector reload.
+  const [revision, setRevision] = useState(0);
+  const [notice, setNotice] = useState('');
+  // Viewing and changing the Central configuration version is limited to abogado,
+  // curador and programador; the tab (and its requests) must not exist for other roles.
+  const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData());
+  const showTabs = canConfigure && Boolean(origin);
+  const configurationActive = showTabs && activeTab === TAB_CONFIGURATION;
+
+  function selectTab(key) {
+    setNotice('');
+    setActiveTab(key);
+  }
+  function handleSaved(message, originChanged) {
+    setNotice(message || '');
+    setRevision((value) => value + 1);
+    if (originChanged) source.refresh();
+  }
+  function handleConflict() {
+    setNotice(CONFLICT_NOTICE);
+    setRevision((value) => value + 1);
+    source.refresh();
+  }
+
   return (
     <div className="space-y-3">
       <DocumentaryOriginStatus origin={source.origin} error={source.error} loading={source.loading} refresh={source.refresh} />
-      {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={origin.publication.configurationId} origin={origin} canManage={props.canManage} onOriginChange={source.refresh} /> : null}
-      {origin && origin.mode !== 'canonical' && props.canManage ? <DocumentaryGovernance origin={origin} canManage onSaved={source.refresh} onConflict={source.refresh} /> : null}
-      {origin?.mode === 'central-linked' ? <details><summary className="cursor-pointer py-2 text-sm">Consultar catálogo publicado en Central</summary><PublishedDocumentCatalogue origin={origin} /></details> : null}
-      {origin?.mode === 'central-linked' || origin?.mode === 'traditional'
-        ? <LegacyDocumentalWorkspace {...props} centralLinked={origin.mode === 'central-linked'} onOriginChange={source.refresh} /> : null}
+      {showTabs ? <DocumentaryTabs idPrefix={idPrefix} active={activeTab} onChange={selectTab} /> : null}
+      {origin ? (
+        <div
+          id={`${idPrefix}-panel-${TAB_DOCUMENTS}`}
+          role={showTabs ? 'tabpanel' : undefined}
+          aria-labelledby={showTabs ? `${idPrefix}-tab-${TAB_DOCUMENTS}` : undefined}
+          hidden={configurationActive}
+          className="space-y-3"
+        >
+          {origin.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} /> : null}
+          {origin.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} /> : null}
+        </div>
+      ) : null}
+      {configurationActive ? (
+        <div
+          id={`${idPrefix}-panel-${TAB_CONFIGURATION}`}
+          role="tabpanel"
+          aria-labelledby={`${idPrefix}-tab-${TAB_CONFIGURATION}`}
+          className="space-y-3"
+        >
+          {notice ? <p role="status" className="text-sm">{notice}</p> : null}
+          <DocumentaryGovernance
+            key={`governance:${revision}`}
+            origin={origin}
+            canManage={Boolean(props.canManage)}
+            defaultOpen
+            onSaved={handleSaved}
+            onConflict={handleConflict}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

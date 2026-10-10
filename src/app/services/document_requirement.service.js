@@ -31,34 +31,6 @@ class DocumentRequirementService {
   setDefaultCentralProfile(profileId) {
     return http.put(`/${ROUTE}/central/profiles/${encodeURIComponent(profileId)}/default`);
   }
-
-  getProjectCentralConfiguration(idPublic) {
-    return http.get(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`);
-  }
-
-  getCentralProject(idPublic) {
-    return this.getProjectCentralConfiguration(idPublic);
-  }
-
-  updateProjectCentralConfiguration(idPublic, { profileId, typologySelections = {} }) {
-    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}`, {
-      profileId,
-      typologySelections,
-    });
-  }
-
-  saveCentralProjectLegalFormReview(idPublic, review) {
-    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}/legal-form/reviews`, review);
-  }
-
-  updateCentralProjectLegalForm(idPublic, selection) {
-    const vrIdPublic = typeof selection === 'object' && selection !== null
-      ? selection.vrIdPublic
-      : selection;
-    return http.put(`/${ROUTE}/central/projects/${encodeURIComponent(idPublic)}/legal-form`, {
-      vrIdPublic,
-    });
-  }
 }
 
 export default new DocumentRequirementService();
