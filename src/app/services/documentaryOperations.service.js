@@ -25,6 +25,19 @@ export async function getCanonicalDocuments(origin, afterId = 0, signal) {
     || data.rows.some((row) => !row.receipt || !Array.isArray(row.controls) || !row.catalogueDisplay)) fail();
   return data;
 }
+const MISSING_STATES = ['current', 'stale', 'missing_cache', 'incomplete', 'not_applicable'];
+export async function getMissingRequirements(fun0Id, signal) {
+  const { data } = await http.get(`${projectUrl(fun0Id)}/requirements/missing`, { signal });
+  if (data?.schemaVersion !== 'dovela-backoffice/documentary-missing/v1' || data.project?.fun0Id !== Number(fun0Id)
+    || !['canonical', 'traditional', 'unlinked'].includes(data.mode) || !MISSING_STATES.includes(data.state)
+    || typeof data.applicable !== 'boolean' || (data.applicable !== (data.mode === 'canonical')) || (!data.applicable && data.state !== 'not_applicable')
+    || ![true, false, null].includes(data.allRequirementsSatisfied)
+    || !Array.isArray(data.requirements) || data.requirements.some((item) => !item || typeof item.code !== 'string' || !['missing', 'present'].includes(item.status))
+    || !Array.isArray(data.groups) || !Array.isArray(data.warnings)
+    || !data.summary || ![data.summary.total, data.summary.missing, data.summary.present].every(Number.isInteger)
+    || !data.refresh || typeof data.refresh.allowed !== 'boolean') fail();
+  return data;
+}
 export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
   const body = new FormData(); body.set('command', JSON.stringify(command));
   if (digital) body.set('digital', digital);

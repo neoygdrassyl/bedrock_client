@@ -32,7 +32,7 @@ function downloadDocument(source, filename) {
     return Promise.resolve();
 }
 
-function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList, activePanel = 'physical', digitalCount = 0, digitalDocuments = [], onPanelChange, renderDigitalPanel }) {
+function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshList, origin = null, activePanel = 'physical', digitalCount = 0, digitalDocuments = [], onPanelChange, renderDigitalPanel }) {
     const [lists, setLists] = useState(0);
     const [extra_items, setExtraItems] = useState(0);
     const [list_data_table, setListDataTable] = useState([]);
@@ -48,13 +48,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
     const [scanPreviewDocument, setScanPreviewDocument] = useState(null);
     const [localDigitalDocuments, setLocalDigitalDocuments] = useState([]);
     const [missingDocumentsModalOpen, setMissingDocumentsModalOpen] = useState(false);
-    const [missingDocumentsResult, setMissingDocumentsResult] = useState(null);
-    const [missingDocumentsLoading, setMissingDocumentsLoading] = useState(false);
-    const [missingDocumentsError, setMissingDocumentsError] = useState('');
     const currentSubLists = currentItem?.sub_lists ?? [];
-    const linkedFunId = currentItem?.id_related || '';
-    const currentVrId = currentItem?.id_public || '';
-    const canReviewMissingDocuments = Boolean(linkedFunId && currentVrId);
+    // Missing requirements are evaluated by the documentary API for the linked
+    // project; an entry without a project has nothing to evaluate.
+    const missingDocumentsFun0Id = origin?.project?.fun0Id || null;
     const normalizeDocumentCode = (value) => String(value || '').trim().toUpperCase();
     const currentVrCode = normalizeDocumentCode(currentItem?.id_public);
     const belongsToCurrentVr = (documentItem) => {
@@ -243,22 +240,8 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
     };
 
     const openMissingDocumentsModal = () => {
-        if (!canReviewMissingDocuments) return;
+        if (!missingDocumentsFun0Id) return;
         setMissingDocumentsModalOpen(true);
-        setMissingDocumentsLoading(true);
-        setMissingDocumentsError('');
-        setMissingDocumentsResult(null);
-
-        funService.getMissingDocuments(linkedFunId, currentVrId)
-            .then((response) => {
-                setMissingDocumentsResult(response?.data || null);
-            })
-            .catch(() => {
-                setMissingDocumentsError('No fue posible consultar los documentos faltantes.');
-            })
-            .finally(() => {
-                setMissingDocumentsLoading(false);
-            });
     };
 
     const goToPreviousList = () => {
@@ -612,9 +595,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
         let _COMPONENT_LIST = () => {
             if (isNew) return _COMPONENT_NEW();
 
-            const renderMissingDocumentsButton = () => canReviewMissingDocuments ? <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[11px]" disabled={missingDocumentsLoading} title="Faltantes" onClick={openMissingDocumentsModal}>
-                <Icon name={missingDocumentsLoading ? 'Loader2' : 'ClipboardList'} size={14} className={missingDocumentsLoading ? 'animate-spin' : ''} /> Faltantes
-            </Button> : null;
+            const renderMissingDocumentsButton = () => <Button type="button" variant="outline" size="sm" className="h-8 px-2 text-[11px]" disabled={!missingDocumentsFun0Id} title={missingDocumentsFun0Id ? 'Faltantes' : 'No aplica: la entrada no tiene un expediente de licencias vinculado'} onClick={openMissingDocumentsModal}>
+                <Icon name="ClipboardList" size={14} /> Faltantes
+            </Button>;
 
             return (
                 <div className="flex h-full min-h-0 flex-col gap-1.5 overflow-hidden">
@@ -694,9 +677,9 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                 </div>
                             </>
                             : <>
-                                {canReviewMissingDocuments ? <div className="flex shrink-0 justify-end border-b border-border/60 bg-muted/20 px-3 py-2">
+                                <div className="flex shrink-0 justify-end border-b border-border/60 bg-muted/20 px-3 py-2">
                                     {renderMissingDocumentsButton()}
-                                </div> : null}
+                                </div>
                                 <div className="flex min-h-64 flex-1 items-center justify-center rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
                                     No hay información documental para esta entrada.
                                 </div>
@@ -1394,9 +1377,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                 </div>
                 <MissingDocumentsModal
                     open={missingDocumentsModalOpen}
-                    loading={missingDocumentsLoading}
-                    error={missingDocumentsError}
-                    result={missingDocumentsResult}
+                    fun0Id={missingDocumentsFun0Id}
                     onClose={() => setMissingDocumentsModalOpen(false)}
                 />
                 {renderScanModal()}

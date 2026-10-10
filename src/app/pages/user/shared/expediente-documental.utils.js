@@ -620,27 +620,6 @@ export function getLegalFormNotEvaluableMessage(source) {
     return LEGAL_FORM_NOT_EVALUABLE_SOURCES.includes(normalizedSource) ? LEGAL_FORM_NOT_EVALUABLE_MESSAGE : '';
 }
 
-// Maps a failed missing-documents request to a synthetic not-evaluable result when
-// the backend closed the legacy reader for a canonical project (HTTP 409 +
-// CANONICAL_LEGACY_WRITE_FORBIDDEN). Returns null for any other error.
-export function mapMissingDocumentsError(error) {
-    const response = error?.response;
-    if (Number(response?.status) !== 409) {
-        return null;
-    }
-    if (response?.data?.error?.code !== 'CANONICAL_LEGACY_WRITE_FORBIDDEN') {
-        return null;
-    }
-    return {
-        source: LEGAL_FORM_CANONICAL_PROJECT_SOURCE,
-        snapshotId: null,
-        configVersionId: null,
-        summary: { totalRequirements: 0, present: 0, missing: 0, pendingScan: 0, notApplicable: 0 },
-        requirements: [],
-        missingDocuments: [],
-    };
-}
-
 const INTERNAL_REPORT_VR_VALUES = new Set(['eng', 'arq', 'arc', 'jur', 'law', 'est']);
 
 export function isInternalReportVr(value) {
@@ -842,26 +821,6 @@ export function summarizeLegalFormRequirements(result = {}) {
         present: Number.isFinite(Number(summary?.present)) ? Number(summary.present) : countedRequirements.present,
         pendingScan: Number.isFinite(Number(summary?.pendingScan)) ? Number(summary.pendingScan) : countedRequirements.pendingScan,
     };
-}
-
-export function buildMissingDocumentsSuggestionText(result = {}) {
-    const suggestedRows = Array.isArray(result?.missingDocuments) && result.missingDocuments.length
-        ? result.missingDocuments
-            .map((document) => normalizeText(document?.suggestedText)
-                || (normalizeText(document?.label) ? `Solicitar ${normalizeText(document.label)}.` : ''))
-            .filter(Boolean)
-        : (Array.isArray(result?.requirements) ? result.requirements
-            .filter((requirement) => [LEGAL_FORM_FILTER.MISSING, LEGAL_FORM_FILTER.PENDING_SCAN].includes(normalizeLegalFormStatus(requirement?.status)))
-            .map((requirement) => {
-                const label = normalizeText(requirement?.label) || normalizeCode(requirement?.code) || 'documento sin identificar';
-                return normalizeLegalFormStatus(requirement?.status) === LEGAL_FORM_FILTER.PENDING_SCAN
-                    ? `Digitalizar o cargar ${label}.`
-                    : `Solicitar ${label}.`;
-            })
-            .filter(Boolean)
-            : []);
-
-    return suggestedRows.map((text, index) => `${index + 1}. ${text}`).join('\n');
 }
 
 export function decorateDocumentTableRowsWithLegalForm(rows = [], result = {}) {

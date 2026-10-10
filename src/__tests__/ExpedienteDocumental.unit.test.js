@@ -8,13 +8,11 @@ import {
     buildDocumentPreviewUrl,
     buildDocumentTableRows,
     buildUnifiedDocumentRows,
-    buildMissingDocumentsSuggestionText,
     decorateDocumentTableRowsWithLegalForm,
     filterDocumentEntryGroups,
     filterDocumentTableRows,
     filterUnifiedDocumentRows,
     groupDocumentEntries,
-    mapMissingDocumentsError,
     normalizeVentanillaDocs,
     summarizeLegalFormRequirements,
     summarizeUnifiedDocumentRows,
@@ -451,48 +449,9 @@ describe('expediente-documental utils', () => {
         });
     });
 
-    it('construye texto sugerido para 5.11 desde el endpoint read-only y preserva el orden recibido', () => {
-        const suggestion = buildMissingDocumentsSuggestionText({
-            missingDocuments: [
-                { suggestedText: 'Solicitar Formulario único nacional.' },
-                { suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' },
-            ],
-        });
-
-        expect(suggestion).toBe('1. Solicitar Formulario único nacional.\n2. Digitalizar o cargar Certificado de libertad físico.');
-    });
 });
 
-describe('mapMissingDocumentsError', () => {
-    const canonicalError = {
-        response: {
-            status: 409,
-            data: {
-                schemaVersion: 'dovela-backoffice/documentary-error/v1',
-                error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN', message: 'Legacy reader closed' },
-            },
-        },
-    };
-
-    it('maps a canonical-project 409 to a synthetic not-evaluable result', () => {
-        const result = mapMissingDocumentsError(canonicalError);
-        expect(result).toMatchObject({ source: 'canonical_project', requirements: [], missingDocuments: [] });
-
-        const summary = summarizeLegalFormRequirements(result);
-        expect(summary.notEvaluable).toBe(true);
-        expect(summary.notEvaluableMessage).toMatch(/se gestiona con la configuración documental de Dovela Central/i);
-        expect(buildMissingDocumentsSuggestionText(result)).toBe('');
-    });
-
-    it.each([
-        ['a 409 with another error code', { response: { status: 409, data: { error: { code: 'OTHER_CONFLICT' } } } }],
-        ['a 500 with the canonical code', { response: { status: 500, data: { error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN' } } } }],
-        ['a network error without response', new Error('Network Error')],
-        ['an undefined error', undefined],
-    ])('returns null for %s', (_label, error) => {
-        expect(mapMissingDocumentsError(error)).toBeNull();
-    });
-
+describe('legal form not-evaluable sources', () => {
     it('keeps the original not-evaluable message for unconfigured sources', () => {
         const summary = summarizeLegalFormRequirements({ source: 'central_snapshot_unconfigured' });
         expect(summary.notEvaluableMessage).toMatch(/no tiene configuración documental de Dovela Central/i);

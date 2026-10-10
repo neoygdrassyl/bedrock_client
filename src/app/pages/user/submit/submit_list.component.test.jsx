@@ -3,9 +3,8 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const { funServiceMock, submitServiceMock } = vi.hoisted(() => ({
+const { funServiceMock, submitServiceMock, getMissingRequirementsMock } = vi.hoisted(() => ({
   funServiceMock: {
-    getMissingDocuments: vi.fn(),
     getAll_VrFun: vi.fn(() => Promise.resolve({ data: [] })),
     get_fun_IdPublic: vi.fn(() => Promise.resolve({ data: { id_public: 'FUN26-2330' } })),
   },
@@ -14,6 +13,7 @@ const { funServiceMock, submitServiceMock } = vi.hoisted(() => ({
     delete_list: vi.fn(() => Promise.resolve({ data: 'OK' })),
     create_list: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
+  getMissingRequirementsMock: vi.fn(),
 }));
 
 vi.mock('../../../services/fun.service', () => ({
@@ -24,6 +24,11 @@ vi.mock('../../../services/fun.service', () => ({
 vi.mock('../../../services/submit.service', () => ({
   __esModule: true,
   default: submitServiceMock,
+}));
+
+vi.mock('@/app/services/documentaryOperations.service', () => ({
+  getMissingRequirements: getMissingRequirementsMock,
+  refreshDocumentaryRequirements: vi.fn(),
 }));
 
 vi.mock('@/components/legacy-modal', () => ({
@@ -64,41 +69,50 @@ const emptyListItem = {
   sub_lists: [],
 };
 
-const missingResult = {
-  source: 'snapshot',
-  snapshotId: 321,
-  summary: { totalRequirements: 1, missing: 1, pendingScan: 0, present: 0, notApplicable: 0 },
-  requirements: [
-    { code: 'DOC-001', label: 'Formulario único nacional', status: 'missing', statusReason: 'required_without_evidence', evidence: [] },
-  ],
-  missingDocuments: [
-    { code: 'DOC-001', label: 'Formulario único nacional', reason: 'required_without_evidence', suggestedText: 'Solicitar Formulario único nacional.' },
-  ],
+const linkedOrigin = { mode: 'traditional', project: { fun0Id: 2330, idPublic: 'FUN26-2330' }, warnings: [] };
+const unlinkedOrigin = { mode: 'unlinked', project: null, warnings: [] };
+
+const notApplicableResult = {
+  schemaVersion: 'dovela-backoffice/documentary-missing/v1',
+  project: { fun0Id: 2330, idPublic: 'FUN26-2330' },
+  mode: 'traditional',
+  applicable: false,
+  state: 'not_applicable',
+  allRequirementsSatisfied: null,
+  requirements: [],
+  groups: [],
+  summary: { total: 0, missing: 0, present: 0 },
+  refresh: { allowed: false, path: null, expectedInputRevision: null },
+  warnings: [],
 };
+
+function renderList(item, origin) {
+  return render(
+    <SUBMIT_LIST
+      translation={{}}
+      swaMsg={{}}
+      globals={{}}
+      currentItem={item}
+      refreshList={vi.fn()}
+      origin={origin}
+      activePanel="physical"
+      digitalCount={0}
+      digitalDocuments={[]}
+      onPanelChange={vi.fn()}
+    />,
+  );
+}
 
 describe('SUBMIT_LIST faltantes documentales', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    funServiceMock.getMissingDocuments.mockResolvedValue({ data: missingResult });
+    getMissingRequirementsMock.mockResolvedValue(notApplicableResult);
     funServiceMock.getAll_VrFun.mockResolvedValue({ data: [] });
   });
 
-  it('muestra Faltantes, consulta el endpoint y conserva el formulario de la lista sin guardar', async () => {
+  it('consulta los faltantes del expediente vinculado y conserva el formulario de la lista sin guardar', async () => {
     const user = userEvent.setup();
-
-    render(
-      <SUBMIT_LIST
-        translation={{}}
-        swaMsg={{}}
-        globals={{}}
-        currentItem={currentItem}
-        refreshList={vi.fn()}
-        activePanel="physical"
-        digitalCount={0}
-        digitalDocuments={[]}
-        onPanelChange={vi.fn()}
-      />,
-    );
+    renderList(currentItem, linkedOrigin);
 
     const titleInput = screen.getByPlaceholderText('Título de la lista');
     fireEvent.change(titleInput, { target: { value: 'Lista temporal sin guardar' } });
@@ -106,45 +120,33 @@ describe('SUBMIT_LIST faltantes documentales', () => {
     await user.click(screen.getByRole('button', { name: /Faltantes/i }));
 
     await waitFor(() => {
-      expect(funServiceMock.getMissingDocuments).toHaveBeenCalledWith('FUN26-2330', 'VR26-2330');
+      expect(getMissingRequirementsMock).toHaveBeenCalledWith(2330, expect.any(AbortSignal));
     });
-    expect(await screen.findByText('snapshotId: 321')).toBeInTheDocument();
-    const missingGroup = screen.getByRole('region', { name: /^Faltantes$/i });
-    expect(within(missingGroup).getByText('Formulario único nacional')).toBeInTheDocument();
+    const modal = await screen.findByRole('region', { name: 'Documentos faltantes' });
+    expect(await within(modal).findByText(/solo aplica a expedientes activados/)).toBeInTheDocument();
     expect(titleInput).toHaveValue('Lista temporal sin guardar');
     expect(submitServiceMock.update_list).not.toHaveBeenCalled();
     expect(submitServiceMock.create_list).not.toHaveBeenCalled();
     expect(submitServiceMock.delete_list).not.toHaveBeenCalled();
   });
 
-  it('muestra Faltantes en una VR vinculada aunque no tenga listas documentales activas', async () => {
+  it('habilita Faltantes en una entrada vinculada aunque no tenga listas documentales activas', async () => {
     const user = userEvent.setup();
-
-    render(
-      <SUBMIT_LIST
-        translation={{}}
-        swaMsg={{}}
-        globals={{}}
-        currentItem={emptyListItem}
-        refreshList={vi.fn()}
-        activePanel="physical"
-        digitalCount={0}
-        digitalDocuments={[]}
-        onPanelChange={vi.fn()}
-      />,
-    );
+    renderList(emptyListItem, linkedOrigin);
 
     expect(screen.getByText('No hay información documental para esta entrada.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Gestionar escaneados/i })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Faltantes/i }));
+    await waitFor(() => expect(getMissingRequirementsMock).toHaveBeenCalledWith(2330, expect.any(AbortSignal)));
+  });
 
-    await waitFor(() => {
-      expect(funServiceMock.getMissingDocuments).toHaveBeenCalledWith('FUN26-2330', 'VR26-2330');
-    });
-    expect(await screen.findByText('snapshotId: 321')).toBeInTheDocument();
-    expect(submitServiceMock.update_list).not.toHaveBeenCalled();
-    expect(submitServiceMock.create_list).not.toHaveBeenCalled();
-    expect(submitServiceMock.delete_list).not.toHaveBeenCalled();
+  it('deshabilita Faltantes cuando la entrada no tiene expediente vinculado', () => {
+    renderList(emptyListItem, unlinkedOrigin);
+
+    const button = screen.getByRole('button', { name: /Faltantes/i });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute('title', expect.stringMatching(/No aplica/));
+    expect(getMissingRequirementsMock).not.toHaveBeenCalled();
   });
 });

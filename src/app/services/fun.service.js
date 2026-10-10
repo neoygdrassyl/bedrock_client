@@ -78,9 +78,6 @@ class UserslDataService {
   getPendingPhysicalDocuments(fun_id, id_related) {
     return http.get(`/${route}/documents/pending-physical/${fun_id}/${id_related}`);
   }
-  getMissingDocuments(fun_id, id_related) {
-    return http.get(`/${route}/documents/missing/${fun_id}/${id_related}`);
-  }
   getFun6Doc(path, name) {
     return http.get(`/files/${path}/${name}`);
   }
