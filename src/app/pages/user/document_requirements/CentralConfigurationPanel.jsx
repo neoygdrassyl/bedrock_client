@@ -13,8 +13,8 @@ function unwrapResponse(response) {
   return first?.data ?? first;
 }
 
-function asConfigurations(payload) {
-  if (Array.isArray(payload?.configurations)) return payload.configurations;
+function asReleases(payload) {
+  if (Array.isArray(payload?.releases)) return payload.releases;
   throw new Error('Unexpected version list');
 }
 
@@ -39,7 +39,7 @@ function configurationId(configuration) {
 }
 
 function configurationVersion(configuration) {
-  const value = configuration?.releaseVersion ?? configuration?.version;
+  const value = configuration?.releaseVersion;
   return value === undefined || value === null ? 'Versión sin número' : `Versión ${value}`;
 }
 
@@ -69,8 +69,8 @@ export default function CentralConfigurationPanel() {
   const loadConfigurations = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await DocumentRequirementService.getCentralConfigurations();
-      setConfigurations(asConfigurations(unwrapResponse(response)));
+      const response = await DocumentRequirementService.getCentralReleases();
+      setConfigurations(asReleases(unwrapResponse(response)));
       return true;
     } catch (requestError) {
       // Do not present a stale version as current after a failed refresh.
@@ -96,7 +96,7 @@ export default function CentralConfigurationPanel() {
     setNotice('');
     try {
       // Central connection and credentials belong to the backend environment.
-      const result = unwrapResponse(await DocumentRequirementService.syncCentralProfile({ makeCurrent: false, setDefault: false }));
+      const result = unwrapResponse(await DocumentRequirementService.syncCentralRelease({ makeCurrent: false }));
       if (await loadConfigurations()) {
         setNotice(result?.created === false
           ? 'La última versión publicada ya estaba sincronizada.'
@@ -116,7 +116,7 @@ export default function CentralConfigurationPanel() {
     setError('');
     setNotice('');
     try {
-      await DocumentRequirementService.setCurrentCentralConfiguration(configurationId(pendingConfiguration));
+      await DocumentRequirementService.setCurrentCentralRelease(configurationId(pendingConfiguration));
       if (await loadConfigurations()) setNotice(`${selectedVersion} es ahora la vigente. Cambiar la versión vigente no modifica los expedientes existentes.`);
     } catch (requestError) {
       setError(errorMessage(requestError, 'No fue posible cambiar la versión vigente. Actualiza la lista e intenta de nuevo.'));
@@ -169,7 +169,7 @@ export default function CentralConfigurationPanel() {
             ) : configurations.length ? configurations.map((configuration) => (
               <TableRow key={configurationId(configuration)}>
                 <TableCell className="break-words px-2 py-2 font-medium tabular-nums sm:px-3">{configurationVersion(configuration)}</TableCell>
-                <TableCell className="hidden px-3 py-2 text-muted-foreground sm:table-cell">{formatDate(configuration.publishedAt ?? configuration.published_at)}</TableCell>
+                <TableCell className="hidden px-3 py-2 text-muted-foreground sm:table-cell">{formatDate(configuration.publishedAt)}</TableCell>
                 <TableCell className="px-3 py-2">{isCurrent(configuration) ? <DovelaBadge tone="success" icon={CheckCircle2}>Vigente</DovelaBadge> : <span className="text-sm text-muted-foreground">Disponible</span>}</TableCell>
                 <TableCell className="px-3 py-2 text-right">
                   {isCurrent(configuration) ? <span className="text-sm text-muted-foreground">En uso</span> : (
