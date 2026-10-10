@@ -1080,7 +1080,7 @@
   }
 }
 
-/* Wide, isolated canvas for the new legal_config presentation module. */
+/* Wide settings canvas: the shell spans the full available width. */
 .settings-shell--wide {
   max-width: none;
   width: 100%;
