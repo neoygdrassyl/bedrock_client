@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { documentaryError } from '@/app/services/documentary.service';
 import {
   getDocumentaryGovernance,
-  getDocumentaryConfigurationOptions,
   activateDocumentaryProject,
   changeDocumentaryConfiguration,
   returnDocumentaryProjectToLegacy,
@@ -90,7 +89,6 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
   const formId = useId();
   const [governance, setGovernance] = useState(null);
   const [target, setTarget] = useState('');
-  const [targetOptions, setTargetOptions] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
@@ -120,19 +118,8 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
   const locked = Boolean(selection) && !selection.changeAllowed;
   const editable = canManage && Boolean(selection) && !locked;
 
-  useEffect(() => {
-    if (!operation || operation === 'legacy') { setTargetOptions(null); return undefined; }
-    const abort = new AbortController();
-    setTargetOptions(null);
-    getDocumentaryConfigurationOptions(Number(target), abort.signal)
-      .then((value) => { if (!abort.signal.aborted) setTargetOptions(value); })
-      .catch((failure) => { if (!abort.signal.aborted) setError(documentaryError(failure)); });
-    return () => abort.abort();
-  }, [operation, target]);
-
   const activationBlocked = operation === 'activate' && (!confirmed || !governance?.capabilities?.activationReady);
-  const projectionBlocked = (operation === 'activate' || operation === 'configuration') && !targetOptions?.projectionReady;
-  const canApply = editable && Boolean(operation) && !busy && Boolean(reason.trim()) && !activationBlocked && !projectionBlocked;
+  const canApply = editable && Boolean(operation) && !busy && Boolean(reason.trim()) && !activationBlocked;
   // The optional view comes from the documents tab; the governance read carries the same state.
   const cacheState = view?.governance?.cacheState ?? governance?.cacheState;
 
@@ -179,7 +166,6 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
             </label>
             {locked ? <p role="note" className="text-xs text-muted-foreground">{LOCKED_REASONS[selection.lockedReason] || 'La configuración no puede cambiarse.'}</p> : null}
             {!locked ? <p className="text-xs text-muted-foreground">Puede cambiar la configuración, o volver a la documentación tradicional, mientras el expediente no tenga evidencia recibida.</p> : null}
-            {operation && operation !== 'legacy' && targetOptions?.projectionReady === false ? <p role="status" className="text-sm">La publicación requiere materialización administrativa antes de usarse.</p> : null}
             {operation === 'activate' && !governance.capabilities?.activationReady ? <p role="status" className="text-sm">La activación de configuraciones de Central aún no está habilitada en este servidor.</p> : null}
             {operation === 'legacy' ? <p role="status" className="text-sm">El expediente volverá a la documentación tradicional y se descartará la evaluación de requisitos de Central.</p> : null}
             {editable && operation ? (
