@@ -1,5 +1,4 @@
 export const DOCUMENTARY_VIEW_SCHEMA = 'dovela-backoffice/documentary-view/v1';
-export const DOCUMENTARY_CONFIGURATIONS_SCHEMA = 'dovela-backoffice/documentary-configurations/v1';
 
 /**
  * U1 wire contract: legacy-preview, readOnly:true, context:null; every write capability false.
@@ -138,11 +137,4 @@ function validateCanonicalView(value) {
     validateDocumentaryReceipt(row.receipt,value.project.fun0Id); seen.add(row.rowKey);
   }
   return value;
-}
-
-export function validateDocumentaryConfigurations(value) {
-  if (!object(value) || value.schemaVersion !== DOCUMENTARY_CONFIGURATIONS_SCHEMA
-    || !arrayOf(value.configurations, configuration)
-    || new Set(value.configurations.map((item) => item.id)).size !== value.configurations.length) invalidContract();
-  return value.configurations;
 }
