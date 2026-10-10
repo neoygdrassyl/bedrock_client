@@ -6,6 +6,11 @@ const projectUrl = (id) => `${ROOT}/projects/${documentaryProjectId(id)}`;
 const fail = () => { throw new Error('La respuesta no corresponde al expediente o a su publicación.'); };
 // The shared client defaults to multipart; documentary commands are strict JSON contracts.
 const JSON_BODY = { headers: { 'Content-Type': 'application/json' } };
+// Control ids are Dovela Central identifiers (central_check_control.id, up to 80 chars).
+const centralControlId = (value) => {
+  if (typeof value !== 'string' || !value.trim() || value.length > 80) fail();
+  return encodeURIComponent(value);
+};
 export async function getDocumentaryOrigin({ fun0Id, submitId }, signal) {
   const url = submitId ? `${ROOT}/submits/${documentaryProjectId(submitId)}/source` : `${projectUrl(fun0Id)}/source`;
   const { data } = await http.get(url, { signal });
@@ -45,7 +50,7 @@ export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
   return (await http.post(`${projectUrl(fun0Id)}/documents`, body)).data;
 }
 export async function saveCanonicalControl(fun0Id, rowId, controlId, command) {
-  return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/controls/${documentaryProjectId(controlId)}`, command, JSON_BODY)).data;
+  return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/controls/${centralControlId(controlId)}`, command, JSON_BODY)).data;
 }
 export async function createCanonicalSubmit(fun0Id, command) {
   return (await http.post(`${projectUrl(fun0Id)}/submits`, command, JSON_BODY)).data;
