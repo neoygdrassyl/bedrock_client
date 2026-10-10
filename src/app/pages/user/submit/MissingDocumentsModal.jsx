@@ -37,7 +37,7 @@ function RequirementList({ title, tone, requirements, emptyText }) {
       </div>
       <div className="space-y-2 p-3">
         {requirements.length ? requirements.map((requirement) => (
-          <article key={`${requirement.catalogueId}:${requirement.code}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+          <article key={`${requirement.documentId}:${requirement.code}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
             <StatusPill className={tone}>{requirement.code}</StatusPill>
             <span className="min-w-0 flex-1 font-medium">{requirement.name || 'Documento sin nombre'}</span>
             {requirement.groupCode ? <StatusPill className="border-border bg-muted/50 text-muted-foreground">Grupo {requirement.groupCode}</StatusPill> : null}

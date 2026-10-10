@@ -4,24 +4,28 @@ export const DOCUMENTARY_VIEW_SCHEMA = 'dovela-backoffice/documentary-view/v1';
  * U1 wire contract: legacy-preview, readOnly:true, context:null; every write capability false.
  * project = {fun0Id,idPublic}; configuration = null | {id,tenantCode,sourceReleaseId,
  * releaseVersion,schemaVersion,checksum,selection:'preview-target'}.
- * rows use opaque rowKey, persistence:'legacy-preview', null projectDocumentId/catalogueId/
+ * rows use opaque rowKey, persistence:'legacy-preview', null projectDocumentId/documentId/
  * instanceNumber/currentVersionId/catalogueDisplay and versions:[]. Historical code/title/
  * listTitle/description/pagesRaw/reviewRaw are unchanged nullable strings. Sources carry actual
  * table/id/itemIndex/sourceSnapshotHash, submitId/vrLabel, medium/originEvidence, raw/parent,
  * receipt indicators and legacy URL availability (not proof of file existence).
  * correlation = {status,reasons:[{code,message,evidence}],targets:[{configurationId,
- * configurationChecksum,catalogueId,sourceDocumentId,code,name,evidence}]}.
+ * configurationChecksum,documentId,sourceDocumentId,code,name,evidence}]}.
  * controls contain null local control/value IDs, opaque source IDs, definition/revision/origins,
- * targetCatalogueId, writable:false, review:null. actions mutate nothing; download is optional.
- * requirements = {documents:[{catalogueId,sourceDocumentId,required,trace,groupCodes}],
+ * targetDocumentId, writable:false, review:null. actions mutate nothing; download is optional.
+ * requirements = {documents:[{documentId,sourceDocumentId,required,trace,groupCodes}],
  * requirementGroups,typologyOptions,warnings}; counts distinguish raw records/items/pages,
  * relation statuses and canonical entities. warnings = [{code,message,rowKeys}].
  * Canonical rows use the separate strict branch below; preview identities remain null.
+ * documentId is the Dovela Central c_document id (string); controlId is the Central control id.
  */
 const object = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const string = (value) => typeof value === 'string';
 const nullableString = (value) => value === null || string(value);
 const id = (value) => Number.isInteger(value) && value > 0 && value <= 2147483647;
+// Central identifiers: c_document.id (varchar 36) and central_check_control.id (varchar 80).
+const documentId = (value) => string(value) && value.length > 0 && value.length <= 36;
+const controlId = (value) => string(value) && value.length > 0 && value.length <= 80;
 const count = (value) => Number.isSafeInteger(value) && value >= 0;
 const arrayOf = (value, check) => Array.isArray(value) && value.every(check);
 const hash = (value) => string(value) && /^[a-f0-9]{64}$/i.test(value);
@@ -51,20 +55,20 @@ function source(value) {
 
 function row(value, config) {
   if (!object(value) || !string(value.rowKey) || !value.rowKey || value.persistence !== 'legacy-preview'
-    || !['projectDocumentId', 'catalogueId', 'instanceNumber', 'currentVersionId', 'catalogueDisplay'].every((key) => value[key] === null)
+    || !['projectDocumentId', 'documentId', 'instanceNumber', 'currentVersionId', 'catalogueDisplay'].every((key) => value[key] === null)
     || !history(value.historical) || !Array.isArray(value.versions) || value.versions.length
     || !arrayOf(value.sources, source) || value.sources.length !== 1 || !object(value.correlation)) return false;
   const correlation = value.correlation;
   if (!['candidate', 'ambiguous', 'unmatched'].includes(correlation.status)
     || !arrayOf(correlation.reasons, (reason) => warning(reason) && Array.isArray(reason.evidence))
     || !arrayOf(correlation.targets, (target) => object(target) && config && target.configurationId === config.id
-      && target.configurationChecksum === config.checksum && id(target.catalogueId)
+      && target.configurationChecksum === config.checksum && documentId(target.documentId)
       && ['sourceDocumentId', 'code', 'name'].every((key) => string(target[key])) && Array.isArray(target.evidence))) return false;
   const targets = correlation.targets;
   if (correlation.status !== (targets.length > 1 ? 'ambiguous' : targets.length ? 'candidate' : 'unmatched')) return false;
   return arrayOf(value.controls, (control) => object(control) && control.controlId === null
     && string(control.sourceControlId) && count(control.revision) && string(control.title)
-    && targets.some((target) => target.catalogueId === control.targetCatalogueId)
+    && targets.some((target) => target.documentId === control.targetDocumentId)
     && arrayOf(control.origins, string) && control.writable === false && control.review === null
     && arrayOf(control.values, (item) => object(item) && item.id === null && ['sourceValueId', 'label', 'effect'].every((key) => string(item[key]))))
     && object(value.actions) && ['receive', 'replace', 'review'].every((key) => value.actions[key] === false)
@@ -86,7 +90,7 @@ export function validateDocumentaryView(value) {
     || !arrayOf(value.warnings, (item) => warning(item) && arrayOf(item.rowKeys, string))) invalidContract();
   const requirements = value.requirements;
   if (!object(requirements) || !arrayOf(requirements.documents, (item) => object(item)
-    && (item.catalogueId === null || id(item.catalogueId)) && string(item.sourceDocumentId)
+    && (item.documentId === null || documentId(item.documentId)) && string(item.sourceDocumentId)
     && string(item.code) && string(item.name) && typeof item.required === 'boolean' && Array.isArray(item.trace) && arrayOf(item.groupCodes, string))
     || !arrayOf(requirements.requirementGroups, object) || !arrayOf(requirements.typologyOptions, object)
     || !arrayOf(requirements.warnings, warning)) invalidContract();
@@ -103,7 +107,7 @@ export function validateDocumentaryView(value) {
 }
 
 export function validateDocumentaryReceipt(value, fun0Id) {
-  if (!object(value) || !id(value.id) || value.fun0Id !== Number(fun0Id) || !id(value.configurationId) || !id(value.catalogueId)
+  if (!object(value) || !id(value.id) || value.fun0Id !== Number(fun0Id) || !id(value.configurationId) || !documentId(value.documentId)
     || !string(value.documentKey) || !id(value.versionSequence) || !id(value.rowVersion) || !id(value.evidenceRevision)
     || !object(value.files) || Object.keys(value.files).length !== 2) invalidContract();
   for (const slot of ['digital','scan']) {
@@ -128,11 +132,11 @@ function validateCanonicalView(value) {
     || !(value.pagination.nextAfterId===null || id(value.pagination.nextAfterId)) || !Array.isArray(value.rows) || value.rows.length>100) invalidContract();
   const seen = new Set();
   for (const row of value.rows) {
-    if (!object(row) || row.persistence!=='canonical' || row.projectDocumentId!==null || !id(row.catalogueId)
+    if (!object(row) || row.persistence!=='canonical' || row.projectDocumentId!==null || !documentId(row.documentId)
       || row.rowKey!==`canonical:${row.documentKey}` || seen.has(row.rowKey) || row.receivedDocumentRowId!==row.currentVersionId
-      || row.receipt?.id!==row.receivedDocumentRowId || row.receipt?.documentKey!==row.documentKey || row.receipt?.catalogueId!==row.catalogueId
+      || row.receipt?.id!==row.receivedDocumentRowId || row.receipt?.documentKey!==row.documentKey || row.receipt?.documentId!==row.documentId
       || row.receipt?.configurationId!==value.configuration.id || !object(row.catalogueDisplay)
-      || !arrayOf(row.controls,control=>object(control)&&id(control.controlId)&&string(control.sourceControlId)&&Array.isArray(control.values))
+      || !arrayOf(row.controls,control=>object(control)&&controlId(control.controlId)&&control.sourceControlId===control.controlId&&Array.isArray(control.values))
       || !Array.isArray(row.sources) || row.sources.length || !Array.isArray(row.versions)) invalidContract();
     validateDocumentaryReceipt(row.receipt,value.project.fun0Id); seen.add(row.rowKey);
   }

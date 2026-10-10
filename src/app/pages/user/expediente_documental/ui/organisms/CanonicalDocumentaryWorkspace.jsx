@@ -70,15 +70,15 @@ function ControlDecision({ origin, row, control, canReview, onSaved, onConflict 
 }
 
 function ReceiptForm({ origin, view, fixedSubmitId, previous, onSaved, onCancel, onConflict }) {
-  const [catalogueId, setCatalogueId] = useState(String(previous?.catalogueId || ''));
+  const [documentId, setDocumentId] = useState(previous?.documentId || '');
   const [submitId, setSubmitId] = useState(String(fixedSubmitId || ''));
   const [physical, setPhysical] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const command = useRef(null);
-  const documents = origin.catalogue.documents.filter((document) => document.catalogueId && (document.isActive === true || document.isActive === 1));
-  const selected = documents.find((document) => document.catalogueId === Number(catalogueId));
-  const applicableIds = new Set((view.requirements?.documents || []).map((document) => document.catalogueId));
+  const documents = origin.catalogue.documents.filter((document) => document.documentId && (document.isActive === true || document.isActive === 1));
+  const selected = documents.find((document) => document.documentId === documentId);
+  const applicableIds = new Set((view.requirements?.documents || []).map((document) => document.documentId));
   async function save(event) {
     event.preventDefault(); if (busy) return;
     const data = new FormData(event.currentTarget);
@@ -88,7 +88,7 @@ function ReceiptForm({ origin, view, fixedSubmitId, previous, onSaved, onCancel,
     if ([digital, scan].some((file) => file?.size > 52428800)) { setError('Cada archivo debe pesar como máximo 50 MB.'); return; }
     setBusy(true); setError('');
     try {
-      command.current ||= { catalogueId: selected.catalogueId, submitId: Number(submitId), historicalTitle: selected.name,
+      command.current ||= { documentId: selected.documentId, submitId: Number(submitId), historicalTitle: selected.name,
         instanceLabel: String(data.get('instanceLabel') || '').trim() || null, documentKey: previous?.documentKey || null,
         previousVersionId: previous?.receivedDocumentRowId || null, expectedRowVersion: previous?.receipt.rowVersion || null,
         receivedAt: new Date().toISOString(), physical: physical ? { pages: Number(data.get('pages')), location: String(data.get('location')).trim(), reference: null } : null,
@@ -101,8 +101,8 @@ function ReceiptForm({ origin, view, fixedSubmitId, previous, onSaved, onCancel,
   return <form onSubmit={save} onChange={() => { command.current = null; }} className="space-y-3 rounded-md border border-border p-4">
     <h3 className="text-sm font-semibold">{previous ? 'Recibir nueva versión' : 'Recibir documento'}</h3>
     <fieldset disabled={busy} className="grid gap-3 md:grid-cols-2">
-      <label className="text-sm">Documento de Central<select className={fieldClass} required disabled={Boolean(previous)} value={catalogueId} onChange={(event) => setCatalogueId(event.target.value)}>
-        <option value="">Seleccione un documento</option>{documents.map((document) => <option key={document.catalogueId} value={document.catalogueId}>{document.code} · {document.name}{applicableIds.has(document.catalogueId) ? ' · Aplicable' : ''}</option>)}
+      <label className="text-sm">Documento de Central<select className={fieldClass} required disabled={Boolean(previous)} value={documentId} onChange={(event) => setDocumentId(event.target.value)}>
+        <option value="">Seleccione un documento</option>{documents.map((document) => <option key={document.documentId} value={document.documentId}>{document.code} · {document.name}{applicableIds.has(document.documentId) ? ' · Aplicable' : ''}</option>)}
       </select></label>
       <label className="text-sm">VR de recepción<select className={fieldClass} required disabled={Boolean(fixedSubmitId)} value={submitId} onChange={(event) => setSubmitId(event.target.value)}>
         <option value="">Seleccione el VR</option>{view.submits.map((submit) => <option key={submit.id} value={submit.id}>{submit.idPublic}</option>)}
@@ -185,7 +185,7 @@ function RequirementSummary({view,fun0Id,onRefreshed}){
     <Button type="button" variant="outline" size="sm" onClick={()=>setMissingOpen(true)}>Ver faltantes</Button>
     <MissingDocumentsModal open={missingOpen} fun0Id={fun0Id} onClose={closeMissing} onRefreshed={()=>{evaluationRefreshed.current=true;}}/>
     <p className="text-sm">{summary?.allRequirementsSatisfied===true?'Los requisitos conocidos tienen recepción. Esto no constituye aprobación de controles.':summary?.allRequirementsSatisfied===false?'Hay requisitos pendientes de recepción.':'La evaluación está incompleta o pendiente de actualizar; no se presume completitud.'}</p>
-    <ul className="space-y-1 text-sm">{(view.requirements?.documents||[]).map(document=><li key={document.catalogueId||document.code}>{document.code} · {document.name} · {document.standaloneRequired?'Obligatorio independiente':document.required?'Requerido':'Alternativa o complementario'}</li>)}</ul>
+    <ul className="space-y-1 text-sm">{(view.requirements?.documents||[]).map(document=><li key={document.documentId||document.code}>{document.code} · {document.name} · {document.standaloneRequired?'Obligatorio independiente':document.required?'Requerido':'Alternativa o complementario'}</li>)}</ul>
     {(summary?.groups||[]).map(group=><p key={group.code} className="text-sm">{group.code} · {group.mode==='at_least_one'?'Al menos uno':group.mode==='all'?'Todos':'Complementario'} · {group.status==='satisfied'?'Recibido':group.status==='not_applicable'?'No aplicable':'Pendiente'}</p>)}</details>;
 }
 
