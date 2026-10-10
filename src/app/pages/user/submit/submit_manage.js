@@ -11,7 +11,7 @@ import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
-import { DocumentaryOriginStatus, PublishedDocumentCatalogue } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
+import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from '../expediente_documental/ui/organisms/CanonicalDocumentaryWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -29,8 +29,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [isRequestMenuOpen, setIsRequestMenuOpen] = useState(false);
     const refreshRequestIdRef = useRef(0);
     const source = useDocumentaryOrigin({ submitId: currentItem?.id });
-    // Historical Central bindings keep their existing intake until an explicit transition.
-    const usesExistingIntake = ['traditional', 'unlinked', 'central-linked'].includes(source.origin?.mode);
+    const usesExistingIntake = ['traditional', 'unlinked'].includes(source.origin?.mode);
     const canEditExistingSubmit = !currentItem ? !currentId : usesExistingIntake;
 
     const normalizedRequestQuery = requestQuery.trim().toLowerCase();
@@ -625,13 +624,13 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                 <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
                                     <DocumentaryOriginStatus {...source} />
                                     {source.origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
-                                    {source.origin?.mode === 'central-linked' ? <details><summary className="cursor-pointer py-2 text-sm">Catálogo de Central asignado al expediente</summary><PublishedDocumentCatalogue origin={source.origin} /></details> : null}
                                     {usesExistingIntake ? <SUBMIT_LIST
                                         translation={translation}
                                         swaMsg={swaMsg}
                                         globals={globals}
                                         currentItem={currentItem}
                                         refreshList={refreshItem}
+                                        origin={source.origin}
                                         activePanel={documentPanel}
                                         digitalCount={digitalCount}
                                         digitalDocuments={digitalDocuments}

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
 import * as api from '@/app/services/documentaryOperations.service';
-vi.mock('@/app/services/documentaryOperations.service', () => ({ getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), downloadCanonicalFile: vi.fn(), receiveCanonicalDocument: vi.fn(), saveCanonicalControl: vi.fn(), createCanonicalSubmit: vi.fn(), updateCanonicalEvidence:vi.fn(), getCanonicalHistory:vi.fn(), getDocumentaryGovernance:vi.fn(), getDocumentaryConfigurationOptions:vi.fn(), saveDocumentaryInputs:vi.fn(), refreshDocumentaryRequirements:vi.fn(), changeDocumentaryConfiguration:vi.fn() }));
+vi.mock('@/app/services/documentaryOperations.service', () => ({ getMissingRequirements: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), downloadCanonicalFile: vi.fn(), receiveCanonicalDocument: vi.fn(), saveCanonicalControl: vi.fn(), createCanonicalSubmit: vi.fn(), updateCanonicalEvidence:vi.fn(), getCanonicalHistory:vi.fn(), getDocumentaryGovernance:vi.fn(), getDocumentaryConfigurationOptions:vi.fn(), returnDocumentaryProjectToLegacy:vi.fn(), refreshDocumentaryRequirements:vi.fn(), changeDocumentaryConfiguration:vi.fn() }));
 vi.mock('@/app/services/documentary.service', () => ({ documentaryError:error=>error.message||'Error',getDocumentaryConfigurations:vi.fn().mockRejectedValue(new Error('Unexpected publication request')) }));
 const origin = { mode:'canonical', project: { fun0Id: 1 }, publication: { configurationId: 2, checksum: 'pinned' }, catalogue: {
   documents: [{ catalogueId: 7, code: 'DOC-A', name: 'Documento publicado', isActive: true, listKey: 'LIST-A', classificationIds: ['CAT-A'] }],
@@ -10,8 +10,16 @@ const origin = { mode:'canonical', project: { fun0Id: 1 }, publication: { config
 } };
 const view = () => ({ readOnly: false, capabilities: { createDocument: true, receivePhysical: true, receiveDigital: true, review: true },
   requirements: { documents: [] }, warnings: [], submits: [{ id: 11, idPublic: 'VR-A' }], rows: [], pagination: { nextAfterId: null } });
-beforeEach(() => { vi.clearAllMocks(); api.getCanonicalDocuments.mockResolvedValue(view()); api.getCanonicalHistory.mockResolvedValue({events:[],nextAfterId:null}); api.getDocumentaryGovernance.mockResolvedValue({inputRevision:1,inputs:{explicitActuationIds:[],typologySelections:{}},cache:{typologyOptions:[]}}); api.getDocumentaryConfigurationOptions.mockResolvedValue({actuations:[],typologyOptions:[]}); });
+beforeEach(() => { vi.clearAllMocks(); api.getCanonicalDocuments.mockResolvedValue(view()); api.getCanonicalHistory.mockResolvedValue({events:[],nextAfterId:null}); api.getDocumentaryGovernance.mockResolvedValue({inputRevision:1,selection:{configurationId:2,changeAllowed:true,lockedReason:null,options:[{kind:'legacy',configurationId:null,selected:false}]},source:{fields:[],diagnostics:[]}}); api.getDocumentaryConfigurationOptions.mockResolvedValue({actuations:[],typologyOptions:[]}); });
 describe('recepción según publicación y expediente', () => {
+  it('opens the shared missing-documents modal from the requirement summary',async()=>{
+    api.getMissingRequirements.mockResolvedValue({schemaVersion:'dovela-backoffice/documentary-missing/v1',project:{fun0Id:1,idPublic:'FUN-1'},mode:'canonical',applicable:true,state:'current',allRequirementsSatisfied:false,
+      requirements:[{catalogueId:7,code:'DOC-A',name:'Documento publicado',required:true,standaloneRequired:true,groupCode:null,status:'missing'}],groups:[],summary:{total:1,missing:1,present:0},refresh:{allowed:false,path:null,expectedInputRevision:1},warnings:[]});
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage/>);
+    fireEvent.click(await screen.findByRole('button',{name:'Ver faltantes'}));
+    await waitFor(()=>expect(api.getMissingRequirements).toHaveBeenCalledWith(1,expect.any(AbortSignal)));
+    expect(await screen.findByText('Faltantes: 1')).toBeInTheDocument();
+  });
   it('reloads on 409 and requires a fresh decision instead of retrying the stale command',async()=>{
     api.receiveCanonicalDocument.mockRejectedValue({response:{status:409,data:{}}});
     render(<CanonicalDocumentaryWorkspace origin={origin} fixedSubmitId={11} canManage />);

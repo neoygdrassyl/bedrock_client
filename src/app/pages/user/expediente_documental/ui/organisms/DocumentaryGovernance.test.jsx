@@ -1,40 +1,81 @@
 import {beforeEach,expect,it,vi} from 'vitest';
-import {fireEvent,render,screen,waitFor} from '@testing-library/react';
+import {fireEvent,render,screen,waitFor,within} from '@testing-library/react';
 import {DocumentaryGovernance} from './DocumentaryGovernance';
 import * as api from '@/app/services/documentaryOperations.service';
-vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),getDocumentaryConfigurationOptions:vi.fn(),activateDocumentaryProject:vi.fn(),saveDocumentaryInputs:vi.fn(),refreshDocumentaryRequirements:vi.fn(),changeDocumentaryConfiguration:vi.fn()}));
-vi.mock('@/app/services/documentary.service',()=>({documentaryError:error=>error.message||'Error',getDocumentaryConfigurations:vi.fn(async()=>[{id:2,releaseVersion:5,checksum:'hash'}])}));
-beforeEach(()=>vi.clearAllMocks());
-it('requires an explicit ready publication and acknowledgement before activation',async()=>{
-  api.getDocumentaryGovernance.mockResolvedValue({mode:'legacy',capabilities:{activationReady:true}});
-  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[{id:'A',name:'Actuación A',code:'A'}],typologyOptions:[]});
-  api.activateDocumentaryProject.mockResolvedValue({});const changed=vi.fn();
-  render(<DocumentaryGovernance origin={{mode:'traditional',project:{fun0Id:1}}} canManage onSaved={changed}/>);
-  fireEvent.change(await screen.findByLabelText('Publicación documental'),{target:{value:'2'}});
-  fireEvent.click(await screen.findByLabelText('A · Actuación A'));
-  fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Activación explícita'}});
-  expect(screen.getByRole('button',{name:'Activar para futuras recepciones'})).toBeDisabled();
-  fireEvent.click(screen.getByLabelText(/Solo gobernará/));fireEvent.click(screen.getByRole('button',{name:'Activar para futuras recepciones'}));
-  await waitFor(()=>expect(api.activateDocumentaryProject).toHaveBeenCalledWith(1,expect.objectContaining({configurationId:2,expectedChecksum:'hash',expectedInputRevision:0,explicitActuationIds:['A']})));
-  expect(changed).toHaveBeenCalled();
+vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),getDocumentaryConfigurationOptions:vi.fn(),activateDocumentaryProject:vi.fn(),changeDocumentaryConfiguration:vi.fn(),returnDocumentaryProjectToLegacy:vi.fn(),refreshDocumentaryRequirements:vi.fn()}));
+vi.mock('@/app/services/documentary.service',()=>({documentaryError:error=>error.message||'Error'}));
+
+const source={table:'fun_1s',selectedFunVersion:3,sourceRowId:40,diagnostics:[],fields:[{field:'tipo',sourceKey:'tipoAny',value:'D',tokens:['D']},{field:'cultural',sourceKey:'culturalAny',value:null,tokens:['UNSET']}]};
+function governance({selected=null,changeAllowed=true,lockedReason=null,inputRevision=0}={}){
+  return {mode:selected?'canonical':'legacy',inputRevision,capabilities:{activationReady:true},source,selection:{configurationId:selected,changeAllowed,lockedReason,evidenceCount:changeAllowed?0:2,options:[
+    {kind:'legacy',configurationId:null,isCurrent:false,selected:selected==null},
+    {kind:'central',configurationId:4,releaseVersion:4,sourceReleaseId:'rel-4',checksum:'c4',isCurrent:true,selected:selected===4},
+    {kind:'central',configurationId:3,releaseVersion:3,sourceReleaseId:'rel-3',checksum:'c3',isCurrent:false,selected:selected===3},
+  ]}};
+}
+const canonicalOrigin={mode:'canonical',project:{fun0Id:1},publication:{configurationId:3,checksum:'c3'}};
+const select=()=>screen.findByLabelText('Configuración que gobierna el expediente');
+beforeEach(()=>{vi.clearAllMocks();api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true});});
+
+it('offers legacy and every enabled configuration, marking the vigente and the one in use',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
+  const control=await select();
+  const labels=within(control).getAllByRole('option').map(option=>option.textContent);
+  expect(labels).toEqual(['Legacy (documentación tradicional)','Publicación 4 · rel-4 · Vigente','Publicación 3 · rel-3 · En uso']);
+  expect(control).toHaveValue('3');
+  expect(control).toBeEnabled();
 });
-it('keeps a central-linked publication in explicit activation mode',async()=>{
-  api.getDocumentaryGovernance.mockResolvedValue({mode:'legacy',capabilities:{activationReady:true}});
-  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[],typologyOptions:[]});
-  render(<DocumentaryGovernance origin={{mode:'central-linked',project:{fun0Id:1},publication:{configurationId:2,checksum:'hash'}}} canManage/>);
-  expect(await screen.findByRole('button',{name:'Activar para futuras recepciones'})).toBeDisabled();
-  expect(screen.queryByRole('button',{name:'Guardar selecciones'})).not.toBeInTheDocument();
+
+it('activates a Central configuration for a traditional expediente without manual inputs',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance());api.activateDocumentaryProject.mockResolvedValue({});const saved=vi.fn();
+  render(<DocumentaryGovernance origin={{mode:'traditional',project:{fun0Id:1}}} canManage onSaved={saved}/>);
+  const control=await select();expect(control).toHaveValue('legacy');
+  fireEvent.change(control,{target:{value:'4'}});
+  fireEvent.change(await screen.findByLabelText('Motivo del cambio documental'),{target:{value:'Adopción de Central'}});
+  const apply=screen.getByRole('button',{name:'Aplicar configuración'});expect(apply).toBeDisabled();
+  fireEvent.click(screen.getByLabelText(/Solo gobernará/));
+  await waitFor(()=>expect(apply).toBeEnabled());fireEvent.click(apply);
+  await waitFor(()=>expect(api.activateDocumentaryProject).toHaveBeenCalledWith(1,{configurationId:4,expectedChecksum:'c4',expectedInputRevision:0,idempotencyKey:expect.any(String),reason:'Adopción de Central'}));
+  expect(saved).toHaveBeenCalledWith(expect.any(String),true);
 });
-it('does not reuse an uncertain inputs command for a different refresh operation',async()=>{
-  api.getDocumentaryGovernance.mockResolvedValue({mode:'canonical',inputRevision:3,inputs:{explicitActuationIds:[],typologySelections:{}},capabilities:{activationReady:true}});
-  api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true,actuations:[],typologyOptions:[]});
-  api.saveDocumentaryInputs.mockRejectedValueOnce(new Error('Network unavailable'));api.refreshDocumentaryRequirements.mockResolvedValue({});
-  render(<DocumentaryGovernance origin={{mode:'canonical',project:{fun0Id:1},publication:{configurationId:2,checksum:'hash'}}} canManage/>);
-  await waitFor(()=>expect(screen.getByRole('button',{name:'Guardar selecciones'})).toBeEnabled());
-  fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Revisión'}});
-  fireEvent.click(screen.getByRole('button',{name:'Guardar selecciones'}));await screen.findByText('Network unavailable');
+
+it('returns a Central expediente to legacy before evidence',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3,inputRevision:6}));api.returnDocumentaryProjectToLegacy.mockResolvedValue({});
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
+  fireEvent.change(await select(),{target:{value:'legacy'}});
+  expect(screen.getByText(/volverá a la documentación tradicional/)).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Error de radicación'}});
+  fireEvent.click(screen.getByRole('button',{name:'Aplicar configuración'}));
+  await waitFor(()=>expect(api.returnDocumentaryProjectToLegacy).toHaveBeenCalledWith(1,{expectedInputRevision:6,idempotencyKey:expect.any(String),reason:'Error de radicación'}));
+  expect(api.getDocumentaryConfigurationOptions).not.toHaveBeenCalled();
+});
+
+it('is read-only and explains why once evidence was received',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3,changeAllowed:false,lockedReason:'EVIDENCE_RECEIVED'}));
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
+  expect(await select()).toBeDisabled();
+  expect(screen.getByText(/ya tiene evidencia recibida/)).toBeInTheDocument();
+  expect(screen.queryByRole('button',{name:'Aplicar configuración'})).not.toBeInTheDocument();
+  expect(screen.getByRole('button',{name:'Actualizar requisitos'})).toBeEnabled();
+});
+
+it('shows the referenced expediente data read-only and refreshes from it',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3,inputRevision:2}));api.refreshDocumentaryRequirements.mockResolvedValue({});
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
+  const panel=await screen.findByRole('region',{name:'Datos del expediente usados en la evaluación'});
+  expect(within(panel).getByText('Formulario FUN 1 · versión 3 · registro 40')).toBeInTheDocument();
+  expect(within(panel).getByText('Tipo de actuación:')).toBeInTheDocument();expect(within(panel).getByText('D')).toBeInTheDocument();
+  expect(within(panel).getByText('Sin dato')).toBeInTheDocument();
+  expect(within(panel).getByText(/edite el FUN del expediente/)).toBeInTheDocument();
+  expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();expect(within(panel).queryByRole('checkbox')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button',{name:'Actualizar requisitos'}));
-  await waitFor(()=>expect(api.refreshDocumentaryRequirements).toHaveBeenCalled());
-  const first=api.saveDocumentaryInputs.mock.calls[0][1],next=api.refreshDocumentaryRequirements.mock.calls[0][1];
-  expect(next.idempotencyKey).not.toBe(first.idempotencyKey);expect(next).not.toHaveProperty('explicitActuationIds');
+  await waitFor(()=>expect(api.refreshDocumentaryRequirements).toHaveBeenCalledWith(1,{expectedInputRevision:2,idempotencyKey:expect.any(String),reason:expect.any(String)}));
+});
+
+it('lets users without the manage permission see the selection but not change it',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  render(<DocumentaryGovernance origin={canonicalOrigin}/>);
+  expect(await select()).toBeDisabled();
+  expect(screen.queryByRole('button',{name:'Actualizar requisitos'})).not.toBeInTheDocument();
 });

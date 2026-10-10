@@ -10,9 +10,9 @@ export async function getDocumentaryOrigin({ fun0Id, submitId }, signal) {
   const url = submitId ? `${ROOT}/submits/${documentaryProjectId(submitId)}/source` : `${projectUrl(fun0Id)}/source`;
   const { data } = await http.get(url, { signal });
   if (data?.schemaVersion !== 'dovela-backoffice/documentary-origin/v1'
-    || !['traditional', 'unlinked', 'central-linked', 'central-pending', 'canonical'].includes(data.mode)
+    || !['traditional', 'unlinked', 'canonical'].includes(data.mode)
     || (submitId ? data.submit?.id !== Number(submitId) : data.project?.fun0Id !== Number(fun0Id))) fail();
-  if (['canonical', 'central-linked'].includes(data.mode) && (!data.publication?.checksum || !Array.isArray(data.catalogue?.documents) || !Array.isArray(data.catalogue?.classifications))) fail();
+  if (data.mode === 'canonical' && (!data.publication?.checksum || !Array.isArray(data.catalogue?.documents) || !Array.isArray(data.catalogue?.classifications))) fail();
   return data;
 }
 export async function getCanonicalDocuments(origin, afterId = 0, signal) {
@@ -73,7 +73,8 @@ export async function getDocumentaryGovernance(fun0Id, signal) {return (await ht
 export async function getDocumentaryConfigurationOptions(configurationId,signal) {return (await http.get(`${ROOT}/configurations/${documentaryProjectId(configurationId)}/options`,{signal})).data;}
 export async function activateDocumentaryProject(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/activation`,command,JSON_BODY)).data;}
 export async function changeDocumentaryConfiguration(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/configuration`,command,JSON_BODY)).data;}
-export async function saveDocumentaryInputs(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/inputs`,command,JSON_BODY)).data;}
+// Returns the expediente to traditional documentation; allowed only before any received evidence.
+export async function returnDocumentaryProjectToLegacy(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/legacy`,command,JSON_BODY)).data;}
 export async function refreshDocumentaryRequirements(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/requirements/refresh`,command,JSON_BODY)).data;}
 export function appendDocumentarySourceCommand(formData, root) {
   if (root?.documentConfigurationId == null) return formData;
