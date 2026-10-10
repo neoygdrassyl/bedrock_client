@@ -4,12 +4,12 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
-  getMissingDocumentsMock,
+  getMissingRequirementsMock,
   getIdRelatedMock,
   getByFUNMock,
   getLastCubMock,
 } = vi.hoisted(() => ({
-  getMissingDocumentsMock: vi.fn(),
+  getMissingRequirementsMock: vi.fn(),
   getIdRelatedMock: vi.fn(),
   getByFUNMock: vi.fn(),
   getLastCubMock: vi.fn(),
@@ -18,11 +18,14 @@ const {
 vi.mock('../../../../services/fun.service', () => ({
   __esModule: true,
   default: {
-    getMissingDocuments: getMissingDocumentsMock,
     update_law: vi.fn(() => Promise.resolve({ data: 'OK' })),
     create_law: vi.fn(() => Promise.resolve({ data: 'OK' })),
     gen_doc_incomplete: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
+}));
+
+vi.mock('@/app/services/documentaryOperations.service', () => ({
+  getMissingRequirements: getMissingRequirementsMock,
 }));
 
 vi.mock('../../../../services/submit.service', () => ({
@@ -80,11 +83,44 @@ const swaMsg = {
   generic_error_text: 'Error',
 };
 
+function requirement(code, name, status) {
+  return { catalogueId: code.length, code, name, required: true, standaloneRequired: true, groupCode: null, status };
+}
+
+function canonical(requirements) {
+  const missing = requirements.filter((item) => item.status === 'missing').length;
+  return {
+    schemaVersion: 'dovela-backoffice/documentary-missing/v1',
+    project: { fun0Id: 77, idPublic: 'FUN26-2330' },
+    mode: 'canonical',
+    applicable: true,
+    state: 'current',
+    allRequirementsSatisfied: missing === 0,
+    requirements,
+    groups: [],
+    summary: { total: requirements.length, missing, present: requirements.length - missing },
+    refresh: { allowed: false, path: null, expectedInputRevision: 1 },
+    warnings: [],
+  };
+}
+
+function renderForm() {
+  return render(
+    <FUN_DOC_CONFIRM_INCOMPLETE
+      currentItem={buildCurrentItem()}
+      currentVersion={1}
+      edit={false}
+      requestUpdate={vi.fn()}
+      swaMsg={swaMsg}
+    />,
+  );
+}
+
 describe('FUN_DOC_CONFIRM_INCOMPLETE', () => {
   beforeEach(() => {
     getIdRelatedMock.mockReset();
     getByFUNMock.mockReset();
-    getMissingDocumentsMock.mockReset();
+    getMissingRequirementsMock.mockReset();
     getLastCubMock.mockReset();
 
     getIdRelatedMock.mockResolvedValue({ data: [{ id: 1, id_public: 'VR26-2330' }] });
@@ -92,59 +128,30 @@ describe('FUN_DOC_CONFIRM_INCOMPLETE', () => {
     getLastCubMock.mockResolvedValue({ data: [{ cub: 'CUB-1' }] });
   });
 
-  it('autocompleta 5.11 con la sugerencia calculada solo cuando el campo estaba vacío', async () => {
-    getMissingDocumentsMock.mockResolvedValue({
-      data: {
-        source: 'snapshot',
-        missingDocuments: [
-          { suggestedText: 'Solicitar Formulario único nacional.' },
-          { suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' },
-        ],
-      },
-    });
+  it('autocompleta 5.11 con los requisitos faltantes solo cuando el campo estaba vacío', async () => {
+    getMissingRequirementsMock.mockResolvedValue(canonical([
+      requirement('D1', 'Formulario único nacional', 'missing'),
+      requirement('D2', 'Certificado de libertad', 'present'),
+      requirement('D3', 'Certificado de libertad físico', 'missing'),
+    ]));
 
-    render(
-      <FUN_DOC_CONFIRM_INCOMPLETE
-        currentItem={buildCurrentItem()}
-        currentVersion={1}
-        edit={false}
-        requestUpdate={vi.fn()}
-        swaMsg={swaMsg}
-      />,
-    );
+    renderForm();
 
-    await waitFor(() => expect(getMissingDocumentsMock).toHaveBeenCalledWith(77, 'FUN26-2330'));
-    await waitFor(() => expect(document.getElementById('geni_missing').value).toBe('1. Solicitar Formulario único nacional.\n2. Digitalizar o cargar Certificado de libertad físico.'));
+    await waitFor(() => expect(getMissingRequirementsMock).toHaveBeenCalledWith(77));
+    await waitFor(() => expect(document.getElementById('geni_missing').value).toBe('1. Solicitar Formulario único nacional.\n2. Solicitar Certificado de libertad físico.'));
 
     expect(screen.queryByText(/Sugerencia calculada/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('preserva el texto manual y muestra la sugerencia calculada aparte cuando cambian los faltantes', async () => {
     const user = userEvent.setup();
 
-    getMissingDocumentsMock
-      .mockResolvedValueOnce({
-        data: {
-          source: 'snapshot',
-          missingDocuments: [{ suggestedText: 'Solicitar Formulario único nacional.' }],
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          source: 'snapshot',
-          missingDocuments: [{ suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' }],
-        },
-      });
+    getMissingRequirementsMock
+      .mockResolvedValueOnce(canonical([requirement('D1', 'Formulario único nacional', 'missing')]))
+      .mockResolvedValueOnce(canonical([requirement('D3', 'Certificado de libertad físico', 'missing')]));
 
-    const { rerender } = render(
-      <FUN_DOC_CONFIRM_INCOMPLETE
-        currentItem={buildCurrentItem()}
-        currentVersion={1}
-        edit={false}
-        requestUpdate={vi.fn()}
-        swaMsg={swaMsg}
-      />,
-    );
+    const { rerender } = renderForm();
 
     await waitFor(() => expect(document.getElementById('geni_missing').value).toBe('1. Solicitar Formulario único nacional.'));
 
@@ -161,81 +168,39 @@ describe('FUN_DOC_CONFIRM_INCOMPLETE', () => {
       />,
     );
 
-    await waitFor(() => expect(getMissingDocumentsMock).toHaveBeenLastCalledWith(78, 'FUN26-2331'));
+    await waitFor(() => expect(getMissingRequirementsMock).toHaveBeenLastCalledWith(78));
     await waitFor(() => expect(document.getElementById('geni_missing').value).toBe('Texto manual de prueba'));
 
     expect(screen.getByText(/Sugerencia calculada/i)).toBeInTheDocument();
-    expect(screen.getByText('1. Digitalizar o cargar Certificado de libertad físico.')).toBeInTheDocument();
+    expect(screen.getByText('1. Solicitar Certificado de libertad físico.')).toBeInTheDocument();
   });
-  it.each(['central_snapshot_unconfigured', 'fun_actuation_missing'])('muestra una nota informativa sin error cuando la fuente %s no es evaluable', async (source) => {
-    getMissingDocumentsMock.mockResolvedValue({
-      data: {
-        source,
-        snapshotId: null,
-        configVersionId: null,
-        summary: { totalRequirements: 0, present: 0, missing: 0, pendingScan: 0, notApplicable: 0 },
-        requirements: [],
-        missingDocuments: [],
-      },
-    });
 
-    render(
-      <FUN_DOC_CONFIRM_INCOMPLETE
-        currentItem={buildCurrentItem()}
-        currentVersion={1}
-        edit={false}
-        requestUpdate={vi.fn()}
-        swaMsg={swaMsg}
-      />,
-    );
+  it('advierte cuando la evaluación de requisitos no está vigente', async () => {
+    getMissingRequirementsMock.mockResolvedValue({ ...canonical([requirement('D1', 'Formulario único nacional', 'missing')]), state: 'stale', allRequirementsSatisfied: null });
+
+    renderForm();
+
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/no está vigente/));
+    expect(document.getElementById('geni_missing').value).toBe('1. Solicitar Formulario único nacional.');
+  });
+
+  it('muestra una nota informativa sin error cuando el expediente no aplica (tradicional)', async () => {
+    getMissingRequirementsMock.mockResolvedValue({ ...canonical([]), mode: 'traditional', applicable: false, state: 'not_applicable', allRequirementsSatisfied: null });
+
+    renderForm();
 
     await waitFor(() => expect(screen.getByRole('note')).toHaveTextContent(/no tiene configuración documental de Dovela Central/i));
-    expect(screen.queryByText('No fue posible consultar Legal y Debida Forma.')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Sugerencia calculada/i)).not.toBeInTheDocument();
-    expect(document.getElementById('geni_missing').value).toBe('');
-  });
-  it('muestra la nota de Dovela Central sin error cuando el backend cierra el lector legado (409 canónico)', async () => {
-    getMissingDocumentsMock.mockRejectedValue({
-      response: {
-        status: 409,
-        data: {
-          schemaVersion: 'dovela-backoffice/documentary-error/v1',
-          error: { code: 'CANONICAL_LEGACY_WRITE_FORBIDDEN', message: 'Legacy reader closed' },
-        },
-      },
-    });
-
-    render(
-      <FUN_DOC_CONFIRM_INCOMPLETE
-        currentItem={buildCurrentItem()}
-        currentVersion={1}
-        edit={false}
-        requestUpdate={vi.fn()}
-        swaMsg={swaMsg}
-      />,
-    );
-
-    await waitFor(() => expect(screen.getByRole('note')).toHaveTextContent(/se gestiona con la configuración documental de Dovela Central/i));
-    expect(screen.getByRole('note')).toHaveTextContent('Documentos (new)');
-    expect(screen.queryByText('No fue posible consultar Legal y Debida Forma.')).not.toBeInTheDocument();
+    expect(screen.queryByText('No fue posible consultar los documentos faltantes.')).not.toBeInTheDocument();
     expect(screen.queryByText(/Sugerencia calculada/i)).not.toBeInTheDocument();
     expect(document.getElementById('geni_missing').value).toBe('');
   });
 
-  it('mantiene el error para otros conflictos 409', async () => {
-    getMissingDocumentsMock.mockRejectedValue({ response: { status: 409, data: { error: { code: 'OTHER_CONFLICT' } } } });
+  it('muestra el error cuando la consulta falla', async () => {
+    getMissingRequirementsMock.mockRejectedValue({ response: { status: 503 } });
 
-    render(
-      <FUN_DOC_CONFIRM_INCOMPLETE
-        currentItem={buildCurrentItem()}
-        currentVersion={1}
-        edit={false}
-        requestUpdate={vi.fn()}
-        swaMsg={swaMsg}
-      />,
-    );
+    renderForm();
 
-    await waitFor(() => expect(screen.getByText('No fue posible consultar Legal y Debida Forma.')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('No fue posible consultar los documentos faltantes.')).toBeInTheDocument());
     expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 });

@@ -5,7 +5,6 @@ import {
     DOCUMENT_PREVIEW_MEDIUM,
     buildDocumentTableRows,
     filterDocumentTableRows,
-    summarizeLegalFormRequirements,
     getDocumentVrDisplayValue,
     isInternalReportVr,
     INTERNAL_REPORT_VR_FILTER,
@@ -29,7 +28,6 @@ const DEFAULT_FILTERS = {
 };
 const DEFAULT_ENTRY_SHEET = { open: false, mode: 'history', group: null };
 const ENTRIES_FETCH_ERROR_MESSAGE = 'No fue posible consultar el expediente documental unificado.';
-const LEGAL_FORM_FETCH_ERROR_MESSAGE = 'No fue posible consultar Legal y Debida Forma.';
 
 function areFiltersEqual(filters, other) {
     return filters.document === other.document
@@ -93,26 +91,21 @@ function getAvailableVrOptions(rows, { includeHistory = false } = {}) {
 }
 
 /**
- * Owns fetch -> derive -> filter -> paginate -> legal-mode -> KPI -> entry-sheet
- * state for the expediente documental unificado view. Pure domain rules
- * The shared build/filter rules are reused from
- * `../../shared/expediente-documental.utils`.
+ * Owns fetch -> derive -> filter -> paginate -> KPI -> entry-sheet state for the
+ * traditional expediente documental view. The shared build/filter rules are
+ * reused from `../../shared/expediente-documental.utils`.
+ * Missing requirements are not derived here: they only exist for projects
+ * activated with a Dovela Central publication (documentary API).
  */
 export function useExpedienteDocumental({
     funId,
     idRelated,
     canManage = false,
     pageSize = 12,
-    documentMetadata = [],
-    authoritativeVrOptions = [],
 } = {}) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [missingDocumentsResult, setMissingDocumentsResult] = useState(null);
-    const [legalLoading, setLegalLoading] = useState(true);
-    const [legalError, setLegalError] = useState('');
-    const [legalMode, setLegalModeState] = useState(false);
     const [filters, setFilters] = useState(DEFAULT_FILTERS);
     const [page, setPage] = useState(1);
     const [entrySheet, setEntrySheet] = useState(DEFAULT_ENTRY_SHEET);
@@ -122,39 +115,24 @@ export function useExpedienteDocumental({
             setEntries([]);
             setLoading(false);
             setError('');
-            setMissingDocumentsResult(null);
-            setLegalLoading(false);
-            setLegalError('');
             return undefined;
         }
 
         setLoading(true);
         setError('');
-        setLegalLoading(true);
-        setLegalError('');
 
-        return Promise.allSettled([
-            FUNService.getUnifiedDocumentEntries(funId, idRelated),
-            FUNService.getMissingDocuments(funId, idRelated),
-        ]).then(([entriesResult, missingResult]) => {
-            if (entriesResult.status === 'fulfilled') {
-                setEntries(Array.isArray(entriesResult.value?.data) ? entriesResult.value.data : []);
-            } else {
-                console.warn(ENTRIES_FETCH_ERROR_MESSAGE, entriesResult.reason);
+        return FUNService.getUnifiedDocumentEntries(funId, idRelated)
+            .then((response) => {
+                setEntries(Array.isArray(response?.data) ? response.data : []);
+            })
+            .catch((reason) => {
+                console.warn(ENTRIES_FETCH_ERROR_MESSAGE, reason);
                 setEntries([]);
                 setError(ENTRIES_FETCH_ERROR_MESSAGE);
-            }
-            setLoading(false);
-
-            if (missingResult.status === 'fulfilled') {
-                setMissingDocumentsResult(missingResult.value?.data || null);
-            } else {
-                console.warn(LEGAL_FORM_FETCH_ERROR_MESSAGE, missingResult.reason);
-                setMissingDocumentsResult(null);
-                setLegalError(LEGAL_FORM_FETCH_ERROR_MESSAGE);
-            }
-            setLegalLoading(false);
-        });
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, [funId, idRelated]);
 
     useEffect(() => {
@@ -163,16 +141,11 @@ export function useExpedienteDocumental({
 
     const baseRows = useMemo(
         () => mergeDocumentRowsByStableUnit(
-            buildDocumentTableRows(prepareDocumentEntriesForStableUnits(
-                entries,
-                documentMetadata,
-                authoritativeVrOptions,
-            )),
+            buildDocumentTableRows(prepareDocumentEntriesForStableUnits(entries)),
         ),
-        [authoritativeVrOptions, documentMetadata, entries],
+        [entries],
     );
-    // Missing requirements belong exclusively to the LyF tab. Documents only
-    // contains stable units backed by real expediente entries.
+    // Rows only contain stable units backed by real expediente entries.
     const rows = baseRows;
     const filteredRows = useMemo(
         () => filterDocumentTableRows(rows, filters)
@@ -181,13 +154,7 @@ export function useExpedienteDocumental({
     );
     const summary = useMemo(() => getSummary(rows), [rows]);
     const vrOptions = useMemo(() => getAvailableVrOptions(rows), [rows]);
-    const legalVrOptions = useMemo(
-        () => getAvailableVrOptions(rows, { includeHistory: true }),
-        [rows],
-    );
-    const legalSummary = useMemo(() => summarizeLegalFormRequirements(missingDocumentsResult), [missingDocumentsResult]);
     const latestVr = useMemo(() => getLatestDocumentVr(rows), [rows]);
-    const legalAvailable = Boolean(legalLoading || legalError || legalSummary.source || legalSummary.totalRequired);
 
     const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
     const visibleRows = useMemo(
@@ -214,14 +181,6 @@ export function useExpedienteDocumental({
         setFilters(DEFAULT_FILTERS);
     }, []);
 
-    const setLegalMode = useCallback((value) => {
-        setLegalModeState(value);
-        setPage(1);
-        if (!value) {
-            setFilters((current) => ({ ...current, legalForm: LEGAL_FORM_FILTER.ALL }));
-        }
-    }, []);
-
     const toggleMedium = useCallback((medium) => {
         setPage(1);
         setFilters((current) => {
@@ -240,14 +199,6 @@ export function useExpedienteDocumental({
         });
     }, []);
 
-    const toggleLegalForm = useCallback((status) => {
-        setPage(1);
-        setFilters((current) => ({
-            ...current,
-            legalForm: current.legalForm === status ? LEGAL_FORM_FILTER.ALL : status,
-        }));
-    }, []);
-
     const openEntrySheetWith = useCallback((group, mode = 'history') => {
         setEntrySheet({ open: true, group, mode });
     }, []);
@@ -262,7 +213,6 @@ export function useExpedienteDocumental({
         filteredCount: filteredRows.length,
         summary,
         vrOptions,
-        legalVrOptions,
         latestVr,
         loading,
         error,
@@ -274,21 +224,9 @@ export function useExpedienteDocumental({
         pageSize,
         totalPages,
         setPage,
-        legal: {
-            mode: legalMode,
-            setMode: setLegalMode,
-            available: legalAvailable,
-            loading: legalLoading,
-            error: legalError,
-            summary: legalSummary,
-            snapshotId: missingDocumentsResult?.snapshotId ?? null,
-            configVersionId: missingDocumentsResult?.configVersionId ?? null,
-            result: missingDocumentsResult,
-        },
         kpi: {
             toggleMedium,
             toggleScanned,
-            toggleLegalForm,
         },
         entrySheet: {
             open: entrySheet.open,

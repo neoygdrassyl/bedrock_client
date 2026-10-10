@@ -11,13 +11,19 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import SubmitService from '../../../../services/submit.service'
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import {
-    LEGAL_FORM_NOT_EVALUABLE_MESSAGE,
-    buildMissingDocumentsSuggestionText,
-    mapMissingDocumentsError,
-    summarizeLegalFormRequirements,
-} from '../../shared/expediente-documental.utils';
+import { LEGAL_FORM_NOT_EVALUABLE_MESSAGE } from '../../shared/expediente-documental.utils';
+import { getMissingRequirements } from '@/app/services/documentaryOperations.service';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+
+const STALE_EVALUATION_MESSAGE = 'La evaluación de requisitos no está vigente; revise la sugerencia antes de usarla.';
+
+// Suggests the missing documents of a canonical project from the documentary API.
+function missingRequirementsSuggestion(result) {
+    return result.requirements
+        .filter((requirement) => requirement.status === 'missing')
+        .map((requirement, index) => `${index + 1}. Solicitar ${requirement.name || requirement.code}.`)
+        .join('\n');
+}
 
 function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, requestUpdate, swaMsg }) {
         const [vrsRelated, setVrsRelated] = useState([]);
@@ -69,7 +75,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
         }
     }, [currentItem.id_public]);
     const retrieveMissingSuggestion = useCallback(async () => {
-        if (!currentItem?.id || !currentItem?.id_public) {
+        if (!currentItem?.id) {
             setCalculatedMissingSuggestion('');
             setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
             return;
@@ -78,30 +84,22 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
         setMissingSuggestionMeta((current) => ({ ...current, loading: true, error: '' }));
 
         try {
-            let result;
-            try {
-                const response = await FUNService.getMissingDocuments(currentItem.id, currentItem.id_public);
-                result = response?.data || {};
-            } catch (requestError) {
-                result = mapMissingDocumentsError(requestError);
-                if (!result) throw requestError;
-            }
-            const suggestion = buildMissingDocumentsSuggestionText(result);
-            const summary = summarizeLegalFormRequirements(result);
+            const result = await getMissingRequirements(currentItem.id);
 
-            if (summary.notEvaluable) {
+            if (!result.applicable) {
                 // Nothing to suggest: keep whatever the field already holds.
                 setCalculatedMissingSuggestion('');
-                setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: true, notEvaluableMessage: summary.notEvaluableMessage || LEGAL_FORM_NOT_EVALUABLE_MESSAGE });
+                setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: true, notEvaluableMessage: LEGAL_FORM_NOT_EVALUABLE_MESSAGE });
                 return;
             }
 
+            const suggestion = missingRequirementsSuggestion(result);
             setCalculatedMissingSuggestion(suggestion);
             setMissingSuggestionMeta({
                 loading: false,
                 error: '',
-                sourceMessage: summary.sourceMessage || '',
-                sourceLabel: summary.sourceLabel || '',
+                sourceMessage: result.state === 'current' ? '' : STALE_EVALUATION_MESSAGE,
+                sourceLabel: '',
                 notEvaluable: false,
                 notEvaluableMessage: '',
             });
@@ -112,9 +110,9 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
             }
         } catch (error) {
             setCalculatedMissingSuggestion('');
-            setMissingSuggestionMeta({ loading: false, error: 'No fue posible consultar Legal y Debida Forma.', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
+            setMissingSuggestionMeta({ loading: false, error: 'No fue posible consultar los documentos faltantes.', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
         }
-    }, [currentItem?.id, currentItem?.id_public]);
+    }, [currentItem?.id]);
 
     useEffect(() => {
         if (currentVersion != null) {
@@ -366,7 +364,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                             setMissingFieldMode('manual');
                             missingFieldModeRef.current = 'manual';
                         }}></textarea>
-                        {missingSuggestionMeta.loading ? <div className="mb-2 text-xs text-muted-foreground" role="status" aria-live="polite">Consultando Legal y Debida Forma...</div> : null}
+                        {missingSuggestionMeta.loading ? <div className="mb-2 text-xs text-muted-foreground" role="status" aria-live="polite">Consultando documentos faltantes...</div> : null}
                         {missingSuggestionMeta.error ? <div className="mb-2 rounded border border-danger-subtle bg-danger-subtle px-2 py-1 text-xs text-danger-emphasis" role="alert">{missingSuggestionMeta.error}</div> : null}
                         {missingSuggestionMeta.notEvaluable ? <div className="mb-2 rounded border border-border bg-light px-2 py-1 text-xs text-muted-foreground" role="note">{missingSuggestionMeta.notEvaluableMessage || LEGAL_FORM_NOT_EVALUABLE_MESSAGE}</div> : null}
                         {missingSuggestionMeta.sourceMessage ? <div className="mb-2 rounded border border-warning-subtle bg-warning-subtle px-2 py-1 text-xs text-warning-emphasis" role="alert">{missingSuggestionMeta.sourceMessage}</div> : null}

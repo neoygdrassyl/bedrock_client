@@ -1,99 +1,122 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const { getMissingRequirementsMock, refreshDocumentaryRequirementsMock } = vi.hoisted(() => ({
+  getMissingRequirementsMock: vi.fn(),
+  refreshDocumentaryRequirementsMock: vi.fn(),
+}));
 
 vi.mock('@/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <section aria-label={contentLabel}>{children}</section> : null),
 }));
+vi.mock('@/app/services/documentaryOperations.service', () => ({
+  getMissingRequirements: getMissingRequirementsMock,
+  refreshDocumentaryRequirements: refreshDocumentaryRequirementsMock,
+}));
+vi.mock('@/app/services/documentary.service', () => ({
+  documentaryError: (error) => error.message || 'Error',
+}));
 
 import MissingDocumentsModal from './MissingDocumentsModal.jsx';
 
-const baseResult = {
-  source: 'snapshot',
-  snapshotId: 321,
-  configVersionId: 12,
-  summary: {
-    totalRequirements: 3,
-    missing: 1,
-    pendingScan: 1,
-    present: 1,
-    notApplicable: 0,
-  },
-  requirements: [
-    {
-      code: 'DOC-001',
-      label: 'Formulario único nacional',
-      groupKey: 'base',
-      status: 'missing',
-      statusReason: 'required_without_evidence',
-      evidence: [],
-    },
-    {
-      code: 'DOC-002',
-      label: 'Certificado de libertad físico',
-      groupKey: 'base',
-      status: 'pending_scan',
-      statusReason: 'physical_positive_without_digital',
-      evidence: [{ sourceTable: 'sub_list', sourceId: 42, vrIdPublic: 'VR26-2330' }],
-    },
-    {
-      code: 'DOC-003',
-      label: 'Documento de identidad digital',
-      groupKey: 'identidad',
-      status: 'present',
-      statusReason: 'digital_evidence',
-      evidence: [{ sourceTable: 'fun_6', sourceId: 77, documentName: 'Documento de identidad digital' }],
-    },
-  ],
-  missingDocuments: [
-    { code: 'DOC-001', label: 'Formulario único nacional', reason: 'required_without_evidence', suggestedText: 'Solicitar Formulario único nacional.' },
-    { code: 'DOC-002', label: 'Certificado de libertad físico', reason: 'physical_positive_without_digital', suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' },
-  ],
-};
+function result(overrides = {}) {
+  return {
+    schemaVersion: 'dovela-backoffice/documentary-missing/v1',
+    project: { fun0Id: 7, idPublic: 'FUN-7' },
+    mode: 'canonical',
+    applicable: true,
+    state: 'current',
+    allRequirementsSatisfied: false,
+    requirements: [
+      { catalogueId: 1, code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' },
+      { catalogueId: 2, code: 'D2', name: 'Certificado de libertad', required: true, standaloneRequired: true, groupCode: null, status: 'missing' },
+    ],
+    groups: [{ code: 'ALT', mode: 'at_least_one', status: 'missing' }],
+    summary: { total: 2, missing: 1, present: 1 },
+    refresh: { allowed: false, path: '/api/fun/documentary/v1/projects/7/requirements/refresh', expectedInputRevision: 3 },
+    warnings: [],
+    ...overrides,
+  };
+}
 
 describe('MissingDocumentsModal', () => {
-  it('agrupa faltantes, pendientes de escaneo y presentes con source y snapshotId visibles', () => {
-    render(<MissingDocumentsModal open result={baseResult} loading={false} error="" onClose={vi.fn()} />);
-
-    expect(screen.getByText('source: snapshot')).toBeInTheDocument();
-    expect(screen.getByText('snapshotId: 321')).toBeInTheDocument();
-
-    const missingGroup = screen.getByRole('region', { name: /^Faltantes$/i });
-    const pendingGroup = screen.getByRole('region', { name: /^Pendientes de escaneo$/i });
-    const presentGroup = screen.getByRole('region', { name: /^Presentes$/i });
-
-    expect(within(missingGroup).getByText('DOC-001')).toBeInTheDocument();
-    expect(within(missingGroup).getByText('Formulario único nacional')).toBeInTheDocument();
-    expect(within(pendingGroup).getByText('DOC-002')).toBeInTheDocument();
-    expect(within(pendingGroup).getByText('Certificado de libertad físico')).toBeInTheDocument();
-    expect(within(presentGroup).getByText('DOC-003')).toBeInTheDocument();
-    expect(within(presentGroup).getByText('Documento de identidad digital')).toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('muestra el callout exacto cuando source es no_snapshot', () => {
-    render(<MissingDocumentsModal open result={{ ...baseResult, source: 'no_snapshot', snapshotId: null, requirements: [], missingDocuments: [] }} loading={false} error="" onClose={vi.fn()} />);
+  it('lists missing and present requirements of a current evaluation', async () => {
+    getMissingRequirementsMock.mockResolvedValue(result());
+    render(<MissingDocumentsModal open fun0Id={7} onClose={vi.fn()} />);
 
-    expect(screen.getByText('Este expediente aún no tiene snapshot de requisitos; no se infieren todos los documentos.')).toBeInTheDocument();
-    expect(screen.getByText('source: no_snapshot')).toBeInTheDocument();
+    const missing = await screen.findByRole('region', { name: 'Faltantes' });
+    expect(within(missing).getByText('Certificado de libertad')).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Presentes' })).getByText('Formulario único')).toBeInTheDocument();
+    expect(screen.getByText('Faltantes: 1')).toBeInTheDocument();
+    expect(screen.getByText('Requisitos incompletos')).toBeInTheDocument();
+    expect(screen.getByText('Grupo ALT · Al menos uno · Faltante')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Actualizar evaluación/ })).not.toBeInTheDocument();
+    expect(getMissingRequirementsMock).toHaveBeenCalledWith(7, expect.any(AbortSignal));
   });
 
-  it('muestra insufficient_inputs como alerta visible y no como resultado exitoso vacío', () => {
-    render(<MissingDocumentsModal open result={{ ...baseResult, source: 'insufficient_inputs', snapshotId: null, requirements: [], missingDocuments: [] }} loading={false} error="" onClose={vi.fn()} />);
+  it('reports a satisfied evaluation', async () => {
+    getMissingRequirementsMock.mockResolvedValue(result({
+      allRequirementsSatisfied: true,
+      requirements: [{ catalogueId: 1, code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' }],
+      groups: [],
+      summary: { total: 1, missing: 0, present: 1 },
+    }));
+    render(<MissingDocumentsModal open fun0Id={7} onClose={vi.fn()} />);
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/insufficient_inputs/i);
-    expect(screen.getByRole('alert')).toHaveTextContent(/No hay insumos suficientes/i);
-    expect(screen.queryByText(/No hay documentos faltantes por mostrar/i)).not.toBeInTheDocument();
+    expect(await screen.findByText('Requisitos completos')).toBeInTheDocument();
+    expect(screen.getByText('No hay requisitos faltantes en la evaluación disponible.')).toBeInTheDocument();
   });
 
-  it('cierra sin acciones de guardado', async () => {
-    const user = userEvent.setup();
-    const onClose = vi.fn();
+  it('warns about a stale evaluation and refreshes it when allowed', async () => {
+    getMissingRequirementsMock
+      .mockResolvedValueOnce(result({ state: 'stale', allRequirementsSatisfied: null, refresh: { allowed: true, path: 'x', expectedInputRevision: 3 } }))
+      .mockResolvedValueOnce(result({ state: 'current' }));
+    refreshDocumentaryRequirementsMock.mockResolvedValue({});
+    const onRefreshed = vi.fn();
+    render(<MissingDocumentsModal open fun0Id={7} onClose={vi.fn()} onRefreshed={onRefreshed} />);
 
-    render(<MissingDocumentsModal open result={baseResult} loading={false} error="" onClose={onClose} />);
+    expect(await screen.findByText(/está desactualizada/)).toBeInTheDocument();
+    expect(screen.getByText('Completitud no establecida')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Actualizar evaluación/ }));
 
-    await user.click(screen.getByRole('button', { name: /Cerrar/i }));
+    await waitFor(() => expect(refreshDocumentaryRequirementsMock).toHaveBeenCalledWith(7, expect.objectContaining({ expectedInputRevision: 3, reason: expect.any(String), idempotencyKey: expect.any(String) })));
+    await waitFor(() => expect(getMissingRequirementsMock).toHaveBeenCalledTimes(2));
+    expect(onRefreshed).toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByText(/está desactualizada/)).not.toBeInTheDocument());
+  });
 
-    expect(onClose).toHaveBeenCalledTimes(1);
+  it('shows the not-applicable state for a traditional project with a pending activation', async () => {
+    getMissingRequirementsMock.mockResolvedValue(result({
+      mode: 'traditional', applicable: false, state: 'not_applicable', allRequirementsSatisfied: null, requirements: [], groups: [],
+      summary: { total: 0, missing: 0, present: 0 }, refresh: { allowed: false, path: null, expectedInputRevision: null },
+      warnings: [{ code: 'CENTRAL_ACTIVATION_PENDING', message: 'x', releaseId: 'release-a', releaseVersion: 4 }],
+    }));
+    render(<MissingDocumentsModal open fun0Id={7} onClose={vi.fn()} />);
+
+    expect(await screen.findByText(/solo aplica a expedientes activados/)).toBeInTheDocument();
+    expect(screen.getByText(/versión 4, pendiente de activación/)).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Faltantes' })).not.toBeInTheDocument();
+  });
+
+  it('shows not applicable without querying when there is no linked project', () => {
+    render(<MissingDocumentsModal open fun0Id={null} onClose={vi.fn()} />);
+
+    expect(screen.getByText(/solo aplica a expedientes activados/)).toBeInTheDocument();
+    expect(getMissingRequirementsMock).not.toHaveBeenCalled();
+  });
+
+  it('shows the error and retries', async () => {
+    getMissingRequirementsMock.mockRejectedValueOnce(new Error('Servicio no disponible')).mockResolvedValueOnce(result());
+    render(<MissingDocumentsModal open fun0Id={7} onClose={vi.fn()} />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Servicio no disponible');
+    await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+    expect(await screen.findByRole('region', { name: 'Faltantes' })).toBeInTheDocument();
   });
 });

@@ -1,74 +1,18 @@
+import { useCallback, useEffect, useState } from 'react';
 import { LegacyModal } from '@/components/legacy-modal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
+import { getMissingRequirements, refreshDocumentaryRequirements } from '@/app/services/documentaryOperations.service';
+import { documentaryError } from '@/app/services/documentary.service';
 
-const EMPTY_ARRAY = [];
-
-const SOURCE_LABELS = {
-  snapshot: 'Snapshot activo',
-  legacy_snapshot: 'Checklist legado',
-  no_snapshot: 'Sin snapshot',
-  insufficient_inputs: 'Insumos insuficientes',
+const STATE_NOTICES = {
+  stale: 'La evaluación de requisitos está desactualizada respecto a los datos del expediente. El listado es orientativo y no confirma que el expediente esté completo.',
+  missing_cache: 'El expediente aún no tiene una evaluación de requisitos. Actualice la evaluación para conocer los documentos exigibles.',
+  incomplete: 'La evaluación de requisitos está incompleta. El listado es orientativo y no confirma que el expediente esté completo.',
 };
 
-const GROUPS = [
-  {
-    key: 'missing',
-    title: 'Faltantes',
-    description: 'Requisitos exigibles sin evidencia física o digital registrada.',
-    statuses: ['missing', 'unknown_code'],
-    icon: 'AlertTriangle',
-    toneClass: 'border-destructive/40 bg-destructive/10 text-foreground',
-    emptyText: 'No hay faltantes legales reportados por el endpoint.',
-  },
-  {
-    key: 'pendingScan',
-    title: 'Pendientes de escaneo',
-    description: 'Documentos aportados en físico que aún requieren evidencia digital.',
-    statuses: ['pending_scan'],
-    icon: 'FileUp',
-    toneClass: 'border-warning/40 bg-warning/10 text-foreground',
-    emptyText: 'No hay documentos físicos pendientes de escaneo.',
-  },
-  {
-    key: 'present',
-    title: 'Presentes',
-    description: 'Requisitos con evidencia digital o evaluación positiva registrada.',
-    statuses: ['present'],
-    icon: 'CheckCircle',
-    toneClass: 'border-accent/40 bg-accent/10 text-foreground',
-    emptyText: 'No hay documentos presentes reportados.',
-  },
-];
-
-function normalizeString(value) {
-  return String(value ?? '').trim();
-}
-
-function normalizeStatus(value) {
-  return normalizeString(value).toLowerCase();
-}
-
-function getResultRequirements(result) {
-  return Array.isArray(result?.requirements) ? result.requirements : EMPTY_ARRAY;
-}
-
-function getSummaryValue(summary, key) {
-  const value = Number(summary?.[key]);
-  return Number.isFinite(value) ? value : 0;
-}
-
-function getSourceLabel(source) {
-  return SOURCE_LABELS[source] || source || 'Sin fuente';
-}
-
-function groupRequirements(result) {
-  const requirements = getResultRequirements(result);
-  return GROUPS.reduce((groups, group) => {
-    groups[group.key] = requirements.filter((requirement) => group.statuses.includes(normalizeStatus(requirement.status)));
-    return groups;
-  }, {});
-}
+const GROUP_MODES = { all: 'Todos requeridos', at_least_one: 'Al menos uno', complementary: 'Complementario' };
+const GROUP_STATUSES = { satisfied: 'Cumplido', missing: 'Faltante', not_applicable: 'No aplica' };
 
 function StatusPill({ children, className = '' }) {
   return (
@@ -78,110 +22,113 @@ function StatusPill({ children, className = '' }) {
   );
 }
 
-function MetadataPill({ label, value }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground">
-      {label}: {value || 'N/D'}
-    </span>
-  );
+function completenessLabel(result) {
+  if (result.allRequirementsSatisfied === true) return 'Requisitos completos';
+  if (result.allRequirementsSatisfied === false) return 'Requisitos incompletos';
+  return 'Completitud no establecida';
 }
 
-function RequirementRow({ requirement, toneClass }) {
-  const evidenceCount = Array.isArray(requirement.evidence) ? requirement.evidence.length : 0;
-  const code = normalizeString(requirement.code) || 'SIN CÓDIGO';
-  const label = normalizeString(requirement.label) || 'Documento sin nombre';
-  const reason = normalizeString(requirement.statusReason || requirement.reason);
-  const groupKey = normalizeString(requirement.groupKey);
-
+function RequirementList({ title, tone, requirements, emptyText }) {
   return (
-    <article className="rounded-lg border border-border bg-background px-3 py-3 text-sm shadow-sm">
-      <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusPill className={toneClass}>{code}</StatusPill>
-            {groupKey ? <StatusPill className="border-border bg-muted/50 text-muted-foreground">{groupKey}</StatusPill> : null}
-          </div>
-          <h4 className="mb-0 text-sm font-semibold leading-5 text-foreground">{label}</h4>
-          {reason ? <p className="mb-0 text-xs leading-5 text-muted-foreground">Motivo: {reason}</p> : null}
-        </div>
-        <StatusPill className="shrink-0 border-border bg-muted/40 text-muted-foreground">
-          Evidencias: {evidenceCount}
-        </StatusPill>
-      </div>
-    </article>
-  );
-}
-
-function RequirementGroup({ group, requirements }) {
-  return (
-    <section aria-label={group.title} className="rounded-xl border border-border bg-card text-foreground shadow-sm">
-      <div className="flex flex-col gap-2 border-b border-border bg-muted/25 px-4 py-3 md:flex-row md:items-start md:justify-between">
-        <div className="min-w-0 space-y-1">
-          <h3 className="mb-0 flex items-center gap-2 text-base font-semibold text-foreground">
-            <Icon name={group.icon} size={16} /> {group.title}
-          </h3>
-          <p className="mb-0 text-sm leading-5 text-muted-foreground">{group.description}</p>
-        </div>
-        <StatusPill className={group.toneClass}>{requirements.length}</StatusPill>
+    <section aria-label={title} className="rounded-xl border border-border bg-card text-foreground shadow-sm">
+      <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/25 px-4 py-3">
+        <h3 className="mb-0 text-base font-semibold text-foreground">{title}</h3>
+        <StatusPill className={tone}>{requirements.length}</StatusPill>
       </div>
       <div className="space-y-2 p-3">
-        {requirements.length
-          ? requirements.map((requirement, index) => (
-            <RequirementRow key={`${group.key}-${requirement.code || index}`} requirement={requirement} toneClass={group.toneClass} />
-          ))
-          : <div className="rounded-lg border border-dashed border-border bg-muted/20 px-3 py-4 text-sm text-muted-foreground">{group.emptyText}</div>}
+        {requirements.length ? requirements.map((requirement) => (
+          <article key={`${requirement.catalogueId}:${requirement.code}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            <StatusPill className={tone}>{requirement.code}</StatusPill>
+            <span className="min-w-0 flex-1 font-medium">{requirement.name || 'Documento sin nombre'}</span>
+            {requirement.groupCode ? <StatusPill className="border-border bg-muted/50 text-muted-foreground">Grupo {requirement.groupCode}</StatusPill> : null}
+          </article>
+        )) : <p className="mb-0 rounded-lg border border-dashed border-border bg-muted/20 px-3 py-4 text-sm text-muted-foreground">{emptyText}</p>}
       </div>
     </section>
   );
 }
 
-export default function MissingDocumentsModal({ open, result, loading = false, error = '', onClose }) {
-  const source = normalizeString(result?.source);
-  const groupedRequirements = groupRequirements(result);
-  const summary = result?.summary || {};
-  const hasNoSnapshot = source === 'no_snapshot';
-  const hasInsufficientInputs = source === 'insufficient_inputs';
-  const hasAnyRequirements = getResultRequirements(result).length > 0;
+function NotApplicable({ result }) {
+  const pending = (result?.warnings || []).find((warning) => warning?.code === 'CENTRAL_ACTIVATION_PENDING');
+  return (
+    <div role="status" className="space-y-2 rounded-lg border border-border bg-muted/20 px-3 py-3 text-sm leading-6 text-foreground">
+      <p className="mb-0">La evaluación centralizada de faltantes solo aplica a expedientes activados con una publicación de Dovela Central. Este expediente se gestiona con documentación tradicional.</p>
+      {pending ? <p className="mb-0 text-amber-900">{`Radicado desde el portal con la publicación de Central ${pending.releaseVersion != null ? `versión ${pending.releaseVersion}` : 'registrada'}, pendiente de activación.`}</p> : null}
+    </div>
+  );
+}
+
+export default function MissingDocumentsModal({ open, fun0Id, onClose, onRefreshed }) {
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = useCallback((signal) => {
+    if (!fun0Id) { setResult(null); setError(''); return Promise.resolve(); }
+    setLoading(true); setError('');
+    return getMissingRequirements(fun0Id, signal)
+      .then((data) => { if (!signal?.aborted) setResult(data); })
+      .catch((failure) => { if (!signal?.aborted) { setResult(null); setError(documentaryError(failure)); } })
+      .finally(() => { if (!signal?.aborted) setLoading(false); });
+  }, [fun0Id]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const controller = new AbortController();
+    load(controller.signal);
+    return () => controller.abort();
+  }, [open, load]);
+
+  const refresh = async () => {
+    setRefreshing(true); setError('');
+    try {
+      await refreshDocumentaryRequirements(fun0Id, {
+        expectedInputRevision: result.refresh.expectedInputRevision ?? 0,
+        idempotencyKey: crypto.randomUUID(),
+        reason: 'Actualización de la evaluación de documentos faltantes',
+      });
+      onRefreshed?.();
+      await load();
+    } catch (failure) {
+      setError(documentaryError(failure));
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const applicable = Boolean(result?.applicable);
+  const missing = applicable ? result.requirements.filter((requirement) => requirement.status === 'missing') : [];
+  const present = applicable ? result.requirements.filter((requirement) => requirement.status === 'present') : [];
+  const notice = applicable ? STATE_NOTICES[result.state] : null;
 
   return (
     <LegacyModal
       isOpen={open}
       onRequestClose={onClose}
       contentLabel="Documentos faltantes"
-      style={{
-        content: {
-          top: '5%',
-          left: '50%',
-          right: 'auto',
-          bottom: '5%',
-          width: 'min(94vw, 1040px)',
-          maxWidth: '1040px',
-          transform: 'translateX(-50%)',
-          overflow: 'hidden',
-          padding: 0,
-        },
-      }}
+      style={{ content: { top: '5%', left: '50%', right: 'auto', bottom: '5%', width: 'min(94vw, 1040px)', maxWidth: '1040px', transform: 'translateX(-50%)', overflow: 'hidden', padding: 0 } }}
     >
       <section className="flex h-full min-h-0 flex-col bg-background text-foreground">
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border bg-muted/20 px-4 py-3">
           <div className="min-w-0 space-y-1">
-            <p className="mb-0 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Consulta read-only</p>
+            <p className="mb-0 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Dovela Central</p>
             <h2 className="mb-0 text-lg font-semibold leading-tight text-foreground">Documentos faltantes del expediente</h2>
-            <p className="mb-0 text-sm leading-5 text-muted-foreground">Resultado oficial del endpoint de requisitos documentales faltantes. Esta vista no guarda ni modifica la ventanilla.</p>
+            <p className="mb-0 text-sm leading-5 text-muted-foreground">Requisitos de la publicación fijada al expediente frente a los documentos recibidos.</p>
           </div>
-          <Button type="button" variant="outline" size="sm" className="h-8 shrink-0 px-2" onClick={onClose}>
-            <Icon name="XCircle" size={14} /> Cerrar
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            {applicable && result.refresh.allowed ? (
+              <Button type="button" variant="outline" size="sm" className="h-8 px-2" disabled={refreshing || loading} onClick={refresh}>
+                <Icon name={refreshing ? 'Loader2' : 'RefreshCw'} size={14} className={refreshing ? 'animate-spin' : ''} /> Actualizar evaluación
+              </Button>
+            ) : null}
+            <Button type="button" variant="outline" size="sm" className="h-8 px-2" onClick={onClose}>
+              <Icon name="XCircle" size={14} /> Cerrar
+            </Button>
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
-          <section className="flex flex-wrap items-center gap-2" aria-label="Metadatos de consulta">
-            <MetadataPill label="source" value={source || (loading ? 'consultando' : '')} />
-            <MetadataPill label="snapshotId" value={result?.snapshotId ?? ''} />
-            {result?.configVersionId ? <MetadataPill label="configVersionId" value={result.configVersionId} /> : null}
-            {source ? <StatusPill className="border-primary/30 bg-primary/10 text-primary">{getSourceLabel(source)}</StatusPill> : null}
-          </section>
-
           {loading ? (
             <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 px-3 py-3 text-sm text-muted-foreground" role="status" aria-live="polite">
               <Icon name="Loader2" size={16} className="animate-spin" /> Consultando documentos faltantes...
@@ -189,44 +136,37 @@ export default function MissingDocumentsModal({ open, result, loading = false, e
           ) : null}
 
           {error ? (
-            <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-3 text-sm leading-6 text-foreground" role="alert">
-              {error}
+            <div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-3 text-sm leading-6 text-foreground" role="alert">
+              <p className="mb-0">{error}</p>
+              {fun0Id ? <Button type="button" variant="outline" size="sm" onClick={() => load()}>Reintentar</Button> : null}
             </div>
           ) : null}
 
-          {hasNoSnapshot ? (
-            <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-3 text-sm leading-6 text-foreground" role="alert">
-              Este expediente aún no tiene snapshot de requisitos; no se infieren todos los documentos.
-            </div>
-          ) : null}
+          {!loading && !error && (!fun0Id || (result && !applicable)) ? <NotApplicable result={result} /> : null}
 
-          {hasInsufficientInputs ? (
-            <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-3 text-sm leading-6 text-foreground" role="alert">
-              insufficient_inputs · No hay insumos suficientes para resolver requisitos documentales. Revise que el expediente tenga FUN relacionado y datos de actuación disponibles.
-            </div>
-          ) : null}
-
-          {!loading && !error && !hasInsufficientInputs ? (
-            <section className="grid gap-2 md:grid-cols-4" aria-label="Resumen de documentos faltantes">
-              <StatusPill className="justify-center border-border bg-background text-foreground">Total: {getSummaryValue(summary, 'totalRequirements')}</StatusPill>
-              <StatusPill className="justify-center border-destructive/40 bg-destructive/10 text-foreground">Faltantes: {getSummaryValue(summary, 'missing')}</StatusPill>
-              <StatusPill className="justify-center border-warning/40 bg-warning/10 text-foreground">Pendientes: {getSummaryValue(summary, 'pendingScan')}</StatusPill>
-              <StatusPill className="justify-center border-accent/40 bg-accent/10 text-foreground">Presentes: {getSummaryValue(summary, 'present')}</StatusPill>
-            </section>
-          ) : null}
-
-          {!loading && !error && !hasInsufficientInputs && !hasAnyRequirements && !hasNoSnapshot ? (
-            <div className="rounded-lg border border-dashed border-border bg-muted/20 px-3 py-4 text-sm text-muted-foreground">
-              No hay documentos faltantes por mostrar para esta consulta.
-            </div>
-          ) : null}
-
-          {!loading && !error && !hasInsufficientInputs ? (
-            <div className="grid gap-3">
-              {GROUPS.map((group) => (
-                <RequirementGroup key={group.key} group={group} requirements={groupedRequirements[group.key] || EMPTY_ARRAY} />
-              ))}
-            </div>
+          {!loading && applicable ? (
+            <>
+              {notice ? <div role="alert" className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-3 text-sm leading-6 text-foreground">{notice}</div> : null}
+              <section className="grid gap-2 md:grid-cols-4" aria-label="Resumen de documentos faltantes">
+                <StatusPill className="justify-center border-border bg-background text-foreground">Total: {result.summary.total}</StatusPill>
+                <StatusPill className="justify-center border-destructive/40 bg-destructive/10 text-foreground">Faltantes: {result.summary.missing}</StatusPill>
+                <StatusPill className="justify-center border-accent/40 bg-accent/10 text-foreground">Presentes: {result.summary.present}</StatusPill>
+                <StatusPill className="justify-center border-primary/30 bg-primary/10 text-primary">{completenessLabel(result)}</StatusPill>
+              </section>
+              {result.groups.length ? (
+                <section aria-label="Grupos de requisitos" className="flex flex-wrap gap-2">
+                  {result.groups.map((group) => (
+                    <StatusPill key={group.code} className="border-border bg-muted/40 text-foreground">
+                      {`Grupo ${group.code} · ${GROUP_MODES[group.mode] || group.mode} · ${GROUP_STATUSES[group.status] || group.status}`}
+                    </StatusPill>
+                  ))}
+                </section>
+              ) : null}
+              <div className="grid gap-3">
+                <RequirementList title="Faltantes" tone="border-destructive/40 bg-destructive/10 text-foreground" requirements={missing} emptyText="No hay requisitos faltantes en la evaluación disponible." />
+                <RequirementList title="Presentes" tone="border-accent/40 bg-accent/10 text-foreground" requirements={present} emptyText="Aún no se han recibido documentos exigibles." />
+              </div>
+            </>
           ) : null}
         </div>
       </section>
