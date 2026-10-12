@@ -1,8 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { documentaryError } from '@/app/services/documentary.service';
-import { getCanonicalDocuments, getCanonicalVersions, downloadCanonicalFile, receiveCanonicalDocument, saveCanonicalControl, createCanonicalSubmit, updateCanonicalEvidence, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
+import { getCanonicalDocuments, getCanonicalVersions, downloadCanonicalFile, receiveCanonicalDocument, saveCanonicalControl, createCanonicalSubmit, updateCanonicalEvidence, getCanonicalHistory, getCanonicalVersionSubmitIds, documentaryReceiptRuleError } from '@/app/services/documentaryOperations.service';
 import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal.jsx';
+
+const CLASS_LABELS = { requirement: 'Requisito', annex: 'Anexo', vr_slip: 'Volante de radicación' };
+const CONTRIBUTOR_LABELS = { applicant: 'Solicitante', curaduria: 'Curaduría' };
+const CHANNEL_LABELS = { counter: 'Ventanilla', email: 'Correo', whatsapp: 'WhatsApp', other: 'Otro' };
+const NO_LIST_TITLE = 'Sin lista';
+// Rows from backends older than v5 carry no documentClass and are always catalogue requirements.
+const documentClassOf = (row) => row.documentClass || 'requirement';
+// Groups the rows of the current page by their ventanilla list, keeping the server order.
+function groupRowsByList(rows) {
+  const groups = new Map();
+  rows.forEach((row) => {
+    const title = row.listTitle || row.receipt?.listTitle || NO_LIST_TITLE;
+    if (!groups.has(title)) groups.set(title, []);
+    groups.get(title).push(row);
+  });
+  return [...groups].map(([title, items]) => ({ title, rows: items }));
+}
 
 const fieldClass = 'mt-1 block min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 const effectLabels = { complies: 'Cumple', does_not_comply: 'No cumple', not_applicable: 'No aplica', no_decision: 'Sin decisión', pending: 'Pendiente', stale: 'Requiere nueva revisión', review_unavailable: 'Revisión no disponible', no_configured_controls: 'Sin controles configurados', unreviewed: 'Pendiente de revisión' };
@@ -70,44 +87,77 @@ function ControlDecision({ origin, row, control, canReview, onSaved, onConflict 
 }
 
 function ReceiptForm({ origin, view, fixedSubmitId, previous, onSaved, onCancel, onConflict }) {
+  const previousClass = previous ? documentClassOf(previous) : null;
+  const [documentClass, setDocumentClass] = useState(previousClass || 'requirement');
   const [documentId, setDocumentId] = useState(previous?.documentId || '');
   const [submitId, setSubmitId] = useState(String(fixedSubmitId || ''));
   const [physical, setPhysical] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  // A new version must come from a VR not used by the previous versions of the document.
+  const [usedSubmits, setUsedSubmits] = useState(() => new Set(previous && Number.isInteger(previous.receipt.submitId) ? [previous.receipt.submitId] : []));
   const command = useRef(null);
+  useEffect(() => {
+    if (!previous || (previous.versionCount ?? 1) <= 1) return undefined;
+    let active = true;
+    getCanonicalVersionSubmitIds(origin.project.fun0Id, previous)
+      .then((used) => { if (active) setUsedSubmits((current) => new Set([...current, ...used])); })
+      .catch(() => {}); // The server still rejects a repeated VR with VERSION_VR_CONFLICT.
+    return () => { active = false; };
+  }, [origin.project.fun0Id, previous]);
+  const isAnnex = documentClass === 'annex';
   const documents = origin.catalogue.documents.filter((document) => document.documentId && (document.isActive === true || document.isActive === 1));
   const selected = documents.find((document) => document.documentId === documentId);
   const applicableIds = new Set((view.requirements?.documents || []).map((document) => document.documentId));
+  const submitUsed = Boolean(previous) && usedSubmits.has(Number(submitId));
   async function save(event) {
     event.preventDefault(); if (busy) return;
     const data = new FormData(event.currentTarget);
     const digital = data.get('digital'); const scan = data.get('scan');
-    if (!selected || !view.submits.some((submit) => submit.id === Number(submitId))) { setError('Seleccione un documento publicado y un VR del expediente.'); return; }
+    const title = isAnnex ? String(previous?.title || data.get('title') || '').trim() : selected?.name;
+    if ((isAnnex ? !title : !selected) || !view.submits.some((submit) => submit.id === Number(submitId))) { setError(isAnnex ? 'Indique el título del anexo y un VR del expediente.' : 'Seleccione un documento publicado y un VR del expediente.'); return; }
+    if (submitUsed) { setError('Este documento ya tiene una versión en ese VR. Seleccione un VR diferente a los de las versiones anteriores.'); return; }
     if (!physical && !digital?.size) { setError('Registre el soporte físico o adjunte un archivo digital.'); return; }
     if ([digital, scan].some((file) => file?.size > 52428800)) { setError('Cada archivo debe pesar como máximo 50 MB.'); return; }
     setBusy(true); setError('');
     try {
-      command.current ||= { documentId: selected.documentId, submitId: Number(submitId), historicalTitle: selected.name,
+      command.current ||= { documentClass, ...(isAnnex ? {} : { documentId: selected.documentId }), submitId: Number(submitId), title,
         instanceLabel: String(data.get('instanceLabel') || '').trim() || null, documentKey: previous?.documentKey || null,
         previousVersionId: previous?.receivedDocumentRowId || null, expectedRowVersion: previous?.receipt.rowVersion || null,
+        contributor: String(data.get('contributor') || '') || null, channel: String(data.get('channel') || 'counter'),
         receivedAt: new Date().toISOString(), physical: physical ? { pages: Number(data.get('pages')), location: String(data.get('location')).trim(), reference: null } : null,
         pagesDigital: null, idempotencyKey: crypto.randomUUID(), reason: String(data.get('reason')).trim() };
       await receiveCanonicalDocument(origin.project.fun0Id, command.current, digital?.size ? digital : null, scan?.size ? scan : null);
       onSaved(previous ? 'Nueva versión recibida. Sus controles quedan pendientes de revisión.' : 'Documento recibido.');
-    } catch (failure) { if(failure.response)command.current=null;if(failure.response?.status===409)onConflict();else setError(documentaryError(failure)); }
+    } catch (failure) {
+      if (failure.response) command.current = null;
+      const ruleError = documentaryReceiptRuleError(failure);
+      if (ruleError) setError(ruleError); else if (failure.response?.status === 409) onConflict(); else setError(documentaryError(failure));
+    }
     finally { setBusy(false); }
   }
   return <form onSubmit={save} onChange={() => { command.current = null; }} className="space-y-3 rounded-md border border-border p-4">
-    <h3 className="text-sm font-semibold">{previous ? 'Recibir nueva versión' : 'Recibir documento'}</h3>
+    <h3 className="text-sm font-semibold">{previous ? `Recibir nueva versión · ${CLASS_LABELS[previousClass] || 'Documento'}` : 'Recibir documento'}</h3>
     <fieldset disabled={busy} className="grid gap-3 md:grid-cols-2">
-      <label className="text-sm">Documento de Central<select className={fieldClass} required disabled={Boolean(previous)} value={documentId} onChange={(event) => setDocumentId(event.target.value)}>
-        <option value="">Seleccione un documento</option>{documents.map((document) => <option key={document.documentId} value={document.documentId}>{document.code} · {document.name}{applicableIds.has(document.documentId) ? ' · Aplicable' : ''}</option>)}
-      </select></label>
+      {previous ? null : <label className="text-sm md:col-span-2">Tipo de documento<select className={fieldClass} value={documentClass} onChange={(event) => setDocumentClass(event.target.value)}>
+        <option value="requirement">{CLASS_LABELS.requirement} (documento del catálogo)</option><option value="annex">{CLASS_LABELS.annex} (título libre)</option>
+      </select></label>}
+      {isAnnex
+        ? <label className="text-sm">Título del anexo<input className={fieldClass} name="title" maxLength={255} required defaultValue={previous?.title || ''} disabled={Boolean(previous)} /></label>
+        : <label className="text-sm">Documento de Central<select className={fieldClass} required disabled={Boolean(previous)} value={documentId} onChange={(event) => setDocumentId(event.target.value)}>
+          <option value="">Seleccione un documento</option>{documents.map((document) => <option key={document.documentId} value={document.documentId}>{document.code} · {document.name}{applicableIds.has(document.documentId) ? ' · Aplicable' : ''}</option>)}
+        </select></label>}
       <label className="text-sm">VR de recepción<select className={fieldClass} required disabled={Boolean(fixedSubmitId)} value={submitId} onChange={(event) => setSubmitId(event.target.value)}>
-        <option value="">Seleccione el VR</option>{view.submits.map((submit) => <option key={submit.id} value={submit.id}>{submit.idPublic}</option>)}
+        <option value="">Seleccione el VR</option>{view.submits.map((submit) => <option key={submit.id} value={submit.id} disabled={Boolean(previous) && usedSubmits.has(submit.id)}>{submit.idPublic}{previous && usedSubmits.has(submit.id) ? ' · ya tiene versión' : ''}</option>)}
       </select></label>
-      {selected ? <p className="text-xs text-muted-foreground md:col-span-2">Lista: {selected.listKey || 'Sin lista publicada'} · Categorías: {origin.catalogue.classifications.filter((item) => selected.classificationIds.includes(item.id)).map((item) => item.name).join(' · ') || 'Sin clasificación publicada'}</p> : null}
+      {submitUsed ? <p role="alert" className="text-xs text-destructive md:col-span-2">Este documento ya tiene una versión en el VR seleccionado. Una nueva versión debe recibirse en un VR diferente; para corregir la misma recepción use «Actualizar evidencia».</p> : null}
+      {!isAnnex && selected ? <p className="text-xs text-muted-foreground md:col-span-2">Lista: {selected.listKey || 'Sin lista publicada'} · Categorías: {origin.catalogue.classifications.filter((item) => selected.classificationIds.includes(item.id)).map((item) => item.name).join(' · ') || 'Sin clasificación publicada'}</p> : null}
+      <label className="text-sm">Aportado por<select className={fieldClass} name="contributor" defaultValue={previous?.receipt.contributor || 'applicant'}>
+        {Object.entries(CONTRIBUTOR_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+      </select></label>
+      <label className="text-sm">Medio de recepción<select className={fieldClass} name="channel" defaultValue="counter">
+        {Object.entries(CHANNEL_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+      </select></label>
       <label className="text-sm md:col-span-2">Identificación adicional (opcional)<input className={fieldClass} name="instanceLabel" maxLength={255} /></label>
       {view.capabilities.receivePhysical ? <label className="flex items-center gap-2 text-sm md:col-span-2"><input type="checkbox" checked={physical} onChange={(event) => setPhysical(event.target.checked)} />Se recibió soporte físico</label> : null}
       {physical ? <>
@@ -149,7 +199,7 @@ function DocumentHistory({ origin, row }) {
   }
   return <div className="space-y-2">
     {!history || history.nextAfterId ? <Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{busy ? 'Consultando…' : history ? 'Más versiones' : 'Consultar versiones'}</Button> : null}
-    {history?.rows.map((receipt) => <div key={receipt.id} className="space-y-2 border-l border-border pl-3 text-sm"><p>Versión {receipt.versionSequence} · {receipt.vrLabel} · {receipt.receivedAt}</p><DocumentFiles origin={origin} receipt={receipt} onError={setError} /></div>)}
+    {history?.rows.map((receipt) => <div key={receipt.id} className="space-y-2 border-l border-border pl-3 text-sm"><p>Versión {receipt.versionSequence}{history.versionCount ? ` de ${history.versionCount}` : ''} · VR {receipt.vrLabel} · {receipt.registeredAt || receipt.receivedAt}{receipt.contributor ? ` · ${CONTRIBUTOR_LABELS[receipt.contributor] || receipt.contributor}` : ''}{receipt.channel ? ` · ${CHANNEL_LABELS[receipt.channel] || receipt.channel}` : ''}</p><DocumentFiles origin={origin} receipt={receipt} onError={setError} /></div>)}
     <ErrorMessage error={error} />
   </div>;
 }
@@ -228,18 +278,29 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       {canReceive && entry ? <ReceiptForm key={`${requestKey}:${entry.rowKey || 'new'}`} origin={origin} view={view} fixedSubmitId={fixedSubmitId} previous={entry.rowKey ? entry : null} onSaved={(message) => { setCursors([0]); refresh(message); }} onCancel={() => setEntry(null)} onConflict={conflict} /> : null}
       {canReceive && evidence?<EvidenceForm key={`evidence:${requestKey}`} origin={origin} row={evidence} onSaved={refresh} onConflict={conflict} onCancel={()=>setEvidence(null)}/>:null}
       {!view.rows.length ? <p className="text-sm text-muted-foreground">No hay documentos recibidos en esta página.</p> : null}
-      {view.rows.map((row) => <article key={`${requestKey}:${row.rowKey}`} className="space-y-3 rounded-md border border-border p-4">
-        <div><h3 className="text-sm font-semibold">{row.catalogueDisplay.code} · {row.catalogueDisplay.name}</h3><p className="text-xs text-muted-foreground">{row.receipt.vrLabel} · Versión {row.versionSequence} · {effectLabel(row.compliance)}{row.receipt.hasPhysical ? ` · ${row.receipt.pagesPhysical} folios físicos` : ''}</p></div>
-        <DocumentFiles origin={origin} receipt={row.receipt} onError={setFileError} />
-        {row.isAdditional===true?<p className="text-xs text-muted-foreground">Documento adicional: su recepción no modifica los requisitos.</p>:null}
-        {canReceive&&row.actions.replace?<Button type="button" variant="outline" size="sm" onClick={()=>{setEntry(null);setEvidence(row);}}>Actualizar evidencia</Button>:null}
-        {canReceive && row.actions.replace ? <Button type="button" variant="outline" size="sm" onClick={() => setEntry(row)}>Recibir nueva versión</Button> : null}
-        <details><summary className="cursor-pointer py-2 text-sm font-medium">Legal y debida forma ({row.controls.length})</summary><div className="space-y-2 pt-2">
-          {!row.controls.length ? <p className="text-sm text-muted-foreground">No hay controles aplicables; esto no equivale a una aprobación.</p> : null}
-          {row.controls.map((control) => <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={Boolean(canManage && !view.readOnly && view.capabilities.review && row.actions.review)} onSaved={refresh} onConflict={conflict} />)}
-        </div></details>
-        <DocumentHistory origin={origin} row={row} />
-      </article>)}
+      {groupRowsByList(view.rows).map((group) => <section key={`${requestKey}:list:${group.title}`} aria-label={group.title} className="space-y-3">
+        <h3 className="text-sm font-semibold text-muted-foreground">{group.title} ({group.rows.length})</h3>
+        {group.rows.map((row) => {
+          const documentClass = documentClassOf(row);
+          const requirement = documentClass === 'requirement';
+          // Annex and VR slip rows have no Central controls; vr_slip only allows evidence updates.
+          const canUpdateEvidence = row.actions.replace || (documentClass === 'vr_slip' && row.actions.receive);
+          const details = [CONTRIBUTOR_LABELS[row.receipt.contributor], CHANNEL_LABELS[row.receipt.channel]].filter(Boolean);
+          return <article key={`${requestKey}:${row.rowKey}`} className="space-y-3 rounded-md border border-border p-4">
+            <div><h4 className="text-sm font-semibold">{[row.catalogueDisplay.code || row.documentCode, row.catalogueDisplay.name || row.title].filter(Boolean).join(' · ')}{row.instanceLabel ? ` · ${row.instanceLabel}` : ''}</h4>
+              <p className="text-xs text-muted-foreground">{CLASS_LABELS[documentClass] || 'Documento'} · VR {row.receipt.vrLabel || 'sin VR'} · Versión {row.versionSequence} de {row.versionCount ?? row.versionSequence}{requirement ? ` · ${effectLabel(row.compliance)}` : ''}{row.receipt.hasPhysical ? ` · ${row.receipt.pagesPhysical} folios físicos` : ''}{details.length ? ` · ${details.join(' · ')}` : ''}</p></div>
+            <DocumentFiles origin={origin} receipt={row.receipt} onError={setFileError} />
+            {row.isAdditional===true?<p className="text-xs text-muted-foreground">Documento adicional: su recepción no modifica los requisitos.</p>:null}
+            {canReceive && canUpdateEvidence ? <Button type="button" variant="outline" size="sm" onClick={()=>{setEntry(null);setEvidence(row);}}>Actualizar evidencia</Button>:null}
+            {canReceive && row.actions.replace ? <Button type="button" variant="outline" size="sm" onClick={() => { setEvidence(null); setEntry(row); }}>Recibir nueva versión</Button> : null}
+            {requirement ? <details><summary className="cursor-pointer py-2 text-sm font-medium">Legal y debida forma ({row.controls.length})</summary><div className="space-y-2 pt-2">
+              {!row.controls.length ? <p className="text-sm text-muted-foreground">No hay controles aplicables; esto no equivale a una aprobación.</p> : null}
+              {row.controls.map((control) => <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={Boolean(canManage && !view.readOnly && view.capabilities.review && row.actions.review)} onSaved={refresh} onConflict={conflict} />)}
+            </div></details> : null}
+            <DocumentHistory origin={origin} row={row} />
+          </article>;
+        })}
+      </section>)}
       <nav className="flex items-center justify-end gap-2" aria-label="Paginación documental"><Button type="button" variant="outline" disabled={cursors.length === 1} onClick={() => { setEntry(null); setCursors((items) => items.slice(0, -1)); }}>Anterior</Button><span className="text-sm">Página {cursors.length}</span><Button type="button" variant="outline" disabled={!view.pagination.nextAfterId} onClick={() => { setEntry(null); setCursors((items) => [...items, view.pagination.nextAfterId]); }}>Siguiente</Button></nav>
       <AuditHistory key={`history:${requestKey}`} origin={origin}/>
     </> : null}
