@@ -1,252 +1,84 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { Archive, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, FileText, Files, History, Monitor, Plus, RefreshCw, RotateCcw, ScanLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import DataService from '@/app/services/data.service';
 import { documentaryError } from '@/app/services/documentary.service';
-import { getCanonicalDocuments, getCanonicalVersions, downloadCanonicalFile, receiveCanonicalDocument, saveCanonicalControl, createCanonicalSubmit, updateCanonicalEvidence, getCanonicalHistory, getCanonicalVersionSubmitIds, documentaryReceiptRuleError } from '@/app/services/documentaryOperations.service';
-import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal.jsx';
+import { getCanonicalDocuments, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
+import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
+import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
+import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
+import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
+import { ColumnFilterField } from '../molecules/ColumnFilterField';
+import { CanonicalDocumentsTable } from './CanonicalDocumentsTable';
+import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
+import { CanonicalRequirementBanner } from './CanonicalRequirementBanner';
+import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForms';
+import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, scanCounts, SCAN_FILTER } from '../../canonicalDocumentaryModel';
 
-const CLASS_LABELS = { requirement: 'Requisito', annex: 'Anexo', vr_slip: 'Volante de radicación' };
-const CONTRIBUTOR_LABELS = { applicant: 'Solicitante', curaduria: 'Curaduría' };
-const CHANNEL_LABELS = { counter: 'Ventanilla', email: 'Correo', whatsapp: 'WhatsApp', other: 'Otro' };
-const NO_LIST_TITLE = 'Sin lista';
-// Rows from backends older than v5 carry no documentClass and are always catalogue requirements.
-const documentClassOf = (row) => row.documentClass || 'requirement';
-// Groups the rows of the current page by their ventanilla list, keeping the server order.
-function groupRowsByList(rows) {
-  const groups = new Map();
-  rows.forEach((row) => {
-    const title = row.listTitle || row.receipt?.listTitle || NO_LIST_TITLE;
-    if (!groups.has(title)) groups.set(title, []);
-    groups.get(title).push(row);
-  });
-  return [...groups].map(([title, items]) => ({ title, rows: items }));
-}
+const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
+const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
+const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL };
+const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
 
-const fieldClass = 'mt-1 block min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
-const effectLabels = { complies: 'Cumple', does_not_comply: 'No cumple', not_applicable: 'No aplica', no_decision: 'Sin decisión', pending: 'Pendiente', stale: 'Requiere nueva revisión', review_unavailable: 'Revisión no disponible', no_configured_controls: 'Sin controles configurados', unreviewed: 'Pendiente de revisión' };
-const effectLabel = (value) => effectLabels[value] || 'Pendiente de revisión';
-
-function ErrorMessage({ error }) {
-  return error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null;
-}
-
-function ProjectSubmitForm({ origin, onSaved, onConflict }) {
-  const [busy, setBusy] = useState(false);
+function AuditHistory({ origin }) {
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(null);
   const [error, setError] = useState('');
-  const command = useRef(null);
-  async function save(event) {
-    event.preventDefault(); if (busy) return;
-    const data = new FormData(event.currentTarget);
-    setBusy(true); setError('');
-    try {
-      command.current ||= { vrLabel: String(data.get('vrLabel')).trim(), reason: 'Apertura de VR para recepción documental', idempotencyKey: crypto.randomUUID() };
-      await createCanonicalSubmit(origin.project.fun0Id, command.current);
-      onSaved('VR vinculado al expediente.');
-    } catch (failure) { if(failure.response)command.current=null;if(failure.response?.status===409)onConflict();else setError(documentaryError(failure)); }
-    finally { setBusy(false); }
-  }
-  return <details className="rounded-md border border-border p-3"><summary className="cursor-pointer text-sm">Crear VR para este expediente</summary>
-    <form onSubmit={save} onChange={() => { command.current = null; }} className="space-y-2 pt-3"><fieldset disabled={busy} className="space-y-2">
-      <label className="block text-sm">Consecutivo VR<input className={fieldClass} name="vrLabel" maxLength={160} required /></label>
-      <Button type="submit" size="sm" disabled={busy}>{busy ? 'Guardando…' : 'Crear VR'}</Button>
-    </fieldset><ErrorMessage error={error} /></form>
-  </details>;
-}
-
-function ControlDecision({ origin, row, control, canReview, onSaved, onConflict }) {
-  const [value, setValue] = useState(control.review?.selectedSourceValueId || '');
-  const [observation, setObservation] = useState(control.review?.observation || '');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const command = useRef(null);
-  async function save(event) {
-    event.preventDefault();
-    if (busy || !canReview) return;
-    setBusy(true); setError('');
-    try {
-      command.current ||= { selectedSourceValueId: value, observation: observation.trim() || null,
-        expectedEvidenceRevision: row.receipt.evidenceRevision, expectedResultRevision: control.review?.resultRevision || 0,
-        idempotencyKey: crypto.randomUUID(), reason: 'Revisión de Legal y debida forma' };
-      await saveCanonicalControl(origin.project.fun0Id, row.receivedDocumentRowId, control.controlId, command.current);
-      onSaved('Revisión guardada.');
-    } catch (failure) { if(failure.response)command.current=null;if(failure.response?.status===409)onConflict();else setError(documentaryError(failure)); }
-    finally { setBusy(false); }
-  }
-  return <form onSubmit={save} onChange={() => { command.current = null; }} className="space-y-2 rounded-md border border-border p-3">
-    <p className="text-sm font-medium">{control.title}</p>
-    <p className="text-xs text-muted-foreground">{control.review?.current === false ? 'La evidencia cambió. Revise nuevamente este control.' : effectLabel(control.review?.effect)}</p>
-    <fieldset disabled={busy || !canReview} className="space-y-2">
-      <label className="block text-sm">Resultado<select className={fieldClass} required value={value} onChange={(event) => setValue(event.target.value)}>
-        <option value="">Seleccione un resultado</option>
-        {control.values.map((item) => <option key={item.sourceValueId} value={item.sourceValueId}>{item.label}</option>)}
-      </select></label>
-      <label className="block text-sm">Observación<textarea className={fieldClass} maxLength={4000} value={observation} onChange={(event) => setObservation(event.target.value)} required={control.values.find((item) => item.sourceValueId === value)?.effect === 'does_not_comply'} /></label>
-      {canReview ? <Button type="submit" size="sm" disabled={busy}>{busy ? 'Guardando…' : 'Guardar revisión'}</Button> : null}
-    </fieldset>
-    <ErrorMessage error={error} />
-  </form>;
-}
-
-function ReceiptForm({ origin, view, fixedSubmitId, previous, onSaved, onCancel, onConflict }) {
-  const previousClass = previous ? documentClassOf(previous) : null;
-  const [documentClass, setDocumentClass] = useState(previousClass || 'requirement');
-  const [documentId, setDocumentId] = useState(previous?.documentId || '');
-  const [submitId, setSubmitId] = useState(String(fixedSubmitId || ''));
-  const [physical, setPhysical] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  // A new version must come from a VR not used by the previous versions of the document.
-  const [usedSubmits, setUsedSubmits] = useState(() => new Set(previous && Number.isInteger(previous.receipt.submitId) ? [previous.receipt.submitId] : []));
-  const command = useRef(null);
-  useEffect(() => {
-    if (!previous || (previous.versionCount ?? 1) <= 1) return undefined;
-    let active = true;
-    getCanonicalVersionSubmitIds(origin.project.fun0Id, previous)
-      .then((used) => { if (active) setUsedSubmits((current) => new Set([...current, ...used])); })
-      .catch(() => {}); // The server still rejects a repeated VR with VERSION_VR_CONFLICT.
-    return () => { active = false; };
-  }, [origin.project.fun0Id, previous]);
-  const isAnnex = documentClass === 'annex';
-  const documents = origin.catalogue.documents.filter((document) => document.documentId && (document.isActive === true || document.isActive === 1));
-  const selected = documents.find((document) => document.documentId === documentId);
-  const applicableIds = new Set((view.requirements?.documents || []).map((document) => document.documentId));
-  const submitUsed = Boolean(previous) && usedSubmits.has(Number(submitId));
-  async function save(event) {
-    event.preventDefault(); if (busy) return;
-    const data = new FormData(event.currentTarget);
-    const digital = data.get('digital'); const scan = data.get('scan');
-    const title = isAnnex ? String(previous?.title || data.get('title') || '').trim() : selected?.name;
-    if ((isAnnex ? !title : !selected) || !view.submits.some((submit) => submit.id === Number(submitId))) { setError(isAnnex ? 'Indique el título del anexo y un VR del expediente.' : 'Seleccione un documento publicado y un VR del expediente.'); return; }
-    if (submitUsed) { setError('Este documento ya tiene una versión en ese VR. Seleccione un VR diferente a los de las versiones anteriores.'); return; }
-    if (!physical && !digital?.size) { setError('Registre el soporte físico o adjunte un archivo digital.'); return; }
-    if ([digital, scan].some((file) => file?.size > 52428800)) { setError('Cada archivo debe pesar como máximo 50 MB.'); return; }
-    setBusy(true); setError('');
-    try {
-      command.current ||= { documentClass, ...(isAnnex ? {} : { documentId: selected.documentId }), submitId: Number(submitId), title,
-        instanceLabel: String(data.get('instanceLabel') || '').trim() || null, documentKey: previous?.documentKey || null,
-        previousVersionId: previous?.receivedDocumentRowId || null, expectedRowVersion: previous?.receipt.rowVersion || null,
-        contributor: String(data.get('contributor') || '') || null, channel: String(data.get('channel') || 'counter'),
-        receivedAt: new Date().toISOString(), physical: physical ? { pages: Number(data.get('pages')), location: String(data.get('location')).trim(), reference: null } : null,
-        pagesDigital: null, idempotencyKey: crypto.randomUUID(), reason: String(data.get('reason')).trim() };
-      await receiveCanonicalDocument(origin.project.fun0Id, command.current, digital?.size ? digital : null, scan?.size ? scan : null);
-      onSaved(previous ? 'Nueva versión recibida. Sus controles quedan pendientes de revisión.' : 'Documento recibido.');
-    } catch (failure) {
-      if (failure.response) command.current = null;
-      const ruleError = documentaryReceiptRuleError(failure);
-      if (ruleError) setError(ruleError); else if (failure.response?.status === 409) onConflict(); else setError(documentaryError(failure));
-    }
-    finally { setBusy(false); }
-  }
-  return <form onSubmit={save} onChange={() => { command.current = null; }} className="space-y-3 rounded-md border border-border p-4">
-    <h3 className="text-sm font-semibold">{previous ? `Recibir nueva versión · ${CLASS_LABELS[previousClass] || 'Documento'}` : 'Recibir documento'}</h3>
-    <fieldset disabled={busy} className="grid gap-3 md:grid-cols-2">
-      {previous ? null : <label className="text-sm md:col-span-2">Tipo de documento<select className={fieldClass} value={documentClass} onChange={(event) => setDocumentClass(event.target.value)}>
-        <option value="requirement">{CLASS_LABELS.requirement} (documento del catálogo)</option><option value="annex">{CLASS_LABELS.annex} (título libre)</option>
-      </select></label>}
-      {isAnnex
-        ? <label className="text-sm">Título del anexo<input className={fieldClass} name="title" maxLength={255} required defaultValue={previous?.title || ''} disabled={Boolean(previous)} /></label>
-        : <label className="text-sm">Documento de Central<select className={fieldClass} required disabled={Boolean(previous)} value={documentId} onChange={(event) => setDocumentId(event.target.value)}>
-          <option value="">Seleccione un documento</option>{documents.map((document) => <option key={document.documentId} value={document.documentId}>{document.code} · {document.name}{applicableIds.has(document.documentId) ? ' · Aplicable' : ''}</option>)}
-        </select></label>}
-      <label className="text-sm">VR de recepción<select className={fieldClass} required disabled={Boolean(fixedSubmitId)} value={submitId} onChange={(event) => setSubmitId(event.target.value)}>
-        <option value="">Seleccione el VR</option>{view.submits.map((submit) => <option key={submit.id} value={submit.id} disabled={Boolean(previous) && usedSubmits.has(submit.id)}>{submit.idPublic}{previous && usedSubmits.has(submit.id) ? ' · ya tiene versión' : ''}</option>)}
-      </select></label>
-      {submitUsed ? <p role="alert" className="text-xs text-destructive md:col-span-2">Este documento ya tiene una versión en el VR seleccionado. Una nueva versión debe recibirse en un VR diferente; para corregir la misma recepción use «Actualizar evidencia».</p> : null}
-      {!isAnnex && selected ? <p className="text-xs text-muted-foreground md:col-span-2">Lista: {selected.listKey || 'Sin lista publicada'} · Categorías: {origin.catalogue.classifications.filter((item) => selected.classificationIds.includes(item.id)).map((item) => item.name).join(' · ') || 'Sin clasificación publicada'}</p> : null}
-      <label className="text-sm">Aportado por<select className={fieldClass} name="contributor" defaultValue={previous?.receipt.contributor || 'applicant'}>
-        {Object.entries(CONTRIBUTOR_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-      </select></label>
-      <label className="text-sm">Medio de recepción<select className={fieldClass} name="channel" defaultValue="counter">
-        {Object.entries(CHANNEL_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-      </select></label>
-      <label className="text-sm md:col-span-2">Identificación adicional (opcional)<input className={fieldClass} name="instanceLabel" maxLength={255} /></label>
-      {view.capabilities.receivePhysical ? <label className="flex items-center gap-2 text-sm md:col-span-2"><input type="checkbox" checked={physical} onChange={(event) => setPhysical(event.target.checked)} />Se recibió soporte físico</label> : null}
-      {physical ? <>
-        <label className="text-sm">Folios físicos<input className={fieldClass} name="pages" type="number" min={1} step={1} required /></label>
-        <label className="text-sm">Ubicación o referencia física<input className={fieldClass} name="location" maxLength={512} required /></label>
-        <label className="text-sm">Escaneado del físico (opcional)<input className={fieldClass} name="scan" type="file" accept="application/pdf,image/jpeg,image/png" /></label>
-      </> : null}
-      {view.capabilities.receiveDigital ? <label className="text-sm">Archivo digital (opcional si hay físico)<input className={fieldClass} name="digital" type="file" accept="application/pdf,image/jpeg,image/png" /></label> : null}
-      <label className="text-sm md:col-span-2">Nota de recepción<input className={fieldClass} name="reason" maxLength={1000} required /></label>
-      <p className="text-xs text-muted-foreground md:col-span-2">Archivos PDF, JPG o PNG; máximo 50 MB cada uno.</p>
-      <div className="flex gap-2 md:col-span-2"><Button type="submit" disabled={busy}>{busy ? 'Guardando…' : 'Guardar recepción'}</Button><Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button></div>
-    </fieldset>
-    <ErrorMessage error={error} />
-  </form>;
-}
-
-function DocumentFiles({ origin, receipt, onError }) {
-  const [busy, setBusy] = useState(false);
-  async function download(slot) {
-    setBusy(true);
-    try { await downloadCanonicalFile(origin.project.fun0Id, receipt.id, slot, receipt.files[slot]); }
-    catch (failure) { onError(documentaryError(failure)); }
-    finally { setBusy(false); }
-  }
-  return <div className="flex flex-wrap gap-2">{['digital', 'scan'].filter((slot) => receipt.files?.[slot]).map((slot) => <Button key={slot} type="button" variant="outline" size="sm" disabled={busy} onClick={() => download(slot)}>Descargar {slot === 'digital' ? 'digital' : 'escaneado'}</Button>)}</div>;
-}
-
-function DocumentHistory({ origin, row }) {
-  const [history, setHistory] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
   async function load() {
     setBusy(true); setError('');
     try {
-      const page = await getCanonicalVersions(origin.project.fun0Id, row, history?.nextAfterId || 0);
-      setHistory({ ...page, rows: [...(history?.rows || []), ...page.rows] });
+      const next = await getCanonicalHistory(origin.project.fun0Id, page?.nextAfterId || 0);
+      setPage({ nextAfterId: next.nextAfterId, events: [...new Map([...(page?.events || []), ...next.events].map((event) => [event.id, event])).values()] });
     } catch (failure) { setError(documentaryError(failure)); }
     finally { setBusy(false); }
   }
-  return <div className="space-y-2">
-    {!history || history.nextAfterId ? <Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{busy ? 'Consultando…' : history ? 'Más versiones' : 'Consultar versiones'}</Button> : null}
-    {history?.rows.map((receipt) => <div key={receipt.id} className="space-y-2 border-l border-border pl-3 text-sm"><p>Versión {receipt.versionSequence}{history.versionCount ? ` de ${history.versionCount}` : ''} · VR {receipt.vrLabel} · {receipt.registeredAt || receipt.receivedAt}{receipt.contributor ? ` · ${CONTRIBUTOR_LABELS[receipt.contributor] || receipt.contributor}` : ''}{receipt.channel ? ` · ${CHANNEL_LABELS[receipt.channel] || receipt.channel}` : ''}</p><DocumentFiles origin={origin} receipt={receipt} onError={setError} /></div>)}
-    <ErrorMessage error={error} />
-  </div>;
+  return (
+    <section className="rounded-xl border border-border bg-[hsl(var(--card))]">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-2 rounded-xl bg-transparent px-[1rem] py-3 text-left text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span className="flex items-center gap-2"><History className="h-4 w-4 text-muted-foreground" aria-hidden="true" />Historial documental</span>
+        <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform motion-reduce:transition-none', open && 'rotate-180')} aria-hidden="true" />
+      </button>
+      {open ? (
+        <div className="space-y-3 border-t border-border px-[1rem] py-3">
+          {page?.events.map((event) => (
+            <article key={event.id} className="space-y-1.5 border-l-2 border-border pl-3 text-sm">
+              <p className="m-0 font-medium">{EVENT_LABELS[event.eventType] || event.eventType}<span className="ml-2 text-xs font-normal text-muted-foreground">{formatDocumentaryDate(event.occurredAt)}</span></p>
+              {event.reason ? <p className="m-0 text-muted-foreground">{event.reason}</p> : null}
+              {event.receivedDocumentRowId ? [event.beforeJson?.manifest, event.afterJson?.manifest].filter(Boolean).map((manifest, index) => (
+                <div key={`${event.id}:${index}`} className="space-y-1">
+                  <p className="m-0 text-xs text-muted-foreground">Evidencia {manifest.evidenceRevision}</p>
+                  <DocumentFiles origin={origin} receipt={{ id: event.receivedDocumentRowId, files: manifest.files }} onError={setError} />
+                </div>
+              )) : null}
+            </article>
+          ))}
+          {page && !page.events.length ? <p className="m-0 text-sm text-muted-foreground">Aún no hay movimientos documentales.</p> : null}
+          {!page || page.nextAfterId ? <Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{busy ? 'Consultando…' : page ? 'Más eventos' : 'Cargar historial'}</Button> : null}
+          <ErrorMessage error={error} />
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
-function EvidenceForm({origin,row,onSaved,onConflict,onCancel}){
-  const [sameContent,setSameContent]=useState(false),[physical,setPhysical]=useState(row.receipt.hasPhysical),[busy,setBusy]=useState(false),[error,setError]=useState('');
-  const command=useRef(null);
-  async function save(event){event.preventDefault();if(busy||!sameContent)return;const form=event.currentTarget,data=new FormData(form),digital=form.elements.digital?.files?.[0]||null,scan=form.elements.scan?.files?.[0]||null;
-    if([digital,scan].some(file=>file?.size>52428800)){setError('Cada archivo debe pesar como máximo 50 MB.');return;}
-    setBusy(true);setError('');try{command.current||={expectedRowVersion:row.receipt.rowVersion,expectedEvidenceRevision:row.receipt.evidenceRevision,sameContent:true,physical:physical?{pages:Number(data.get('pages')),location:String(data.get('location')).trim()||null,reference:String(data.get('reference')||'').trim()||null}:null,pagesDigital:row.receipt.pagesDigital??null,idempotencyKey:crypto.randomUUID(),reason:String(data.get('reason')).trim()};await updateCanonicalEvidence(origin.project.fun0Id,row.receivedDocumentRowId,command.current,digital,scan);onSaved('Evidencia actualizada. Revise nuevamente los controles de esta fila.');}catch(failure){if(failure.response)command.current=null;if(failure.response?.status===409)onConflict();else setError(documentaryError(failure));}finally{setBusy(false);}}
-  return <form onSubmit={save} onChange={()=>{command.current=null;}} className="space-y-3 rounded-md border border-border p-4"><h3 className="text-sm font-semibold">Actualizar evidencia de la misma recepción</h3><p className="text-xs text-muted-foreground">VR {row.receipt.vrLabel} · evidencia {row.receipt.evidenceRevision}. Un contenido corregido o un VR nuevo requiere otra versión.</p><fieldset disabled={busy} className="space-y-3">
-    <label className="flex gap-2 text-sm"><input type="checkbox" checked={sameContent} onChange={event=>setSameContent(event.target.checked)}/>Confirmo que corresponde al mismo contenido y al mismo VR</label>
-    <label className="flex gap-2 text-sm"><input type="checkbox" checked={physical} onChange={event=>setPhysical(event.target.checked)}/>Conservar o completar soporte físico</label>
-    {physical?<><label className="block text-sm">Folios de esta evidencia<input className={fieldClass} name="pages" type="number" min={1} required defaultValue={row.receipt.pagesPhysical||1}/></label><label className="block text-sm">Ubicación de esta evidencia<input className={fieldClass} name="location" maxLength={512} defaultValue={row.receipt.location||''}/></label><label className="block text-sm">Referencia física<input className={fieldClass} name="reference" maxLength={255} defaultValue={row.receipt.reference||''}/></label><label className="block text-sm">Nuevo escaneado<input className={fieldClass} name="scan" type="file" accept="application/pdf,image/jpeg,image/png"/></label></>:null}
-    <label className="block text-sm">Representación digital del mismo contenido<input className={fieldClass} name="digital" type="file" accept="application/pdf,image/jpeg,image/png"/></label><label className="block text-sm">Motivo de la actualización<input className={fieldClass} name="reason" required maxLength={1000}/></label>
-    <div className="flex gap-2"><Button type="submit" disabled={!sameContent}>Guardar evidencia</Button><Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button></div></fieldset><ErrorMessage error={error}/></form>;
-}
-
-function AuditHistory({origin}){
-  const [page,setPage]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
-  async function load(){setBusy(true);setError('');try{const next=await getCanonicalHistory(origin.project.fun0Id,page?.nextAfterId||0);setPage({nextAfterId:next.nextAfterId,events:[...new Map([...(page?.events||[]),...next.events].map(event=>[event.id,event])).values()]});}catch(failure){setError(documentaryError(failure));}finally{setBusy(false);}}
-  return <details className="space-y-3 rounded-md border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Historial documental</summary>{!page||page.nextAfterId?<Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{page?'Más eventos':'Cargar historial'}</Button>:null}
-    {page?.events.map(event=><article key={event.id} className="space-y-2 border-l border-border pl-3 text-sm"><p>{event.eventType} · {event.occurredAt} · usuario {event.actorId}</p><p>{event.reason}</p>{event.receivedDocumentRowId?[event.beforeJson?.manifest,event.afterJson?.manifest].filter(Boolean).map((manifest,index)=><div key={`${event.id}:${index}`}><p>Evidencia {manifest.evidenceRevision}</p><DocumentFiles origin={origin} receipt={{id:event.receivedDocumentRowId,files:manifest.files}} onError={setError}/></div>):null}</article>)}{page&&!page.events.length?<p className="text-sm">No hay eventos documentales.</p>:null}<ErrorMessage error={error}/></details>;
-}
-
-function RequirementSummary({view,fun0Id,onRefreshed}){
-  const summary=view.satisfaction;
-  const [missingOpen,setMissingOpen]=useState(false);
-  // Reloading the workspace unmounts this summary, so it waits until the modal closes.
-  const evaluationRefreshed=useRef(false);
-  function closeMissing(){setMissingOpen(false);if(evaluationRefreshed.current){evaluationRefreshed.current=false;onRefreshed?.();}}
-  return <details className="space-y-2 rounded-md border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Requisitos y recepción</summary>
-    <Button type="button" variant="outline" size="sm" onClick={()=>setMissingOpen(true)}>Ver faltantes</Button>
-    <MissingDocumentsModal open={missingOpen} fun0Id={fun0Id} onClose={closeMissing} onRefreshed={()=>{evaluationRefreshed.current=true;}}/>
-    <p className="text-sm">{summary?.allRequirementsSatisfied===true?'Los requisitos conocidos tienen recepción. Esto no constituye aprobación de controles.':summary?.allRequirementsSatisfied===false?'Hay requisitos pendientes de recepción.':'La evaluación está incompleta o pendiente de actualizar; no se presume completitud.'}</p>
-    <ul className="space-y-1 text-sm">{(view.requirements?.documents||[]).map(document=><li key={document.documentId||document.code}>{document.code} · {document.name} · {document.standaloneRequired?'Obligatorio independiente':document.required?'Requerido':'Alternativa o complementario'}</li>)}</ul>
-    {(summary?.groups||[]).map(group=><p key={group.code} className="text-sm">{group.code} · {group.mode==='at_least_one'?'Al menos uno':group.mode==='all'?'Todos':'Complementario'} · {group.status==='satisfied'?'Recibido':group.status==='not_applicable'?'No aplicable':'Pendiente'}</p>)}</details>;
-}
-
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId }) {
+/**
+ * Catalogue-based Radicación workspace (container). Props are kept backward compatible:
+ * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
+ */
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange }) {
+  const ids = useId();
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
   const [result, setResult] = useState(null);
-  const [entry, setEntry] = useState(null);
-  const [evidence,setEvidence]=useState(null);
+  const [sheet, setSheet] = useState(null); // { kind: 'receive' | 'evidence', row, nonce }
   const [notice, setNotice] = useState('');
   const [fileError, setFileError] = useState('');
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [selectedKey, setSelectedKey] = useState(null);
+  const [expandedKey, setExpandedKey] = useState(null);
   const afterId = cursors[cursors.length - 1];
   const requestKey = `${origin.project.fun0Id}:${origin.publication.configurationId}:${origin.publication.checksum}:${afterId}:${revision}`;
   useEffect(() => {
@@ -256,53 +88,173 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       .catch((failure) => { if (!controller.signal.aborted) setResult({ key: requestKey, error: documentaryError(failure) }); });
     return () => controller.abort();
   }, [origin, afterId, requestKey]);
-  const current = result?.key === requestKey ? result : null;
-  const view = current?.view;
-  function refresh(message = '') { setEntry(null); setEvidence(null); setNotice(message); setFileError(''); setRevision((value) => value + 1); }
-  function conflict(){refresh('Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.');}
-  const submitMatches = !fixedSubmitId || view?.submits.some((submit) => submit.id === Number(fixedSubmitId));
-  const canReceive = canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches;
-  return <section className="space-y-4 p-3">
-    <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-base font-semibold">Documentación y Legal y debida forma</h2><Button type="button" variant="outline" size="sm" onClick={() => refresh()}>Actualizar</Button></div>
-    {notice ? <p role="status" className="text-sm">{notice}</p> : null}
-    <ErrorMessage error={current?.error || fileError} />
-    {!current ? <p role="status" className="text-sm text-muted-foreground">Consultando documentos del expediente…</p> : null}
-    {view ? <>
-      <RequirementSummary view={view} fun0Id={origin.project.fun0Id} onRefreshed={()=>refresh('Evaluación de requisitos actualizada.')}/>
-      {view.readOnly ? <p role="status" className="text-sm text-muted-foreground">La consulta está disponible. La recepción y la revisión requieren habilitar las capacidades pendientes del servidor.</p> : null}
-      {!submitMatches ? <p role="status" className="text-sm text-muted-foreground">Este VR aún no tiene vínculo operativo con el expediente. No se pueden registrar documentos en él.</p> : null}
-      {view.warnings.length ? <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">{view.warnings.map((warning) => <li key={warning.code}>{warning.code.startsWith('REQUIREMENTS_') ? 'Los requisitos están pendientes de evaluación o actualización; la recepción no confirma que el expediente esté completo.' : warning.code === 'NO_CONFIGURED_CONTROLS' ? 'Esta publicación no tiene controles configurados. No se presume cumplimiento.' : warning.message}</li>)}</ul> : null}
-      {canReceive && !entry ? <Button type="button" disabled={!view.submits.length} onClick={() => setEntry({})}>Recibir documento</Button> : null}
-      {canReceive && !fixedSubmitId ? <ProjectSubmitForm key={requestKey} origin={origin} onSaved={refresh} onConflict={conflict} /> : null}
-      {!view.submits.length ? <p className="text-sm text-muted-foreground">No hay un VR vinculado para recibir documentos.</p> : null}
-      {canReceive && entry ? <ReceiptForm key={`${requestKey}:${entry.rowKey || 'new'}`} origin={origin} view={view} fixedSubmitId={fixedSubmitId} previous={entry.rowKey ? entry : null} onSaved={(message) => { setCursors([0]); refresh(message); }} onCancel={() => setEntry(null)} onConflict={conflict} /> : null}
-      {canReceive && evidence?<EvidenceForm key={`evidence:${requestKey}`} origin={origin} row={evidence} onSaved={refresh} onConflict={conflict} onCancel={()=>setEvidence(null)}/>:null}
-      {!view.rows.length ? <p className="text-sm text-muted-foreground">No hay documentos recibidos en esta página.</p> : null}
-      {groupRowsByList(view.rows).map((group) => <section key={`${requestKey}:list:${group.title}`} aria-label={group.title} className="space-y-3">
-        <h3 className="text-sm font-semibold text-muted-foreground">{group.title} ({group.rows.length})</h3>
-        {group.rows.map((row) => {
-          const documentClass = documentClassOf(row);
-          const requirement = documentClass === 'requirement';
-          // Annex and VR slip rows have no Central controls; vr_slip only allows evidence updates.
-          const canUpdateEvidence = row.actions.replace || (documentClass === 'vr_slip' && row.actions.receive);
-          const details = [CONTRIBUTOR_LABELS[row.receipt.contributor], CHANNEL_LABELS[row.receipt.channel]].filter(Boolean);
-          return <article key={`${requestKey}:${row.rowKey}`} className="space-y-3 rounded-md border border-border p-4">
-            <div><h4 className="text-sm font-semibold">{[row.catalogueDisplay.code || row.documentCode, row.catalogueDisplay.name || row.title].filter(Boolean).join(' · ')}{row.instanceLabel ? ` · ${row.instanceLabel}` : ''}</h4>
-              <p className="text-xs text-muted-foreground">{CLASS_LABELS[documentClass] || 'Documento'} · VR {row.receipt.vrLabel || 'sin VR'} · Versión {row.versionSequence} de {row.versionCount ?? row.versionSequence}{requirement ? ` · ${effectLabel(row.compliance)}` : ''}{row.receipt.hasPhysical ? ` · ${row.receipt.pagesPhysical} folios físicos` : ''}{details.length ? ` · ${details.join(' · ')}` : ''}</p></div>
-            <DocumentFiles origin={origin} receipt={row.receipt} onError={setFileError} />
-            {row.isAdditional===true?<p className="text-xs text-muted-foreground">Documento adicional: su recepción no modifica los requisitos.</p>:null}
-            {canReceive && canUpdateEvidence ? <Button type="button" variant="outline" size="sm" onClick={()=>{setEntry(null);setEvidence(row);}}>Actualizar evidencia</Button>:null}
-            {canReceive && row.actions.replace ? <Button type="button" variant="outline" size="sm" onClick={() => { setEvidence(null); setEntry(row); }}>Recibir nueva versión</Button> : null}
-            {requirement ? <details><summary className="cursor-pointer py-2 text-sm font-medium">Legal y debida forma ({row.controls.length})</summary><div className="space-y-2 pt-2">
-              {!row.controls.length ? <p className="text-sm text-muted-foreground">No hay controles aplicables; esto no equivale a una aprobación.</p> : null}
-              {row.controls.map((control) => <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={Boolean(canManage && !view.readOnly && view.capabilities.review && row.actions.review)} onSaved={refresh} onConflict={conflict} />)}
-            </div></details> : null}
-            <DocumentHistory origin={origin} row={row} />
-          </article>;
-        })}
-      </section>)}
-      <nav className="flex items-center justify-end gap-2" aria-label="Paginación documental"><Button type="button" variant="outline" disabled={cursors.length === 1} onClick={() => { setEntry(null); setCursors((items) => items.slice(0, -1)); }}>Anterior</Button><span className="text-sm">Página {cursors.length}</span><Button type="button" variant="outline" disabled={!view.pagination.nextAfterId} onClick={() => { setEntry(null); setCursors((items) => [...items, view.pagination.nextAfterId]); }}>Siguiente</Button></nav>
-      <AuditHistory key={`history:${requestKey}`} origin={origin}/>
-    </> : null}
-  </section>;
+  const loading = result?.key !== requestKey;
+  // While reloading, the last view stays visible (busy) so open forms keep their input.
+  const view = result?.view;
+  const error = loading ? '' : result?.error;
+  const total = view?.counts?.canonicalDocuments;
+  useEffect(() => { if (Number.isFinite(total)) onCountChange?.(total); }, [total, onCountChange]);
+
+  function reload(message = '') { setNotice(message); setFileError(''); setRevision((value) => value + 1); }
+  function refresh(message = '') { setSheet(null); reload(message); }
+  function conflict() { refresh(CONFLICT_MESSAGE); }
+  function setFilter(key, value) { setFilters((current) => ({ ...current, [key]: value })); }
+  function changePage(next) { setSheet(null); setSelectedKey(null); setCursors(next); }
+
+  const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
+  const canReceive = Boolean(canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
+  const canReview = Boolean(canManage && view && !view.readOnly && view.capabilities.review);
+  const rows = view?.rows || [];
+  const visibleRows = filterCanonicalRows(rows, filters);
+  const groups = groupRowsByList(visibleRows);
+  const hasFilters = Object.entries(filters).some(([key, value]) => value !== EMPTY_FILTERS[key]);
+  const selected = visibleRows.find((row) => row.rowKey === selectedKey) || visibleRows[0] || null;
+  const metrics = canonicalMetrics(view, { firstPage: cursors.length === 1 });
+  const pageHint = metrics.partial ? 'Contado en la página actual' : undefined;
+  const scans = scanCounts(rows);
+  const headerMetrics = [
+    { label: 'Documentos', value: metrics.documents, icon: Files },
+    { label: 'Entregas', value: metrics.deliveries, icon: History, hint: 'Versiones recibidas en total' },
+    { label: 'Físicos', value: metrics.physical, icon: Archive, hint: pageHint },
+    { label: 'Digitales', value: metrics.digital, icon: Monitor, hint: pageHint },
+    { label: 'Escaneados', value: metrics.scanned, icon: ScanLine, hint: pageHint },
+    ...(metrics.missing === null ? [] : [{ label: 'Faltantes', value: metrics.missing, icon: ClipboardList }]),
+  ];
+
+  function selectRow(row) {
+    setSelectedKey(row.rowKey);
+    setExpandedKey((current) => (current === row.rowKey ? null : row.rowKey));
+  }
+  function openSheet(kind, row = null) { setNotice(''); setSheet({ kind, row, nonce: Date.now() }); }
+
+  return (
+    <section className="space-y-3" aria-labelledby={`${ids}-title`}>
+      <DocumentalWorkspaceHeader
+        titleId={`${ids}-title`}
+        currentPublic={origin.project.idPublic || view?.project?.idPublic}
+        subtitle="Documentos recibidos del expediente"
+        metrics={headerMetrics}
+        loading={!view}
+      />
+      {notice ? <p role="status" className="m-0 rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">{notice}</p> : null}
+      <ErrorMessage error={error || fileError} />
+      {view ? (
+        <>
+          <CanonicalRequirementBanner
+            view={view}
+            fun0Id={origin.project.fun0Id}
+            canRefresh={Boolean(canManage && !view.readOnly && canManageDocumentaryConfiguration(DataService.getUserData()))}
+            onRefreshed={() => reload('Evaluación de requisitos actualizada.')}
+            onConflict={conflict}
+          />
+          {view.readOnly ? <p role="status" className="m-0 text-sm text-muted-foreground">Puede consultar los documentos. La recepción y la revisión aún no están habilitadas para este expediente.</p> : null}
+          {!submitMatches ? <p role="status" className="m-0 text-sm text-muted-foreground">Este VR aún no tiene vínculo operativo con el expediente. No se pueden registrar documentos en él.</p> : null}
+        </>
+      ) : null}
+
+      {!view && !error ? <p role="status" className="sr-only">Consultando documentos del expediente…</p> : null}
+      {view || !error ? (
+        <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-[hsl(var(--card))]" data-testid="canonical-documentary-workspace">
+          <div className="shrink-0 border-b border-border bg-[hsl(var(--card))]">
+            <div className="flex flex-wrap items-center gap-[0.75rem] px-[1rem] py-[0.75rem]">
+              <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
+              <ColumnFilterField type="select" value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className="h-9 w-auto min-w-[9rem]" />
+              <ColumnFilterField type="select" value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className="h-9 w-auto min-w-[9rem]" />
+              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2 text-xs text-muted-foreground" onClick={() => setFilters(EMPTY_FILTERS)}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
+              <div className="ml-auto flex flex-wrap items-center gap-2">
+                <span className="text-xs text-muted-foreground" aria-live="polite">
+                  <strong className="font-mono font-medium tabular-nums text-foreground">{visibleRows.length}</strong> {visibleRows.length === 1 ? 'documento' : 'documentos'}
+                </span>
+                <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => refresh()}>
+                  <RefreshCw className={cn(loading && view && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />Actualizar documentos
+                </Button>
+                {canReceive ? <Button type="button" size="sm" onClick={() => openSheet('receive')}><Plus aria-hidden="true" />Recibir documento</Button> : null}
+              </div>
+            </div>
+            <DocumentalQuickFilters
+              label="Accesos rápidos de escaneo"
+              options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
+              value={filters.scan}
+              onChange={(value) => setFilter('scan', value)}
+            />
+          </div>
+          <div className="grid min-h-0 min-w-0 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]">
+            <div className="max-h-[65dvh] min-h-[16rem] min-w-0 overflow-auto overscroll-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" tabIndex={0} role="region" aria-label="Tabla documental desplazable">
+              <CanonicalDocumentsTable
+                groups={groups}
+                selectedKey={selected?.rowKey}
+                expandedKey={expandedKey}
+                onSelect={selectRow}
+                loading={!view}
+                hasFilters={hasFilters}
+                onResetFilters={() => setFilters(EMPTY_FILTERS)}
+                idPrefix={ids}
+              />
+            </div>
+            {view && selected ? (
+              <div className="grid max-h-[65dvh] min-h-0">
+                <CanonicalDocumentDetail
+                  key={selected.rowKey}
+                  origin={origin}
+                  row={selected}
+                  canReceive={canReceive}
+                  canReview={canReview && Boolean(selected.actions?.review)}
+                  headingId={`${ids}-detail`}
+                  onReceiveVersion={(row) => openSheet('receive', row)}
+                  onUpdateEvidence={(row) => openSheet('evidence', row)}
+                  onSaved={refresh}
+                  onConflict={conflict}
+                />
+              </div>
+            ) : (
+              <aside className="flex flex-col items-center justify-center gap-[0.75rem] border-t border-border bg-muted/15 p-8 text-center lg:border-l lg:border-t-0">
+                <FileText className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+                <p className="m-0 text-xs leading-5 text-muted-foreground">Seleccione un documento para consultar sus entregas y archivos.</p>
+              </aside>
+            )}
+          </div>
+          {view && (cursors.length > 1 || view.pagination.nextAfterId) ? (
+            <nav className="flex min-h-12 shrink-0 items-center justify-end gap-1 border-t border-border px-[1rem] py-2" aria-label="Paginación documental">
+              <span className="mr-2 text-xs text-muted-foreground">Página {cursors.length}</span>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label="Página anterior" disabled={cursors.length === 1 || loading} onClick={() => changePage(cursors.slice(0, -1))}><ChevronLeft aria-hidden="true" /></Button>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label="Página siguiente" disabled={!view.pagination.nextAfterId || loading} onClick={() => changePage([...cursors, view.pagination.nextAfterId])}><ChevronRight aria-hidden="true" /></Button>
+            </nav>
+          ) : null}
+        </div>
+      ) : null}
+
+      {view ? <AuditHistory key={`history:${revision}`} origin={origin} /> : null}
+
+      <Sheet open={Boolean(sheet && view && canReceive)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
+          {sheet && view ? (
+            <>
+              <SheetHeader className="mb-4 pr-6">
+                <SheetTitle>{sheet.kind === 'evidence' ? 'Actualizar evidencia' : sheet.row ? 'Recibir nueva versión' : 'Recibir documento'}</SheetTitle>
+                <SheetDescription>{sheet.row ? rowName(sheet.row) : 'Registre un documento entregado para este expediente.'}</SheetDescription>
+              </SheetHeader>
+              {sheet.kind === 'evidence' ? (
+                <EvidenceForm key={sheet.nonce} origin={origin} row={sheet.row} onSaved={refresh} onConflict={conflict} onCancel={() => setSheet(null)} />
+              ) : (
+                <ReceiptForm
+                  key={sheet.nonce}
+                  origin={origin}
+                  view={view}
+                  fixedSubmitId={fixedSubmitId}
+                  previous={sheet.row}
+                  canCreateSubmit={canReceive && !fixedSubmitId}
+                  onSubmitCreated={(label) => reload(`VR ${label} creada.`)}
+                  onSaved={(message) => { setCursors([0]); refresh(message); }}
+                  onCancel={() => setSheet(null)}
+                  onConflict={conflict}
+                />
+              )}
+            </>
+          ) : null}
+        </SheetContent>
+      </Sheet>
+    </section>
+  );
 }
+
+export default CanonicalDocumentaryWorkspace;
