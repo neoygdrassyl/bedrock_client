@@ -27,14 +27,15 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
         }, []);
 
         useEffect(() => {
-            if (currentSeal != null) {
+            // A failed lookup stores `false`; missing fields must not print "undefined" in the inputs.
+            if (currentSeal) {
                 var _ITEM = currentSeal;
-                document.getElementById("seal_3").value = _ITEM.id_public;
-                document.getElementById("seal_4").value = _ITEM.area;
-                document.getElementById("seal_5").value = currentItem.date;
-                document.getElementById("seal_6").value = _ITEM.blueprints;
-                document.getElementById("seal_7").value = _ITEM.drives;
-                document.getElementById("seal_8").value = _ITEM.folders;
+                document.getElementById("seal_3").value = _ITEM.id_public ?? '';
+                document.getElementById("seal_4").value = _ITEM.area ?? '';
+                document.getElementById("seal_5").value = currentItem.date ?? '';
+                document.getElementById("seal_6").value = _ITEM.blueprints ?? '';
+                document.getElementById("seal_7").value = _ITEM.drives ?? '';
+                document.getElementById("seal_8").value = _ITEM.folders ?? '';
             }
         }, [currentSeal]);
 
