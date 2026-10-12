@@ -41,6 +41,11 @@ if (!window.ResizeObserver) {
   };
 }
 
+// jsdom doesn't implement scrollIntoView — used by cmdk (Command) to keep the active item visible
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
 // jsdom doesn't implement window.matchMedia — required by ThemeProvider & sonner
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
