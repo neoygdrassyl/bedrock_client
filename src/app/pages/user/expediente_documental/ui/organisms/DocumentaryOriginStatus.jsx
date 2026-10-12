@@ -11,7 +11,7 @@ export function DocumentaryOriginStatus({ origin, error, refresh }) {
   const pending = origin.publication ? null : pendingActivation(origin);
   return <div className="space-y-1">
     <p className="m-0 flex items-center gap-2 px-1 py-1 text-xs text-muted-foreground"><FolderOpen className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /><span>{origin.publication
-      ? `Expediente ${origin.project.idPublic} · Dovela Central · publicación ${origin.publication.releaseVersion}`
+      ? `Documentación según el catálogo documental (versión ${origin.publication.releaseVersion})`
       : origin.mode === 'unlinked' ? 'Entrada sin expediente de licencias vinculado · documentación tradicional'
         : 'Documentación tradicional del expediente'}</span></p>
     {pending ? <p role="note" className="m-0 rounded-md border border-amber-300 bg-amber-50 px-2 py-1 text-xs text-amber-900">
