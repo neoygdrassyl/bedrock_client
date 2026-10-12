@@ -12,7 +12,10 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock('./hooks/useDocumentaryOrigin', () => ({ useDocumentaryOrigin: mocks.origin }));
 vi.mock('./hooks/useExpedienteDocumental', () => ({ useExpedienteDocumental: mocks.legacy }));
-vi.mock('./ui/organisms/CanonicalDocumentaryWorkspace', () => ({ CanonicalDocumentaryWorkspace: () => <div>Recepción canónica</div> }));
+vi.mock('./ui/organisms/CanonicalDocumentaryWorkspace', async () => {
+  const { useEffect } = await import('react');
+  return { CanonicalDocumentaryWorkspace: ({ onCountChange }) => { useEffect(() => { onCountChange?.(7); }, [onCountChange]); return <div>Recepción canónica</div>; } };
+});
 vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: () => <div>Selector de configuración</div> }));
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
@@ -63,6 +66,7 @@ describe('documentary tabs', () => {
     expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByRole('tab', { name: /Configuración documental/ })).not.toBeInTheDocument();
     expect(screen.getByText('Recepción canónica')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Radicación/ })).toHaveTextContent('7'));
     await settleIssuedCount();
   });
 
@@ -94,11 +98,23 @@ describe('documentary tabs', () => {
     const rows = within(table).getAllByRole('row');
     expect(rows).toHaveLength(3);
     expect(rows[1]).toHaveTextContent('CUB-0002');
-    expect(rows[1]).toHaveTextContent('2026-02-10');
+    expect(rows[1]).toHaveTextContent('10 feb 2026');
     expect(rows[2]).toHaveTextContent('CUB-0001');
     expect(rows[2]).toHaveTextContent('ACTA PARTE 1');
     expect(within(table).queryByRole('button')).not.toBeInTheDocument();
-    expect(screen.getByText(/se integrarán desde Dovela Central/)).toBeInTheDocument();
+    expect(screen.getByText(/Por ahora se muestran los consecutivos de salida \(CUB\)/)).toBeInTheDocument();
+  });
+
+  it('renders null-like CUB values as a dash', async () => {
+    const user = userEvent.setup();
+    mocks.origin.mockReturnValue({ origin: TRADITIONAL, refresh: vi.fn() });
+    mocks.cubByFun.mockResolvedValue({ data: [{ id: 3, cub: 'CUB-0003', process: 'PUBLICIDAD', vr: 'null', date: null, desc: null }] });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveTextContent('1'));
+    await user.click(screen.getByRole('tab', { name: /Expedidos/ }));
+    const [, row] = within(screen.getByRole('table', { name: 'Documentos expedidos' })).getAllByRole('row');
+    expect(row).not.toHaveTextContent('null');
+    expect(within(row).getAllByText('—')).toHaveLength(3);
   });
 
   it('shows a clean empty state when the expediente has no issued documents', async () => {
@@ -107,7 +123,7 @@ describe('documentary tabs', () => {
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     await settleIssuedCount();
     await user.click(screen.getByRole('tab', { name: /Expedidos/ }));
-    expect(screen.getByText('No hay documentos expedidos')).toBeInTheDocument();
+    expect(screen.getByText('Aún no hay documentos expedidos para este expediente.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 });

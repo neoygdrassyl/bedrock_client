@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
@@ -19,12 +19,17 @@ function LegacyDocumentalWorkspace({
   currentId,
   currentPublic,
   canManage = false,
+  onCountChange,
 }) {
   const documental = useExpedienteDocumental({
     funId: currentId,
     idRelated: currentPublic,
     canManage,
   });
+  const legacyCount = documental.loading ? undefined : documental.summary?.totalGroups;
+  useEffect(() => {
+    if (Number.isFinite(legacyCount)) onCountChange?.(legacyCount);
+  }, [legacyCount, onCountChange]);
 
   const handleRowAction = useCallback((row, action) => {
     if (action === 'history' || action === 'evaluation') {
@@ -80,7 +85,8 @@ const TAB_INPUT = 'radicacion';
 const TAB_ISSUED = 'expedidos';
 const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
-const TRIGGER_CLASS = 'gap-1.5 px-3';
+// Explicit active state: the shared trigger style is too subtle inside the expediente shell.
+const TRIGGER_CLASS = 'min-h-9 gap-1.5 rounded-md border border-transparent px-4 text-muted-foreground hover:text-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-[hsl(var(--primary))] data-[state=active]:shadow-sm';
 
 function TabCount({ value, label }) {
   if (!Number.isFinite(value)) return null;
@@ -99,6 +105,7 @@ function ProjectDocumentaryWorkspace(props) {
   // Bumped after a configuration command so the Radicación tab and the selector reload.
   const [revision, setRevision] = useState(0);
   const [notice, setNotice] = useState('');
+  const [inputCount, setInputCount] = useState(null);
   // Viewing and changing the Central configuration version is limited to abogado,
   // curador and programador; the tab (and its requests) must not exist for other roles.
   const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData()) && Boolean(origin);
@@ -120,10 +127,13 @@ function ProjectDocumentaryWorkspace(props) {
   }
 
   return (
-    <Tabs value={currentTab} onValueChange={selectTab} className="space-y-3">
+    <Tabs value={currentTab} onValueChange={selectTab} className="space-y-4">
       <DocumentaryOriginStatus origin={source.origin} error={source.error} loading={source.loading} refresh={source.refresh} />
-      <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start overflow-x-auto">
-        <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>Radicación</TabsTrigger>
+      <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start gap-1 overflow-x-auto border border-border bg-muted/50 p-1">
+        <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>
+          Radicación
+          <TabCount value={inputCount} label="documentos recibidos" />
+        </TabsTrigger>
         <TabsTrigger value={TAB_ISSUED} className={TRIGGER_CLASS}>
           Expedidos
           {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
@@ -133,8 +143,8 @@ function ProjectDocumentaryWorkspace(props) {
 
       {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
       <TabsContent value={TAB_INPUT} forceMount className="mt-0 space-y-3 data-[state=inactive]:hidden">
-        {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} /> : null}
-        {origin?.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} /> : null}
+        {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} /> : null}
+        {origin?.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} onCountChange={setInputCount} /> : null}
       </TabsContent>
 
       <TabsContent value={TAB_ISSUED} className="mt-0">

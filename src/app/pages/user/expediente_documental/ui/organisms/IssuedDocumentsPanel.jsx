@@ -1,14 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { displayValue, formatDocumentaryDate } from '../../canonicalDocumentaryModel';
 
-const EMPTY_VALUE = '—';
-const CENTRAL_NOTE = 'La clasificación y los archivos de los documentos expedidos se integrarán desde Dovela Central.';
+const SCOPE_NOTE = 'Por ahora se muestran los consecutivos de salida (CUB). Los archivos de cada documento se agregarán más adelante.';
 
-function formatDate(value) {
-  if (!value) return EMPTY_VALUE;
-  const text = String(value);
-  return /^\d{4}-\d{2}-\d{2}/.test(text) ? text.slice(0, 10) : text;
+// CUB dates are calendar days; a time component is ignored.
+function formatIssuedDate(value) {
+  const text = displayValue(value);
+  return /^\d{4}-\d{2}-\d{2}/.test(text) ? formatDocumentaryDate(text.slice(0, 10)) : text;
 }
 
 /** Read-only list of the documents issued for an expediente (CUB registry). */
@@ -17,7 +17,7 @@ export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', o
     <section className="space-y-3" aria-labelledby="issued-documents-title">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="issued-documents-title" className="text-base font-semibold">Documentos expedidos</h2>
-        <p className="text-xs text-muted-foreground">{CENTRAL_NOTE}</p>
+        <p className="m-0 text-xs text-muted-foreground">{SCOPE_NOTE}</p>
       </div>
 
       {error ? (
@@ -32,8 +32,7 @@ export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', o
       {!loading && !error && !rows.length ? (
         <EmptyState
           icon="FileOutput"
-          message="No hay documentos expedidos"
-          description="Este expediente aún no registra consecutivos CUB."
+          message="Aún no hay documentos expedidos para este expediente."
           className="rounded-lg border border-dashed border-border py-8"
         />
       ) : null}
@@ -53,11 +52,11 @@ export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', o
             <TableBody>
               {rows.map((row, index) => (
                 <TableRow key={row.id ?? `${row.cub}-${index}`}>
-                  <TableCell className="whitespace-nowrap font-medium">{row.cub || EMPTY_VALUE}</TableCell>
-                  <TableCell>{row.process || EMPTY_VALUE}</TableCell>
-                  <TableCell className="whitespace-nowrap">{row.vr || EMPTY_VALUE}</TableCell>
-                  <TableCell className="whitespace-nowrap">{formatDate(row.date)}</TableCell>
-                  <TableCell className="text-muted-foreground">{row.desc || EMPTY_VALUE}</TableCell>
+                  <TableCell className="whitespace-nowrap font-mono text-xs font-medium">{displayValue(row.cub)}</TableCell>
+                  <TableCell>{displayValue(row.process)}</TableCell>
+                  <TableCell className="whitespace-nowrap font-mono text-xs">{displayValue(row.vr)}</TableCell>
+                  <TableCell className="whitespace-nowrap tabular-nums">{formatIssuedDate(row.date)}</TableCell>
+                  <TableCell className="text-foreground">{displayValue(row.desc)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
