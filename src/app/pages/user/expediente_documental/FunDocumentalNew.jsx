@@ -1,7 +1,9 @@
-import { useCallback, useId, useState } from 'react';
+import { useCallback, useState } from 'react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
+import { badgeVariants } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UnifiedDocumentEntryModal from '../shared/UnifiedDocumentEntryModal';
 import { useExpedienteDocumental } from './hooks/useExpedienteDocumental';
 import { DocumentalWorkspaceHeader } from './ui/organisms/DocumentalWorkspaceHeader';
@@ -10,6 +12,8 @@ import { useDocumentaryOrigin } from './hooks/useDocumentaryOrigin';
 import { DocumentaryOriginStatus } from './ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from './ui/organisms/CanonicalDocumentaryWorkspace';
 import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
+import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
+import { useIssuedDocuments } from './hooks/useIssuedDocuments';
 
 function LegacyDocumentalWorkspace({
   currentId,
@@ -72,70 +76,33 @@ function LegacyDocumentalWorkspace({
   );
 }
 
-const TAB_DOCUMENTS = 'documents';
-const TAB_CONFIGURATION = 'configuration';
-const TABS = [
-  { key: TAB_DOCUMENTS, label: 'Documentos' },
-  { key: TAB_CONFIGURATION, label: 'Configuración documental' },
-];
+const TAB_INPUT = 'radicacion';
+const TAB_ISSUED = 'expedidos';
+const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
+const TRIGGER_CLASS = 'gap-1.5 px-3';
 
-function DocumentaryTabs({ idPrefix, active, onChange }) {
-  const tabId = (key) => `${idPrefix}-tab-${key}`;
-  function handleKeyDown(event) {
-    const index = TABS.findIndex((tab) => tab.key === active);
-    let next = null;
-    if (event.key === 'ArrowRight') next = TABS[(index + 1) % TABS.length];
-    else if (event.key === 'ArrowLeft') next = TABS[(index - 1 + TABS.length) % TABS.length];
-    else if (event.key === 'Home') next = TABS[0];
-    else if (event.key === 'End') next = TABS[TABS.length - 1];
-    if (!next) return;
-    event.preventDefault();
-    onChange(next.key);
-    document.getElementById(tabId(next.key))?.focus();
-  }
+function TabCount({ value, label }) {
+  if (!Number.isFinite(value)) return null;
   return (
-    <div role="tablist" aria-label="Secciones del módulo documental" className="flex overflow-x-auto border-b border-border" onKeyDown={handleKeyDown}>
-      {TABS.map((tab) => {
-        const selected = tab.key === active;
-        return (
-          <button
-            key={tab.key}
-            type="button"
-            role="tab"
-            id={tabId(tab.key)}
-            aria-selected={selected}
-            aria-controls={`${idPrefix}-panel-${tab.key}`}
-            tabIndex={selected ? 0 : -1}
-            onClick={() => onChange(tab.key)}
-            className={cn(
-              'whitespace-nowrap border-0 border-b-2 bg-transparent px-4 py-2.5 text-sm font-medium transition-colors',
-              selected
-                ? 'border-b-primary text-primary'
-                : 'border-b-transparent text-muted-foreground hover:border-b-border hover:text-foreground',
-            )}
-          >
-            {tab.label}
-          </button>
-        );
-      })}
-    </div>
+    <span className={cn(badgeVariants({ variant: 'secondary' }), 'px-1.5 py-0 text-[11px] font-medium tabular-nums')} aria-label={`${value} ${label}`}>
+      {value}
+    </span>
   );
 }
 
 function ProjectDocumentaryWorkspace(props) {
   const source = useDocumentaryOrigin({ fun0Id: props.currentId });
   const { origin } = source;
-  const idPrefix = useId();
-  const [activeTab, setActiveTab] = useState(TAB_DOCUMENTS);
-  // Bumped after a configuration command so the Documentos tab and the selector reload.
+  const issued = useIssuedDocuments(props.currentPublic || origin?.project?.idPublic);
+  const [activeTab, setActiveTab] = useState(TAB_INPUT);
+  // Bumped after a configuration command so the Radicación tab and the selector reload.
   const [revision, setRevision] = useState(0);
   const [notice, setNotice] = useState('');
   // Viewing and changing the Central configuration version is limited to abogado,
   // curador and programador; the tab (and its requests) must not exist for other roles.
-  const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData());
-  const showTabs = canConfigure && Boolean(origin);
-  const configurationActive = showTabs && activeTab === TAB_CONFIGURATION;
+  const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData()) && Boolean(origin);
+  const currentTab = activeTab === TAB_CONFIGURATION && !canConfigure ? TAB_INPUT : activeTab;
 
   function selectTab(key) {
     setNotice('');
@@ -153,28 +120,29 @@ function ProjectDocumentaryWorkspace(props) {
   }
 
   return (
-    <div className="space-y-3">
+    <Tabs value={currentTab} onValueChange={selectTab} className="space-y-3">
       <DocumentaryOriginStatus origin={source.origin} error={source.error} loading={source.loading} refresh={source.refresh} />
-      {showTabs ? <DocumentaryTabs idPrefix={idPrefix} active={activeTab} onChange={selectTab} /> : null}
-      {origin ? (
-        <div
-          id={`${idPrefix}-panel-${TAB_DOCUMENTS}`}
-          role={showTabs ? 'tabpanel' : undefined}
-          aria-labelledby={showTabs ? `${idPrefix}-tab-${TAB_DOCUMENTS}` : undefined}
-          hidden={configurationActive}
-          className="space-y-3"
-        >
-          {origin.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} /> : null}
-          {origin.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} /> : null}
-        </div>
-      ) : null}
-      {configurationActive ? (
-        <div
-          id={`${idPrefix}-panel-${TAB_CONFIGURATION}`}
-          role="tabpanel"
-          aria-labelledby={`${idPrefix}-tab-${TAB_CONFIGURATION}`}
-          className="space-y-3"
-        >
+      <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start overflow-x-auto">
+        <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>Radicación</TabsTrigger>
+        <TabsTrigger value={TAB_ISSUED} className={TRIGGER_CLASS}>
+          Expedidos
+          {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
+        </TabsTrigger>
+        {canConfigure ? <TabsTrigger value={TAB_CONFIGURATION} className={TRIGGER_CLASS}>Configuración documental</TabsTrigger> : null}
+      </TabsList>
+
+      {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
+      <TabsContent value={TAB_INPUT} forceMount className="mt-0 space-y-3 data-[state=inactive]:hidden">
+        {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} /> : null}
+        {origin?.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} /> : null}
+      </TabsContent>
+
+      <TabsContent value={TAB_ISSUED} className="mt-0">
+        <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} />
+      </TabsContent>
+
+      {canConfigure ? (
+        <TabsContent value={TAB_CONFIGURATION} className="mt-0 space-y-3">
           {notice ? <p role="status" className="text-sm">{notice}</p> : null}
           <DocumentaryGovernance
             key={`governance:${revision}`}
@@ -184,9 +152,9 @@ function ProjectDocumentaryWorkspace(props) {
             onSaved={handleSaved}
             onConflict={handleConflict}
           />
-        </div>
+        </TabsContent>
       ) : null}
-    </div>
+    </Tabs>
   );
 }
 
