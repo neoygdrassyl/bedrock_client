@@ -62,6 +62,28 @@ export async function getCanonicalVersions(fun0Id, row, afterId = 0) {
   return data;
 }
 
+// VRs (submit ids) already used by the versions of a document: a new version needs another VR.
+export async function getCanonicalVersionSubmitIds(fun0Id, row) {
+  const used = new Set();
+  let afterId = 0;
+  do {
+    const page = await getCanonicalVersions(fun0Id, row, afterId);
+    page.rows.forEach((receipt) => { if (Number.isInteger(receipt.submitId)) used.add(receipt.submitId); });
+    afterId = page.nextAfterId;
+  } while (afterId);
+  return used;
+}
+// Receipt rule violations that the user can fix in the form (not stale data).
+const RECEIPT_ERROR_MESSAGES = {
+  VERSION_VR_CONFLICT: 'Este documento ya tiene una versión en ese VR. Seleccione otro VR o actualice la evidencia de la versión existente.',
+  NEW_VERSION_NOT_ALLOWED: 'Un volante de radicación pertenece a un único VR y no admite nuevas versiones.',
+  MULTIPLICITY_CONFLICT: 'Ya existe este documento en el expediente (o el volante de este VR). Reciba una nueva versión del documento existente.',
+};
+export function documentaryReceiptRuleError(error) {
+  const code = error?.response?.data?.error?.code;
+  return error?.response?.status === 409 && RECEIPT_ERROR_MESSAGES[code] ? RECEIPT_ERROR_MESSAGES[code] : null;
+}
+
 export async function updateCanonicalEvidence(fun0Id, rowId, command, digital, scan) {
   const body = new FormData(); body.set('command',JSON.stringify(command));
   if (digital) body.set('digital',digital); if (scan) body.set('scan',scan);
