@@ -30,8 +30,8 @@ function result(overrides = {}) {
     state: 'current',
     allRequirementsSatisfied: false,
     requirements: [
-      { catalogueId: 1, code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' },
-      { catalogueId: 2, code: 'D2', name: 'Certificado de libertad', required: true, standaloneRequired: true, groupCode: null, status: 'missing' },
+      { documentId: 'C-D1', code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' },
+      { documentId: 'C-D2', code: 'D2', name: 'Certificado de libertad', required: true, standaloneRequired: true, groupCode: null, status: 'missing' },
     ],
     groups: [{ code: 'ALT', mode: 'at_least_one', status: 'missing' }],
     summary: { total: 2, missing: 1, present: 1 },
@@ -63,7 +63,7 @@ describe('MissingDocumentsModal', () => {
   it('reports a satisfied evaluation', async () => {
     getMissingRequirementsMock.mockResolvedValue(result({
       allRequirementsSatisfied: true,
-      requirements: [{ catalogueId: 1, code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' }],
+      requirements: [{ documentId: 'C-D1', code: 'D1', name: 'Formulario único', required: true, standaloneRequired: true, groupCode: null, status: 'present' }],
       groups: [],
       summary: { total: 1, missing: 0, present: 1 },
     }));
