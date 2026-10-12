@@ -84,7 +84,7 @@ const swaMsg = {
 };
 
 function requirement(code, name, status) {
-  return { catalogueId: code.length, code, name, required: true, standaloneRequired: true, groupCode: null, status };
+  return { documentId: `C-${code}`, code, name, required: true, standaloneRequired: true, groupCode: null, status };
 }
 
 function canonical(requirements) {

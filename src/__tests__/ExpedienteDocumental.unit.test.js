@@ -472,13 +472,16 @@ describe('documentary command transport', () => {
         await api.returnDocumentaryProjectToLegacy(1, command);
         await api.refreshDocumentaryRequirements(1, command);
         await api.createCanonicalSubmit(1, command);
-        await api.saveCanonicalControl(1, 10, 20, command);
+        // Control ids are Dovela Central string ids and travel URL-encoded.
+        await api.saveCanonicalControl(1, 10, 'CTRL/20', command);
         const calls = [...post.mock.calls, ...put.mock.calls];
         expect(calls).toHaveLength(6);
         calls.forEach(([, body, config]) => {
             expect(body).toBe(command);
             expect(config?.headers?.['Content-Type']).toBe('application/json');
         });
+        expect(put.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/documents/10/controls/CTRL%2F20');
+        await expect(api.saveCanonicalControl(1, 10, 20, command)).rejects.toThrow();
         vi.doUnmock('../http-common');
     });
 });

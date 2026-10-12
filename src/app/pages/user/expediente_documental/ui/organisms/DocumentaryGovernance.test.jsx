@@ -15,7 +15,8 @@ function governance({selected=null,changeAllowed=true,lockedReason=null,inputRev
 }
 const canonicalOrigin={mode:'canonical',project:{fun0Id:1},publication:{configurationId:3,checksum:'c3'}};
 const select=()=>screen.findByLabelText('Configuración que gobierna el expediente');
-beforeEach(()=>{vi.clearAllMocks();api.getDocumentaryConfigurationOptions.mockResolvedValue({projectionReady:true});});
+// Selection no longer waits on a projection readiness check; options are never requested.
+beforeEach(()=>{vi.clearAllMocks();});
 
 it('offers legacy and every enabled configuration, marking the vigente and the one in use',async()=>{
   api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
