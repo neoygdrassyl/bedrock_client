@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 import Icon from '@/components/icon';
@@ -192,7 +192,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 let _RETURN_COMPONENT = []
                 let DOCS_COUNT = 1;
                 for (var ITEM in _LIST_2) {
-                    _RETURN_COMPONENT.push(<>
+                    _RETURN_COMPONENT.push(<Fragment key={`${value}-${ITEM}`}>
                         <li className="list-group-item">
                             <div className="row">
                                 <div className="col">
@@ -204,12 +204,12 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
                         {_COMPONENT_DOCS(_LIST_2[ITEM], DOCS_COUNT)}
 
-                    </>)
+                    </Fragment>)
                     DOCS_COUNT += _LIST_2[ITEM].length;
                 }
-                return <>
+                return <Fragment key={value}>
                     {_RETURN_COMPONENT}
-                </>
+                </Fragment>
             })
         }
         let _COMPONENT_DOCS = (array, _DOCS_COUNT) => {
@@ -220,7 +220,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 let currentPages = normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={cId}>
                     <li className="list-group-item">
                         <div className="row">
                             <div className="col-1 text-center">
@@ -245,7 +245,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                 </select>
                             </div>
                         </div>
-                    </li></>)
+                    </li></Fragment>)
             }
             return <>{_COMPONENT}</>
         }

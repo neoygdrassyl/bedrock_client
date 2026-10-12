@@ -124,7 +124,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
             let _LIST = _SET_CHILD_3();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={i}>{_LIST[i].direccion_2}</option>)
+                _COMPONENT.push(<option key={i} value={i}>{_LIST[i].direccion_2}</option>)
             }
             return <>{_COMPONENT}</>
         }
