@@ -1,14 +1,22 @@
 import { Archive, FileText, Files, History, Monitor, ScanLine } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, configuration }) {
-  const metrics = [
+function legacyMetrics(summary = {}) {
+  return [
     { label: 'Unidades', value: summary.totalGroups, icon: Files },
     { label: 'Asientos', value: summary.totalEntries, icon: History },
     { label: 'Físicos', value: summary.physical, icon: Archive },
     { label: 'Digitales', value: summary.digital, icon: Monitor },
     { label: 'Escaneados', value: summary.scanned, icon: ScanLine },
   ];
+}
+
+/**
+ * Shared header of the documentary workspaces. `metrics` ({label, value, icon, hint})
+ * overrides the legacy summary metrics; `subtitle` replaces the default caption.
+ */
+export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, configuration, metrics: customMetrics, subtitle = 'Archivo del expediente', titleId = 'documental-workspace-title' }) {
+  const metrics = customMetrics || legacyMetrics(summary);
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-[1rem] px-1 py-2">
@@ -18,7 +26,7 @@ export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, con
         </span>
         <div className="min-w-0">
           <h2
-            id="documental-workspace-title"
+            id={titleId}
             className="m-0 text-lg font-semibold tracking-tight text-foreground"
           >
             Gestión documental
@@ -28,7 +36,7 @@ export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, con
             <span className="mx-2 text-border" aria-hidden="true">
               /
             </span>
-            Archivo del expediente
+            {subtitle}
           </p>
         </div>
       </div>
@@ -38,14 +46,14 @@ export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, con
           aria-label="Resumen documental"
           aria-busy={loading}
         >
-          {metrics.map(({ label, value, icon: Icon }) => (
-            <div key={label} className="flex flex-col gap-1">
+          {metrics.map(({ label, value, icon: Icon, hint }) => (
+            <div key={label} className="flex flex-col gap-1" title={hint}>
               <dt className="flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
                 <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                 {label}
               </dt>
               <dd className="m-0 font-mono text-lg font-semibold leading-6 tabular-nums text-foreground">
-                {loading ? <Skeleton className="h-6 w-8" /> : value}
+                {loading ? <Skeleton className="h-6 w-8" /> : (value ?? '—')}
               </dd>
             </div>
           ))}

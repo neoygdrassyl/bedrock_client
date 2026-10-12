@@ -14,64 +14,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { VrCell } from '../molecules/VrCell';
+import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
 import { DocumentalDetailPanel } from './DocumentalDetailPanel';
 import { DocumentalTableToolbar } from './DocumentalTableToolbar';
-
-function DocumentTitleButton({ row, expanded, selected, detailId, onClick }) {
-  return (
-    <button
-      type="button"
-      aria-expanded={expanded}
-      aria-controls={`${detailId}-${row.id}`}
-      aria-current={selected ? 'true' : undefined}
-      aria-label={
-        (expanded ? 'Contraer: ' : 'Mostrar completo: ') + (row.documentName || 'documento')
-      }
-      onClick={onClick}
-      className="group flex min-h-10 w-full items-center gap-[0.75rem] rounded-md bg-transparent p-0 text-left text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    >
-      <span
-        className={cn(
-          'grid h-8 w-8 shrink-0 place-items-center rounded-md border transition-colors motion-reduce:transition-none',
-          selected
-            ? 'border-primary/20 bg-primary/10 text-[hsl(var(--primary))]'
-            : 'border-border/70 bg-muted/30 text-muted-foreground group-hover:border-primary/20 group-hover:text-primary',
-        )}
-      >
-        <FileText className="h-4 w-4" aria-hidden="true" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span
-          id={`${detailId}-${row.id}`}
-          className={cn(
-            'block break-words text-[13px] font-medium leading-5',
-            !expanded && 'line-clamp-2',
-          )}
-        >
-          {row.documentName || 'Documento sin nombre'}
-        </span>
-        <span
-          className={cn(
-            'mt-0.5 block font-mono text-[11px] leading-4',
-            selected ? 'text-[hsl(var(--primary))]' : 'text-muted-foreground',
-          )}
-        >
-          {row.documentCode || 'Sin código'}
-        </span>
-      </span>
-      <ChevronRight
-        className={cn(
-          'h-3.5 w-3.5 shrink-0 transition-colors motion-reduce:transition-none',
-          selected
-            ? 'text-[hsl(var(--primary))]'
-            : 'text-muted-foreground/40 group-hover:text-muted-foreground',
-        )}
-        aria-hidden="true"
-      />
-    </button>
-  );
-}
 
 function DocumentalPagination({ page, totalPages, resultCount, pageSize, onPageChange }) {
   const firstVisible = resultCount ? (page - 1) * pageSize + 1 : 0;
@@ -329,10 +275,11 @@ export function DocumentalReviewTable({
                             )}
                           >
                             <DocumentTitleButton
-                              row={row}
+                              name={row.documentName}
+                              code={row.documentCode}
                               expanded={expandedId === row.id}
                               selected={isSelected}
-                              detailId={detailId}
+                              controlsId={`${detailId}-${row.id}`}
                               onClick={() => toggleRow(row)}
                             />
                           </TableCell>

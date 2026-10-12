@@ -1,8 +1,9 @@
-import { ListFilter, RotateCcw, Search, X } from 'lucide-react';
+import { ListFilter, RotateCcw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
+import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
+import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
 
 const MEDIUM_OPTIONS = [
   { value: 'physical', label: 'Físico' },
@@ -53,33 +54,11 @@ export function DocumentalTableToolbar({
   return (
     <div ref={containerRef} className="shrink-0 border-b border-border bg-[hsl(var(--card))]">
       <div className="flex flex-wrap items-center gap-[0.75rem] px-[1rem] py-[0.75rem]">
-        <div className="relative min-w-0 basis-full sm:max-w-sm sm:flex-1 sm:basis-auto">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <Input
-            id={`${id}-search`}
-            name="documentalSearch"
-            value={filters.document || ''}
-            onChange={(event) => onFilterChange?.('document', event.target.value)}
-            placeholder="Buscar por nombre o código…"
-            aria-label="Buscar documento o código"
-            className="h-9 bg-background px-[2.25rem] text-sm"
-          />
-          {filters.document ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-0.5 h-8 w-8"
-              aria-label="Limpiar búsqueda"
-              onClick={() => onFilterChange?.('document', '')}
-            >
-              <X aria-hidden="true" />
-            </Button>
-          ) : null}
-        </div>
+        <DocumentalSearchField
+          id={`${id}-search`}
+          value={filters.document || ''}
+          onChange={(value) => onFilterChange?.('document', value)}
+        />
         <Button
           type="button"
           variant="outline"
@@ -201,31 +180,13 @@ export function DocumentalTableToolbar({
         </div>
       ) : null}
 
-      <div
-        className="flex flex-wrap gap-[1rem] px-[1rem]"
-        role="group"
-        aria-label="Accesos rápidos de escaneo"
-      >
-        {[{ value: '', label: 'Todos' }, SCAN_OPTIONS[1], SCAN_OPTIONS[0]].map((option) => {
-          const active = option.value ? status === option.value : !filters.statuses?.length;
-          return (
-            <button
-              key={option.label}
-              type="button"
-              aria-pressed={active}
-              onClick={() => onFilterChange?.('statuses', option.value ? [option.value] : [])}
-              className={cn(
-                'border-x-0 border-t-0 border-b-2 border-solid bg-transparent px-0 py-2.5 text-xs font-medium transition-colors focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none',
-                active
-                  ? 'border-primary text-[hsl(var(--primary))]'
-                  : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',
-              )}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+      <DocumentalQuickFilters
+        label="Accesos rápidos de escaneo"
+        options={[{ value: '', label: 'Todos' }, SCAN_OPTIONS[1], SCAN_OPTIONS[0]]}
+        // Several statuses selected from the filter panel leave no shortcut active.
+        value={filters.statuses?.length ? status || 'multiple' : ''}
+        onChange={(value) => onFilterChange?.('statuses', value ? [value] : [])}
+      />
     </div>
   );
 }
