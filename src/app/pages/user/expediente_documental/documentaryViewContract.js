@@ -106,8 +106,26 @@ export function validateDocumentaryView(value) {
   return value;
 }
 
+// v5 input documents: requirement rows reference a Central document; annex and vr_slip rows do not.
+const DOCUMENT_CLASSES = ['requirement', 'annex', 'vr_slip'];
+const optional = (check) => (value) => value === undefined || value === null || check(value);
+const optionalString = optional(string);
+const optionalCount = optional(count);
+const optionalId = optional(id);
+// Older backends omit documentClass; their rows are always Central requirements.
+const documentClassOf = (value) => value.documentClass ?? 'requirement';
+function documentIdentity(value) {
+  const documentClass = documentClassOf(value);
+  if (!DOCUMENT_CLASSES.includes(documentClass)) return false;
+  return documentClass === 'requirement' ? documentId(value.documentId) : value.documentId === null || value.documentId === undefined;
+}
+// New v5 fields are validated leniently so v3/v4 responses keep passing.
+const inputDocumentFields = (value) => ['documentCode', 'title', 'instanceLabel', 'listKey', 'listTitle'].every((key) => optionalString(value[key]))
+  && optionalCount(value.versionCount) && optionalId(value.inputDocumentId) && optionalId(value.currentVersionId);
+
 export function validateDocumentaryReceipt(value, fun0Id) {
-  if (!object(value) || !id(value.id) || value.fun0Id !== Number(fun0Id) || !id(value.configurationId) || !documentId(value.documentId)
+  if (!object(value) || !id(value.id) || value.fun0Id !== Number(fun0Id) || !id(value.configurationId) || !documentIdentity(value)
+    || !inputDocumentFields(value) || !['contributor', 'channel'].every((key) => optionalString(value[key]))
     || !string(value.documentKey) || !id(value.versionSequence) || !id(value.rowVersion) || !id(value.evidenceRevision)
     || !object(value.files) || Object.keys(value.files).length !== 2) invalidContract();
   for (const slot of ['digital','scan']) {
@@ -132,7 +150,8 @@ function validateCanonicalView(value) {
     || !(value.pagination.nextAfterId===null || id(value.pagination.nextAfterId)) || !Array.isArray(value.rows) || value.rows.length>100) invalidContract();
   const seen = new Set();
   for (const row of value.rows) {
-    if (!object(row) || row.persistence!=='canonical' || row.projectDocumentId!==null || !documentId(row.documentId)
+    if (!object(row) || row.persistence!=='canonical' || row.projectDocumentId!==null || !documentIdentity(row) || !inputDocumentFields(row)
+      || (row.receipt?.documentClass !== undefined && documentClassOf(row) !== row.receipt.documentClass)
       || row.rowKey!==`canonical:${row.documentKey}` || seen.has(row.rowKey) || row.receivedDocumentRowId!==row.currentVersionId
       || row.receipt?.id!==row.receivedDocumentRowId || row.receipt?.documentKey!==row.documentKey || row.receipt?.documentId!==row.documentId
       || row.receipt?.configurationId!==value.configuration.id || !object(row.catalogueDisplay)
