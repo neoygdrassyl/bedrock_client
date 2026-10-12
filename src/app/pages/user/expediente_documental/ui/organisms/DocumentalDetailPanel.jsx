@@ -1,8 +1,9 @@
-import { Archive, ClipboardCheck, FileText, History, Monitor, ScanLine } from 'lucide-react';
+import { ClipboardCheck, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { VrCell } from '../molecules/VrCell';
-import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
+import { DocumentSupportList } from '../molecules/DocumentSupportList';
+import { DocumentalDetailShell } from './DocumentalDetailShell';
 
 function normalizeVr(value) {
   return String(value || '').trim();
@@ -126,106 +127,53 @@ function VrHistory({ row }) {
 export function DocumentalDetailPanel({ row, onRowAction, headingId }) {
   const entries = row.entries || [];
   return (
-    <aside
-      aria-labelledby={headingId}
-      className="flex min-h-0 min-w-0 flex-col border-t border-border bg-[hsl(var(--card))] lg:border-l lg:border-t-0"
-    >
-      <div className="flex h-10 shrink-0 items-center justify-between border-b border-border/70 bg-muted/30 px-[1.25rem]">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Ficha documental
-        </span>
-        <span className="font-mono text-xs text-muted-foreground">
-          {row.documentCode || 'Sin código'}
-        </span>
-      </div>
-      <div
-        tabIndex={0}
-        role="region"
-        aria-label="Detalle documental desplazable"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-[1.25rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-      >
-        <div className="mb-[1.25rem]">
-          <span className="mb-[0.75rem] grid h-10 w-10 place-items-center rounded-lg border border-primary/15 bg-primary/5 text-[hsl(var(--primary))]">
-            <FileText className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <h3
-            id={headingId}
-            className="m-0 break-words text-base font-semibold leading-6 tracking-tight text-foreground"
+    <DocumentalDetailShell
+      code={row.documentCode}
+      title={row.documentName}
+      headingId={headingId}
+      caption={`${entries.length} ${entries.length === 1 ? 'asiento registrado' : 'asientos registrados'}`}
+      footer={
+        <>
+          <Button
+            type="button"
+            size="sm"
+            className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary)/0.9)]"
+            onClick={() => onRowAction?.(row, 'history')}
           >
-            {row.documentName || 'Documento sin nombre'}
-          </h3>
-          <p className="mb-0 mt-2 text-xs text-muted-foreground">
-            {entries.length} {entries.length === 1 ? 'asiento registrado' : 'asientos registrados'}
-          </p>
-        </div>
-        <section className="border-y border-border/70 py-[1rem]" aria-label="Soportes recibidos">
-          <dl className="m-0 space-y-3">
-            <div className="flex items-center justify-between gap-[0.75rem]">
-              <dt className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                <Archive className="h-3.5 w-3.5" aria-hidden="true" />
-                Recepción física
-              </dt>
-              <dd className="m-0">
-                <ReceiptStatus row={row} medium="physical" />
+            <History aria-hidden="true" />
+            Ver historial
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onRowAction?.(row, 'evaluation')}
+          >
+            <ClipboardCheck aria-hidden="true" />
+            Ver evaluación
+          </Button>
+        </>
+      }
+    >
+      <section className="border-y border-border/70 py-[1rem]" aria-label="Soportes recibidos">
+        <DocumentSupportList row={row} scanned={row.scanned} />
+        <dl className="mb-0 mt-[1rem] grid grid-cols-2 gap-[1rem] border-t border-border/70 pt-[1rem]">
+          {[
+            ['Folios físicos', row.folios?.physical],
+            ['Folios digitales', row.folios?.digital],
+          ].map(([label, value]) => (
+            <div key={label}>
+              <dt className="text-xs font-normal text-muted-foreground">{label}</dt>
+              <dd className="mb-0 mt-1 font-mono text-xl font-medium tabular-nums text-foreground">
+                {value ?? <span className="font-sans text-xs">Sin dato</span>}
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-[0.75rem]">
-              <dt className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                <Monitor className="h-3.5 w-3.5" aria-hidden="true" />
-                Recepción digital
-              </dt>
-              <dd className="m-0">
-                <ReceiptStatus row={row} medium="digital" />
-              </dd>
-            </div>
-            <div className="flex items-center justify-between gap-[0.75rem]">
-              <dt className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                <ScanLine className="h-3.5 w-3.5" aria-hidden="true" />
-                Escaneado del físico
-              </dt>
-              <dd className="m-0">
-                <ScanStatus scanned={row.scanned} />
-              </dd>
-            </div>
-          </dl>
-          <dl className="mb-0 mt-[1rem] grid grid-cols-2 gap-[1rem] border-t border-border/70 pt-[1rem]">
-            {[
-              ['Folios físicos', row.folios?.physical],
-              ['Folios digitales', row.folios?.digital],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-xs font-normal text-muted-foreground">{label}</dt>
-                <dd className="mb-0 mt-1 font-mono text-xl font-medium tabular-nums text-foreground">
-                  {value ?? <span className="font-sans text-xs">Sin dato</span>}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-        <div className="pt-[1.25rem]">
-          <VrHistory row={row} />
-        </div>
+          ))}
+        </dl>
+      </section>
+      <div className="pt-[1.25rem]">
+        <VrHistory row={row} />
       </div>
-      <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-border bg-[hsl(var(--card))] p-[1rem]">
-        <Button
-          type="button"
-          size="sm"
-          className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary)/0.9)]"
-          onClick={() => onRowAction?.(row, 'history')}
-        >
-          <History aria-hidden="true" />
-          Ver historial
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onRowAction?.(row, 'evaluation')}
-        >
-          <ClipboardCheck aria-hidden="true" />
-          Ver evaluación
-        </Button>
-      </div>
-    </aside>
+    </DocumentalDetailShell>
   );
 }
