@@ -20,7 +20,7 @@ export function CatalogueDocumentPicker({ id, documents, value, onChange, applic
           return normalize(search).split(/\s+/).filter(Boolean).every((word) => haystack.includes(word)) ? 1 : 0;
         }}
       >
-        <CommandInput placeholder="Buscar por código o nombre…" />
+        <CommandInput name="catalogueSearch" placeholder="Buscar por código o nombre…" />
         <CommandList className="max-h-56" label="Documentos del catálogo">
           <CommandEmpty>No hay documentos con ese código o nombre.</CommandEmpty>
           {documents.map((document) => {

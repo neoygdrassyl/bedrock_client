@@ -34,10 +34,27 @@ function HeadLabel({ icon: Icon, children }) {
 
 const COLUMNS = 6;
 
-/** One row per current document, grouped by ventanilla list. Presentation only. */
+/** Arrow keys move focus between document rows; Enter/Space select the focused row. */
+function handleRowKeyDown(event, row, onSelect) {
+  if (event.target !== event.currentTarget) return;
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    onSelect(row);
+    return;
+  }
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+  const rows = [...(event.currentTarget.closest('table')?.querySelectorAll('tr[data-row-key]') || [])];
+  const next = rows[rows.indexOf(event.currentTarget) + (event.key === 'ArrowDown' ? 1 : -1)];
+  if (next) { event.preventDefault(); next.focus(); }
+}
+
+/**
+ * One row per current document, grouped by ventanilla list. Presentation only.
+ * The whole row selects the document (click, Enter or Space); one row is tabbable at a time.
+ */
 export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix }) {
   return (
-    <table className="w-full min-w-[720px] table-fixed border-collapse text-sm" aria-label="Documentos recibidos" aria-busy={loading}>
+    <table role="grid" className="w-full min-w-[720px] table-fixed border-collapse text-sm" aria-label="Documentos recibidos" aria-busy={loading}>
       <TableHeader className="sticky top-0 z-10 bg-[hsl(var(--card))]">
         <TableRow className="border-border bg-muted/30 hover:bg-muted/30">
           <TableHead scope="col" className="h-10 w-[38%] px-[1rem] text-[11px] font-medium">Documento</TableHead>
@@ -72,7 +89,18 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
             const selected = row.rowKey === selectedKey;
             const support = rowSupport(row);
             return (
-              <TableRow key={row.rowKey} data-row-key={row.rowKey} className={cn('border-border/60', selected ? 'bg-primary/5 hover:bg-primary/5' : 'hover:bg-muted/40')}>
+              <TableRow
+                key={row.rowKey}
+                data-row-key={row.rowKey}
+                aria-selected={selected}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => onSelect(row)}
+                onKeyDown={(event) => handleRowKeyDown(event, row, onSelect)}
+                className={cn(
+                  'cursor-pointer border-border/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                  selected ? 'bg-primary/5 hover:bg-primary/5' : 'hover:bg-muted/40',
+                )}
+              >
                 <TableCell className={cn('relative px-[1rem] py-2', selected && "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary before:content-['']")}>
                   <DocumentTitleButton
                     name={rowName(row)}
@@ -81,7 +109,7 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                     selected={selected}
                     expanded={expandedKey === row.rowKey}
                     controlsId={`${idPrefix}-${row.receivedDocumentRowId}`}
-                    onClick={() => onSelect(row)}
+                    tabIndex={-1}
                   />
                 </TableCell>
                 <TableCell className="px-[0.75rem] py-2">
