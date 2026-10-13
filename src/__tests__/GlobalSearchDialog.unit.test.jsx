@@ -117,4 +117,21 @@ describe('GlobalSearchDialog', () => {
     expect(getFunByPublicMock).not.toHaveBeenCalled();
     expect(await screen.findByText('68001-1-26-0001')).toBeInTheDocument();
   });
+  it('capitaliza palabras con tildes sin partirlas en la vocal acentuada', async () => {
+    const user = userEvent.setup();
+    getSummaryByIdPublicMock.mockResolvedValue({ data: { data: { ...summary, fase_label: 'RADICACIÓN LDF', solicitante: 'ÁLVARO GÓMEZ' } } });
+
+    render(
+      <MemoryRouter>
+        <GlobalSearchDialog open onOpenChange={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText(/criterio de búsqueda de expedientes/i), '68001-1-26-0001');
+    await user.click(screen.getByRole('button', { name: /^buscar$/i }));
+
+    expect(await screen.findByText(/Radicación Ldf/)).toBeInTheDocument();
+    expect(screen.getByText(/Álvaro Gómez/)).toBeInTheDocument();
+    expect(screen.queryByText(/RadicaciÓN/)).not.toBeInTheDocument();
+  });
 });

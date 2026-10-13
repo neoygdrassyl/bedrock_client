@@ -115,7 +115,8 @@ function toDisplayCase(value) {
 
   return text
     .toLowerCase()
-    .replace(/\b([a-záéíóúñ])/g, (match) => match.toUpperCase());
+    // `\b` is ASCII-only: it treats accented letters as word breaks ("GestiÓN").
+    .replace(/(^|[^\p{L}\p{N}])(\p{L})/gu, (_, before, letter) => before + letter.toUpperCase());
 }
 
 function formatLicenseName(item, summary) {
