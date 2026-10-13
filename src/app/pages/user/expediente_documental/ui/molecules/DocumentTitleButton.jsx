@@ -3,9 +3,10 @@ import { cn } from '@/lib/utils';
 
 /**
  * Selectable document title of a documentary table row: icon, name (clamped until
- * expanded), code and optional extra content (e.g. a class badge).
+ * expanded), code and optional extra content (e.g. a class badge). Pass `tabIndex={-1}`
+ * and no `onClick` when the whole row is the focusable, clickable target.
  */
-export function DocumentTitleButton({ name, code, extra, expanded = false, selected = false, controlsId, onClick }) {
+export function DocumentTitleButton({ name, code, extra, expanded = false, selected = false, controlsId, onClick, tabIndex }) {
   const displayName = name || 'Documento sin nombre';
   return (
     <button
@@ -15,6 +16,7 @@ export function DocumentTitleButton({ name, code, extra, expanded = false, selec
       aria-current={selected ? 'true' : undefined}
       aria-label={(expanded ? 'Contraer: ' : 'Mostrar completo: ') + (name || 'documento')}
       onClick={onClick}
+      tabIndex={tabIndex}
       className="group flex min-h-10 w-full items-center gap-[0.75rem] rounded-md bg-transparent p-0 text-left text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <span

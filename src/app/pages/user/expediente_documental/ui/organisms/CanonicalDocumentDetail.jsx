@@ -119,12 +119,12 @@ export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, he
   const footer = canUpdateEvidence || canReceiveVersion ? (
     <>
       {canReceiveVersion ? (
-        <Button type="button" size="sm" className={cn(!canUpdateEvidence && 'col-span-2')} onClick={() => onReceiveVersion(row)}>
+        <Button type="button" size="sm" onClick={() => onReceiveVersion(row)}>
           <FilePlus2 aria-hidden="true" />Recibir nueva versión
         </Button>
       ) : null}
       {canUpdateEvidence ? (
-        <Button type="button" variant="outline" size="sm" className={cn(!canReceiveVersion && 'col-span-2')} onClick={() => onUpdateEvidence(row)}>
+        <Button type="button" variant="outline" size="sm" onClick={() => onUpdateEvidence(row)}>
           <RefreshCw aria-hidden="true" />Actualizar evidencia
         </Button>
       ) : null}

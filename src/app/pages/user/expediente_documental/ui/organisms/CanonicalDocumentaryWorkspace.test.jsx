@@ -141,7 +141,54 @@ describe('recepción según el catálogo y el expediente', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Crear VR' }));
     await waitFor(() => expect(api.createCanonicalSubmit).toHaveBeenCalledWith(1, expect.objectContaining({ vrLabel: 'VR-B' })));
     await waitFor(() => expect(within(dialog).getByLabelText('VR de recepción')).toHaveValue('12'));
+    expect(within(dialog).getByRole('button', { name: 'Guardar recepción' })).toBeDisabled();
+    fillPhysicalReceipt(dialog);
     expect(within(dialog).getByRole('button', { name: 'Guardar recepción' })).toBeEnabled();
+  });
+
+  it('keeps «Guardar recepción» disabled with inline hints until the receipt is complete', async () => {
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    const dialog = await openReceive();
+    const save = within(dialog).getByRole('button', { name: 'Guardar recepción' });
+    expect(save).toBeDisabled();
+    expect(save).toHaveAccessibleDescription(/Seleccione un documento del catálogo\..*Seleccione la VR de recepción\..*Escriba la nota de recepción\./);
+    fireEvent.click(within(dialog).getByRole('option', { name: /DOC-A/ }));
+    fireEvent.change(within(dialog).getByLabelText('VR de recepción'), { target: { value: '11' } });
+    fireEvent.click(within(dialog).getByLabelText('Se recibió soporte físico'));
+    fireEvent.change(within(dialog).getByLabelText('Folios físicos'), { target: { value: '0' } });
+    fireEvent.change(within(dialog).getByLabelText('Ubicación o referencia física'), { target: { value: 'Archivo 1' } });
+    fireEvent.change(within(dialog).getByLabelText('Nota de recepción'), { target: { value: 'Entrega' } });
+    expect(save).toBeDisabled();
+    expect(within(dialog).getByText(/Indique los folios físicos/)).toBeInTheDocument();
+    fireEvent.change(within(dialog).getByLabelText('Folios físicos'), { target: { value: '3' } });
+    expect(save).toBeEnabled();
+    expect(within(dialog).queryByText('Para guardar la recepción:')).not.toBeInTheDocument();
+  });
+
+  it('selects a document from anywhere in its row, by click or keyboard, and updates the ficha', async () => {
+    const rows = [
+      docRow({ catalogueDisplay: { code: '513', name: 'Plano estructural' } }),
+      docRow({ rowKey: 'canonical:b', documentKey: 'b', documentId: 'C-DOC-B', receivedDocumentRowId: 22, catalogueDisplay: { code: '511', name: 'Memoria de cálculo' }, receipt: receipt(22) }),
+    ];
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows });
+    render(<CanonicalDocumentaryWorkspace origin={origin} />);
+    await screen.findByRole('heading', { name: 'Plano estructural' });
+    const [first, second] = screen.getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
+    expect(first).toHaveAttribute('aria-selected', 'true');
+    expect(second).toHaveAttribute('aria-selected', 'false');
+    // Click on a non-title cell (the version count) of the second row.
+    fireEvent.click([...second.querySelectorAll('td')].at(-1));
+    expect(await screen.findByRole('heading', { name: 'Memoria de cálculo' })).toBeInTheDocument();
+    expect(screen.getByRole('complementary')).toHaveTextContent('511');
+    expect(second).toHaveAttribute('aria-selected', 'true');
+    expect(second).toHaveAttribute('tabindex', '0');
+    expect(first).toHaveAttribute('tabindex', '-1');
+    fireEvent.keyDown(first, { key: 'Enter' });
+    expect(await screen.findByRole('heading', { name: 'Plano estructural' })).toBeInTheDocument();
+    fireEvent.keyDown(first, { key: 'ArrowDown' });
+    expect(second).toHaveFocus();
+    fireEvent.keyDown(second, { key: ' ' });
+    expect(await screen.findByRole('heading', { name: 'Memoria de cálculo' })).toBeInTheDocument();
   });
 
   it('no habilita recepción si el VR no pertenece al expediente', async () => {

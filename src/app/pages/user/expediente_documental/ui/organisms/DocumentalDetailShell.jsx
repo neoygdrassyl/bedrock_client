@@ -37,7 +37,8 @@ export function DocumentalDetailShell({ code, title, caption, headingId, footer,
         {children}
       </div>
       {footer ? (
-        <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-border bg-[hsl(var(--card))] p-[1rem]">
+        // Actions share the row while they fit and stack full-width in a narrow panel.
+        <div className="flex shrink-0 flex-wrap gap-2 border-t border-border bg-[hsl(var(--card))] p-[1rem] [&>*]:flex-auto">
           {footer}
         </div>
       ) : null}
