@@ -327,7 +327,7 @@ export default function FUN_D_CONTROL_2(props) {
         </>
 
     }
-    function BODY_DOPCUMENT(item) {
+    function BODY_DOPCUMENT(item, index) {
         const find_item = INVENTORY.items ? INVENTORY.items.find(i => i.name == item.name) : {};
         let df_n = 0
         if(item.n2){
@@ -340,14 +340,14 @@ export default function FUN_D_CONTROL_2(props) {
             }
         }else df_n = GET_FUN6_CODE(item.n) || 0;
         let dv = item.dv ? item.dv() : false
-        return <>
-            <div className='row'>
+        return (
+            <div className='row' key={`${item.name}-${index}`}>
                 <div className='col-4 border'>{item.name}</div>
                 {item.date ? <div className='col-3 border'><input type="date" max='2100-01-01' className='form-control' id={`date_${item.n}_${item.i}`} defaultValue={find_item.date || dv} /></div> : <div className='col-3 border' />}
                 {item.folio ? <div className='col-3 border'><input type="number" className='form-control' id={`folio_${item.n}_${item.i}`} defaultValue={find_item.n || df_n} /></div> : <div className='col-3 border' />}
                 <div className='col-2 border'>{item.label}</div>
             </div>
-        </>
+        );
     }
     const BODY = () => {
         return <>
