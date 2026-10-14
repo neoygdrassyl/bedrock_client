@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Download, FilePlus2, RefreshCw } from 'lucide-react';
+import { Download, FilePlus2, Info, RefreshCw } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import { downloadCanonicalFile, getCanonicalVersions } from '@/app/services/documentaryOperations.service';
 import { VrBadge } from '../atoms/VrBadge';
+import { DetailFact, DetailPill, DetailSection } from '../molecules/DetailSection';
 import { DocumentSupportList } from '../molecules/DocumentSupportList';
 import { DocumentalDetailShell } from './DocumentalDetailShell';
 import { ControlDecision, ErrorMessage } from './CanonicalDocumentForms';
@@ -24,7 +27,7 @@ export function DocumentFiles({ origin, receipt, onError, size = 'sm' }) {
   return (
     <div className="flex flex-wrap gap-2">
       {slots.map((slot) => (
-        <Button key={slot} type="button" variant="outline" size={size} className="h-8 text-xs" disabled={busy} onClick={() => download(slot)}>
+        <Button key={slot} type="button" variant="outline" size={size} className="h-8 px-2.5 text-xs" disabled={busy} onClick={() => download(slot)}>
           <Download aria-hidden="true" />
           Descargar {slot === 'digital' ? 'digital' : 'escaneado'}
         </Button>
@@ -41,21 +44,29 @@ function TimelineItem({ origin, receipt, sequence, current, onError, last }) {
   const caption = receiptCaption(receipt);
   return (
     <li className="relative flex gap-[0.75rem] pb-[1rem] last:pb-0">
-      <div className="relative flex w-4 shrink-0 justify-center">
-        {!last ? <span className="absolute bottom-[-16px] top-3 w-px bg-border" aria-hidden="true" /> : null}
-        <span className={cn('relative mt-1.5 h-2 w-2 rounded-full border', current ? 'border-primary bg-primary' : 'border-border bg-muted')} aria-hidden="true" />
+      <div className="relative flex w-3 shrink-0 justify-center">
+        {!last ? <span className="absolute -bottom-1 top-[14px] w-px bg-border" aria-hidden="true" /> : null}
+        <span
+          className={cn(
+            'relative mt-1 h-2.5 w-2.5 rounded-full border-[2px] border-solid',
+            current ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))] shadow-[0_0_0_3px_hsl(var(--primary)/0.15)]' : 'border-[hsl(var(--border))] bg-[hsl(var(--card))]',
+          )}
+          aria-hidden="true"
+        />
       </div>
-      <div className="min-w-0 flex-1 space-y-1.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-foreground">Versión {sequence}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs font-semibold text-foreground">Versión {sequence}</span>
           <VrBadge value={receipt.vrLabel} />
-          {current ? <span className="text-[11px] font-medium text-[hsl(var(--primary))]">Vigente</span> : null}
+          {current ? <DetailPill tone="primary">Vigente</DetailPill> : null}
         </div>
-        <p className="m-0 text-xs leading-5 text-muted-foreground">
+        <p className="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
           {formatDocumentaryDate(receipt.registeredAt || receipt.receivedAt)}
           {caption ? <><span className="mx-1.5" aria-hidden="true">·</span>{caption}</> : null}
         </p>
-        <DocumentFiles origin={origin} receipt={receipt} onError={onError} />
+        <div className="mt-2 empty:hidden">
+          <DocumentFiles origin={origin} receipt={receipt} onError={onError} />
+        </div>
       </div>
     </li>
   );
@@ -79,32 +90,19 @@ function VersionTimeline({ origin, row }) {
     ? [...history.rows].sort((left, right) => right.versionSequence - left.versionSequence)
     : [{ ...row.receipt, versionSequence: row.versionSequence }];
   return (
-    <section aria-labelledby={`versions-${row.rowKey}`}>
-      <div className="mb-[0.75rem] flex items-center justify-between gap-2">
-        <h4 id={`versions-${row.rowKey}`} className="m-0 text-xs font-semibold text-foreground">Versiones</h4>
-        <span className="font-mono text-xs tabular-nums text-muted-foreground">{total}</span>
-      </div>
+    <DetailSection id={`versions-${row.rowKey}`} title="Versiones" aside={<DetailPill>{total}</DetailPill>}>
       <ol className="m-0 list-none p-0">
         {items.map((receipt, index) => (
           <TimelineItem key={receipt.id} origin={origin} receipt={receipt} sequence={receipt.versionSequence} current={receipt.id === row.receivedDocumentRowId} onError={setError} last={index === items.length - 1} />
         ))}
       </ol>
       {total > 1 && (!history || history.nextAfterId) ? (
-        <Button type="button" variant="ghost" size="sm" className="mt-2 h-8 px-2 text-xs" disabled={busy} onClick={load}>
+        <Button type="button" variant="ghost" size="sm" className="mt-2 h-8 w-full text-xs text-muted-foreground" disabled={busy} onClick={load}>
           {busy ? 'Consultando…' : history ? 'Más versiones' : 'Ver versiones anteriores'}
         </Button>
       ) : null}
-      <ErrorMessage error={error} />
-    </section>
-  );
-}
-
-function Fact({ label, children }) {
-  return (
-    <div className="min-w-0">
-      <dt className="text-xs font-normal text-muted-foreground">{label}</dt>
-      <dd className="mb-0 mt-1 break-words text-sm text-foreground">{children}</dd>
-    </div>
+      {error ? <ErrorMessage error={error} className="mt-2" /> : null}
+    </DetailSection>
   );
 }
 
@@ -138,27 +136,32 @@ export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, he
       caption={`${CLASS_LABELS[documentClass] || 'Documento'} · Versión ${row.versionSequence} de ${versionCountOf(row)}`}
       footer={footer}
     >
-      {row.isAdditional === true ? <p className="mb-3 rounded-md bg-muted/40 p-2 text-xs text-muted-foreground">Documento adicional: no hace parte de los requisitos del expediente.</p> : null}
-      <section className="border-y border-border/70 py-[1rem]" aria-label="Soportes recibidos">
+      {row.isAdditional === true ? (
+        <Alert role="note" variant="neutral" className="px-[0.75rem] py-2">
+          <Info aria-hidden="true" />
+          <AlertDescription className="text-xs">Documento adicional: no hace parte de los requisitos del expediente.</AlertDescription>
+        </Alert>
+      ) : null}
+      <DetailSection id={`supports-${row.rowKey}`} title="Soportes recibidos">
         <DocumentSupportList row={support} scanned={support.scanned} />
-        <dl className="mb-0 mt-[1rem] grid grid-cols-2 gap-[1rem] border-t border-border/70 pt-[1rem]">
-          <Fact label="Folios físicos"><span className="font-mono tabular-nums">{support.pagesPhysical ?? EMPTY_VALUE}</span></Fact>
-          <Fact label="Ubicación física">{receipt.location || EMPTY_VALUE}</Fact>
-          <Fact label="Aportado por">{CONTRIBUTOR_LABELS[receipt.contributor] || EMPTY_VALUE}</Fact>
-          <Fact label="Medio">{CHANNEL_LABELS[receipt.channel] || EMPTY_VALUE}</Fact>
-          <div className="col-span-2"><Fact label="Lista">{rowListTitle(row)}</Fact></div>
+        <Separator className="my-[0.75rem]" />
+        <dl className="m-0 grid grid-cols-2 gap-x-[1rem] gap-y-[0.75rem]">
+          <DetailFact label="Folios físicos"><span className="tabular-nums">{support.pagesPhysical ?? EMPTY_VALUE}</span></DetailFact>
+          <DetailFact label="Ubicación física">{receipt.location || EMPTY_VALUE}</DetailFact>
+          <DetailFact label="Aportado por">{CONTRIBUTOR_LABELS[receipt.contributor] || EMPTY_VALUE}</DetailFact>
+          <DetailFact label="Medio">{CHANNEL_LABELS[receipt.channel] || EMPTY_VALUE}</DetailFact>
+          <DetailFact label="Lista" className="col-span-2">{rowListTitle(row)}</DetailFact>
         </dl>
-      </section>
-      <div className="pt-[1.25rem]">
-        <VersionTimeline origin={origin} row={row} />
-      </div>
+      </DetailSection>
+      <VersionTimeline origin={origin} row={row} />
       {row.controls.length ? (
-        <section className="mt-[1.25rem] space-y-2 border-t border-border/70 pt-[1.25rem]" aria-labelledby={`controls-${row.rowKey}`}>
-          <h4 id={`controls-${row.rowKey}`} className="m-0 text-xs font-semibold text-foreground">Legal y debida forma</h4>
-          {row.controls.map((control) => (
-            <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={canReview} onSaved={onSaved} onConflict={onConflict} />
-          ))}
-        </section>
+        <DetailSection id={`controls-${row.rowKey}`} title="Legal y debida forma">
+          <div className="flex flex-col divide-y [&>*:first-child]:pt-0 [&>*:last-child]:pb-0 [&>*]:py-[0.75rem]">
+            {row.controls.map((control) => (
+              <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={canReview} onSaved={onSaved} onConflict={onConflict} />
+            ))}
+          </div>
+        </DetailSection>
       ) : null}
     </DocumentalDetailShell>
   );

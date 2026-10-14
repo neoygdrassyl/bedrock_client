@@ -1,0 +1,12 @@
+/*
+ * Tailwind preflight is disabled app-wide, so side borders (border-t, border-b, border-l-[3px]…)
+ * have no border-style and render invisible. Inside the documentary module this zero-specificity
+ * reset restores Tailwind's border defaults; every utility, component and Bootstrap rule still wins.
+ */
+:where(.documental-ui, .documental-ui *),
+:where(.documental-ui, .documental-ui *)::before,
+:where(.documental-ui, .documental-ui *)::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: hsl(var(--border));
+}
