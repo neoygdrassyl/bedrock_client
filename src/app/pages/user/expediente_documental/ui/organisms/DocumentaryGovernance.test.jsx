@@ -66,7 +66,7 @@ it('shows the referenced expediente data read-only and refreshes from it',async(
   render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
   const panel=await screen.findByRole('region',{name:'Datos del expediente usados en la evaluación'});
   expect(within(panel).getByText('Formulario FUN 1 · versión 3 · registro 40')).toBeInTheDocument();
-  expect(within(panel).getByText('Tipo de actuación:')).toBeInTheDocument();expect(within(panel).getByText('D')).toBeInTheDocument();
+  expect(within(panel).getByText('Tipo de actuación')).toBeInTheDocument();expect(within(panel).getByText('D')).toBeInTheDocument();
   expect(within(panel).getByText('Sin dato')).toBeInTheDocument();
   expect(within(panel).getByText(/edite el FUN del expediente/)).toBeInTheDocument();
   expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();expect(within(panel).queryByRole('checkbox')).not.toBeInTheDocument();

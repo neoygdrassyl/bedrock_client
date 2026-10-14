@@ -1,5 +1,10 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { CircleAlert, Info, Lock, RefreshCw, Settings2, TriangleAlert } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import {
   getDocumentaryGovernance,
@@ -8,8 +13,9 @@ import {
   returnDocumentaryProjectToLegacy,
   refreshDocumentaryRequirements,
 } from '@/app/services/documentaryOperations.service';
+import { DetailFact } from '../molecules/DetailSection';
+import { CheckboxField, fieldClass, FormField } from '../molecules/FormField';
 
-const field = 'mt-1 block min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm';
 export const LEGACY_VALUE = 'legacy';
 const REFRESH_REASON = 'Actualización de requisitos con los datos del expediente';
 
@@ -29,6 +35,12 @@ export const SOURCE_FIELD_LABELS = {
 const LOCKED_REASONS = {
   EVIDENCE_RECEIVED: 'La configuración quedó fijada porque el expediente ya tiene evidencia recibida. Ya no puede cambiarse.',
   CAPABILITY_UNAVAILABLE: 'La gestión de la configuración documental no está disponible en este servidor.',
+};
+
+const CACHE_STATES = {
+  current: { label: 'al día', className: 'bg-[hsl(var(--operational-success-bg))] text-[hsl(var(--operational-success-text))]' },
+  stale: { label: 'desactualizada respecto del expediente', className: 'bg-[hsl(var(--operational-warning-bg))] text-[hsl(var(--operational-warning-text))]' },
+  pending: { label: 'pendiente', className: 'bg-muted text-muted-foreground' },
 };
 
 export function optionValue(option) {
@@ -55,32 +67,74 @@ const SUCCESS_MESSAGES = {
   refresh: 'Requisitos evaluados nuevamente con los datos del expediente.',
 };
 
+function Notice({ role = 'status', variant = 'neutral', icon: Icon = Info, children }) {
+  return (
+    <Alert role={role} variant={variant} className="py-2.5">
+      <Icon aria-hidden="true" />
+      <AlertDescription className="min-w-0 flex-1">{children}</AlertDescription>
+    </Alert>
+  );
+}
+
 export function ReferencedExpedienteData({ source }) {
   if (!source) return null;
   return (
-    <section aria-label="Datos del expediente usados en la evaluación" className="space-y-2 rounded-md border border-border p-3">
-      <h4 className="text-sm font-medium">Datos del expediente usados en la evaluación</h4>
-      <p className="text-xs text-muted-foreground">
-        {source.selectedFunVersion == null
-          ? 'El expediente no tiene una versión FUN activa única.'
-          : `Formulario FUN 1 · versión ${source.selectedFunVersion}${source.sourceRowId ? ` · registro ${source.sourceRowId}` : ''}`}
-      </p>
-      <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
-        {(source.fields || []).map((item) => (
-          <div key={item.field} className="flex flex-wrap gap-x-2">
-            <dt className="text-muted-foreground">{SOURCE_FIELD_LABELS[item.field] || item.field}:</dt>
-            <dd>{item.value == null ? 'Sin dato' : item.value}</dd>
-          </div>
-        ))}
-      </dl>
-      {(source.diagnostics || []).length ? (
-        <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
-          {source.diagnostics.map((item, index) => <li key={`${item.code}:${item.field || index}`}>{item.field ? `${SOURCE_FIELD_LABELS[item.field] || item.field}: valor no reconocido (${item.value})` : 'No hay una versión FUN activa única para evaluar.'}</li>)}
-        </ul>
-      ) : null}
-      <p className="text-xs text-muted-foreground">
-        Estos datos son de solo lectura en este módulo. Para corregirlos, edite el FUN del expediente y luego use «Actualizar requisitos».
-      </p>
+    <section aria-label="Datos del expediente usados en la evaluación" className="min-w-0 rounded-lg border bg-[hsl(var(--card))]">
+      <header className="border-b bg-muted/30 px-[1rem] py-2.5">
+        <h4 className="mb-0 text-sm font-semibold leading-5 text-foreground">Datos del expediente usados en la evaluación</h4>
+        <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">
+          {source.selectedFunVersion == null
+            ? 'El expediente no tiene una versión FUN activa única.'
+            : `Formulario FUN 1 · versión ${source.selectedFunVersion}${source.sourceRowId ? ` · registro ${source.sourceRowId}` : ''}`}
+        </p>
+      </header>
+      <div className="flex flex-col gap-[0.75rem] p-[1rem]">
+        {(source.fields || []).length ? (
+          <dl className="m-0 grid gap-x-[1.25rem] gap-y-[0.75rem] sm:grid-cols-2 xl:grid-cols-3">
+            {source.fields.map((item) => (
+              <DetailFact key={item.field} label={SOURCE_FIELD_LABELS[item.field] || item.field}>
+                {item.value == null ? <span className="font-normal text-muted-foreground">Sin dato</span> : item.value}
+              </DetailFact>
+            ))}
+          </dl>
+        ) : null}
+        {(source.diagnostics || []).length ? (
+          <ul className="mb-0 list-disc space-y-1 pl-5 text-xs text-[hsl(var(--operational-warning-text))]">
+            {source.diagnostics.map((item, index) => <li key={`${item.code}:${item.field || index}`}>{item.field ? `${SOURCE_FIELD_LABELS[item.field] || item.field}: valor no reconocido (${item.value})` : 'No hay una versión FUN activa única para evaluar.'}</li>)}
+          </ul>
+        ) : null}
+        <p className="mb-0 text-xs leading-4 text-muted-foreground">
+          Estos datos son de solo lectura en este módulo. Para corregirlos, edite el FUN del expediente y luego use «Actualizar requisitos».
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/** Card with title and description (tab content) or a collapsible block (inline use). */
+function GovernanceFrame({ collapsible, open, titleId, children }) {
+  const title = 'Configuración documental del expediente';
+  const description = 'Define qué catálogo documental gobierna la radicación y con qué datos del expediente se evalúan los requisitos.';
+  if (collapsible) {
+    return (
+      <details className="min-w-0 rounded-lg border bg-[hsl(var(--card))] shadow-sm" open={open}>
+        <summary className="cursor-pointer px-[1rem] py-[0.75rem] text-sm font-semibold text-foreground">{title}</summary>
+        <div className="flex flex-col gap-[1rem] border-t p-[1rem]">{children}</div>
+      </details>
+    );
+  }
+  return (
+    <section aria-labelledby={titleId} className="min-w-0 rounded-lg border bg-[hsl(var(--card))] shadow-sm">
+      <header className="flex items-start gap-[0.75rem] border-b px-[1rem] py-[0.75rem]">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border-[1px] border-solid border-primary/20 bg-primary/10 text-[hsl(var(--primary))]">
+          <Settings2 className="h-4 w-4" aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <h2 id={titleId} className="mb-0 text-[15px] font-semibold leading-5 text-foreground">{title}</h2>
+          <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">{description}</p>
+        </div>
+      </header>
+      <div className="flex flex-col gap-[1rem] p-[1rem]">{children}</div>
     </section>
   );
 }
@@ -122,6 +176,7 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
   const canApply = editable && Boolean(operation) && !busy && Boolean(reason.trim()) && !activationBlocked;
   // The optional view comes from the documents tab; the governance read carries the same state.
   const cacheState = view?.governance?.cacheState ?? governance?.cacheState;
+  const cache = CACHE_STATES[cacheState] || CACHE_STATES.pending;
 
   async function execute(kind, fixedReason) {
     if (busy || !canManage) return;
@@ -149,37 +204,59 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
   }
 
   return (
-    <details className="space-y-3 rounded-md border border-border p-3" open={defaultOpen || !canonical}>
-      <summary className="cursor-pointer text-sm font-medium">Configuración documental del expediente</summary>
-      {canonical && cacheState ? <p className="text-sm text-muted-foreground">Estado de la evaluación: {cacheState === 'current' ? 'al día' : cacheState === 'stale' ? 'desactualizada respecto del expediente' : 'pendiente'}</p> : null}
-      {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
-      {!governance && !error ? <p role="status" className="text-sm text-muted-foreground">Consultando la configuración del expediente…</p> : null}
+    <GovernanceFrame collapsible={!defaultOpen} open={!canonical} titleId={`${formId}-title`}>
+      {canonical && cacheState ? (
+        <p className="mb-0 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          Estado de la evaluación de requisitos:
+          <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold leading-4', cache.className)}>{cache.label}</span>
+        </p>
+      ) : null}
+      {error ? <Notice role="alert" variant="destructive" icon={CircleAlert}>{error}</Notice> : null}
+      {!governance && !error ? (
+        <div className="flex flex-col gap-2">
+          <p role="status" className="mb-0 text-xs text-muted-foreground">Consultando la configuración del expediente…</p>
+          <Skeleton className="h-10 w-full max-w-xl" aria-hidden="true" />
+        </div>
+      ) : null}
       {governance ? (
-        <form onSubmit={(event) => { event.preventDefault(); if (operation) execute(operation); }} onChange={() => { command.current = null; }} className="space-y-3">
-          <fieldset disabled={busy || !canManage} className="space-y-3">
-            <label htmlFor={`${formId}-configuration`} className="block text-sm">
-              Configuración que gobierna el expediente
-              <select id={`${formId}-configuration`} name="configuration" className={field} value={target} disabled={!editable}
+        <form onSubmit={(event) => { event.preventDefault(); if (operation) execute(operation); }} onChange={() => { command.current = null; }}>
+          <fieldset disabled={busy || !canManage} className="m-0 flex min-w-0 flex-col gap-[1rem] p-0 !border-0">
+            <FormField
+              id={`${formId}-configuration`}
+              label="Configuración que gobierna el expediente"
+              hint={locked ? null : 'Puede cambiar la configuración, o volver a la documentación tradicional, mientras el expediente no tenga evidencia recibida.'}
+              className="max-w-xl"
+            >
+              <select id={`${formId}-configuration`} name="configuration" className={fieldClass} value={target} disabled={!editable} aria-describedby={locked ? undefined : `${formId}-configuration-hint`}
                 onChange={(event) => { setTarget(event.target.value); setConfirmed(false); }}>
                 {options.map((option) => <option key={optionValue(option)} value={optionValue(option)}>{optionLabel(option)}</option>)}
               </select>
-            </label>
-            {locked ? <p role="note" className="text-xs text-muted-foreground">{LOCKED_REASONS[selection.lockedReason] || 'La configuración no puede cambiarse.'}</p> : null}
-            {!locked ? <p className="text-xs text-muted-foreground">Puede cambiar la configuración, o volver a la documentación tradicional, mientras el expediente no tenga evidencia recibida.</p> : null}
-            {operation === 'activate' && !governance.capabilities?.activationReady ? <p role="status" className="text-sm">La activación de configuraciones de Central aún no está habilitada en este servidor.</p> : null}
-            {operation === 'legacy' ? <p role="status" className="text-sm">El expediente volverá a la documentación tradicional y se descartará la evaluación de requisitos de Central.</p> : null}
+            </FormField>
+            {locked ? <Notice role="note" icon={Lock}>{LOCKED_REASONS[selection.lockedReason] || 'La configuración no puede cambiarse.'}</Notice> : null}
+            {operation === 'activate' && !governance.capabilities?.activationReady ? <Notice variant="warning" icon={TriangleAlert}>La activación de configuraciones de Central aún no está habilitada en este servidor.</Notice> : null}
+            {operation === 'legacy' ? <Notice variant="warning" icon={TriangleAlert}>El expediente volverá a la documentación tradicional y se descartará la evaluación de requisitos de Central.</Notice> : null}
             {editable && operation ? (
-              <>
-                <label htmlFor={`${formId}-reason`} className="block text-sm">Motivo del cambio documental<input id={`${formId}-reason`} name="reason" className={field} maxLength={1000} required value={reason} onChange={(event) => setReason(event.target.value)} /></label>
-                {operation === 'activate' ? <label htmlFor={`${formId}-future-only`} className="flex gap-2 text-sm"><input id={`${formId}-future-only`} name="confirmFutureReceipts" type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />Solo gobernará futuras recepciones; no convertirá documentos históricos.</label> : null}
-                <Button type="submit" disabled={!canApply}>Aplicar configuración</Button>
-              </>
+              <div className="flex max-w-xl flex-col gap-[0.75rem] rounded-lg border bg-muted/20 p-[1rem]">
+                <FormField id={`${formId}-reason`} label="Motivo del cambio documental" hint="Queda registrado en el historial documental del expediente.">
+                  <Input id={`${formId}-reason`} name="reason" className="text-sm" maxLength={1000} required value={reason} aria-describedby={`${formId}-reason-hint`} onChange={(event) => setReason(event.target.value)} />
+                </FormField>
+                {operation === 'activate' ? <CheckboxField id={`${formId}-future-only`} name="confirmFutureReceipts" label="Solo gobernará futuras recepciones; no convertirá documentos históricos." checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> : null}
+                <div className="flex justify-end">
+                  <Button type="submit" size="sm" disabled={!canApply}>Aplicar configuración</Button>
+                </div>
+              </div>
             ) : null}
-            {canManage && canonical && !operation ? <Button type="button" variant="outline" onClick={() => execute('refresh', REFRESH_REASON)} disabled={busy}>Actualizar requisitos</Button> : null}
+            {canManage && canonical && !operation ? (
+              <div>
+                <Button type="button" variant="outline" size="sm" onClick={() => execute('refresh', REFRESH_REASON)} disabled={busy}>
+                  <RefreshCw aria-hidden="true" />Actualizar requisitos
+                </Button>
+              </div>
+            ) : null}
           </fieldset>
         </form>
       ) : null}
       <ReferencedExpedienteData source={governance?.source} />
-    </details>
+    </GovernanceFrame>
   );
 }

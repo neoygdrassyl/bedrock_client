@@ -52,8 +52,8 @@ export function DocumentalTableToolbar({
   ].filter(Boolean);
 
   return (
-    <div ref={containerRef} className="shrink-0 border-b border-border bg-[hsl(var(--card))]">
-      <div className="flex flex-wrap items-center gap-[0.75rem] px-[1rem] py-[0.75rem]">
+    <div ref={containerRef} className="shrink-0 border-b bg-[hsl(var(--card))]">
+      <div className="flex flex-wrap items-center gap-2 px-[1rem] py-[0.75rem]">
         <DocumentalSearchField
           id={`${id}-search`}
           value={filters.document || ''}
@@ -67,15 +67,14 @@ export function DocumentalTableToolbar({
           aria-controls={`${id}-filters`}
           onClick={() => setFiltersOpen(!filtersOpen)}
           className={cn(
-            'text-xs',
             (filtersOpen || activeFilters.length > 0) &&
-              'border-primary/30 bg-primary/5 text-[hsl(var(--primary))]',
+              'bg-primary/5 text-[hsl(var(--primary))] hover:bg-primary/10 hover:text-[hsl(var(--primary))]',
           )}
         >
           <ListFilter aria-hidden="true" />
           Filtros
           {activeFilters.length > 0 ? (
-            <span className="grid h-4 min-w-4 place-items-center rounded bg-primary/10 px-1 font-mono text-[10px]">
+            <span className="grid h-4 min-w-4 place-items-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold tabular-nums">
               {activeFilters.length}
             </span>
           ) : null}
@@ -86,14 +85,14 @@ export function DocumentalTableToolbar({
             variant="ghost"
             size="sm"
             onClick={onResetFilters}
-            className="px-2 text-xs text-muted-foreground"
+            className="px-2.5 text-muted-foreground"
           >
             <RotateCcw aria-hidden="true" />
             Limpiar
           </Button>
         ) : null}
         <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
-          <strong className="font-mono font-medium tabular-nums text-foreground">
+          <strong className="font-semibold tabular-nums text-foreground">
             {resultCount}
           </strong>{' '}
           {resultCount === 1 ? 'unidad' : 'unidades'}
@@ -103,9 +102,9 @@ export function DocumentalTableToolbar({
       {filtersOpen ? (
         <div
           id={`${id}-filters`}
-          className="grid gap-[0.75rem] border-t border-border/60 bg-muted/20 p-[1rem] sm:grid-cols-2 xl:grid-cols-5"
+          className="grid gap-[0.75rem] border-t bg-muted/20 p-[1rem] sm:grid-cols-2 xl:grid-cols-5"
         >
-          <label className="space-y-1.5 text-xs font-medium text-foreground">
+          <label className="flex min-w-0 flex-col gap-1.5 text-[13px] font-medium leading-5 text-foreground">
             Último VR
             <ColumnFilterField
               type="select"
@@ -115,7 +114,7 @@ export function DocumentalTableToolbar({
               aria-label="Filtrar por último VR"
             />
           </label>
-          <label className="space-y-1.5 text-xs font-medium text-foreground">
+          <label className="flex min-w-0 flex-col gap-1.5 text-[13px] font-medium leading-5 text-foreground">
             Medio recibido
             <ColumnFilterField
               type="select"
@@ -125,7 +124,7 @@ export function DocumentalTableToolbar({
               aria-label="Filtrar por medio recibido"
             />
           </label>
-          <label className="space-y-1.5 text-xs font-medium text-foreground">
+          <label className="flex min-w-0 flex-col gap-1.5 text-[13px] font-medium leading-5 text-foreground">
             Escaneado
             <ColumnFilterField
               type="select"
@@ -135,7 +134,7 @@ export function DocumentalTableToolbar({
               aria-label="Filtrar por escaneo"
             />
           </label>
-          <label className="space-y-1.5 text-xs font-medium text-foreground">
+          <label className="flex min-w-0 flex-col gap-1.5 text-[13px] font-medium leading-5 text-foreground">
             Fecha del último documento
             <ColumnFilterField
               name="documentalDate"
@@ -145,7 +144,7 @@ export function DocumentalTableToolbar({
               aria-label="Filtrar por fecha"
             />
           </label>
-          <label className="space-y-1.5 text-xs font-medium text-foreground">
+          <label className="flex min-w-0 flex-col gap-1.5 text-[13px] font-medium leading-5 text-foreground">
             Folios digitales o físicos
             <ColumnFilterField
               name="documentalFolios"

@@ -62,6 +62,9 @@ describe('documentary tabs', () => {
   it('opens on Radicación and hides Configuración documental for roles without access', async () => {
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    // One module heading above the tabs, with the radicado and the documentary origin as caption.
+    expect(screen.getByRole('heading', { name: 'Gestión documental' })).toBeInTheDocument();
+    expect(screen.getByText('FUN-1')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Radicación/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByRole('tab', { name: /Configuración documental/ })).not.toBeInTheDocument();

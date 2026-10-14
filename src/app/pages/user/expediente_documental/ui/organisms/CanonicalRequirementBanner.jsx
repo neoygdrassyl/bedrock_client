@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { CircleAlert, CircleCheck, Info, RefreshCw } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
@@ -8,9 +9,9 @@ import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal
 import { requirementStatus } from '../../canonicalDocumentaryModel';
 
 const TONES = {
-  pending: { icon: Info, className: 'border-border bg-muted/30 text-foreground' },
-  missing: { icon: CircleAlert, className: 'border-[hsl(var(--operational-warning-border)/0.4)] bg-[hsl(var(--operational-warning-bg))] text-[hsl(var(--operational-warning-text))]' },
-  complete: { icon: CircleCheck, className: 'border-[hsl(var(--operational-success-border)/0.4)] bg-[hsl(var(--operational-success-bg))] text-[hsl(var(--operational-success-text))]' },
+  pending: { icon: Info, variant: 'neutral' },
+  missing: { icon: CircleAlert, variant: 'warning' },
+  complete: { icon: CircleCheck, variant: 'success' },
 };
 
 /**
@@ -44,12 +45,12 @@ export function CanonicalRequirementBanner({ view, fun0Id, canRefresh = false, o
   }
   const Icon = tone.icon;
   return (
-    <section aria-label="Estado de los requisitos" className={cn('flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border px-3 py-2 text-sm', tone.className)}>
-      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-      <p className="m-0 min-w-0 flex-1">
-        <span className="font-medium">{status.message}</span>
-        {status.detail ? <span className="opacity-80"> {status.detail}</span> : null}
-      </p>
+    <Alert role="region" aria-label="Estado de los requisitos" variant={tone.variant} className="flex-wrap items-center gap-y-2">
+      <Icon className="self-start" aria-hidden="true" />
+      <div className="min-w-0 flex-1 basis-[16rem]">
+        <AlertTitle>{status.message}</AlertTitle>
+        {status.detail ? <AlertDescription className="mt-0.5 text-xs opacity-90">{status.detail}</AlertDescription> : null}
+      </div>
       <div className="flex flex-wrap gap-2">
         <Button type="button" variant="outline" size="sm" className="h-8 bg-background" onClick={() => setMissingOpen(true)}>Ver faltantes</Button>
         {canRefresh && status.tone === 'pending' ? (
@@ -59,9 +60,9 @@ export function CanonicalRequirementBanner({ view, fun0Id, canRefresh = false, o
           </Button>
         ) : null}
       </div>
-      {error ? <p role="alert" className="m-0 basis-full text-xs text-destructive">{error}</p> : null}
+      {error ? <p role="alert" className="mb-0 basis-full text-xs text-destructive">{error}</p> : null}
       <MissingDocumentsModal open={missingOpen} fun0Id={fun0Id} onClose={closeMissing} onRefreshed={() => { refreshedInModal.current = true; }} />
-    </section>
+    </Alert>
   );
 }
 

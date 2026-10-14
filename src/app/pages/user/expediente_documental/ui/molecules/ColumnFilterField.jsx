@@ -26,7 +26,7 @@ export function ColumnFilterField({
 }) {
     if (type === 'select') {
         return <Select value={value || ALL_VALUE} onValueChange={(next) => onChange?.(next === ALL_VALUE ? '' : next)}>
-            <SelectTrigger data-testid="column-filter-select" className={cn('h-8 text-xs', className)} {...rest}>
+            <SelectTrigger data-testid="column-filter-select" className={cn('h-9 text-sm', className)} {...rest}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -46,7 +46,7 @@ export function ColumnFilterField({
             value={value}
             onChange={(event) => onChange?.(event.target.value)}
             placeholder={placeholder}
-            className={cn('h-8 text-xs', IconComponent && 'pl-8', className)}
+            className={cn('h-9 text-sm', IconComponent && 'pl-8', className)}
             {...rest}
         />
     </div>;

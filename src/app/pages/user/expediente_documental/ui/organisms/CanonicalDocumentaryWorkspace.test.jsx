@@ -266,3 +266,32 @@ describe('recepción según el catálogo y el expediente', () => {
     expect(command).not.toHaveProperty('documentId');
   });
 });
+
+describe('presentación alineada con Actualizar', () => {
+  it('shows the module title on its own and only the KPI strip when embedded in the tabs', async () => {
+    const { unmount } = render(<CanonicalDocumentaryWorkspace origin={origin} />);
+    expect(await screen.findByRole('heading', { name: 'Gestión documental' })).toBeInTheDocument();
+    unmount();
+    render(<CanonicalDocumentaryWorkspace origin={origin} embedded />);
+    const workspace = await screen.findByRole('region', { name: 'Documentos recibidos' });
+    expect(within(workspace).queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
+    expect(within(workspace).getByLabelText('Resumen documental')).toHaveTextContent('Documentos');
+  });
+
+  it('explains KPI hints through an accessible tooltip trigger instead of a native title', async () => {
+    render(<CanonicalDocumentaryWorkspace origin={origin} embedded />);
+    const summary = await screen.findByLabelText('Resumen documental');
+    expect(within(summary).getByRole('button', { name: 'Recepciones: Cada entrega de un documento en una VR' })).toBeInTheDocument();
+    expect(summary.querySelector('[title]')).toBeNull();
+  });
+
+  it('keeps the receipt actions in the sheet footer, outside the scrollable body', async () => {
+    render(<CanonicalDocumentaryWorkspace origin={origin} fixedSubmitId={11} canManage />);
+    const dialog = await openReceive();
+    const save = within(dialog).getByRole('button', { name: 'Guardar recepción' });
+    const cancel = within(dialog).getByRole('button', { name: 'Cancelar' });
+    expect(save.parentElement).toBe(cancel.parentElement);
+    expect(save.parentElement).not.toContainElement(within(dialog).getByLabelText('Nota de recepción'));
+    expect(within(dialog).getByText('Para guardar la recepción:').closest('[role="status"]')).toHaveAttribute('aria-live', 'polite');
+  });
+});
