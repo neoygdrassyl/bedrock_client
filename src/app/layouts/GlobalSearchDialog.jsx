@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Icon } from '@/components/icon';
 import { formsParser1 } from '@/app/components/customClasses/typeParse';
+import { toDisplayCase } from '@/app/utils/displayCase';
 import FUNService from '../services/fun.service';
 import { buildExpedienteWorkspaceUrl } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 
@@ -107,16 +108,6 @@ function formatFallbackPhase(item) {
   if (rawState >= 30) return 'Observaciones';
   if (rawState >= 5) return 'Estudio y observaciones';
   return 'Radicación';
-}
-
-function toDisplayCase(value) {
-  const text = String(value || '').trim();
-  if (!text) return '';
-
-  return text
-    .toLowerCase()
-    // `\b` is ASCII-only: it treats accented letters as word breaks ("GestiÓN").
-    .replace(/(^|[^\p{L}\p{N}])(\p{L})/gu, (_, before, letter) => before + letter.toUpperCase());
 }
 
 function formatLicenseName(item, summary) {
