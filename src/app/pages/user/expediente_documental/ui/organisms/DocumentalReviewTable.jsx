@@ -18,6 +18,7 @@ import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
 import { DocumentalDetailPanel } from './DocumentalDetailPanel';
 import { DocumentalTableToolbar } from './DocumentalTableToolbar';
+import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 
 function DocumentalPagination({ page, totalPages, resultCount, pageSize, onPageChange }) {
   const firstVisible = resultCount ? (page - 1) * pageSize + 1 : 0;
@@ -138,7 +139,7 @@ export function DocumentalReviewTable({
   }, []);
 
   useEffect(() => {
-    tableViewportRef.current?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    tableViewportRef.current?.scrollTo?.({ top: 0, left: 0, behavior: 'auto' });
     setSelectedId(null);
     setExpandedId(null);
   }, [
@@ -193,6 +194,7 @@ export function DocumentalReviewTable({
             aria-label="Tabla documental desplazable"
           >
             <table
+              role="grid"
               className="w-full min-w-[660px] table-fixed border-collapse text-sm"
               aria-label="Documentos new por unidad documental"
               aria-busy={loading}
@@ -262,25 +264,21 @@ export function DocumentalReviewTable({
                       return (
                         <TableRow
                           key={row.id}
-                          className={cn(
-                            'border-border/60 motion-reduce:transition-none',
-                            isSelected ? 'bg-primary/5 hover:bg-primary/5' : 'hover:bg-muted/40',
-                          )}
+                          data-row-key={row.id}
+                          aria-selected={isSelected}
+                          tabIndex={isSelected ? 0 : -1}
+                          onClick={() => toggleRow(row)}
+                          onKeyDown={(event) => handleSelectableRowKeyDown(event, () => toggleRow(row))}
+                          className={selectableRowClass(isSelected)}
                         >
-                          <TableCell
-                            className={cn(
-                              'relative px-[1rem] py-2',
-                              isSelected &&
-                              "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary before:content-['']",
-                            )}
-                          >
+                          <TableCell className={cn('relative px-[1rem] py-2', isSelected && selectedRowAccent)}>
                             <DocumentTitleButton
                               name={row.documentName}
                               code={row.documentCode}
                               expanded={expandedId === row.id}
                               selected={isSelected}
                               controlsId={`${detailId}-${row.id}`}
-                              onClick={() => toggleRow(row)}
+                              tabIndex={-1}
                             />
                           </TableCell>
                           <TableCell className="px-[0.75rem] py-2">

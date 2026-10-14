@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
+import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
 const CLASS_TONES = {
@@ -33,20 +34,6 @@ function HeadLabel({ icon: Icon, children }) {
 }
 
 const COLUMNS = 6;
-
-/** Arrow keys move focus between document rows; Enter/Space select the focused row. */
-function handleRowKeyDown(event, row, onSelect) {
-  if (event.target !== event.currentTarget) return;
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    onSelect(row);
-    return;
-  }
-  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-  const rows = [...(event.currentTarget.closest('table')?.querySelectorAll('tr[data-row-key]') || [])];
-  const next = rows[rows.indexOf(event.currentTarget) + (event.key === 'ArrowDown' ? 1 : -1)];
-  if (next) { event.preventDefault(); next.focus(); }
-}
 
 /**
  * One row per current document, grouped by ventanilla list. Presentation only.
@@ -95,13 +82,10 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                 aria-selected={selected}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => onSelect(row)}
-                onKeyDown={(event) => handleRowKeyDown(event, row, onSelect)}
-                className={cn(
-                  'cursor-pointer border-border/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
-                  selected ? 'bg-primary/5 hover:bg-primary/5' : 'hover:bg-muted/40',
-                )}
+                onKeyDown={(event) => handleSelectableRowKeyDown(event, () => onSelect(row))}
+                className={selectableRowClass(selected)}
               >
-                <TableCell className={cn('relative px-[1rem] py-2', selected && "before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-primary before:content-['']")}>
+                <TableCell className={cn('relative px-[1rem] py-2', selected && selectedRowAccent)}>
                   <DocumentTitleButton
                     name={rowName(row)}
                     code={rowCode(row)}
