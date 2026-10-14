@@ -27,11 +27,11 @@ function DocumentalPagination({ page, totalPages, resultCount, pageSize, onPageC
   const pages = Array.from({ length: Math.min(5, totalPages) }, (_, index) => startPage + index);
   return (
     <nav
-      className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-2 border-t border-border bg-[hsl(var(--card))] px-[1rem] py-2"
+      className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-[hsl(var(--card))] px-[1rem] py-2"
       aria-label="Paginación documental"
     >
       <span className="text-xs text-muted-foreground" aria-live="polite">
-        <strong className="font-mono font-medium tabular-nums text-foreground">
+        <strong className="font-semibold tabular-nums text-foreground">
           {firstVisible}–{lastVisible}
         </strong>{' '}
         de {resultCount} unidades
@@ -162,7 +162,7 @@ export function DocumentalReviewTable({
     <div
       ref={viewportRef}
       style={{ '--documental-height': availableHeight ? `${availableHeight}px` : '65dvh' }}
-      className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-[hsl(var(--card))] lg:h-[var(--documental-height)]"
+      className="flex min-h-0 flex-col overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm lg:h-[var(--documental-height)]"
       data-testid="documental-review-workspace"
     >
       <DocumentalTableToolbar
@@ -201,25 +201,25 @@ export function DocumentalReviewTable({
             >
               <TableHeader className="sticky top-0 z-10 bg-[hsl(var(--card))]">
                 <TableRow className="border-border bg-muted/30 hover:bg-muted/30">
-                  <TableHead scope="col" className="h-10 w-[44%] px-[1rem] text-[11px] font-medium">
+                  <TableHead scope="col" className="h-10 w-[44%] px-[1rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     Documento
                   </TableHead>
                   <TableHead
                     scope="col"
-                    className="h-10 w-[20%] px-[0.75rem] text-[11px] font-medium"
+                    className="h-10 w-[20%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
                   >
                     <span className="flex items-center gap-1.5">
                       <History className="h-3.5 w-3.5" aria-hidden="true" />
                       Última recepción
                     </span>
                   </TableHead>
-                  <TableHead scope="col" className="h-10 w-[10%] px-2 text-[11px] font-medium">
+                  <TableHead scope="col" className="h-10 w-[10%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     <span className="flex items-center gap-1.5">
                       <Archive className="h-3.5 w-3.5" aria-hidden="true" />
                       Físico
                     </span>
                   </TableHead>
-                  <TableHead scope="col" className="h-10 w-[10%] px-2 text-[11px] font-medium">
+                  <TableHead scope="col" className="h-10 w-[10%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     <span className="flex items-center gap-1.5">
                       <Monitor className="h-3.5 w-3.5" aria-hidden="true" />
                       Digital
@@ -227,7 +227,7 @@ export function DocumentalReviewTable({
                   </TableHead>
                   <TableHead
                     scope="col"
-                    className="h-10 w-[16%] px-[0.75rem] text-[11px] font-medium"
+                    className="h-10 w-[16%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
                   >
                     <span className="flex items-center gap-1.5">
                       <ScanLine className="h-3.5 w-3.5" aria-hidden="true" />
@@ -334,10 +334,13 @@ export function DocumentalReviewTable({
           />
         </div>
         {loading ? (
-          <div className="space-y-4 border-t border-border p-[1.25rem] lg:border-l lg:border-t-0">
-            <Skeleton className="h-10 w-10" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-32 w-full" />
+          <div className="flex flex-col gap-[0.75rem] border-t bg-muted/20 p-[1rem] lg:border-l lg:border-t-0" aria-hidden="true">
+            <div className="flex items-center gap-[0.75rem]">
+              <Skeleton className="h-9 w-9 shrink-0" />
+              <Skeleton className="h-5 flex-1" />
+            </div>
+            <Skeleton className="h-36 w-full rounded-lg" />
+            <Skeleton className="h-24 w-full rounded-lg" />
           </div>
         ) : selected ? (
           <DocumentalDetailPanel
@@ -347,9 +350,11 @@ export function DocumentalReviewTable({
             headingId={`${detailId}-detail`}
           />
         ) : (
-          <aside className="flex flex-col items-center justify-center gap-[0.75rem] border-t border-border bg-muted/15 p-8 text-center lg:border-l lg:border-t-0">
-            <FileText className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
-            <p className="m-0 text-xs leading-5 text-muted-foreground">
+          <aside className="flex flex-col items-center justify-center gap-[0.75rem] border-t bg-muted/20 p-8 text-center lg:border-l lg:border-t-0">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
+              <FileText className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <p className="mb-0 max-w-[16rem] text-xs leading-5 text-muted-foreground">
               Selecciona un documento para consultar sus soportes y recepciones.
             </p>
           </aside>

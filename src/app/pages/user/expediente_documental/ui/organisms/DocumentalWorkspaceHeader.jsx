@@ -1,5 +1,7 @@
-import { Archive, FileText, Files, History, Monitor, ScanLine } from 'lucide-react';
+import { Archive, FileText, Files, History, Info, Monitor, ScanLine } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import FunUpdateSectionLegend from '@/app/pages/user/fun_forms/components/FunUpdateSectionLegend.jsx';
 
 function legacyMetrics(summary = {}) {
   return [
@@ -11,57 +13,69 @@ function legacyMetrics(summary = {}) {
   ];
 }
 
+function MetricHint({ label, hint }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={`${label}: ${hint}`}
+          className="inline-grid h-4 w-4 shrink-0 cursor-help place-items-center rounded-full bg-transparent p-0 text-muted-foreground/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Info className="h-3 w-3" aria-hidden="true" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[16rem] text-xs leading-4">{hint}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 /**
- * Shared header of the documentary workspaces. `metrics` ({label, value, icon, hint})
- * overrides the legacy summary metrics; `subtitle` replaces the default caption.
+ * Shared header of the documentary workspaces: optional module title (same heading as the
+ * FUN "Actualizar" sections) and a compact KPI strip. `metrics` ({label, value, icon, hint})
+ * overrides the legacy summary metrics; `showTitle={false}` keeps only the KPI strip when the
+ * module title is already rendered above (tabs of Documentos new).
  */
-export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, configuration, metrics: customMetrics, subtitle = 'Archivo del expediente', titleId = 'documental-workspace-title' }) {
+export function DocumentalWorkspaceHeader({ currentPublic, summary, loading, configuration, metrics: customMetrics, subtitle = 'Archivo del expediente', titleId = 'documental-workspace-title', showTitle = true }) {
   const metrics = customMetrics || legacyMetrics(summary);
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-[1rem] px-1 py-2">
-      <div className="flex min-w-0 items-center gap-[0.75rem]">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/5 text-[hsl(var(--primary))]">
-          <FileText className="h-5 w-5" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <h2
-            id={titleId}
-            className="m-0 text-lg font-semibold tracking-tight text-foreground"
-          >
-            Gestión documental
-          </h2>
-          <p className="mb-0 mt-1 text-xs text-muted-foreground">
-            <span className="font-mono">{currentPublic || 'Expediente sin radicado'}</span>
-            <span className="mx-2 text-border" aria-hidden="true">
-              /
-            </span>
-            {subtitle}
-          </p>
+    <header className="flex min-w-0 flex-col gap-[0.75rem]">
+      {showTitle ? (
+        <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-2">
+          <div className="min-w-0">
+            <FunUpdateSectionLegend as="h2" id={titleId} step={<FileText className="h-4 w-4" aria-hidden="true" />} className="m-0">
+              Gestión documental
+            </FunUpdateSectionLegend>
+            <p className="mb-0 mt-1.5 text-xs text-muted-foreground">
+              <span className="font-mono text-foreground/80">{currentPublic || 'Expediente sin radicado'}</span>
+              <span className="mx-2 text-muted-foreground/50" aria-hidden="true">/</span>
+              {subtitle}
+            </p>
+          </div>
+          {configuration ? <div className="min-w-0">{configuration}</div> : null}
         </div>
-      </div>
-      <div className="flex max-w-full flex-wrap items-center gap-[0.75rem]">
+      ) : null}
+      <TooltipProvider delayDuration={150}>
         <dl
-          className="m-0 flex flex-wrap gap-x-[1.25rem] gap-y-[0.75rem]"
+          className="m-0 flex flex-wrap gap-px overflow-hidden rounded-lg border bg-border shadow-sm"
           aria-label="Resumen documental"
           aria-busy={loading}
         >
           {metrics.map(({ label, value, icon: Icon, hint }) => (
-            <div key={label} className="flex flex-col gap-1" title={hint}>
-              <dt className="flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
-                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                {label}
+            <div key={label} className="min-w-[8.5rem] flex-1 bg-[hsl(var(--card))] px-[1rem] py-[0.625rem]">
+              <dt className="flex min-w-0 items-center gap-1.5 text-xs font-medium leading-4 text-muted-foreground">
+                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <span className="truncate">{label}</span>
+                {hint ? <MetricHint label={label} hint={hint} /> : null}
               </dt>
-              <dd className="m-0 font-mono text-lg font-semibold leading-6 tabular-nums text-foreground">
-                {loading ? <Skeleton className="h-6 w-8" /> : (value ?? '—')}
+              <dd className="mb-0 mt-1 text-xl font-semibold leading-7 tabular-nums tracking-tight text-foreground">
+                {loading ? <Skeleton className="h-7 w-10" /> : (value ?? '—')}
               </dd>
             </div>
           ))}
         </dl>
-        {configuration ? (
-          <div className="border-l border-border pl-[0.75rem]">{configuration}</div>
-        ) : null}
-      </div>
+      </TooltipProvider>
     </header>
   );
 }

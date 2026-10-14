@@ -1,12 +1,15 @@
 import { useEffect, useId, useState } from 'react';
-import { Archive, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, FileText, Files, History, Monitor, Plus, RefreshCw, RotateCcw, ScanLine } from 'lucide-react';
+import { Archive, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, ClipboardList, FileText, Files, History, Info, Monitor, Plus, RefreshCw, RotateCcw, ScanLine, TriangleAlert } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import DataService from '@/app/services/data.service';
 import { documentaryError } from '@/app/services/documentary.service';
 import { getCanonicalDocuments, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
+import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
@@ -21,6 +24,7 @@ const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y co
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
 const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL };
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
+const FILTER_SELECT_CLASS = 'h-9 min-w-[10rem] flex-1 text-sm sm:w-auto sm:flex-none';
 
 function AuditHistory({ origin }) {
   const [open, setOpen] = useState(false);
@@ -36,27 +40,31 @@ function AuditHistory({ origin }) {
     finally { setBusy(false); }
   }
   return (
-    <section className="rounded-xl border border-border bg-[hsl(var(--card))]">
-      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-2 rounded-xl bg-transparent px-[1rem] py-3 text-left text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+    <section className="overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-2 bg-transparent px-[1rem] py-[0.75rem] text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none">
         <span className="flex items-center gap-2"><History className="h-4 w-4 text-muted-foreground" aria-hidden="true" />Historial documental</span>
         <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform motion-reduce:transition-none', open && 'rotate-180')} aria-hidden="true" />
       </button>
       {open ? (
-        <div className="space-y-3 border-t border-border px-[1rem] py-3">
-          {page?.events.map((event) => (
-            <article key={event.id} className="space-y-1.5 border-l-2 border-border pl-3 text-sm">
-              <p className="m-0 font-medium">{EVENT_LABELS[event.eventType] || event.eventType}<span className="ml-2 text-xs font-normal text-muted-foreground">{formatDocumentaryDate(event.occurredAt)}</span></p>
-              {event.reason ? <p className="m-0 text-muted-foreground">{event.reason}</p> : null}
-              {event.receivedDocumentRowId ? [event.beforeJson?.manifest, event.afterJson?.manifest].filter(Boolean).map((manifest, index) => (
-                <div key={`${event.id}:${index}`} className="space-y-1">
-                  <p className="m-0 text-xs text-muted-foreground">Evidencia {manifest.evidenceRevision}</p>
-                  <DocumentFiles origin={origin} receipt={{ id: event.receivedDocumentRowId, files: manifest.files }} onError={setError} />
-                </div>
-              )) : null}
-            </article>
-          ))}
-          {page && !page.events.length ? <p className="m-0 text-sm text-muted-foreground">Aún no hay movimientos documentales.</p> : null}
-          {!page || page.nextAfterId ? <Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{busy ? 'Consultando…' : page ? 'Más eventos' : 'Cargar historial'}</Button> : null}
+        <div className="flex flex-col gap-[0.75rem] border-t px-[1rem] py-[0.75rem]">
+          {page?.events.length ? (
+            <ol className="m-0 flex list-none flex-col gap-[0.75rem] p-0">
+              {page.events.map((event) => (
+                <li key={event.id} className="flex flex-col gap-1.5 border-l-2 pl-[0.75rem]">
+                  <p className="mb-0 text-sm font-medium leading-5 text-foreground">{EVENT_LABELS[event.eventType] || event.eventType}<span className="ml-2 text-xs font-normal text-muted-foreground">{formatDocumentaryDate(event.occurredAt)}</span></p>
+                  {event.reason ? <p className="mb-0 text-xs leading-5 text-muted-foreground">{event.reason}</p> : null}
+                  {event.receivedDocumentRowId ? [event.beforeJson?.manifest, event.afterJson?.manifest].filter(Boolean).map((manifest, index) => (
+                    <div key={`${event.id}:${index}`} className="flex flex-col gap-1">
+                      <p className="mb-0 text-xs text-muted-foreground">Evidencia {manifest.evidenceRevision}</p>
+                      <DocumentFiles origin={origin} receipt={{ id: event.receivedDocumentRowId, files: manifest.files }} onError={setError} />
+                    </div>
+                  )) : null}
+                </li>
+              ))}
+            </ol>
+          ) : null}
+          {page && !page.events.length ? <p className="mb-0 text-sm text-muted-foreground">Aún no hay movimientos documentales.</p> : null}
+          {!page || page.nextAfterId ? <div><Button type="button" variant="outline" size="sm" disabled={busy} onClick={load}>{busy ? 'Consultando…' : page ? 'Más eventos' : 'Cargar historial'}</Button></div> : null}
           <ErrorMessage error={error} />
         </div>
       ) : null}
@@ -64,11 +72,33 @@ function AuditHistory({ origin }) {
   );
 }
 
+/** Success or conflict notice after a command; conflicts ask the user to review the new state. */
+function WorkspaceNotice({ message }) {
+  const conflict = message === CONFLICT_MESSAGE;
+  const Icon = conflict ? TriangleAlert : CircleCheck;
+  return (
+    <Alert role="status" variant={conflict ? 'warning' : 'success'} className="py-2.5">
+      <Icon aria-hidden="true" />
+      <AlertDescription className="min-w-0 flex-1">{message}</AlertDescription>
+    </Alert>
+  );
+}
+
+function InfoNotice({ children }) {
+  return (
+    <Alert role="status" variant="neutral" className="py-2.5">
+      <Info aria-hidden="true" />
+      <AlertDescription className="min-w-0 flex-1">{children}</AlertDescription>
+    </Alert>
+  );
+}
+
 /**
  * Catalogue-based Radicación workspace (container). Props are kept backward compatible:
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
+ * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, embedded = false }) {
   const ids = useId();
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
@@ -128,15 +158,19 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   function openSheet(kind, row = null) { setNotice(''); setSheet({ kind, row, nonce: Date.now() }); }
 
   return (
-    <section className="space-y-3" aria-labelledby={`${ids}-title`}>
+    <section
+      className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[0.75rem]')}
+      {...(embedded ? { 'aria-label': 'Documentos recibidos' } : { 'aria-labelledby': `${ids}-title` })}
+    >
       <DocumentalWorkspaceHeader
         titleId={`${ids}-title`}
         currentPublic={origin.project.idPublic || view?.project?.idPublic}
         subtitle="Documentos recibidos del expediente"
         metrics={headerMetrics}
         loading={!view}
+        showTitle={!embedded}
       />
-      {notice ? <p role="status" className="m-0 rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">{notice}</p> : null}
+      {notice ? <WorkspaceNotice message={notice} /> : null}
       <ErrorMessage error={error || fileError} />
       {view ? (
         <>
@@ -147,23 +181,23 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
             onRefreshed={() => reload('Evaluación de requisitos actualizada.')}
             onConflict={conflict}
           />
-          {view.readOnly ? <p role="status" className="m-0 text-sm text-muted-foreground">Puede consultar los documentos. La recepción y la revisión aún no están habilitadas para este expediente.</p> : null}
-          {!submitMatches ? <p role="status" className="m-0 text-sm text-muted-foreground">Este VR aún no tiene vínculo operativo con el expediente. No se pueden registrar documentos en él.</p> : null}
+          {view.readOnly ? <InfoNotice>Puede consultar los documentos. La recepción y la revisión aún no están habilitadas para este expediente.</InfoNotice> : null}
+          {!submitMatches ? <InfoNotice>Este VR aún no tiene vínculo operativo con el expediente. No se pueden registrar documentos en él.</InfoNotice> : null}
         </>
       ) : null}
 
       {!view && !error ? <p role="status" className="sr-only">Consultando documentos del expediente…</p> : null}
       {view || !error ? (
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-[hsl(var(--card))]" data-testid="canonical-documentary-workspace">
-          <div className="shrink-0 border-b border-border bg-[hsl(var(--card))]">
-            <div className="flex flex-wrap items-center gap-[0.75rem] px-[1rem] py-[0.75rem]">
+        <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm" data-testid="canonical-documentary-workspace">
+          <div className="shrink-0 border-b bg-[hsl(var(--card))]">
+            <div className="flex flex-wrap items-center gap-2 px-[1rem] py-[0.75rem]">
               <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
-              <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className="h-9 w-auto min-w-[9rem]" />
-              <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className="h-9 w-auto min-w-[9rem]" />
-              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2 text-xs text-muted-foreground" onClick={() => setFilters(EMPTY_FILTERS)}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
-              <div className="ml-auto flex flex-wrap items-center gap-2">
-                <span className="text-xs text-muted-foreground" aria-live="polite">
-                  <strong className="font-mono font-medium tabular-nums text-foreground">{visibleRows.length}</strong> {visibleRows.length === 1 ? 'documento' : 'documentos'}
+              <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className={FILTER_SELECT_CLASS} />
+              <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} />
+              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={() => setFilters(EMPTY_FILTERS)}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
+              <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:ml-auto lg:w-auto">
+                <span className="mr-1 text-xs text-muted-foreground" aria-live="polite">
+                  <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {visibleRows.length === 1 ? 'documento' : 'documentos'}
                 </span>
                 <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => refresh()}>
                   <RefreshCw className={cn(loading && view && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />Actualizar documentos
@@ -192,7 +226,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
               />
             </div>
             {view && selected ? (
-              <div className="grid max-h-[65dvh] min-h-0">
+              <div className="grid max-h-[65dvh] min-h-0 min-w-0">
                 <CanonicalDocumentDetail
                   key={selected.rowKey}
                   origin={origin}
@@ -206,15 +240,26 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                   onConflict={conflict}
                 />
               </div>
+            ) : !view ? (
+              <div className="flex flex-col gap-[0.75rem] border-t bg-muted/20 p-[1rem] lg:border-l lg:border-t-0" aria-hidden="true">
+                <div className="flex items-center gap-[0.75rem]">
+                  <Skeleton className="h-9 w-9 shrink-0" />
+                  <Skeleton className="h-5 flex-1" />
+                </div>
+                <Skeleton className="h-36 w-full rounded-lg" />
+                <Skeleton className="h-24 w-full rounded-lg" />
+              </div>
             ) : (
-              <aside className="flex flex-col items-center justify-center gap-[0.75rem] border-t border-border bg-muted/15 p-8 text-center lg:border-l lg:border-t-0">
-                <FileText className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
-                <p className="m-0 text-xs leading-5 text-muted-foreground">Seleccione un documento para consultar sus entregas y archivos.</p>
+              <aside className="flex flex-col items-center justify-center gap-[0.75rem] border-t bg-muted/20 p-8 text-center lg:border-l lg:border-t-0">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
+                  <FileText className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <p className="mb-0 max-w-[16rem] text-xs leading-5 text-muted-foreground">Seleccione un documento para consultar sus entregas y archivos.</p>
               </aside>
             )}
           </div>
           {view && (cursors.length > 1 || view.pagination.nextAfterId) ? (
-            <nav className="flex min-h-12 shrink-0 items-center justify-end gap-1 border-t border-border px-[1rem] py-2" aria-label="Paginación documental">
+            <nav className="flex min-h-12 shrink-0 items-center justify-end gap-1 border-t px-[1rem] py-2" aria-label="Paginación documental">
               <span className="mr-2 text-xs text-muted-foreground">Página {cursors.length}</span>
               <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label="Página anterior" disabled={cursors.length === 1 || loading} onClick={() => changePage(cursors.slice(0, -1))}><ChevronLeft aria-hidden="true" /></Button>
               <Button type="button" variant="ghost" size="icon" className="h-8 w-8" aria-label="Página siguiente" disabled={!view.pagination.nextAfterId || loading} onClick={() => changePage([...cursors, view.pagination.nextAfterId])}><ChevronRight aria-hidden="true" /></Button>
@@ -226,12 +271,12 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       {view ? <AuditHistory key={`history:${revision}`} origin={origin} /> : null}
 
       <Sheet open={Boolean(sheet && view && canReceive)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
-        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>
           {sheet && view ? (
             <>
-              <SheetHeader className="mb-4 pr-6">
-                <SheetTitle>{sheet.kind === 'evidence' ? 'Actualizar evidencia' : sheet.row ? 'Recibir nueva versión' : 'Recibir documento'}</SheetTitle>
-                <SheetDescription>{sheet.row ? rowName(sheet.row) : 'Registre un documento entregado para este expediente.'}</SheetDescription>
+              <SheetHeader className="shrink-0 space-y-1 border-b px-6 py-[1rem] pr-12 text-left">
+                <SheetTitle className="mb-0 text-base leading-6">{sheet.kind === 'evidence' ? 'Actualizar evidencia' : sheet.row ? 'Recibir nueva versión' : 'Recibir documento'}</SheetTitle>
+                <SheetDescription className="mb-0 text-xs leading-4">{sheet.row ? rowName(sheet.row) : 'Registre un documento entregado para este expediente.'}</SheetDescription>
               </SheetHeader>
               {sheet.kind === 'evidence' ? (
                 <EvidenceForm key={sheet.nonce} origin={origin} row={sheet.row} onSaved={refresh} onConflict={conflict} onCancel={() => setSheet(null)} />

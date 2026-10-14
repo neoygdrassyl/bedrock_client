@@ -44,12 +44,12 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
     <table role="grid" className="w-full min-w-[720px] table-fixed border-collapse text-sm" aria-label="Documentos recibidos" aria-busy={loading}>
       <TableHeader className="sticky top-0 z-10 bg-[hsl(var(--card))]">
         <TableRow className="border-border bg-muted/30 hover:bg-muted/30">
-          <TableHead scope="col" className="h-10 w-[38%] px-[1rem] text-[11px] font-medium">Documento</TableHead>
-          <TableHead scope="col" className="h-10 w-[20%] px-[0.75rem] text-[11px] font-medium"><HeadLabel icon={History}>Última entrega</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[11%] px-2 text-[11px] font-medium"><HeadLabel icon={Archive}>Físico</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-medium"><HeadLabel icon={Monitor}>Digital</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[13%] px-[0.75rem] text-[11px] font-medium"><HeadLabel icon={ScanLine}>Escaneado</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-medium"><HeadLabel icon={Layers}>Versiones</HeadLabel></TableHead>
+          <TableHead scope="col" className="h-10 w-[38%] px-[1rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Documento</TableHead>
+          <TableHead scope="col" className="h-10 w-[20%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={History}>Última entrega</HeadLabel></TableHead>
+          <TableHead scope="col" className="h-10 w-[11%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Archive}>Físico</HeadLabel></TableHead>
+          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Monitor}>Digital</HeadLabel></TableHead>
+          <TableHead scope="col" className="h-10 w-[13%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={ScanLine}>Escaneado</HeadLabel></TableHead>
+          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Layers}>Versiones</HeadLabel></TableHead>
         </TableRow>
       </TableHeader>
       {loading ? (
