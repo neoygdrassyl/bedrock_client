@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } fr
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/icon';
 import SubmitService from '../../../services/submit.service';
+import { getDocumentaryInventory } from '../../../services/documentaryOperations.service';
+import { inventoryReceivedItems } from '../expediente_documental/documentaryInventoryModel';
+import { isCanonicalExpediente } from '../expediente_documental/hooks/useDocumentaryInventory';
 import Collapsible from '../../../components/Collapsible';
 
 
@@ -49,7 +52,14 @@ export default function EXP_ACT_DESIST(props) {
   const model = useMemo(() => currentRecord?.model_des || "delete", [currentRecord?.model_des]);
 
   // ========================= Remote loader =========================
+  // Canonical expedientes no longer write VR sub_lists: every delivery comes from the documentary inventory.
+  const canonicalFun0Id = isCanonicalExpediente(currentItem) ? currentItem.id : null;
   const fetchRemoteListDocs = useCallback(async (idPublic) => {
+    if (canonicalFun0Id) {
+      const inventory = await getDocumentaryInventory(canonicalFun0Id);
+      if (inventory.mode !== 'canonical') throw new Error('El expediente ya no usa el modelo documental canónico.');
+      return normalizeLD(inventoryReceivedItems(inventory), idPublic);
+    }
     const response = await SubmitService.getIdRelated(idPublic);
     const List = response.data || [];
     const remoteList = [];
@@ -81,7 +91,7 @@ export default function EXP_ACT_DESIST(props) {
     });
 
     return normalizeLD(remoteList, idPublic);
-  }, []);
+  }, [canonicalFun0Id]);
 
   // ========================= State =========================
   const [listDocuments, setListDocuments] = useState([]); // (array) documentos del expediente (remotos/editables)

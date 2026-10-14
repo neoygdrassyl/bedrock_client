@@ -8,8 +8,12 @@ import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SU
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { normalizeDocumentControlPages } from './documentControlPages';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 
 function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+    // Canonical expedientes read statuses and folios from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     const _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -186,6 +190,8 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             if (_SUBSERIE.length == 0) _LIST = _SERIE;
             else _LIST = _SUBSERIE;
 
+            const blocker = inventoryBlocker(documentaryInventory);
+            if (blocker) return <li className="list-group-item text-center">{documentaryInventory.status === 'loading' ? 'Cargando inventario documental...' : blocker}</li>;
             return _LIST.map((value) => {
                 let _LIST_2 = _SERIES_DOCS[value]
                 if (!_LIST_2) _LIST_2 = _SERIES_DOCS['GENERIC']
@@ -217,9 +223,11 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
             for (var i = 0; i < array.length; i++) {
                 let cId = Number(array[i].i);
-                let currentPages = normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
+                const canonical = documentaryInventory ? documentaryInventory.inventory : null;
+                let currentPages = canonical ? normalizeDocumentControlPages(canonical.folios.byCode.get(String(docCode))) : normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
+                let defaultState = canonical ? (canonical.statusByCode.get(String(docCode)) ?? 2) : (_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2);
                 _COMPONENT.push(<Fragment key={cId}>
                     <li className="list-group-item">
                         <div className="row">
@@ -238,7 +246,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                             <div className="col-2 text-center">
                                 <select className="form-select" name="select_doc" id={"select_doc_" + cId}
-                                    defaultValue={_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2}>
+                                    defaultValue={defaultState}>
                                     <option value="2">N/A</option>
                                     <option value="1">SI</option>
                                     <option value="0">NO</option>
@@ -313,6 +321,8 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
         }
         let gen_pdf = () => {
+            const blocker = inventoryBlocker(documentaryInventory);
+            if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
 
             formData = new FormData();
 

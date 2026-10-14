@@ -10,6 +10,8 @@ import PQRS_Service from '../../../../services/pqrs_main.service';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryLastVr } from '../../expediente_documental/documentaryInventoryModel';
 
 export function extractConfirmLegalProcessData(items) {
     const match = Array.isArray(items)
@@ -35,6 +37,8 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
         const [cubSelected, setCubSelected] = useState(null);
         const [idCUBxVr, setIdCUBxVr] = useState(null);
         const [tn, setTn] = useState(null);
+        // Canonical expedientes take the satisfying VR of each requirement from the inventory (null for legacy).
+        const documentaryInventory = useDocumentaryInventory(currentItem);
     useEffect(() => {
         retrieveItem();
     }, []);
@@ -412,6 +416,13 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
         }
 
         let _GET_LAST_VR = () => {
+            if (documentaryInventory) {
+                const canonical = documentaryInventory.inventory;
+                if (!canonical) return { date: _GET_CLOCK_STATE(3).date_start, vr: documentaryInventory.status === 'loading' ? '(cargando...)' : '' };
+                // Required codes (delivered or missing), as fun_rs checked 1/0 did.
+                const required = Array.from(canonical.statusByCode.entries()).filter(([, value]) => value === '1' || value === '0').map(([code]) => code);
+                return inventoryLastVr(canonical.satisfyingVr, required, _GET_CLOCK_STATE(3).date_start);
+            }
             let fun_r = _SET_CHILD_REVIEW();
             let checks = fun_r.checked ? fun_r.checked.split(',') : [];
             let codes = fun_r.code ? fun_r.code.split(',') : [];

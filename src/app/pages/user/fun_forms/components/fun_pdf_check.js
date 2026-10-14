@@ -10,9 +10,13 @@ import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
+    // Canonical expedientes take requirement statuses from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     let _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -178,6 +182,7 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
                 _CHILD = false
             }
         }
+        if (documentaryInventory?.inventory) return documentaryInventory.inventory.funReview(_CHILD);
         return _CHILD;
     }
 
@@ -221,6 +226,8 @@ function FUN_PDF_CHECK({ currentItem, currentVersion, swaMsg }) {
         }, '');
     };
     const getPdfForm = async () => {
+        const blocker = inventoryBlocker(documentaryInventory);
+        if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
         let model = currentItem.model
