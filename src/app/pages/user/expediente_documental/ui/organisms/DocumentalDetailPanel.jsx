@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { VrCell } from '../molecules/VrCell';
 import { DocumentSupportList } from '../molecules/DocumentSupportList';
+import { DetailFact, DetailPill, DetailSection } from '../molecules/DetailSection';
+import { Separator } from '@/components/ui/separator';
 import { DocumentalDetailShell } from './DocumentalDetailShell';
 
 function normalizeVr(value) {
@@ -58,15 +60,7 @@ function VrHistory({ row }) {
   const latestVr = normalizeVr(row.latestVr);
   const items = buildVrHistory(row);
   return (
-    <section aria-labelledby={`vr-history-${row.id}`}>
-      <div className="mb-[0.75rem] flex items-center justify-between gap-2">
-        <h4 id={`vr-history-${row.id}`} className="m-0 text-xs font-semibold text-foreground">
-          Recepciones asociadas
-        </h4>
-        <span className="font-mono text-xs tabular-nums text-muted-foreground">
-          {items.length} VR
-        </span>
-      </div>
+    <DetailSection id={`vr-history-${row.id}`} title="Recepciones asociadas" aside={<DetailPill>{items.length} VR</DetailPill>}>
       {items.length ? (
         <ol className="m-0 list-none space-y-0 p-0">
           {items.slice(0, 5).map((item, index) => (
@@ -74,16 +68,16 @@ function VrHistory({ row }) {
               <div className="relative flex w-4 shrink-0 justify-center">
                 {index < Math.min(items.length, 5) - 1 ? (
                   <span
-                    className="absolute bottom-[-16px] top-3 w-px bg-border"
+                    className="absolute -bottom-1 top-[14px] w-px bg-border"
                     aria-hidden="true"
                   />
                 ) : null}
                 <span
                   className={cn(
-                    'relative mt-1.5 h-2 w-2 rounded-full border',
+                    'relative mt-1 h-2.5 w-2.5 rounded-full border-[2px] border-solid',
                     item.value === latestVr
-                      ? 'border-primary bg-primary'
-                      : 'border-border bg-muted',
+                      ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))] shadow-[0_0_0_3px_hsl(var(--primary)/0.15)]'
+                      : 'border-[hsl(var(--border))] bg-[hsl(var(--card))]',
                   )}
                   aria-hidden="true"
                 />
@@ -91,11 +85,7 @@ function VrHistory({ row }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <VrCell latestVr={item.value} />
-                  {item.value === latestVr ? (
-                    <span className="text-[11px] font-medium text-[hsl(var(--primary))]">
-                      Última recepción
-                    </span>
-                  ) : null}
+                  {item.value === latestVr ? <DetailPill tone="primary">Última recepción</DetailPill> : null}
                 </div>
                 <p className="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
                   <span className="font-mono">{item.date || 'Sin fecha'}</span>
@@ -111,16 +101,14 @@ function VrHistory({ row }) {
           ))}
         </ol>
       ) : (
-        <p className="m-0 rounded-md bg-muted/40 p-[0.75rem] text-xs text-muted-foreground">
-          Sin versiones VR registradas.
-        </p>
+        <p className="mb-0 text-xs text-muted-foreground">Sin versiones VR registradas.</p>
       )}
       {items.length > 5 ? (
         <p className="mb-0 mt-[0.75rem] text-xs text-muted-foreground">
           {items.length - 5} VR adicionales en el historial completo.
         </p>
       ) : null}
-    </section>
+    </DetailSection>
   );
 }
 
@@ -137,7 +125,6 @@ export function DocumentalDetailPanel({ row, onRowAction, headingId }) {
           <Button
             type="button"
             size="sm"
-            className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary)/0.9)]"
             onClick={() => onRowAction?.(row, 'history')}
           >
             <History aria-hidden="true" />
@@ -155,25 +142,21 @@ export function DocumentalDetailPanel({ row, onRowAction, headingId }) {
         </>
       }
     >
-      <section className="border-y border-border/70 py-[1rem]" aria-label="Soportes recibidos">
+      <DetailSection id={`supports-${row.id}`} title="Soportes recibidos">
         <DocumentSupportList row={row} scanned={row.scanned} />
-        <dl className="mb-0 mt-[1rem] grid grid-cols-2 gap-[1rem] border-t border-border/70 pt-[1rem]">
+        <Separator className="my-[0.75rem]" />
+        <dl className="m-0 grid grid-cols-2 gap-x-[1rem] gap-y-[0.75rem]">
           {[
             ['Folios físicos', row.folios?.physical],
             ['Folios digitales', row.folios?.digital],
           ].map(([label, value]) => (
-            <div key={label}>
-              <dt className="text-xs font-normal text-muted-foreground">{label}</dt>
-              <dd className="mb-0 mt-1 font-mono text-xl font-medium tabular-nums text-foreground">
-                {value ?? <span className="font-sans text-xs">Sin dato</span>}
-              </dd>
-            </div>
+            <DetailFact key={label} label={label}>
+              {value ?? <span className="text-xs font-normal text-muted-foreground">Sin dato</span>}
+            </DetailFact>
           ))}
         </dl>
-      </section>
-      <div className="pt-[1.25rem]">
-        <VrHistory row={row} />
-      </div>
+      </DetailSection>
+      <VrHistory row={row} />
     </DocumentalDetailShell>
   );
 }

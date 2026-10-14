@@ -9,11 +9,11 @@ import { cn } from '@/lib/utils';
 export function CatalogueDocumentPicker({ id, documents, value, onChange, applicableIds, label = 'Documento del catálogo' }) {
   const selected = documents.find((document) => document.documentId === value);
   return (
-    <div className="space-y-1.5">
-      <p id={id} className="m-0 text-sm font-medium" aria-hidden="true">{label}</p>
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <p id={id} className="mb-0 text-[13px] font-medium leading-5 text-foreground" aria-hidden="true">{label}</p>
       <Command
         label={label}
-        className="rounded-md border border-input bg-background"
+        className="rounded-md border border-input bg-background shadow-none"
         // Matches every typed word against the code and the name, ignoring accents and case.
         filter={(itemValue, search) => {
           const haystack = normalize(itemValue);
@@ -40,14 +40,14 @@ export function CatalogueDocumentPicker({ id, documents, value, onChange, applic
                   {isSelected ? <span className="sr-only"> (seleccionado)</span> : null}
                 </span>
                 {applicableIds?.has(document.documentId) ? (
-                  <span className="shrink-0 rounded bg-primary/10 px-1.5 text-[11px] font-medium leading-5 text-[hsl(var(--primary))]">Aplicable</span>
+                  <span className="shrink-0 rounded-full bg-primary/10 px-2 text-[11px] font-semibold leading-5 text-[hsl(var(--primary))]">Aplicable</span>
                 ) : null}
               </CommandItem>
             );
           })}
         </CommandList>
       </Command>
-      <p className="text-xs text-muted-foreground" aria-live="polite">
+      <p className="mb-0 text-xs leading-4 text-muted-foreground" aria-live="polite">
         {selected ? `Seleccionado: ${selected.code ? `${selected.code} · ` : ''}${selected.name}` : 'Ningún documento seleccionado.'}
       </p>
     </div>
