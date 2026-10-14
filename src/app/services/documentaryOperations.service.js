@@ -1,6 +1,6 @@
 import http from '../../http-common';
 import { documentaryProjectId } from './documentary.service';
-import { validateDocumentaryView, validateDocumentaryReceipt } from '../pages/user/expediente_documental/documentaryViewContract';
+import { validateDocumentaryView, validateDocumentaryReceipt, validateDocumentaryInventory } from '../pages/user/expediente_documental/documentaryViewContract';
 const ROOT = '/fun/documentary/v1';
 const projectUrl = (id) => `${ROOT}/projects/${documentaryProjectId(id)}`;
 const fail = () => { throw new Error('La respuesta no corresponde al expediente o a su publicación.'); };
@@ -42,6 +42,11 @@ export async function getMissingRequirements(fun0Id, signal) {
     || !data.summary || ![data.summary.total, data.summary.missing, data.summary.present].every(Number.isInteger)
     || !data.refresh || typeof data.refresh.allowed !== 'boolean') fail();
   return data;
+}
+// Inventory port for document generators (every input document delivery + requirement status).
+export async function getDocumentaryInventory(fun0Id, signal) {
+  const { data } = await http.get(`${projectUrl(fun0Id)}/inventory`, { signal });
+  return validateDocumentaryInventory(data, fun0Id);
 }
 export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
   const body = new FormData(); body.set('command', JSON.stringify(command));

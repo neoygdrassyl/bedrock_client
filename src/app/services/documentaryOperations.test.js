@@ -50,3 +50,17 @@ it('recovers source conflicts by reloading and requiring confirmation, never ret
   expect(await api.recoverDocumentarySourceConflict(new Error('Network'),{root:{id:1,centralReleaseId:'release-1'},formData,reload,notify})).toBe(false);
   expect(reload).toHaveBeenCalledTimes(1);
 });
+it('reads the documentary inventory and rejects responses of another expediente or shape',async()=>{
+  const inventory={schemaVersion:'dovela-backoffice/documentary-inventory/v1',mode:'canonical',applicable:true,project:{fun0Id:1,idPublic:'FUN'},
+    items:[{id:3,documentKey:key,documentClass:'requirement',documentCode:'511',documentId,title:'Formulario',listKey:'list_61',listTitle:'Lista',versionSequence:1,versionCount:1,isCurrent:true,submitId:10,vrLabel:'VR-10',registeredAt:'2026-10-01T00:00:00.000Z',registeredBy:7,hasPhysical:true,pagesPhysical:2,pagesDigital:null,hasDigital:false,hasScan:false,contributor:null,channel:'counter'}],
+    requirements:[{documentCode:'511',documentId,title:'Formulario',required:true,standaloneRequired:true,groupCode:null,status:'present',satisfiedBy:{submitId:10,vrLabel:'VR-10',registeredAt:'2026-10-01T00:00:00.000Z'}}],
+    evaluation:{state:'current',evaluatedAt:null}};
+  http.get.mockResolvedValue({data:inventory});
+  expect((await api.getDocumentaryInventory(1)).items).toHaveLength(1);
+  expect(http.get.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/inventory');
+  await expect(api.getDocumentaryInventory(2)).rejects.toThrow();
+  http.get.mockResolvedValue({data:{...inventory,requirements:[{...inventory.requirements[0],status:'done'}]}});
+  await expect(api.getDocumentaryInventory(1)).rejects.toThrow();
+  http.get.mockResolvedValue({data:{...inventory,mode:'traditional',applicable:false,items:[],requirements:[],evaluation:{state:'not_applicable',evaluatedAt:null}}});
+  expect((await api.getDocumentaryInventory(1)).mode).toBe('traditional');
+});

@@ -161,3 +161,36 @@ function validateCanonicalView(value) {
   }
   return value;
 }
+
+export const DOCUMENTARY_INVENTORY_SCHEMA = 'dovela-backoffice/documentary-inventory/v1';
+const INVENTORY_CLASSES = ['requirement', 'annex', 'vr_slip'];
+const REQUIREMENT_STATUSES = ['present', 'missing', 'not_applicable', 'unknown'];
+const EVALUATION_STATES = ['current', 'stale', 'missing', 'incomplete', 'not_applicable'];
+const nullableCount = (value) => value === null || count(value);
+const nullableBoolean = (value) => value === null || typeof value === 'boolean';
+function inventoryItem(value) {
+  return object(value) && id(value.id) && string(value.documentKey) && INVENTORY_CLASSES.includes(value.documentClass)
+    && (value.documentClass === 'requirement' ? documentId(value.documentId) : value.documentId === null)
+    && ['documentCode', 'title', 'listKey', 'listTitle', 'vrLabel', 'registeredAt', 'contributor', 'channel'].every((key) => nullableString(value[key]))
+    && id(value.versionSequence) && id(value.versionCount) && typeof value.isCurrent === 'boolean' && id(value.submitId)
+    && ['hasPhysical', 'hasDigital', 'hasScan'].every((key) => typeof value[key] === 'boolean')
+    && nullableCount(value.pagesPhysical) && nullableCount(value.pagesDigital);
+}
+function inventoryRequirement(value) {
+  return object(value) && nullableString(value.documentCode) && documentId(value.documentId) && nullableString(value.title)
+    && nullableBoolean(value.required) && nullableBoolean(value.standaloneRequired) && nullableString(value.groupCode)
+    && REQUIREMENT_STATUSES.includes(value.status)
+    && (value.satisfiedBy === null || (object(value.satisfiedBy) && id(value.satisfiedBy.submitId) && nullableString(value.satisfiedBy.vrLabel) && nullableString(value.satisfiedBy.registeredAt)));
+}
+// Inventory wire contract (GET /projects/:fun0Id/inventory). Traditional expedientes carry empty lists.
+export function validateDocumentaryInventory(value, fun0Id) {
+  const traditional = object(value) && value.mode === 'traditional';
+  if (!object(value) || value.schemaVersion !== DOCUMENTARY_INVENTORY_SCHEMA || !object(value.project) || value.project.fun0Id !== Number(fun0Id)
+    || !['canonical', 'traditional'].includes(value.mode) || value.applicable !== !traditional
+    || !arrayOf(value.items, inventoryItem) || !arrayOf(value.requirements, inventoryRequirement)
+    || !object(value.evaluation) || !EVALUATION_STATES.includes(value.evaluation.state) || !nullableString(value.evaluation.evaluatedAt)
+    || (traditional && (value.items.length || value.requirements.length || value.evaluation.state !== 'not_applicable'))) {
+    throw new Error('El inventario documental no corresponde al expediente.');
+  }
+  return value;
+}
