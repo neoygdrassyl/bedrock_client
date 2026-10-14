@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Icon } from '@/components/icon';
+import { Z_CLASS } from '@/lib/layers';
 import { cn } from '@/lib/utils';
 import FUNService from '../../../../services/fun.service';
 import legalGuideService from '../../../../services/legalGuide.service';
@@ -1553,7 +1554,7 @@ export function FunExpedienteFullscreen({
 
   const content = (
     <div
-      className="expediente-fullscreen fixed inset-0 z-[9999] bg-background text-foreground flex flex-col overflow-hidden"
+      className={cn('expediente-fullscreen fixed inset-0 bg-background text-foreground flex flex-col overflow-hidden', Z_CLASS.workspace)}
       role="dialog"
       aria-modal="true"
       aria-label="Detalle del expediente"

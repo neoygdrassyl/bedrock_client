@@ -14,6 +14,7 @@
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Z_INDEX } from '@/lib/layers';
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
@@ -544,7 +545,7 @@ export const MDBTooltip = ({
     }
 
     tip.style.position = 'fixed';
-    tip.style.zIndex = '9999';
+    tip.style.zIndex = String(Z_INDEX.floating);
 
     // Wait for render to get dimensions
     requestAnimationFrame(() => {
@@ -653,7 +654,7 @@ export const MDBPopover = ({
     const rect = triggerRef.current.getBoundingClientRect();
     const pop = popoverRef.current;
     pop.style.position = 'fixed';
-    pop.style.zIndex = '9999';
+    pop.style.zIndex = String(Z_INDEX.floating);
 
     requestAnimationFrame(() => {
       if (!pop) return;

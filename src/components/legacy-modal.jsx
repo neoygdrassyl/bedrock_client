@@ -1,10 +1,12 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { Z_INDEX } from '@/lib/layers';
 import { cn } from '@/lib/utils';
 
-const MIN_OVERLAY_Z_INDEX = 1050;
-const MIN_CONTENT_Z_INDEX = 1051;
-const FULLSCREEN_WORKSPACE_BASE_Z_INDEX = 10080;
+const MIN_OVERLAY_Z_INDEX = Z_INDEX.pageModal;
+const MIN_CONTENT_Z_INDEX = Z_INDEX.pageModal + 1;
+// Inside the expediente workspace it shares the modal layer with Dialog/Sheet (see src/lib/layers.js).
+const FULLSCREEN_WORKSPACE_BASE_Z_INDEX = Z_INDEX.modal;
 
 function getSafeZIndex(value, fallback) {
   const parsedValue = Number.parseInt(`${value ?? ''}`, 10);
