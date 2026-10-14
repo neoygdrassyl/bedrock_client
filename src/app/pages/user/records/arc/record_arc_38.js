@@ -10,6 +10,7 @@ import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHa
 import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
@@ -32,6 +33,8 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [rewState, setRewState] = useState({});
+    // Canonical expedientes take statuses and VR deliveries from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
     const uploadRichTextImage = useCallback((file) => uploadRecordArcRichTextImage(file, currentItem), [currentItem]);
 
     useEffect(() => {
@@ -239,12 +242,14 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                     _CHILD = false
                 }
             }
+            if (documentaryInventory?.inventory) return documentaryInventory.inventory.funReview(_CHILD);
             return _CHILD;
         };
         //  DATA CONVERTERS
         let _FIND_IN_VRDOCS = (code) => {
             if (!code) return false;
-            let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
+            const docs = documentaryInventory ? (documentaryInventory.inventory?.receivedItems || []) : VRDocs;
+            let FOUND_CODE = docs.find(vr => code.includes(vr.code));
             return FOUND_CODE;
         }
         let BUILD_LIST = (concat) => {

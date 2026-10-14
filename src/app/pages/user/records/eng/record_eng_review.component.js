@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { Button } from '@/components/ui/button';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import FUN_SERVICE from '../../../../services/fun.service'
@@ -22,6 +23,8 @@ function RECORD_ENG_REVIEW(props) {
     const [VRDocs, setVRDocs] = useState([]);
     const [load, setLoad] = useState(false);
     const [rewStates, setRewStates] = useState({});
+    // Canonical expedientes take statuses and VR deliveries from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(props.currentItem);
 
     useEffect(() => {
         setVRList(props.currentItem ? props.currentItem.id_public : false);
@@ -293,12 +296,14 @@ function RECORD_ENG_REVIEW(props) {
                     _CHILD = false
                 }
             }
+            if (documentaryInventory?.inventory) return documentaryInventory.inventory.funReview(_CHILD);
             return _CHILD;
         };
         // DATA CONVERTERS
         let _FIND_IN_VRDOCS = (code) => {
             if (!code) return false;
-            let FOUND_CODE = VRDocs.find(vr => code.includes(vr.code));
+            const docs = documentaryInventory ? (documentaryInventory.inventory?.receivedItems || []) : VRDocs;
+            let FOUND_CODE = docs.find(vr => code.includes(vr.code));
             return FOUND_CODE;
         }
         let BUILD_LIST = (concat) => {

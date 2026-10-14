@@ -5,9 +5,13 @@ import Icon from '@/components/icon';
 import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 
 export default function FUN_D_CONTROL_2(props) {
     const { currentItem, swaMsg, requestUpdate } = props
+    // Canonical expedientes read folios from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     // DATA GETTERS
     let GET_CHILD_1 = () => {
@@ -142,6 +146,7 @@ export default function FUN_D_CONTROL_2(props) {
         return _LIST;
     }
     let GET_FUN6_CODE = (_CODE) => {
+        if (documentaryInventory) return documentaryInventory.inventory?.folios.byCode.get(String(_CODE)) || null;
         const FUN_6 = GET_CHILD_6();
         if (FUN_6) {
             let DOC = FUN_6.find(i => i.id_public == _CODE)
@@ -216,6 +221,8 @@ export default function FUN_D_CONTROL_2(props) {
     }
 
     let gen_pdf = () => {
+        const blocker = inventoryBlocker(documentaryInventory);
+        if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
 
         let formData = new FormData();
 
@@ -355,7 +362,9 @@ export default function FUN_D_CONTROL_2(props) {
                 <div className='col-4 border fw-bold'>DOCUMENTOS</div>
                 <div className='col-8 border fw-bold'>CANTIDAD</div>
             </div>
-            {INVENTORY_LIST.map(BODY_DOPCUMENT)}
+            {inventoryBlocker(documentaryInventory)
+                ? <div className='row'><div className='col border text-center'>{documentaryInventory.status === 'loading' ? 'Cargando inventario documental...' : inventoryBlocker(documentaryInventory)}</div></div>
+                : INVENTORY_LIST.map(BODY_DOPCUMENT)}
         </>
     }
     const FOOTER = () => {

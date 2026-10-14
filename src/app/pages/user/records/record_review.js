@@ -25,6 +25,8 @@ import { Button } from '@/components/ui/button';
 import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { useDocumentaryInventory } from '../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryBlocker } from '../expediente_documental/documentaryInventoryModel';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -143,6 +145,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
     const [load, setLoad] = useState(false);
     const [tn, setTn] = useState(undefined);
     const [actaSimple, setActaSimple] = useState(false);
+    // Canonical expedientes take requirement statuses from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     useEffect(() => {
         setItem_Record();
@@ -462,6 +466,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     if (element.version == _CURRENT_VERSION) VAR = _CHILD[i]
                 }
             }
+            if (documentaryInventory?.inventory) return documentaryInventory.inventory.funReview(VAR);
             return VAR;
         }
         let LOAD_STEP = (_id_public, _parent) => {
@@ -1636,6 +1641,8 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 });
         }
         let CREATE_PDF_CHECK = () => {
+            const blocker = inventoryBlocker(documentaryInventory);
+            if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
 
             let _CHECKS = [];
             let _RESUME = [];

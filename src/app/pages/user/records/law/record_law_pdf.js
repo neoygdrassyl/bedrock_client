@@ -8,10 +8,14 @@ import { handleLAWhCheck } from '../../../../components/customClasses/pdfCheckHa
 import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_LAW_PDF(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, noReport } = props;
+    // Canonical expedientes take requirement statuses from the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     const _GET_CHILD_REVIEW_CLASS = () => {
         var _CHILD = props.currentItem.fun_rs;
@@ -23,6 +27,7 @@ function RECORD_LAW_PDF(props) {
                 if (element.version == _CURRENT_VERSION) VAR = _CHILD[i]
             }
         }
+        if (documentaryInventory?.inventory) return documentaryInventory.inventory.funReview(VAR);
         return VAR;
     }
     const _GET_CHILD_RECORD_REVIEW = () => {
@@ -277,6 +282,8 @@ function RECORD_LAW_PDF(props) {
         document.getElementById('record_pdf_date').value = reviews[i].date;
     }
     let CREATE_PDF_CHECK = () => {
+        const blocker = inventoryBlocker(documentaryInventory);
+        if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
         let _RESUME = [];
         let CLOCK_3 = _GET_CLOCK_STATE_VERSION(3, 1)
         let values_1 = _GET_STEP_TYPE('s1', 'value');
