@@ -20,9 +20,6 @@ import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocume
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
 const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL };
-// The sheet is portaled to <body>: it must stack above the expediente fullscreen overlay (z-[9999]),
-// on the same layer LegacyModal uses inside the fullscreen workspace (10080).
-const SHEET_LAYER = 'z-[10080]';
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
 
 function AuditHistory({ origin }) {
@@ -229,7 +226,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       {view ? <AuditHistory key={`history:${revision}`} origin={origin} /> : null}
 
       <Sheet open={Boolean(sheet && view && canReceive)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
-        <SheetContent side="right" overlayClassName={SHEET_LAYER} className={cn(SHEET_LAYER, 'w-full overflow-y-auto sm:max-w-xl')}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
           {sheet && view ? (
             <>
               <SheetHeader className="mb-4 pr-6">
