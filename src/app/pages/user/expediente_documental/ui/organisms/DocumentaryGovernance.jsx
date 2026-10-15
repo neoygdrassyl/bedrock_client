@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { useEffect, useId, useRef, useState } from 'react';
 import { CircleAlert, Info, Lock, RefreshCw, Settings2, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -38,9 +39,9 @@ const LOCKED_REASONS = {
 };
 
 const CACHE_STATES = {
-  current: { label: 'al día', className: 'bg-[hsl(var(--operational-success-bg))] text-[hsl(var(--operational-success-text))]' },
-  stale: { label: 'desactualizada respecto del expediente', className: 'bg-[hsl(var(--operational-warning-bg))] text-[hsl(var(--operational-warning-text))]' },
-  pending: { label: 'pendiente', className: 'bg-muted text-muted-foreground' },
+  current: { label: 'al día', tone: 'success' },
+  stale: { label: 'desactualizada', tone: 'warning' },
+  pending: { label: 'pendiente', tone: 'neutral' },
 };
 
 export function optionValue(option) {
@@ -82,7 +83,7 @@ export function ReferencedExpedienteData({ source }) {
     <section aria-label="Datos del expediente usados en la evaluación" className="min-w-0 rounded-lg border bg-[hsl(var(--card))]">
       <header className="border-b bg-muted/30 px-[1rem] py-2.5">
         <h4 className="mb-0 text-sm font-semibold leading-5 text-foreground">Datos del expediente usados en la evaluación</h4>
-        <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">
+        <p className="mb-0 mt-0.5 text-xs leading-4 text-slate-600">
           {source.selectedFunVersion == null
             ? 'El expediente no tiene una versión FUN activa única.'
             : `Formulario FUN 1 · versión ${source.selectedFunVersion}${source.sourceRowId ? ` · registro ${source.sourceRowId}` : ''}`}
@@ -93,7 +94,7 @@ export function ReferencedExpedienteData({ source }) {
           <dl className="m-0 grid gap-x-[1.25rem] gap-y-[0.75rem] sm:grid-cols-2 xl:grid-cols-3">
             {source.fields.map((item) => (
               <DetailFact key={item.field} label={SOURCE_FIELD_LABELS[item.field] || item.field}>
-                {item.value == null ? <span className="font-normal text-muted-foreground">Sin dato</span> : item.value}
+                {item.value == null ? <span className="font-normal text-slate-600">Sin dato</span> : item.value}
               </DetailFact>
             ))}
           </dl>
@@ -103,8 +104,8 @@ export function ReferencedExpedienteData({ source }) {
             {source.diagnostics.map((item, index) => <li key={`${item.code}:${item.field || index}`}>{item.field ? `${SOURCE_FIELD_LABELS[item.field] || item.field}: valor no reconocido (${item.value})` : 'No hay una versión FUN activa única para evaluar.'}</li>)}
           </ul>
         ) : null}
-        <p className="mb-0 text-xs leading-4 text-muted-foreground">
-          Estos datos son de solo lectura en este módulo. Para corregirlos, edite el FUN del expediente y luego use «Actualizar requisitos».
+        <p className="mb-0 text-xs leading-4 text-slate-600">
+          Solo lectura. Corrija el FUN y use «Actualizar requisitos».
         </p>
       </div>
     </section>
@@ -114,7 +115,7 @@ export function ReferencedExpedienteData({ source }) {
 /** Card with title and description (tab content) or a collapsible block (inline use). */
 function GovernanceFrame({ collapsible, open, titleId, children }) {
   const title = 'Configuración documental del expediente';
-  const description = 'Define qué catálogo documental gobierna la radicación y con qué datos del expediente se evalúan los requisitos.';
+  const description = 'Catálogo que gobierna la radicación y datos usados en la evaluación.';
   if (collapsible) {
     return (
       <details className="min-w-0 rounded-lg border bg-[hsl(var(--card))] shadow-sm" open={open}>
@@ -131,7 +132,7 @@ function GovernanceFrame({ collapsible, open, titleId, children }) {
         </span>
         <div className="min-w-0">
           <h2 id={titleId} className="mb-0 text-[15px] font-semibold leading-5 text-foreground">{title}</h2>
-          <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">{description}</p>
+          <p className="mb-0 mt-0.5 text-xs leading-4 text-slate-600">{description}</p>
         </div>
       </header>
       <div className="flex flex-col gap-[1rem] p-[1rem]">{children}</div>
@@ -206,15 +207,15 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
   return (
     <GovernanceFrame collapsible={!defaultOpen} open={!canonical} titleId={`${formId}-title`}>
       {canonical && cacheState ? (
-        <p className="mb-0 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+        <p className="mb-0 flex flex-wrap items-center gap-2 text-xs text-slate-600">
           Estado de la evaluación de requisitos:
-          <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold leading-4', cache.className)}>{cache.label}</span>
+          <Tag tone={cache.tone} pill title={cache.tone === 'warning' ? 'La evaluación no refleja los datos actuales del expediente' : undefined}>{cache.label}</Tag>
         </p>
       ) : null}
       {error ? <Notice role="alert" variant="destructive" icon={CircleAlert}>{error}</Notice> : null}
       {!governance && !error ? (
         <div className="flex flex-col gap-2">
-          <p role="status" className="mb-0 text-xs text-muted-foreground">Consultando la configuración del expediente…</p>
+          <p role="status" className="mb-0 text-xs text-slate-600">Consultando la configuración del expediente…</p>
           <Skeleton className="h-10 w-full max-w-xl" aria-hidden="true" />
         </div>
       ) : null}
@@ -224,7 +225,7 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
             <FormField
               id={`${formId}-configuration`}
               label="Configuración que gobierna el expediente"
-              hint={locked ? null : 'Puede cambiar la configuración, o volver a la documentación tradicional, mientras el expediente no tenga evidencia recibida.'}
+              hint={locked ? null : 'Modificable mientras no haya evidencia recibida.'}
               className="max-w-xl"
             >
               <select id={`${formId}-configuration`} name="configuration" className={fieldClass} value={target} disabled={!editable} aria-describedby={locked ? undefined : `${formId}-configuration-hint`}
@@ -237,7 +238,7 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
             {operation === 'legacy' ? <Notice variant="warning" icon={TriangleAlert}>El expediente volverá a la documentación tradicional y se descartará la evaluación de requisitos de Central.</Notice> : null}
             {editable && operation ? (
               <div className="flex max-w-xl flex-col gap-[0.75rem] rounded-lg border bg-muted/20 p-[1rem]">
-                <FormField id={`${formId}-reason`} label="Motivo del cambio documental" hint="Queda registrado en el historial documental del expediente.">
+                <FormField id={`${formId}-reason`} label="Motivo del cambio documental" hint="Queda en el historial del expediente.">
                   <Input id={`${formId}-reason`} name="reason" className="text-sm" maxLength={1000} required value={reason} aria-describedby={`${formId}-reason-hint`} onChange={(event) => setReason(event.target.value)} />
                 </FormField>
                 {operation === 'activate' ? <CheckboxField id={`${formId}-future-only`} name="confirmFutureReceipts" label="Solo gobernará futuras recepciones; no convertirá documentos históricos." checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> : null}

@@ -10,7 +10,7 @@ describe('LegalFormBadge', () => {
         const badge = screen.getByTestId('legal-form-badge');
         expect(badge).toHaveTextContent('Faltante');
         expect(badge).toHaveAttribute('data-legal-form-status', LEGAL_FORM_FILTER.MISSING);
-        expect(badge.className).toMatch(/destructive/);
+        expect(badge).toHaveAttribute("data-tone", "danger");
     });
 
     it('renders the pending-scan tone', () => {
@@ -22,7 +22,7 @@ describe('LegalFormBadge', () => {
     it('renders the present tone', () => {
         render(<LegalFormBadge status={LEGAL_FORM_FILTER.PRESENT}>Presente</LegalFormBadge>);
 
-        expect(screen.getByTestId('legal-form-badge').className).toMatch(/accent/);
+        expect(screen.getByTestId("legal-form-badge")).toHaveAttribute("data-tone", "success");
     });
 
     it('falls back to a neutral tone for an unknown status', () => {

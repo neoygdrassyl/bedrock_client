@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { cn } from '@/lib/utils';
 
 /**
@@ -29,13 +30,8 @@ export function DetailFact({ label, className, children }) {
 /** Small count/label pill used in section headers and timelines. */
 export function DetailPill({ tone = 'neutral', className, children }) {
   return (
-    <span className={cn(
-      'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-4 tabular-nums',
-      tone === 'primary' ? 'bg-primary/10 text-[hsl(var(--primary))]' : 'bg-muted text-muted-foreground',
-      className,
-    )}
-    >
+    <Tag tone={tone === 'primary' ? 'info' : tone} pill className={className}>
       {children}
-    </span>
+    </Tag>
   );
 }

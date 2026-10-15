@@ -2,7 +2,8 @@ import { useId, useState } from 'react';
 import { ArrowRightLeft, CircleAlert, CircleCheck, Info, SearchCheck, TriangleAlert } from 'lucide-react';
 import FunUpdateSectionLegend from '@/app/pages/user/fun_forms/components/FunUpdateSectionLegend.jsx';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tag } from '../atoms/Tag';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,18 +19,30 @@ import {
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 
 const SEVERITY_STYLE = {
-  blocking: { variant: 'destructive', icon: CircleAlert },
-  warning: { variant: 'warning', icon: TriangleAlert },
+  blocking: { tone: 'danger', icon: CircleAlert },
+  warning: { tone: 'warning', icon: TriangleAlert },
 };
+
+const CLASS_TONES = { requirement: 'neutral', annex: 'info', vr_slip: 'code' };
+const DELIVERY_STATUS = { import: { label: 'Importar', tone: 'success' }, merged: { label: 'Unida', tone: 'neutral' }, excluded: { label: 'Excluida', tone: 'warning' } };
+const TIGHT_CELL = 'px-[0.5rem] py-[0.25rem] text-xs align-middle';
+const TIGHT_HEAD = 'h-[2rem] px-[0.5rem] py-[0.25rem] text-[11px] font-semibold uppercase tracking-wide text-slate-600';
+
+function shortDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value || '');
+  return match ? `${match[3]}/${match[2]}/${match[1].slice(2)}` : '—';
+}
 
 function SummaryFacts({ preview }) {
   return (
-    <dl className="m-0 grid gap-[0.75rem] sm:grid-cols-2 xl:grid-cols-4">
+    <dl className="m-0 grid gap-[0.5rem] sm:grid-cols-2 xl:grid-cols-4">
       {summaryFacts(preview).map((fact) => (
-        <div key={fact.key} className="min-w-0 rounded-lg border bg-muted/20 px-[0.75rem] py-2">
-          <dt className="text-xs font-medium text-muted-foreground">{fact.label}</dt>
-          <dd className="mb-0 text-lg font-semibold leading-6 text-foreground tabular-nums">{fact.value}</dd>
-          {fact.hint ? <dd className="mb-0 text-[11px] leading-4 text-muted-foreground">{fact.hint}</dd> : null}
+        <div key={fact.key} className="flex min-w-0 items-baseline justify-between gap-[0.5rem] rounded-md border bg-card px-[0.75rem] py-[0.375rem]" title={fact.hint || undefined}>
+          <dt className="m-0 text-xs font-medium text-slate-600">{fact.label}</dt>
+          <dd className="m-0 flex items-baseline gap-1.5 text-base font-semibold leading-6 text-foreground tabular-nums">
+            {fact.value}
+            {fact.hint ? <span className="truncate text-[11px] font-normal text-slate-600">{fact.hint}</span> : null}
+          </dd>
         </div>
       ))}
     </dl>
@@ -38,53 +51,70 @@ function SummaryFacts({ preview }) {
 
 function IssueGroups({ issues }) {
   const groups = groupIssues(issues);
-  if (!groups.length) return <Alert variant="success" className="py-2.5"><CircleCheck aria-hidden="true" /><AlertDescription>Sin incidencias.</AlertDescription></Alert>;
-  return groups.map((group) => {
-    const style = SEVERITY_STYLE[group.severity];
-    return (
-      <Alert key={group.severity} variant={style.variant} role={group.severity === 'blocking' ? 'alert' : 'status'} className="py-2.5">
-        <style.icon aria-hidden="true" />
-        <AlertDescription className="min-w-0 flex-1">
-          <p className="mb-1 text-sm font-semibold">{group.label}</p>
-          <ul className="mb-0 space-y-0.5 pl-4 text-xs">
-            {group.entries.map((entry) => <li key={entry.code}><span className="font-medium">{entry.label}</span> · {entry.count}</li>)}
-          </ul>
-        </AlertDescription>
-      </Alert>
-    );
-  });
+  if (!groups.length) return <Tag tone="success" pill className="self-start"><CircleCheck className="h-3 w-3" aria-hidden="true" />Sin incidencias</Tag>;
+  return (
+    <div className="flex flex-col gap-[0.375rem]">
+      {groups.map((group) => {
+        const style = SEVERITY_STYLE[group.severity];
+        return (
+          <div key={group.severity} role={group.severity === 'blocking' ? 'alert' : 'status'} className="flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-foreground"><style.icon className="h-3.5 w-3.5" aria-hidden="true" />{group.label}</span>
+            {group.entries.map((entry) => (
+              <Tag key={entry.code} tone={style.tone} title={entry.message || undefined}>
+                {entry.label}<span className="font-bold">{entry.count}</span>
+              </Tag>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function DigitalResolutions({ preview, choices, onChoose, disabled }) {
   const files = pendingDigitalFiles(preview);
   if (!files.length) return null;
   return (
-    <section aria-label="Archivos digitales sin VR" className="flex min-w-0 flex-col gap-2">
-      <h4 className="mb-0 text-sm font-semibold text-foreground">Archivos digitales sin VR</h4>
-      <p className="mb-0 text-xs text-muted-foreground">Asigne cada archivo a una ventanilla del expediente o exclúyalo; luego vuelva a analizar.</p>
-      <Table>
-        <TableHeader>
-          <TableRow><TableHead>Archivo</TableHead><TableHead>Código</TableHead><TableHead>Registrado</TableHead><TableHead className="w-[16rem]">Decisión</TableHead></TableRow>
-        </TableHeader>
-        <TableBody>
-          {files.map((file) => (
-            <TableRow key={file.id}>
-              <TableCell className="max-w-[22rem] truncate text-xs" title={file.originalName || ''}>{file.description || file.originalName || `Archivo ${file.id}`}</TableCell>
-              <TableCell className="font-mono text-xs">{file.code || 'Sin código'}</TableCell>
-              <TableCell className="text-xs">{file.createdAt ? file.createdAt.slice(0, 10) : 'Sin fecha'}</TableCell>
-              <TableCell>
-                <Select value={choices[file.id] || ''} onValueChange={(value) => onChoose(file.id, value)} disabled={disabled}>
-                  <SelectTrigger aria-label={`Decisión para el archivo ${file.id}`} className="h-8 text-xs"><SelectValue placeholder="Elegir…" /></SelectTrigger>
-                  <SelectContent>
-                    {preview.vrs.map((vr) => <SelectItem key={vr.submitId} value={String(vr.submitId)}>{`Asignar a ${vr.vrLabel}${vr.date ? ` (${vr.date})` : ''}`}</SelectItem>)}
-                    <SelectItem value={EXCLUDE_VALUE}>Excluir de la migración</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <section aria-label="Archivos digitales sin VR" className="flex min-w-0 flex-col gap-1.5">
+      <h4 className="mb-0 flex items-center gap-2 text-sm font-semibold text-foreground">
+        Archivos digitales sin VR <Tag tone="warning" pill>{files.length}</Tag>
+        <span className="text-xs font-normal text-slate-600" title="Asigne cada archivo a una ventanilla del expediente o exclúyalo; luego vuelva a analizar.">Asignar o excluir</span>
+      </h4>
+      <TooltipProvider delayDuration={150}>
+        <div className="max-h-[22rem] overflow-auto rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50"><TableHead className={TIGHT_HEAD}>Archivo</TableHead><TableHead className={TIGHT_HEAD}>Código</TableHead><TableHead className={TIGHT_HEAD}>Fecha</TableHead><TableHead className={cn(TIGHT_HEAD, 'w-[12rem]')}>VR</TableHead></TableRow>
+            </TableHeader>
+            <TableBody>
+              {files.map((file) => {
+                const name = file.description || file.originalName || `Archivo ${file.id}`;
+                return (
+                  <TableRow key={file.id}>
+                    <TableCell className={cn(TIGHT_CELL, 'max-w-[20rem]')}>
+                      <Tooltip>
+                        <TooltipTrigger asChild><span className="block truncate" tabIndex={0}>{name}</span></TooltipTrigger>
+                        <TooltipContent className="max-w-sm break-words text-xs">{file.originalName && file.originalName !== name ? `${name} (${file.originalName})` : name}</TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className={TIGHT_CELL}>{file.code ? <Tag tone="code" mono>{file.code}</Tag> : <span className="text-slate-600">—</span>}</TableCell>
+                    <TableCell className={cn(TIGHT_CELL, 'whitespace-nowrap tabular-nums text-slate-700')}>{shortDate(file.createdAt)}</TableCell>
+                    <TableCell className={TIGHT_CELL}>
+                      <Select value={choices[file.id] || ''} onValueChange={(value) => onChoose(file.id, value)} disabled={disabled}>
+                        <SelectTrigger aria-label={`Decisión para el archivo ${file.id}`} className="h-7 w-[11rem] px-2 text-xs"><SelectValue placeholder="Elegir…" /></SelectTrigger>
+                        <SelectContent>
+                          {preview.vrs.map((vr) => <SelectItem key={vr.submitId} value={String(vr.submitId)} className="text-xs">{`${vr.vrLabel}${vr.date ? ` · ${vr.date}` : ''}`}</SelectItem>)}
+                          <SelectItem value={EXCLUDE_VALUE} className="text-xs">Excluir</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </TooltipProvider>
     </section>
   );
 }
@@ -92,25 +122,30 @@ function DigitalResolutions({ preview, choices, onChoose, disabled }) {
 function DeliveriesTable({ preview }) {
   const rows = preview.deliveries;
   return (
-    <details className="min-w-0 rounded-lg border">
-      <summary className="cursor-pointer px-[0.75rem] py-2 text-sm font-semibold text-foreground">Entregas que se importarán ({preview.stats.deliveries})</summary>
+    <details className="min-w-0 rounded-md border">
+      <summary className="cursor-pointer px-[0.75rem] py-[0.375rem] text-sm font-semibold text-foreground">Entregas a importar <Tag pill>{preview.stats.deliveries}</Tag></summary>
       <div className="max-h-[28rem] overflow-auto border-t">
         <Table>
           <TableHeader>
-            <TableRow><TableHead>VR</TableHead><TableHead>Código</TableHead><TableHead>Documento</TableHead><TableHead>Tipo</TableHead><TableHead>Versión</TableHead><TableHead>Soporte</TableHead><TableHead>Estado</TableHead></TableRow>
+            <TableRow className="bg-slate-50"><TableHead className={TIGHT_HEAD}>VR</TableHead><TableHead className={TIGHT_HEAD}>Código</TableHead><TableHead className={TIGHT_HEAD}>Documento</TableHead><TableHead className={TIGHT_HEAD}>Tipo</TableHead><TableHead className={TIGHT_HEAD}>Versión</TableHead><TableHead className={TIGHT_HEAD}>Soporte</TableHead><TableHead className={TIGHT_HEAD}>Estado</TableHead></TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.legacyKey} className={cn(row.status !== 'import' && 'opacity-60')}>
-                <TableCell className="whitespace-nowrap font-mono text-xs">{row.vrLabel}</TableCell>
-                <TableCell className="font-mono text-xs">{row.documentCode || row.legacyCode || '—'}</TableCell>
-                <TableCell className="max-w-[24rem] text-xs">{row.instanceLabel || row.title}</TableCell>
-                <TableCell><Badge variant={row.documentClass === 'requirement' ? 'secondary' : 'outline'}>{CLASS_LABELS[row.documentClass] || row.documentClass}</Badge></TableCell>
-                <TableCell className="whitespace-nowrap text-xs tabular-nums">{row.versionSequence ? `${row.versionSequence} de ${row.versionCount}${row.isCurrent ? ' · vigente' : ''}` : '—'}</TableCell>
-                <TableCell className="whitespace-nowrap text-xs">{deliveryMedium(row)}</TableCell>
-                <TableCell className="text-xs">{row.status === 'import' ? 'Importar' : row.status === 'merged' ? 'Unida (repetida)' : 'Excluida'}</TableCell>
-              </TableRow>
-            ))}
+            {rows.map((row) => {
+              const status = DELIVERY_STATUS[row.status] || DELIVERY_STATUS.excluded;
+              return (
+                <TableRow key={row.legacyKey}>
+                  <TableCell className={cn(TIGHT_CELL, 'whitespace-nowrap')}><Tag tone="code" mono>{row.vrLabel}</Tag></TableCell>
+                  <TableCell className={cn(TIGHT_CELL, 'font-mono')}>{row.documentCode || row.legacyCode || '—'}</TableCell>
+                  <TableCell className={cn(TIGHT_CELL, 'max-w-[24rem]')}>{row.instanceLabel || row.title}</TableCell>
+                  <TableCell className={TIGHT_CELL}><Tag tone={CLASS_TONES[row.documentClass] || 'neutral'}>{CLASS_LABELS[row.documentClass] || row.documentClass}</Tag></TableCell>
+                  <TableCell className={cn(TIGHT_CELL, 'whitespace-nowrap tabular-nums')}>
+                    {row.versionSequence ? `${row.versionSequence}/${row.versionCount}` : '—'}{row.isCurrent ? <Tag tone="success" className="ml-1">Vigente</Tag> : null}
+                  </TableCell>
+                  <TableCell className={cn(TIGHT_CELL, 'whitespace-nowrap')}>{deliveryMedium(row)}</TableCell>
+                  <TableCell className={TIGHT_CELL}><Tag tone={status.tone}>{status.label}</Tag></TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
@@ -118,28 +153,35 @@ function DeliveriesTable({ preview }) {
   );
 }
 
+function CountRow({ label, count, tone = 'neutral' }) {
+  return <li className="flex items-center justify-between gap-2 text-xs text-foreground"><span>{label}</span><Tag tone={tone} pill>{count}</Tag></li>;
+}
+
 function FilesAndChecklist({ preview }) {
   const statuses = preview.files.reduce((acc, file) => Object.assign(acc, { [file.status]: (acc[file.status] || 0) + 1 }), {});
   const checklist = preview.stats.checklist;
   return (
-    <div className="grid gap-[0.75rem] lg:grid-cols-2">
-      <div className="rounded-lg border px-[0.75rem] py-2">
-        <h4 className="mb-1 text-sm font-semibold text-foreground">Archivos</h4>
-        <ul className="mb-0 space-y-0.5 pl-4 text-xs text-muted-foreground">
-          {Object.keys(statuses).map((status) => <li key={status}>{FILE_STATUS_LABELS[status] || status}: {statuses[status]}</li>)}
-          <li>Se conservan las rutas de almacenamiento actuales; los archivos no se copian.</li>
-        </ul>
-      </div>
-      <div className="rounded-lg border px-[0.75rem] py-2">
-        <h4 className="mb-1 text-sm font-semibold text-foreground">Lista de chequeo antigua frente a Central</h4>
-        {checklist ? (
-          <ul className="mb-0 space-y-0.5 pl-4 text-xs text-muted-foreground">
-            {['consistent', 'mismatch', 'missing', 'not_applicable'].map((status) => <li key={status}>{CHECKLIST_STATUS_LABELS[status]}: {checklist[status === 'not_applicable' ? 'notApplicable' : status]}</li>)}
-            <li>La lista de chequeo antigua no se importa; solo se compara.</li>
+    <details className="min-w-0 rounded-md border">
+      <summary className="cursor-pointer px-[0.75rem] py-[0.375rem] text-sm font-semibold text-foreground">Detalles de archivos y lista de chequeo</summary>
+      <div className="grid gap-[0.75rem] border-t p-[0.75rem] lg:grid-cols-2">
+        <div>
+          <h4 className="mb-1 text-xs font-semibold text-foreground" title="Se conservan las rutas actuales; los archivos no se copian.">Archivos</h4>
+          <ul className="m-0 flex list-none flex-col gap-1 p-0">
+            {Object.keys(statuses).map((status) => <CountRow key={status} label={FILE_STATUS_LABELS[status] || status} count={statuses[status]} />)}
           </ul>
-        ) : null}
+        </div>
+        <div>
+          <h4 className="mb-1 text-xs font-semibold text-foreground" title="La lista de chequeo antigua no se importa; solo se compara con Central.">Chequeo antiguo vs. Central</h4>
+          {checklist ? (
+            <ul className="m-0 flex list-none flex-col gap-1 p-0">
+              {['consistent', 'mismatch', 'missing', 'not_applicable'].map((status) => (
+                <CountRow key={status} label={CHECKLIST_STATUS_LABELS[status]} count={checklist[status === 'not_applicable' ? 'notApplicable' : status]} tone={status === 'mismatch' || status === 'missing' ? 'warning' : 'neutral'} />
+              ))}
+            </ul>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -152,13 +194,12 @@ function ConfirmDialog({ open, onOpenChange, preview, busy, onConfirm }) {
         <DialogHeader>
           <DialogTitle>Migrar el expediente al modelo nuevo</DialogTitle>
           <DialogDescription>
-            Se fijará la {releaseLabel(preview.release)} y se importarán {preview.stats.deliveries} entregas de {preview.stats.vrs} VR. La operación es atómica y no modifica las tablas antiguas.
+            Se fijará la {releaseLabel(preview.release)} y se importarán {preview.stats.deliveries} entregas de {preview.stats.vrs} VR. Es atómica y no modifica las tablas antiguas.
           </DialogDescription>
         </DialogHeader>
         <form id={`${reasonId}-form`} onSubmit={(event) => { event.preventDefault(); if (reason.trim()) onConfirm(reason); }} className="flex flex-col gap-1.5">
           <label htmlFor={reasonId} className="text-sm font-medium text-foreground">Motivo de la migración</label>
-          <Textarea id={reasonId} value={reason} maxLength={1000} required rows={3} onChange={(event) => setReason(event.target.value)} disabled={busy} />
-          <p className="mb-0 text-xs text-muted-foreground">Queda registrado en el historial documental del expediente.</p>
+          <Textarea id={reasonId} placeholder="Queda en el historial del expediente" value={reason} maxLength={1000} required rows={3} onChange={(event) => setReason(event.target.value)} disabled={busy} />
         </form>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>Cancelar</Button>
@@ -191,12 +232,12 @@ export function LegacyMigrationPanel({ fun0Id, onMigrated = () => {} }) {
         <FunUpdateSectionLegend as="h3" id={titleId} step={<ArrowRightLeft className="h-4 w-4" aria-hidden="true" />} className="m-0">
           Migrar al modelo nuevo
         </FunUpdateSectionLegend>
-        <p className="mb-0 text-xs text-muted-foreground">Importa las entregas de las ventanillas antiguas al modelo documental nuevo, correlacionadas con el catálogo de Dovela Central.</p>
+        <p className="mb-0 text-xs text-slate-600">Importa las entregas antiguas al modelo nuevo.</p>
       </CardHeader>
       <CardContent className="flex flex-col gap-[1rem] p-[1rem]">
         <div className="flex flex-wrap items-end gap-[0.75rem]">
           <div className="flex min-w-[16rem] flex-col gap-1">
-            <span id={`${titleId}-release`} className="text-xs font-medium text-muted-foreground">Publicación de Central</span>
+            <span id={`${titleId}-release`} className="text-xs font-medium text-slate-600">Publicación de Central</span>
             <Select value={migration.configurationId == null ? 'current' : String(migration.configurationId)}
               onValueChange={(value) => migration.chooseRelease(value === 'current' ? null : value)} disabled={migration.loading || migration.committing}>
               <SelectTrigger aria-labelledby={`${titleId}-release`} className="h-9 text-sm"><SelectValue /></SelectTrigger>
@@ -215,7 +256,7 @@ export function LegacyMigrationPanel({ fun0Id, onMigrated = () => {} }) {
         {migration.error ? <Alert role="alert" variant="destructive" className="py-2.5"><CircleAlert aria-hidden="true" /><AlertDescription>{migration.error}</AlertDescription></Alert> : null}
         {migration.loading ? <div className="flex flex-col gap-2" aria-hidden="true"><Skeleton className="h-16 w-full" /><Skeleton className="h-24 w-full" /></div> : null}
         {!preview && !migration.loading ? (
-          <Alert variant="neutral" className="py-2.5"><Info aria-hidden="true" /><AlertDescription>Analice el expediente para ver las entregas que se importarán y las incidencias antes de migrar.</AlertDescription></Alert>
+          <Alert variant="neutral" className="py-2.5"><Info aria-hidden="true" /><AlertDescription>Analice el expediente para ver qué se importará.</AlertDescription></Alert>
         ) : null}
 
         {preview && !migration.loading ? (
@@ -224,7 +265,7 @@ export function LegacyMigrationPanel({ fun0Id, onMigrated = () => {} }) {
             <IssueGroups issues={preview.issues} />
             <DigitalResolutions preview={preview} choices={migration.choices} onChoose={migration.choose} disabled={migration.committing} />
             {migration.resolutionsChanged ? (
-              <Alert variant="warning" className="py-2.5"><TriangleAlert aria-hidden="true" /><AlertDescription>Cambió las decisiones: analice de nuevo antes de migrar.</AlertDescription></Alert>
+              <Alert variant="warning" className="py-2.5"><TriangleAlert aria-hidden="true" /><AlertDescription>Decisiones cambiadas: analice de nuevo.</AlertDescription></Alert>
             ) : null}
             <FilesAndChecklist preview={preview} />
             <DeliveriesTable preview={preview} />

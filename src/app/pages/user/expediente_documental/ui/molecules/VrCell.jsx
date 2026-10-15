@@ -5,7 +5,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
+import { Tag } from '../atoms/Tag';
 import { cn } from '@/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { getDocumentVrDisplayValue } from '../../../shared/expediente-documental.utils';
@@ -34,15 +34,14 @@ export function VrCell({ latestVr, vrValues = [], className }) {
         <VrBadge value={primaryValue} />
         {extraValues.length ? <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Badge
-                    variant="outline"
-                    role="button"
-                    tabIndex={0}
+                <Tag
+                    as="button"
+                    type="button"
                     aria-label={`Ver ${extraValues.length} VR adicionales`}
-                    className="cursor-pointer rounded-full border-border bg-muted/40 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground hover:bg-muted"
+                    pill
                 >
                     +{extraValues.length}
-                </Badge>
+                </Tag>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
                 <DropdownMenuLabel>VR asociados</DropdownMenuLabel>
