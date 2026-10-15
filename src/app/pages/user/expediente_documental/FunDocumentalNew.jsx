@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { CircleAlert, CircleCheck, FileOutput, FilePlus2, Inbox, Settings2, TriangleAlert } from 'lucide-react';
+import { CircleAlert, CircleCheck, FileOutput, FilePlus2, Inbox, Scale, Settings2, TriangleAlert } from 'lucide-react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
 
 // The generators pull PDF tooling; load them only when the tab is opened.
 const DocumentGeneratorsPanel = lazy(() => import('./ui/organisms/DocumentGeneratorsPanel'));
+const LegalFormPanel = lazy(() => import('./ui/organisms/LegalFormPanel'));
 
 function LegacyDocumentalWorkspace({
   currentId,
@@ -84,6 +85,7 @@ function LegacyDocumentalWorkspace({
 
 const TAB_INPUT = 'radicacion';
 const TAB_ISSUED = 'expedidos';
+const TAB_LEGAL_FORM = 'legal';
 const TAB_GENERATORS = 'generar';
 const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
@@ -121,7 +123,13 @@ function ProjectDocumentaryWorkspace(props) {
   // Viewing and changing the Central configuration version is limited to abogado,
   // curador and programador; the tab (and its requests) must not exist for other roles.
   const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData()) && Boolean(origin);
-  const currentTab = activeTab === TAB_CONFIGURATION && !canConfigure ? TAB_INPUT : activeTab;
+  // Last loaded origin: a refresh (e.g. after a declaration) must not unmount the open tab.
+  const [lastOrigin, setLastOrigin] = useState(null);
+  if (origin && origin !== lastOrigin) setLastOrigin(origin);
+  const stableOrigin = origin || lastOrigin;
+  // Legal y debida forma exists only in the new documentary model (legacy keeps its checklist).
+  const showLegalForm = isCanonicalMode(stableOrigin?.mode);
+  const currentTab = (activeTab === TAB_CONFIGURATION && !canConfigure) || (activeTab === TAB_LEGAL_FORM && !showLegalForm) ? TAB_INPUT : activeTab;
 
   function selectTab(key) {
     setNotice('');
@@ -134,6 +142,11 @@ function ProjectDocumentaryWorkspace(props) {
   }
   function handleConflict() {
     setNotice(CONFLICT_NOTICE);
+    setRevision((value) => value + 1);
+    source.refresh();
+  }
+  // A declaration changes the expediente state (minState 5 generators) and the inventory verdicts.
+  function handleDeclarationChanged() {
     setRevision((value) => value + 1);
     source.refresh();
   }
@@ -153,6 +166,12 @@ function ProjectDocumentaryWorkspace(props) {
             Expedidos
             {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
           </TabsTrigger>
+          {showLegalForm ? (
+            <TabsTrigger value={TAB_LEGAL_FORM} className={TRIGGER_CLASS}>
+              <Scale aria-hidden="true" />
+              Legal y debida forma
+            </TabsTrigger>
+          ) : null}
           <TabsTrigger value={TAB_GENERATORS} className={TRIGGER_CLASS}>
             <FilePlus2 aria-hidden="true" />
             Generar documentos
@@ -179,10 +198,19 @@ function ProjectDocumentaryWorkspace(props) {
         <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} />
       </TabsContent>
 
-      {/* Mounted only while active: it loads the expediente and its generators on demand. */}
+      {showLegalForm ? (
+        <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
+          <Suspense fallback={<WorkspaceSkeleton />}>
+            <LegalFormPanel origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} />
+          </Suspense>
+        </TabsContent>
+      ) : null}
+
+      {/* Mounted only while active: it loads the expediente (state) and its generators on demand. */}
       <TabsContent value={TAB_GENERATORS} className="mt-0 min-w-0">
         <Suspense fallback={<WorkspaceSkeleton />}>
           <DocumentGeneratorsPanel
+            key={`generators:${revision}`}
             currentId={props.currentId}
             currentVersion={props.currentVersion}
             translation={props.translation}
