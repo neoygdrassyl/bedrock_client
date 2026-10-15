@@ -201,7 +201,7 @@ function ProjectDocumentaryWorkspace(props) {
       {showLegalForm ? (
         <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
           <Suspense fallback={<WorkspaceSkeleton />}>
-            <LegalFormPanel origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} />
+            <LegalFormPanel origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
           </Suspense>
         </TabsContent>
       ) : null}

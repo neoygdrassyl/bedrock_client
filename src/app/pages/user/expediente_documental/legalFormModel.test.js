@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { controlSheetDefaults, controlSheetReviewPlan, groupBlockers, inventorySheetCommand } from './legalFormModel';
+import { checklistDefaultMarks, checklistInitialMarks, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, groupBlockers, inventorySheetCommand, missingFactLabels, reviewedByLine, SOURCE_FACT_LABELS } from './legalFormModel';
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });
 const requirement = (extra) => ({ documentCode: '511', title: 'Formulario', delivered: true, allowsMultipleInstances: false, instances: [instance()], ...extra });
@@ -59,5 +59,36 @@ describe('legalFormModel', () => {
     expect(command).toEqual({ sheet: { date_create: '2026-10-01', user_archive: 'Ana', user_retrieve: '', date_retrieve: '2026-10-02', items: [{ name: 'CD', date: '', n: '2', label: 'CD(s)' }] },
       expectedSheetRevision: 4, idempotencyKey: expect.any(String), reason: 'Inventario' });
     expect(inventorySheetCommand(null, { items: [] }, 'x').expectedSheetRevision).toBe(0);
+  });
+
+  it('labels the missing facts of an incomplete evaluation, deduplicated and tolerant of older payloads', () => {
+    expect(missingFactLabels({})).toEqual([]);
+    expect(missingFactLabels({ warnings: [], evaluation: { missingFacts: [] } })).toEqual([]);
+    expect(missingFactLabels({
+      warnings: [{ code: 'REQUIREMENTS_INCOMPLETE', sourceKeys: ['usosAny', 'personaAny'] }, { code: 'OTHER', sourceKeys: ['areaAny'] }],
+      evaluation: { missingFacts: ['usosAny', 'mUrbAny', 'nuevaAny'] },
+    })).toEqual(['Usos', 'Modalidad urbanización', 'nuevaAny', 'Tipo de persona del solicitante']);
+    expect(SOURCE_FACT_LABELS.tipoAny).toBe('Tipo de solicitud');
+    expect(SOURCE_FACT_LABELS.tipo).toBe('Tipo de solicitud');
+    ['tramiteAny', 'mSubAny', 'mLicAny', 'areaAny', 'viviendaAny', 'culturalAny', 'calidadAny', 'profesionalAny'].forEach((key) => expect(SOURCE_FACT_LABELS[key]).toBeTruthy());
+  });
+
+  it('starts the checklist from the saved mark, then the server default, then N/A', () => {
+    const data = { checklist: { marks: { a: '0', b: 'x' } }, checklistDefaults: { a: '1', b: '1', c: '0', d: 'bad' } };
+    expect(checklistInitialMarks(data, ['a', 'b', 'c', 'd', 'e'])).toEqual({ a: '0', b: '1', c: '0', d: '2', e: '2' });
+    expect(checklistDefaultMarks(data, ['a', 'c', 'e'])).toEqual({ a: '1', c: '0', e: '2' });
+    expect(checklistInitialMarks({ checklist: null }, ['a'])).toEqual({ a: '2' });
+    expect(checklistInitialMarks(null, ['a'])).toEqual({ a: '2' });
+  });
+
+  it('builds the legacy review shape of the checklist in code order', () => {
+    expect(checklistReviewOf(['511', '512', '513'], { 511: '1', 512: '0' })).toEqual({ code: '511,512,513', checked: '1,0,2' });
+  });
+
+  it('formats who reviewed, with the id as fallback and nothing without a previous decision', () => {
+    expect(reviewedByLine({})).toBeNull();
+    expect(reviewedByLine({ name: 'Ana', at: '2026-10-14T15:00:00.000Z' })).toMatch(/^Revisado por Ana · \d/);
+    expect(reviewedByLine({ id: 9 })).toBe('Revisado por usuario 9');
+    expect(reviewedByLine({ name: 'Ana' })).toBe('Revisado por Ana');
   });
 });

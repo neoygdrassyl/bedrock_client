@@ -9,6 +9,7 @@ import { createCanonicalSubmit, documentaryReceiptRuleError, getCanonicalVersion
 import { CatalogueDocumentPicker } from '../molecules/CatalogueDocumentPicker';
 import { CheckboxField, fieldClass, fileFieldClass, FormField, FormFieldset, FormSection, hintClass } from '../molecules/FormField';
 import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf } from '../../canonicalDocumentaryModel';
+import { reviewedByLine } from '../../legalFormModel';
 
 export { fieldClass };
 
@@ -435,6 +436,39 @@ export function EvidenceForm({ origin, row, onSaved, onConflict, onCancel }) {
   );
 }
 
+/**
+ * Presentational fields of one control decision: title, status, previous reviewer, result select
+ * and observation. `children` render inside the (disabled-while-busy) fieldset, e.g. a save button.
+ */
+export function ControlDecisionFields({ idPrefix, control, value, observation, onValueChange, onObservationChange, disabled = false, invalid = false, children }) {
+  const stale = control.review?.current === false;
+  const reviewedBy = reviewedByLine({ name: control.review?.actorName, id: control.review?.actorId, at: control.review?.decidedAt });
+  return (
+    <>
+      <div className="flex flex-col gap-1">
+        <p className="mb-0 text-sm font-medium leading-5 text-foreground">{control.title}</p>
+        <p className={cn('mb-0 text-xs leading-4', stale ? 'font-medium text-[hsl(var(--operational-warning-text))]' : 'text-muted-foreground')}>
+          {stale ? 'La evidencia cambió. Revise nuevamente este control.' : effectLabel(control.review?.effect)}
+        </p>
+        {reviewedBy ? <p className="mb-0 text-[11px] leading-4 text-muted-foreground">{reviewedBy}</p> : null}
+      </div>
+      <fieldset disabled={disabled} className="m-0 flex min-w-0 flex-col gap-[0.75rem] p-0 !border-0">
+        <FormField id={`${idPrefix}-result`} label="Resultado">
+          <select id={`${idPrefix}-result`} name="result" className={fieldClass} required value={value} onChange={(event) => onValueChange(event.target.value)}>
+            <option value="">Seleccione un resultado</option>
+            {control.values.map((item) => <option key={item.sourceValueId} value={item.sourceValueId}>{item.label}</option>)}
+          </select>
+        </FormField>
+        <FormField id={`${idPrefix}-observation`} label="Observación">
+          <textarea id={`${idPrefix}-observation`} name="observation" rows={3} className={cn(fieldClass, 'min-h-[4.5rem] resize-y')} maxLength={4000} value={observation} onChange={(event) => onObservationChange(event.target.value)}
+            required={control.values.find((item) => item.sourceValueId === value)?.effect === 'does_not_comply'} aria-invalid={invalid || undefined} />
+        </FormField>
+        {children}
+      </fieldset>
+    </>
+  );
+}
+
 /** Legal y debida forma decision for one control of the current evidence. */
 export function ControlDecision({ origin, row, control, canReview, onSaved, onConflict }) {
   const ids = useId();
@@ -456,27 +490,11 @@ export function ControlDecision({ origin, row, control, canReview, onSaved, onCo
     } catch (failure) { failureHandler(command, setError, onConflict)(failure); }
     finally { setBusy(false); }
   }
-  const stale = control.review?.current === false;
   return (
     <form onSubmit={save} onChange={() => { command.current = null; }} className="flex flex-col gap-[0.75rem]">
-      <div className="flex flex-col gap-1">
-        <p className="mb-0 text-sm font-medium leading-5 text-foreground">{control.title}</p>
-        <p className={cn('mb-0 text-xs leading-4', stale ? 'font-medium text-[hsl(var(--operational-warning-text))]' : 'text-muted-foreground')}>
-          {stale ? 'La evidencia cambió. Revise nuevamente este control.' : effectLabel(control.review?.effect)}
-        </p>
-      </div>
-      <fieldset disabled={busy || !canReview} className="m-0 flex min-w-0 flex-col gap-[0.75rem] p-0 !border-0">
-        <FormField id={`${ids}-result`} label="Resultado">
-          <select id={`${ids}-result`} name="result" className={fieldClass} required value={value} onChange={(event) => setValue(event.target.value)}>
-            <option value="">Seleccione un resultado</option>
-            {control.values.map((item) => <option key={item.sourceValueId} value={item.sourceValueId}>{item.label}</option>)}
-          </select>
-        </FormField>
-        <FormField id={`${ids}-observation`} label="Observación">
-          <textarea id={`${ids}-observation`} name="observation" rows={3} className={cn(fieldClass, 'min-h-[4.5rem] resize-y')} maxLength={4000} value={observation} onChange={(event) => setObservation(event.target.value)} required={control.values.find((item) => item.sourceValueId === value)?.effect === 'does_not_comply'} />
-        </FormField>
+      <ControlDecisionFields idPrefix={ids} control={control} value={value} observation={observation} onValueChange={setValue} onObservationChange={setObservation} disabled={busy || !canReview}>
         {canReview ? <div className="flex justify-end"><Button type="submit" size="sm" disabled={busy}>{busy ? 'Guardando…' : 'Guardar revisión'}</Button></div> : null}
-      </fieldset>
+      </ControlDecisionFields>
       <ErrorMessage error={error} />
     </form>
   );

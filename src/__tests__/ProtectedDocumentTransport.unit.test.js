@@ -52,7 +52,7 @@ const protectedPreviewFiles = [
 
 const protectedPdfTemplateFiles = [
   'src/app/pages/user/fun_forms/components/fun_pdf.js',
-  'src/app/pages/user/fun_forms/components/fun_pdf_check.js',
+  'src/app/pages/user/fun_forms/components/checklistPdf.js',
   'src/app/pages/user/records/arc/record_arc_38.js',
   'src/app/pages/user/records/ph/record_ph_review.component.js',
   'src/app/pages/user/records/record_review.js',

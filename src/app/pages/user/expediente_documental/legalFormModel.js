@@ -1,4 +1,5 @@
 // Pure helpers of the legal y debida forma (LDF) view and of the generators that write it.
+import { formatDocumentaryDate } from './canonicalDocumentaryModel';
 
 export const LEGAL_FORM_STATE_META = {
   ready: { label: 'Lista para declarar', tone: 'success', text: 'Todos los requisitos están entregados y revisados.' },
@@ -19,6 +20,7 @@ export const BLOCKER_LABELS = {
   REQUIREMENTS_NOT_EVALUATED: 'Requisitos sin evaluar',
   REQUIREMENTS_STALE: 'Evaluación desactualizada',
   REQUIREMENTS_INCOMPLETE: 'Evaluación incompleta',
+  REQUIREMENTS_UNSUPPORTED: 'Evaluación no soportada',
   NOT_DELIVERED: 'Sin entregar',
   VERDICT_PENDING: 'Revisión pendiente',
   DOES_NOT_COMPLY: 'No cumple',
@@ -112,3 +114,68 @@ export function inventorySheetOf({ date_create, user_archive, user_retrieve, dat
 export function inventorySheetCommand(legalForm, values, reason) {
   return { sheet: inventorySheetOf(values), expectedSheetRevision: legalForm?.sheet?.sheetRevision || 0, idempotencyKey: crypto.randomUUID(), reason };
 }
+
+// ---------- incomplete evaluation (warning) ----------
+
+/** Human labels of the Central source keys (facts of the FUN) an evaluation can miss. Unknown keys show as-is. */
+export const SOURCE_FACT_LABELS = {
+  tipoAny: 'Tipo de solicitud',
+  tramiteAny: 'Trámite',
+  mUrbAny: 'Modalidad urbanización',
+  mSubAny: 'Modalidad subdivisión',
+  mLicAny: 'Modalidad licencia',
+  usosAny: 'Usos',
+  areaAny: 'Área',
+  viviendaAny: 'Vivienda',
+  culturalAny: 'Bien de interés cultural',
+  personaAny: 'Tipo de persona del solicitante',
+  calidadAny: 'Calidad del solicitante',
+  profesionalAny: 'Profesionales',
+};
+// Legacy aliases of the same facts (backend documentary-fact-aliases.js).
+Object.entries({ tipo: 'tipoAny', tramite: 'tramiteAny', m_urb: 'mUrbAny', m_sub: 'mSubAny', m_lic: 'mLicAny', usos: 'usosAny', area: 'areaAny', vivienda: 'viviendaAny', cultural: 'culturalAny' })
+  .forEach(([alias, key]) => { SOURCE_FACT_LABELS[alias] = SOURCE_FACT_LABELS[key]; });
+
+export const factLabel = (sourceKey) => SOURCE_FACT_LABELS[sourceKey] || String(sourceKey);
+
+/**
+ * Labels of the facts the evaluation could not read: `evaluation.missingFacts` plus the sourceKeys of
+ * the REQUIREMENTS_INCOMPLETE warning, deduplicated. Empty for payloads without these fields.
+ */
+export function missingFactLabels(data) {
+  const warned = (data?.warnings || []).filter((warning) => warning?.code === 'REQUIREMENTS_INCOMPLETE').flatMap((warning) => warning.sourceKeys || []);
+  const keys = [...(data?.evaluation?.missingFacts || []), ...warned].filter((key) => key != null && key !== '');
+  return Array.from(new Set(keys.map(String))).map(factLabel);
+}
+
+// ---------- reviewer attribution ----------
+
+/**
+ * "Revisado por {name} · {date}" of a previous decision, or null when there is none. Falls back to
+ * "usuario {id}" when only the id is known; the date is omitted when unknown.
+ */
+export function reviewedByLine({ name, id, at } = {}) {
+  const who = name || (id != null && id !== '' ? `usuario ${id}` : null);
+  if (!who && !at) return null;
+  const when = at ? formatDocumentaryDate(at) : null;
+  return [`Revisado por ${who || 'un usuario'}`, when && when !== '—' ? when : null].filter(Boolean).join(' · ');
+}
+
+// ---------- lista de chequeo (checklist) ----------
+
+export const CHECKLIST_MARKS = [{ value: '1', label: 'SI' }, { value: '0', label: 'NO' }, { value: '2', label: 'N/A' }];
+const validMark = (value) => (value === '0' || value === '1' || value === '2' ? value : null);
+
+/** Server defaults (derived from the reviews) of each code; N/A when unknown. */
+export function checklistDefaultMarks(data, codes) {
+  return Object.fromEntries(codes.map((code) => [code, validMark(data?.checklistDefaults?.[code]) ?? '2']));
+}
+
+/** Initial marks of the checklist dialog: saved mark, else server default, else N/A. */
+export function checklistInitialMarks(data, codes) {
+  const defaults = checklistDefaultMarks(data, codes);
+  return Object.fromEntries(codes.map((code) => [code, validMark(data?.checklist?.marks?.[code]) ?? defaults[code]]));
+}
+
+/** Legacy `fun_rs` shape the checklist PDF reads: { code: 'a,b', checked: '1,0' }. */
+export const checklistReviewOf = (codes, marks) => ({ code: codes.join(','), checked: codes.map((code) => marks[code] ?? '2').join(',') });
