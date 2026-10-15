@@ -20,7 +20,7 @@ vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: 
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
 vi.mock('../shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
-vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: () => null }));
+vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
 vi.mock('@/app/services/data.service', () => ({ default: { getUserData: mocks.user } }));
 vi.mock('@/app/services/cubXvr.service', () => ({ default: { getByFUN: mocks.cubByFun } }));
 
@@ -53,8 +53,28 @@ it('renders the redesigned workspace for a traditional origin and never the lega
   mocks.origin.mockReturnValue({ origin: TRADITIONAL, refresh: vi.fn() });
   render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
   expect(screen.getByText('Redesigned documentary workspace')).toBeInTheDocument();
+  expect(screen.getByText('Documentación tradicional')).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
   expect(screen.queryByText('Legacy FUND module')).not.toBeInTheDocument();
   expect(mocks.fund).not.toHaveBeenCalled();
+  await settleIssuedCount();
+});
+
+it('keeps the origin query error visible with a retry action once the banner is gone', async () => {
+  const user = userEvent.setup();
+  const refresh = vi.fn();
+  mocks.origin.mockReturnValue({ origin: null, error: 'Publicación no disponible', refresh });
+  render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+  expect(screen.getByRole('alert')).toHaveTextContent('Publicación no disponible');
+  await user.click(screen.getByRole('button', { name: 'Reintentar' }));
+  expect(refresh).toHaveBeenCalledTimes(1);
+  await settleIssuedCount();
+});
+
+it('shows the pending Central activation notice without a banner', async () => {
+  mocks.origin.mockReturnValue({ origin: { ...TRADITIONAL, publication: null, warnings: [{ code: 'CENTRAL_ACTIVATION_PENDING', releaseVersion: 3, releaseId: 'rel-a' }] }, refresh: vi.fn() });
+  render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+  expect(screen.getByRole('note')).toHaveTextContent('versión 3 (rel-a), pendiente de activación');
   await settleIssuedCount();
 });
 
@@ -62,9 +82,10 @@ describe('documentary tabs', () => {
   it('opens on Radicación and hides Configuración documental for roles without access', async () => {
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
-    // One module heading above the tabs, with the radicado and the documentary origin as caption.
-    expect(screen.getByRole('heading', { name: 'Gestión documental' })).toBeInTheDocument();
+    // No module banner: the radicado and the documentary origin are a single caption next to the tabs.
+    expect(screen.queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
     expect(screen.getByText('FUN-1')).toBeInTheDocument();
+    expect(screen.getByText('Documentación según el catálogo documental (versión 1)')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Radicación/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByRole('tab', { name: /Configuración documental/ })).not.toBeInTheDocument();

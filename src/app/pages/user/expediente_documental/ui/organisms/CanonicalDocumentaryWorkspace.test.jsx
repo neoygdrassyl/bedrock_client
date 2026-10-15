@@ -268,14 +268,18 @@ describe('recepción según el catálogo y el expediente', () => {
 });
 
 describe('presentación alineada con Actualizar', () => {
-  it('shows the module title on its own and only the KPI strip when embedded in the tabs', async () => {
+  it('keeps the module title only on standalone screens and always renders the KPIs as chips in the toolbar', async () => {
     const { unmount } = render(<CanonicalDocumentaryWorkspace origin={origin} />);
     expect(await screen.findByRole('heading', { name: 'Gestión documental' })).toBeInTheDocument();
     unmount();
     render(<CanonicalDocumentaryWorkspace origin={origin} embedded />);
     const workspace = await screen.findByRole('region', { name: 'Documentos recibidos' });
     expect(within(workspace).queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
-    expect(within(workspace).getByLabelText('Resumen documental')).toHaveTextContent('Documentos');
+    const summary = within(workspace).getByLabelText('Resumen documental');
+    expect(summary).toHaveTextContent('Documentos');
+    // Chips live in the card toolbar, next to the quick filters: no band of their own above the card.
+    expect(within(workspace.querySelector('[data-testid="canonical-documentary-workspace"]')).getByLabelText('Resumen documental')).toBe(summary);
+    expect(summary.closest('[role="group"]')).toBeNull();
   });
 
   it('explains KPI hints through an accessible tooltip trigger instead of a native title', async () => {
