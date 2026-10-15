@@ -185,3 +185,36 @@
     border-bottom-color: #D7E6F5;
     background: #F7FAFD;
 }
+
+.dark .op__trigger,
+:root[class~="dark"] .op__trigger {
+    background: hsl(var(--muted) / 0.4);
+    border-color: hsl(var(--border));
+    border-left-color: hsl(var(--primary));
+    color: hsl(var(--foreground));
+}
+
+.dark .op__trigger:hover,
+:root[class~="dark"] .op__trigger:hover {
+    background: hsl(var(--muted) / 0.6);
+}
+
+.dark .op__hint,
+:root[class~="dark"] .op__hint {
+    color: hsl(var(--primary));
+}
+
+.dark .op__static-header,
+:root[class~="dark"] .op__static-header {
+    background: hsl(var(--muted) / 0.4);
+    border-color: hsl(var(--border));
+    border-left-color: hsl(var(--primary));
+    color: hsl(var(--foreground));
+}
+
+.dark .op__static-body,
+:root[class~="dark"] .op__static-body {
+    border-color: hsl(var(--border));
+    background: hsl(var(--card));
+}
+
