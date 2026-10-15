@@ -19,6 +19,9 @@ export const GENERATOR_SECTION_SPECIAL = 'special';
 const MIN_STATE_REASON = 'Disponible desde el estado radicado en legal y debida forma.';
 const NEIGHBOUR_REASON = 'No aplica: la modalidad del trámite no requiere citación a vecinos.';
 
+// `edit` is deliberately not passed to fun_doc_confirmlegal / fun_doc_confirminc: it is only set by the
+// "5. CONTROL DE LYDF" section of fun_c.js (the data-entry form) to show SAVE and GENERAR CUB. The legacy
+// FUND module (fun_docs.js) never passed it, so the generators list keeps parity: PDF generation only.
 const withRequestUpdate = (ctx) => ({ requestUpdate: ctx.requestUpdate });
 
 /**
@@ -38,7 +41,7 @@ export const DOCUMENT_GENERATORS = Object.freeze([
   { id: 'fun_pdf', domId: 'fund_pdf', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF, label: 'PDF Formulario Único Nacional', title: 'Formulario Único Nacional', description: 'PDF del FUN con los datos del expediente.', gates: {}, canonicalSave: false },
   { id: 'fun_pdf_check', domId: 'fund_pdf2', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF_CHECK, label: 'PDF Lista de Chekeo', title: 'Lista de chequeo', description: 'PDF de la lista de chequeo documental.', gates: {}, canonicalSave: false, usesDocumentaryInventory: true },
   { id: 'fun_doc_confirminc', domId: 'fund_212', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRM_INCOMPLETE, label: 'Documento de recordatorio incompleto', title: 'Recordatorio de radicación incompleta', description: 'Carta de documentos faltantes.', gates: {}, canonicalSave: true, extraProps: withRequestUpdate },
-  { id: 'fun_doc_confirmlegal', domId: 'fund_21', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRMLEGAL, label: 'Documento de Confirmación Legal y Debida Forma', title: 'Constancia de legal y debida forma', description: 'Confirmación de radicación en legal y debida forma.', gates: { minState: 5 }, canonicalSave: true, usesDocumentaryInventory: true, extraProps: (ctx) => ({ requestUpdate: ctx.requestUpdate, VIEW_G: true }) },
+  { id: 'fun_doc_confirmlegal', domId: 'fund_21', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRMLEGAL, label: 'Documento de Confirmación Legal y Debida Forma', title: 'Constancia de legal y debida forma', description: 'Confirmación de radicación en legal y debida forma.', gates: { minState: 5 }, canonicalSave: true, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
   { id: 'fun_sign_pdf', domId: 'fund_sign', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SIGN_PDF, label: 'Valla', title: 'Valla', description: 'Valla informativa del trámite.', gates: { minState: 5, neighbourNotice: true }, canonicalSave: false },
   { id: 'fun_seals', domId: 'fund_seal', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SEAL, label: 'Sello', title: 'Sello', description: 'Sello de radicación.', gates: { tenant: 'cb1' }, canonicalSave: true },
   { id: 'fun_alert_neighbour', domId: 'fund_22', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_ALERT_NEIGHBOUR, label: 'DOCUMENTOS DE CITACIÓN A VECINOS', title: 'Citación a vecinos', description: 'Comunicaciones y publicación a vecinos.', gates: { neighbourNotice: true }, canonicalSave: false },

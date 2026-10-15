@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button';
 
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
         const [attachs, setAttachs] = useState(0);
-        const [edit, setEdit] = useState(false);
         const [item, setItem] = useState(null);
         const [show_doc_1, setShow_doc_1] = useState(false);
         const [modal_searchList, setModal_searchList] = useState(false);
