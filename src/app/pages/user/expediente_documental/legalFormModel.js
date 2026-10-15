@@ -179,3 +179,22 @@ export function checklistInitialMarks(data, codes) {
 
 /** Legacy `fun_rs` shape the checklist PDF reads: { code: 'a,b', checked: '1,0' }. */
 export const checklistReviewOf = (codes, marks) => ({ code: codes.join(','), checked: codes.map((code) => marks[code] ?? '2').join(',') });
+
+/** Valid stored marks as a plain { code: mark } object (invalid or empty values dropped). */
+const storedChecklistMarks = (data) => Object.fromEntries(Object.entries(data?.checklist?.marks || {}).map(([code, value]) => [code, validMark(value)]).filter(([, value]) => value));
+
+/**
+ * Checklist marks are overrides of the server defaults: only the codes whose mark differs from the
+ * default (N/A when the server gives none) are stored. All marks equal to the defaults gives `{}`.
+ */
+export function checklistOverrides(data, codes, marks) {
+  const defaults = checklistDefaultMarks(data, codes);
+  return Object.fromEntries(codes.map((code) => [code, validMark(marks?.[code]) ?? defaults[code]]).filter(([code, value]) => value !== defaults[code]));
+}
+
+/** Whether `overrides` is exactly what is already stored (both empty counts as equal). */
+export function checklistOverridesStored(data, overrides) {
+  const stored = storedChecklistMarks(data);
+  const keys = Object.keys(overrides);
+  return keys.length === Object.keys(stored).length && keys.every((code) => stored[code] === overrides[code]);
+}

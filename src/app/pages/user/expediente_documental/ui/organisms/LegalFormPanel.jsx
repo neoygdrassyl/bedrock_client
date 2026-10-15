@@ -267,7 +267,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
       </div>
 
       <ReviewSheet target={review} fun0Id={fun0Id} onClose={() => setReview(null)} onSaved={(message) => { setReview(null); refresh(message); }} onConflict={conflict} />
-      <ControlsSheet target={controls} origin={origin} canReview={canReview} onClose={() => setControls(null)} onSaved={(message) => { setControls(null); refresh(message); }} onConflict={() => { setControls(null); refresh(CONFLICT_MESSAGE); }} />
+      <ControlsSheet target={controls} origin={origin} canReview={canReview} onClose={() => setControls(null)} onSaved={(message) => { setControls(null); refresh(message); }} onPartialSave={() => refresh()} onConflict={() => { setControls(null); refresh(CONFLICT_MESSAGE); }} />
       {currentVersion != null ? (
         <ChecklistDialog
           open={checklistOpen}

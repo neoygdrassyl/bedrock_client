@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checklistDefaultMarks, checklistInitialMarks, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, groupBlockers, inventorySheetCommand, missingFactLabels, reviewedByLine, SOURCE_FACT_LABELS } from './legalFormModel';
+import { checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, groupBlockers, inventorySheetCommand, missingFactLabels, reviewedByLine, SOURCE_FACT_LABELS } from './legalFormModel';
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });
 const requirement = (extra) => ({ documentCode: '511', title: 'Formulario', delivered: true, allowsMultipleInstances: false, instances: [instance()], ...extra });
@@ -83,6 +83,27 @@ describe('legalFormModel', () => {
 
   it('builds the legacy review shape of the checklist in code order', () => {
     expect(checklistReviewOf(['511', '512', '513'], { 511: '1', 512: '0' })).toEqual({ code: '511,512,513', checked: '1,0,2' });
+  });
+
+  it('keeps as checklist overrides only the marks that differ from the defaults', () => {
+    const data = { checklistDefaults: { a: '1', b: '0' } };
+    const codes = ['a', 'b', 'c'];
+    expect(checklistOverrides(data, codes, { a: '1', b: '0', c: '2' })).toEqual({});
+    expect(checklistOverrides(data, codes, { a: '0', b: '0', c: '1' })).toEqual({ a: '0', c: '1' });
+    expect(checklistOverrides(data, codes, { a: 'x' })).toEqual({}); // invalid or missing marks fall back to the default
+    expect(checklistOverrides(data, codes, checklistDefaultMarks(data, codes))).toEqual({});
+    expect(checklistOverrides(null, ['a'], { a: '0' })).toEqual({ a: '0' }); // no default counts as N/A
+    expect(checklistOverrides(null, ['a'], { a: '2' })).toEqual({});
+  });
+
+  it('compares checklist overrides with the stored ones, both empty being equal', () => {
+    expect(checklistOverridesStored({ checklist: null }, {})).toBe(true);
+    expect(checklistOverridesStored({}, { a: '0' })).toBe(false);
+    expect(checklistOverridesStored({ checklist: { marks: { a: '0', b: '1' } } }, { b: '1', a: '0' })).toBe(true);
+    expect(checklistOverridesStored({ checklist: { marks: { a: '0', b: '1' } } }, { a: '0' })).toBe(false);
+    expect(checklistOverridesStored({ checklist: { marks: { a: '0' } } }, {})).toBe(false); // reset must clear what is stored
+    expect(checklistOverridesStored({ checklist: { marks: { a: '0' } } }, { a: '1' })).toBe(false);
+    expect(checklistOverridesStored({ checklist: { marks: { a: 'bad' } } }, {})).toBe(true);
   });
 
   it('formats who reviewed, with the id as fallback and nothing without a previous decision', () => {
