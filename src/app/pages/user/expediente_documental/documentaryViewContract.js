@@ -56,8 +56,15 @@ export function validateDocumentaryReceipt(value, fun0Id) {
   for (const slot of ['digital','scan']) {
     const file = value.files[slot];
     if (file === null) continue;
-    if (!object(file) || 'storageKey' in file || !hash(file.sha256) || !id(file.bytes) || file.bytes > 52428800
-      || !['application/pdf','image/png','image/jpeg'].includes(file.mimeType) || !string(file.originalName) || file.evidenceRevision !== value.evidenceRevision) invalidContract();
+    if (!object(file) || 'storageKey' in file || !string(file.originalName) || file.evidenceRevision !== value.evidenceRevision) invalidContract();
+    // Files imported from the legacy model keep their original path and type; the backend flags them
+    // with a boolean `missing`. A missing legacy file legitimately has no hash or size.
+    if (typeof file.missing === 'boolean') {
+      if (!string(file.mimeType) || (!file.missing && (!hash(file.sha256) || !id(file.bytes)))) invalidContract();
+      continue;
+    }
+    if (!hash(file.sha256) || !id(file.bytes) || file.bytes > 52428800
+      || !['application/pdf','image/png','image/jpeg'].includes(file.mimeType)) invalidContract();
   }
   return value;
 }
