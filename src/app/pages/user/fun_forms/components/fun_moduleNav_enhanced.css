@@ -22,26 +22,6 @@
 }
 
 /* Scrollbar personalizado para la barra lateral */
-.fun-nav-sidebar::-webkit-scrollbar {
-    width: 12px;
-}
-
-.fun-nav-sidebar::-webkit-scrollbar-track {
-    background: hsl(var(--scrollbar-track));
-}
-
-.fun-nav-sidebar::-webkit-scrollbar-thumb {
-    background: hsl(var(--scrollbar-thumb));
-    border-radius: 9999px;
-}
-
-.fun-nav-sidebar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.fun-nav-sidebar::-webkit-scrollbar-thumb:active {
-    background: hsl(var(--scrollbar-thumb-active));
-}
 
 /* Toggle button - centered vertically with better visibility */
 .fun-nav-toggle {

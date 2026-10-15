@@ -1145,11 +1145,7 @@
   outline-offset: 2px;
 }
 
-/* Scrollbar styling for content area */
-#main-content :where(*) {
-  scrollbar-width: auto;
-  scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
-}
+/* Scrollbars: gestionados globalmente en src/styles/scrollbar.css */
 
 /* Tooltip override for Bootstrap tooltips */
 .tooltip {

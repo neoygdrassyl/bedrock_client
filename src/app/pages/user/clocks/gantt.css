@@ -109,14 +109,6 @@
   overflow-y: hidden;
   scrollbar-gutter: stable both-edges;
 }
-.gantt-chart-column::-webkit-scrollbar { height: 8px; }
-.gantt-chart-column::-webkit-scrollbar-track { background: hsl(var(--scrollbar-track)); }
-.gantt-chart-column::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-}
-.gantt-chart-column::-webkit-scrollbar-thumb:hover { background: hsl(var(--scrollbar-thumb-hover)); }
-.gantt-chart-column::-webkit-scrollbar-thumb:active { background: hsl(var(--scrollbar-thumb-active)); }
 
 .gantt-header-timeline { 
   position: relative; 
@@ -184,14 +176,6 @@
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;
 }
-.gantt-body-scroll-wrapper::-webkit-scrollbar { height: 8px; width: 8px; }
-.gantt-body-scroll-wrapper::-webkit-scrollbar-track { background: hsl(var(--scrollbar-track)); }
-.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-}
-.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: hsl(var(--scrollbar-thumb-hover)); }
-.gantt-body-scroll-wrapper::-webkit-scrollbar-thumb:active { background: hsl(var(--scrollbar-thumb-active)); }
 
 .gantt-body-content { 
   position: relative; 
@@ -805,24 +789,6 @@
   background: linear-gradient(180deg, #fdfefe 0%, #f7f9fc 100%);
   scrollbar-gutter: stable both-edges;
 }
-.gantt-preview-body::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-}
-.gantt-preview-body::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-  border-radius: 6px;
-}
-.gantt-preview-body::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 6px;
-}
-.gantt-preview-body::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-.gantt-preview-body::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
-}
 
 .sidebar-gantt-container { margin-top: 12px; }
 
@@ -866,7 +832,6 @@
   color: #707d8f;
 }
 .gantt-preview-body .gantt-chart-column {
-  scrollbar-width: thin;
   scrollbar-gutter: stable both-edges;
 }
 .gantt-preview-body .gantt-timeline-tick {
@@ -2016,9 +1981,6 @@ input:checked + .gantt-slider:before {
 .gantt-today-suggestion.normal::after { border-top-color: #339af0; }
 
 /* ... (Todo tu CSS existente) ... */
-
-
-
 
 
 /* Título de la tarjeta (Nombre de la fase) */
