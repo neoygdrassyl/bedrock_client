@@ -9,6 +9,7 @@ import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus } from '../molecules/DocumentReceiptStatus';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
+import { effectiveDeliveryLabel, effectiveOf } from '../../legalFormModel';
 import { canEvaluateRow, CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
 const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
@@ -68,12 +69,14 @@ const COLUMN_DEFS = {
   evaluation: {
     head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]',
     cell: (row, { instances }) => {
-      const selection = instances?.get(row.documentKey)?.instance?.selection;
+      const effective = effectiveOf(instances?.get(row.documentKey)?.instance);
+      // With legal-form data the delivery in use is derived from it; without it only an explicit choice is marked.
+      const inUse = effective ? effective.rowId === row.receivedDocumentRowId : Boolean(row.ldfSelected);
       return (
         <>
           <EvaluationStatus row={row} />
-          {row.ldfSelected ? <Tag tone="success" className="mt-1" title="Entrega que usa legal y debida forma">VR elegido</Tag>
-            : selection ? <span className="mt-1 block text-[11px] leading-4 text-muted-foreground" title="Entrega que usa legal y debida forma">Elegido: {selection.vrLabel || 'VR'}{selection.versionSequence != null ? ` · v${selection.versionSequence}` : ''}</span> : null}
+          {inUse ? <Tag tone="success" className="mt-1" title="Entrega que usa legal y debida forma">En uso</Tag>
+            : effective ? <span className="mt-1 block text-[11px] leading-4 text-muted-foreground" title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span> : null}
         </>
       );
     },
@@ -87,7 +90,7 @@ const COLUMN_DEFS = {
  * The whole row selects the document (click, Enter or Space); one row is tabbable at a time.
  * `columns` picks the optional columns (see TABLE_COLUMNS); `onEvaluate(row)` adds the per-row
  * "Evaluar" action to the `actions` column for rows the server allows to evaluate. `instances` (documentKey -> legal-form
- * instance, optional) lets the evaluation cell name the chosen VR when the row is not the chosen one.
+ * instance, optional) lets the evaluation cell tag the delivery in use and name it when the row is another one.
  */
 export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, instances, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
   const defs = columns.filter((key) => COLUMN_DEFS[key]).map((key) => ({ key, ...COLUMN_DEFS[key] }));

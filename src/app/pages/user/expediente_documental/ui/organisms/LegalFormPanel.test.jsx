@@ -11,9 +11,9 @@ const { saveCanonicalControl } = operations;
 
 vi.mock('@/app/services/documentaryLegalForm.service', async (importOriginal) => ({
   ...(await importOriginal()),
-  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), saveLegalFormChecklist: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(), selectLegalFormVr: vi.fn(), clearLegalFormVr: vi.fn(),
+  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), saveLegalFormChecklist: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(), updateLegalFormDeclaration: vi.fn(), selectLegalFormVr: vi.fn(), clearLegalFormVr: vi.fn(),
 }));
-vi.mock('@/app/services/documentaryOperations.service', () => ({ saveCanonicalControl: vi.fn(), saveCanonicalReview: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), createCanonicalSubmit: vi.fn(),
+vi.mock('@/app/services/documentaryOperations.service', () => ({ saveCanonicalControl: vi.fn(), saveCanonicalReview: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalDocumentRow: vi.fn(), getCanonicalVersions: vi.fn(), createCanonicalSubmit: vi.fn(),
   documentaryReceiptRuleError: vi.fn(), getCanonicalVersionSubmitIds: vi.fn(), receiveCanonicalDocument: vi.fn(), updateCanonicalEvidence: vi.fn(), getCanonicalHistory: vi.fn(), getMissingRequirements: vi.fn(), refreshDocumentaryRequirements: vi.fn(), downloadCanonicalFile: vi.fn() }));
 vi.mock('../../../fun_forms/components/checklistPdf', async (importOriginal) => ({ ...(await importOriginal()), buildChecklistPdf: vi.fn() }));
 vi.mock('js-file-download', () => ({ default: vi.fn() }));
@@ -68,20 +68,78 @@ describe('LegalFormPanel', () => {
   it('orders the pending panel by group and opens the evaluation of an item with a delivery', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       blockers: [
-        { code: 'VR_NOT_SELECTED', message: 'v', documentCode: '511', groupCode: null, documentKey: 'k-1' },
+        { code: 'SELECTION_INVALID', message: 'v', documentCode: '511', groupCode: null, documentKey: 'k-1' },
         { code: 'REQUIREMENTS_STALE', message: 'La evaluación cambió', documentCode: null, groupCode: null, documentKey: null },
         { code: 'NOT_DELIVERED', message: 'y', documentCode: '600', groupCode: null, documentKey: null },
       ],
-      requirements: [requirement(), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null })],
+      requirements: [requirement({ instances: [instance({ selection: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1 } })] }), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null })],
     }));
     render(<LegalFormPanel origin={origin} canManage />);
     const pending = await screen.findByTestId('legal-form-pending');
     const sections = within(pending).getAllByTestId(/^legal-form-pending-/).map((node) => node.getAttribute('data-testid'));
-    expect(sections).toEqual(['legal-form-pending-alert', 'legal-form-pending-not_delivered', 'legal-form-pending-vr_not_selected']);
+    expect(sections).toEqual(['legal-form-pending-alert', 'legal-form-pending-not_delivered', 'legal-form-pending-selection_invalid']);
+    expect(within(pending).getByTestId('legal-form-pending-selection_invalid')).toHaveTextContent('Elección de VR inválida');
+    expect(pending).not.toHaveTextContent('Falta elegir el VR');
     expect(within(pending).getByTestId('legal-form-pending-alert')).toHaveTextContent('Evaluación desactualizada');
     fireEvent.click(within(pending).getByRole('button', { name: '511 · Formulario único · VR-1' }));
     expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
     expect(within(pending).queryByRole('button', { name: /^600/ })).not.toBeInTheDocument();
+  });
+
+  it('explains why a verdict or a typology option is pending', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({
+      sections: [{ typologyCode: 'T1', typologyName: 'Vivienda', state: 'selection_required', requirementCodes: [] }],
+      blockers: [
+        { code: 'VERDICT_PENDING', reason: 'no_decision', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' },
+        { code: 'TYPOLOGY_SELECTION_REQUIRED', reason: 'unknown_option', message: 'x', typologyCode: 'T1', documentCode: null, groupCode: null, documentKey: null },
+      ],
+    }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    const pending = await screen.findByTestId('legal-form-pending');
+    expect(within(pending).getByTestId('legal-form-pending-pending_review')).toHaveTextContent('Controles decididos sin aprobación');
+    expect(within(pending).getByTestId('legal-form-pending-typology')).toHaveTextContent('La opción elegida en el portal no existe en esta versión de Central');
+  });
+
+  it('opens the evaluation of a pending item whose document is not on the loaded page by asking for its row', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({
+      blockers: [{ code: 'VERDICT_PENDING', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' }],
+    }));
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ rowKey: 'canonical:k-9', documentKey: 'k-9', documentCode: '519', catalogueDisplay: { code: '519', name: 'Otro' }, receivedDocumentRowId: 19, receipt: receipt(19) })]));
+    operations.getCanonicalDocumentRow.mockResolvedValue(viewRow());
+    render(<LegalFormPanel origin={origin} canManage />);
+    const pending = await screen.findByTestId('legal-form-pending');
+    fireEvent.click(within(pending).getByRole('button', { name: '511 · Formulario único · VR-1' }));
+    expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
+    expect(operations.getCanonicalDocumentRow).toHaveBeenCalledWith(origin, 'k-1');
+    expect(screen.getByText(/Formulario único · VR-1 · Versión 1/)).toBeInTheDocument();
+    expect(screen.queryByText(/No se encontró ese documento/)).not.toBeInTheDocument();
+  });
+
+  it('does not ask for the row when the document is on the loaded page', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({ blockers: [{ code: 'VERDICT_PENDING', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' }] }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    fireEvent.click(await within(await screen.findByTestId('legal-form-pending')).findByRole('button', { name: '511 · Formulario único · VR-1' }));
+    expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
+    expect(operations.getCanonicalDocumentRow).not.toHaveBeenCalled();
+  });
+
+  it('loads every page of requirement rows so the order and the chips apply to the whole list', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    const second = viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11), evaluation: { status: 'rejected', source: 'review' } });
+    operations.getCanonicalDocuments
+      .mockResolvedValueOnce({ ...viewOf([viewRow({ evaluation: approved })]), pagination: { nextAfterId: 77 }, counts: { canonicalDocuments: 2 } })
+      .mockResolvedValueOnce(viewOf([second]));
+    render(<LegalFormPanel origin={origin} canManage />);
+    const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    await within(table).findByText('Plano');
+    expect(operations.getCanonicalDocuments).toHaveBeenCalledTimes(2);
+    expect(operations.getCanonicalDocuments).toHaveBeenNthCalledWith(1, origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
+    expect(operations.getCanonicalDocuments).toHaveBeenNthCalledWith(2, origin, 77, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
+    const keys = () => within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key')).map((row) => row.getAttribute('data-row-key'));
+    expect(keys()).toEqual(['canonical:k-2', 'canonical:k-1']); // the rejected row of the second page sorts first
+    expect(screen.queryByText(/aplican a esta página/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Paginación documental' })).not.toBeInTheDocument();
+    expect(within(screen.getByRole('group', { name: 'Estado de los requisitos' })).getByRole('button', { name: /^Todos/ })).toHaveTextContent('2');
   });
 
   it('renders the shared documents table filtered to requirements, with Evaluación and no scan or medium columns', async () => {
@@ -158,6 +216,52 @@ describe('LegalFormPanel', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Anular declaración' }));
     await waitFor(() => expect(api.revokeLegalForm).toHaveBeenCalledWith(1, { reason: 'Error de folios', idempotencyKey: expect.any(String) }));
     expect(changed).toHaveBeenCalledTimes(1);
+  });
+
+  describe('update of the declaration', () => {
+    const declaredForm = (extra = {}) => legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez' }, outdated: false,
+      actions: { review: true, declare: false, revoke: true, update: true, sheet: true }, ...extra });
+
+    it('offers the update next to the annulment, warns about newer deliveries and sends the motive', async () => {
+      api.getLegalForm.mockResolvedValueOnce(declaredForm({ outdated: true }))
+        .mockResolvedValue(declaredForm({ declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez', updatedAt: '2026-10-16T15:00:00.000Z', updatedBy: 8, updatedByName: 'Ana Pérez' } }));
+      api.updateLegalFormDeclaration.mockResolvedValue({ wasOutdated: true, state: 'declared' });
+      const changed = vi.fn();
+      render(<LegalFormPanel origin={origin} canManage onDeclarationChanged={changed} />);
+      expect(await screen.findByTestId('legal-form-outdated')).toHaveTextContent('Hay entregas más recientes que las declaradas');
+      expect(screen.getByRole('button', { name: 'Anular declaración' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Actualizar legal y debida forma' }));
+      const dialog = await screen.findByRole('dialog');
+      expect(within(dialog).getByRole('button', { name: 'Actualizar declaración' })).toBeDisabled();
+      fireEvent.change(within(dialog).getByLabelText('Motivo'), { target: { value: 'Nueva entrega aprobada' } });
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Actualizar declaración' }));
+      await waitFor(() => expect(api.updateLegalFormDeclaration).toHaveBeenCalledWith(1, { reason: 'Nueva entrega aprobada', idempotencyKey: expect.any(String) }));
+      expect(await screen.findByText('Declaración actualizada.')).toBeInTheDocument();
+      expect(await screen.findByTestId('legal-form-declaration-updated')).toHaveTextContent(/Actualizada el .* por Ana Pérez/);
+      expect(screen.queryByTestId('legal-form-outdated')).not.toBeInTheDocument();
+      expect(changed).not.toHaveBeenCalled(); // state and clock do not change
+    });
+
+    it('hides the update without the action and says nothing about newer deliveries when up to date', async () => {
+      api.getLegalForm.mockResolvedValue(declaredForm({ actions: { review: true, declare: false, revoke: true, update: false, sheet: true } }));
+      render(<LegalFormPanel origin={origin} canManage />);
+      await screen.findByTestId('legal-form-declaration');
+      expect(screen.queryByRole('button', { name: 'Actualizar legal y debida forma' })).not.toBeInTheDocument();
+      expect(screen.queryByTestId('legal-form-outdated')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('legal-form-declaration-updated')).not.toBeInTheDocument();
+    });
+
+    it('keeps the dialog open with the rule message and reloads when the update is rejected', async () => {
+      api.getLegalForm.mockResolvedValue(declaredForm());
+      api.updateLegalFormDeclaration.mockRejectedValue({ response: { status: 409, data: { error: { code: 'LEGAL_FORM_NOT_READY' } } } });
+      render(<LegalFormPanel origin={origin} canManage />);
+      fireEvent.click(await screen.findByRole('button', { name: 'Actualizar legal y debida forma' }));
+      const dialog = await screen.findByRole('dialog');
+      fireEvent.change(within(dialog).getByLabelText('Motivo'), { target: { value: 'Revisión' } });
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Actualizar declaración' }));
+      expect(await within(dialog).findByText(/aún no está listo/)).toBeInTheDocument();
+      await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+    });
   });
 
   const openSheet = async (name = 'Evaluar 511') => {
@@ -575,46 +679,76 @@ describe('LegalFormPanel', () => {
     });
   });
 
-  describe('VR choice', () => {
+  describe('VR in use', () => {
     const chosen = { rowId: 10, vrLabel: 'VR-1', versionSequence: 1, selectedBy: 4, selectedByName: 'Marta Ruiz', selectedAt: '2026-10-14T15:00:00.000Z', selectionRevision: 4 };
+    const latest = { rowId: 11, vrLabel: 'VR-2', versionSequence: 2, source: 'latest' };
     const form = (instanceExtra = {}, extra = {}) => legalForm({ actions: { review: true, declare: false, revoke: false, sheet: true, select: true },
-      requirements: [requirement({ instances: [instance({ selection: null, selectedEvaluation: null, ...instanceExtra })] })], ...extra });
+      requirements: [requirement({ instances: [instance({ selection: null, selectionRevision: 0, effective: latest, selectedEvaluation: null, ...instanceExtra })] })], ...extra });
     const twoVersions = (first = approved, second = pendingEvaluation) => {
       operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ receivedDocumentRowId: 11, versionSequence: 2, versionCount: 2, receipt: receipt(11, { vrLabel: 'VR-2' }) })]));
       operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, first), version(11, 2, second)], nextAfterId: null });
     };
 
-    it('chooses an approved version, disables the others and reloads the table and the legal form', async () => {
+    it('uses the latest delivery by default and lets an approved older one be chosen optionally', async () => {
       api.getLegalForm.mockResolvedValue(form());
       twoVersions();
       api.selectLegalFormVr.mockResolvedValue({ unchanged: false, selection: chosen });
       render(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+      expect(within(previous).getByTestId('effective-vr-line')).toHaveTextContent('Se usa: VR-2 (último)');
+      expect(within(previous).queryByRole('button', { name: 'Volver al último' })).not.toBeInTheDocument();
       const [newest, oldest] = within(previous).getAllByRole('listitem');
-      expect(within(newest).getByRole('button', { name: /^Usar VR-2/ })).toBeDisabled();
-      expect(newest).toHaveTextContent('Apruebe esta entrega para poder elegirla');
+      expect(newest).toHaveTextContent('En uso');
+      expect(within(newest).queryByRole('button', { name: /^Usar VR-2/ })).not.toBeInTheDocument();
+      expect(oldest).not.toHaveTextContent('En uso');
+      expect(within(oldest).getByRole('button', { name: /^Usar VR-1/ })).toHaveTextContent('Usar esta entrega');
       const documentCalls = operations.getCanonicalDocuments.mock.calls.length;
       fireEvent.click(within(oldest).getByRole('button', { name: /^Usar VR-1/ }));
       await waitFor(() => expect(api.selectLegalFormVr).toHaveBeenCalledWith(1, 'k-1', expect.objectContaining({ rowId: 10, expectedSelectionRevision: 0, idempotencyKey: expect.any(String), reason: expect.any(String) })));
       await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
       await waitFor(() => expect(operations.getCanonicalDocuments.mock.calls.length).toBeGreaterThan(documentCalls));
-      expect(await within(sheet).findByText('VR elegido para legal y debida forma.')).toBeInTheDocument();
+      expect(await within(sheet).findByText('Entrega en uso elegida para legal y debida forma.')).toBeInTheDocument();
     });
 
-    it('shows the chosen version with who chose it and clears it against the stored revision', async () => {
-      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectedEvaluation: approved }));
-      twoVersions();
-      api.clearLegalFormVr.mockResolvedValue({ unchanged: false, selection: null, selectionRevision: 4, documentKey: 'k-1' });
+    it('disables choosing a delivery that is not approved', async () => {
+      api.getLegalForm.mockResolvedValue(form({ effective: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1, source: 'latest' } }));
+      operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow()]));
+      operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, approved), version(11, 2, pendingEvaluation)], nextAfterId: null });
       render(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+      const [newest] = within(previous).getAllByRole('listitem');
+      expect(within(newest).getByRole('button', { name: /^Usar VR-2/ })).toBeDisabled();
+      expect(newest).toHaveTextContent('Apruebe esta entrega para poder usarla');
+    });
+
+    it('shows the chosen delivery with who chose it and goes back to the latest against the stored revision', async () => {
+      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectionRevision: 4, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }));
+      twoVersions();
+      api.clearLegalFormVr.mockResolvedValue({ unchanged: false, selection: null, selectionRevision: 5, documentKey: 'k-1' });
+      render(<LegalFormPanel origin={origin} canManage />);
+      const sheet = await openSheet();
+      const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+      expect(within(previous).getByTestId('effective-vr-line')).toHaveTextContent('Se usa: VR-1 (elegido por Marta Ruiz)');
       const [newest, oldest] = within(previous).getAllByRole('listitem');
-      expect(oldest).toHaveTextContent('VR elegido');
+      expect(oldest).toHaveTextContent('En uso');
       expect(oldest).toHaveTextContent('Elegido por Marta Ruiz');
-      expect(newest).not.toHaveTextContent('VR elegido');
-      fireEvent.click(within(oldest).getByRole('button', { name: 'Quitar elección' }));
+      expect(newest).not.toHaveTextContent('En uso');
+      fireEvent.click(within(previous).getByRole('button', { name: 'Volver al último' }));
       await waitFor(() => expect(api.clearLegalFormVr).toHaveBeenCalledWith(1, 'k-1', expect.objectContaining({ expectedSelectionRevision: 4 })));
+      expect(await within(sheet).findByText('Se usa de nuevo la última entrega.')).toBeInTheDocument();
+    });
+
+    it('offers neither choosing nor going back once the expediente is declared', async () => {
+      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectionRevision: 4, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }, { declaration: { at: '2026-10-15T15:00:00.000Z', by: 7 }, state: 'declared' }));
+      twoVersions();
+      render(<LegalFormPanel origin={origin} canManage />);
+      const sheet = await openSheet();
+      const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+      expect(within(previous).queryByRole('button', { name: 'Volver al último' })).not.toBeInTheDocument();
+      expect(within(previous).queryByRole('button', { name: /^Usar VR/ })).not.toBeInTheDocument();
+      expect(previous).toHaveTextContent('anule la declaración');
     });
 
     it('explains a rule error of the choice without closing the sheet', async () => {
@@ -628,34 +762,38 @@ describe('LegalFormPanel', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    it('tags the chosen row in the table and names the chosen VR when the latest delivery is another one', async () => {
-      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectedEvaluation: approved }, {
-        requirements: [requirement({ instances: [instance({ selection: chosen, selectedEvaluation: approved }), instance({ documentKey: 'k-2', selection: chosen, selectedEvaluation: approved })] })] }));
+    it('tags the delivery in use in the table, derived from the legal form, and names it on the other rows', async () => {
+      const twoInstances = [
+        instance({ selection: null, effective: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1, source: 'latest' } }),
+        instance({ documentKey: 'k-2', selection: chosen, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }),
+      ];
+      api.getLegalForm.mockResolvedValue(form({}, { requirements: [requirement({ instances: twoInstances })] }));
       operations.getCanonicalDocuments.mockResolvedValue(viewOf([
-        viewRow({ evaluation: approved, ldfSelected: true }),
-        viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11, { vrLabel: 'VR-2' }), evaluation: pendingEvaluation, ldfSelected: false }),
+        viewRow({ evaluation: approved }),
+        viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11, { vrLabel: 'VR-2' }), evaluation: pendingEvaluation }),
       ]));
       render(<LegalFormPanel origin={origin} canManage />);
       const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
-      await within(table).findByText('VR elegido');
+      await within(table).findByText('En uso');
       const rows = within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
-      const tagged = rows.find((row) => row.getAttribute('data-row-key') === 'canonical:k-1');
-      const other = rows.find((row) => row.getAttribute('data-row-key') === 'canonical:k-2');
-      expect(tagged).toHaveTextContent('VR elegido');
-      expect(other).not.toHaveTextContent('VR elegido');
-      expect(other).toHaveTextContent('Elegido: VR-1 · v1');
+      const latestRow = rows.find((row) => row.getAttribute('data-row-key') === 'canonical:k-1');
+      const chosenElsewhere = rows.find((row) => row.getAttribute('data-row-key') === 'canonical:k-2');
+      expect(latestRow).toHaveTextContent('En uso');
+      expect(chosenElsewhere).not.toHaveTextContent('En uso');
+      expect(chosenElsewhere).toHaveTextContent('Se usa: VR-1 · v1');
     });
 
-    it('orders unresolved rows first and filters Por resolver / Listos', async () => {
-      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectedEvaluation: approved }));
+    it('orders unresolved rows first and filters Por resolver / Listos by the delivery in use', async () => {
+      api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }));
       operations.getCanonicalDocuments.mockResolvedValue(viewOf([
-        viewRow({ evaluation: approved, ldfSelected: true }),
+        viewRow({ evaluation: pendingEvaluation }),
         viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11), evaluation: pendingEvaluation }),
       ]));
       render(<LegalFormPanel origin={origin} canManage />);
       const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
       await within(table).findByText('Plano');
       const keys = () => within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key')).map((row) => row.getAttribute('data-row-key'));
+      // k-1 is pending itself but its chosen delivery is approved, so it is ready; k-2 has no instance and is pending.
       expect(keys()).toEqual(['canonical:k-2', 'canonical:k-1']);
       const chips = screen.getByRole('group', { name: 'Estado de los requisitos' });
       fireEvent.click(within(chips).getByRole('button', { name: /^Listos/ }));

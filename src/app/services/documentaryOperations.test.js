@@ -137,3 +137,16 @@ it('reads, adds and removes requirement additions with JSON commands',async()=>{
   expect(http.delete.mock.calls.at(-1)[1]).toEqual({data:remove,headers:{'Content-Type':'application/json'}});
   await expect(api.removeRequirementAddition(1,'x'.repeat(37),remove)).rejects.toThrow();
 });
+it('reads the current row of one document by documentKey and returns null when the view has none',async()=>{
+  const origin={project:{fun0Id:1},publication:{configurationId:2,checksum}};
+  http.get.mockResolvedValue({data:view()});
+  const row=await api.getCanonicalDocumentRow(origin,key);
+  expect(row.documentKey).toBe(key);
+  expect(http.get.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/view');
+  expect(http.get.mock.calls.at(-1)[1].params).toEqual({documentKey:key});
+  const empty=view();empty.rows=[];http.get.mockResolvedValue({data:empty});
+  await expect(api.getCanonicalDocumentRow(origin,key)).resolves.toBeNull();
+  await expect(api.getCanonicalDocumentRow(origin,'')).rejects.toThrow();
+  http.get.mockResolvedValue({data:{...view(),project:{fun0Id:9}}});
+  await expect(api.getCanonicalDocumentRow(origin,key)).rejects.toThrow();
+});

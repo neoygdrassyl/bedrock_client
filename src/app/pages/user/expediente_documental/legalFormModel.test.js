@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, filterByReadiness, groupBlockers, instancesByKey, inventorySheetCommand, missingFactLabels, pendingGroups, reviewedByLine, rowReadiness, selectedByLine, sortByReadiness, SOURCE_FACT_LABELS } from './legalFormModel';
+import { checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, effectiveDeliveryLabel, effectiveOf, effectiveVrLine, filterByReadiness, groupBlockers, instancesByKey, inventorySheetCommand, missingFactLabels, pendingGroups, reviewedByLine, rowReadiness, selectedByLine, sortByReadiness, SOURCE_FACT_LABELS } from './legalFormModel';
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });
 const requirement = (extra) => ({ documentCode: '511', title: 'Formulario', delivered: true, allowsMultipleInstances: false, instances: [instance()], ...extra });
@@ -124,7 +124,6 @@ describe('legalFormModel', () => {
       sections: [{ typologyCode: 'T1', typologyName: 'Tipología uno' }],
       blockers: [
         blocker('TYPOLOGY_SELECTION_REQUIRED', { typologyCode: 'T1' }),
-        blocker('VR_NOT_SELECTED', { documentCode: '511', documentKey: 'k-1' }),
         blocker('VERDICT_PENDING', { documentCode: '511', documentKey: 'k-1' }),
         blocker('GROUP_NOT_SATISFIED', { groupCode: 'G1' }),
         blocker('DOES_NOT_COMPLY', { documentCode: '511', documentKey: 'k-1' }),
@@ -135,10 +134,10 @@ describe('legalFormModel', () => {
       ],
     };
 
-    it('puts evaluation blockers as alerts and orders the groups: sin entregar, rechazados, sin evaluar, VR, tipología', () => {
+    it('puts evaluation blockers as alerts and orders the groups: sin entregar, rechazados, sin evaluar, elección inválida, tipología', () => {
       const { alerts, groups } = pendingGroups(data);
       expect(alerts.map((alert) => alert.code)).toEqual(['REQUIREMENTS_STALE']);
-      expect(groups.map((group) => group.key)).toEqual(['not_delivered', 'rejected', 'pending_review', 'vr_not_selected', 'typology', 'other']);
+      expect(groups.map((group) => group.key)).toEqual(['not_delivered', 'rejected', 'pending_review', 'selection_invalid', 'typology', 'other']);
       expect(groups.find((group) => group.key === 'not_delivered').items.map((item) => item.code)).toEqual(['NOT_DELIVERED', 'GROUP_NOT_SATISFIED']);
     });
 
@@ -152,8 +151,24 @@ describe('legalFormModel', () => {
     });
 
     it('explains an invalid choice with the VR that was chosen', () => {
-      const invalid = pendingGroups(data).groups.find((group) => group.key === 'vr_not_selected').items.find((item) => item.code === 'SELECTION_INVALID');
+      const invalid = pendingGroups(data).groups.find((group) => group.key === 'selection_invalid').items.find((item) => item.code === 'SELECTION_INVALID');
       expect(invalid).toMatchObject({ vrLabel: 'VR-1', note: 'La entrega elegida ya no está aprobada', openable: true });
+    });
+
+    it('does not offer a mandatory-choice group any more: a legacy VR_NOT_SELECTED blocker is an unknown code', () => {
+      const { groups } = pendingGroups({ requirements: [], blockers: [blocker('VR_NOT_SELECTED', { documentCode: '511' })] });
+      expect(groups.map((group) => group.key)).toEqual(['other']);
+      expect(groups[0].title).toBe('Otros pendientes');
+    });
+
+    it('explains the reason of a pending verdict and of a typology selection, and ignores unknown reasons', () => {
+      const item = (code, reason, extra) => pendingGroups({ requirements: [], blockers: [blocker(code, { reason, ...extra })] }).groups[0].items[0];
+      expect(item('VERDICT_PENDING', 'no_decision', { documentCode: '511' }).note).toBe('Controles decididos sin aprobación');
+      expect(item('VERDICT_PENDING', 'unreviewed', { documentCode: '511' }).note).toBeNull();
+      expect(item('TYPOLOGY_SELECTION_REQUIRED', 'unknown_option', { typologyCode: 'T1' }).note).toBe('La opción elegida en el portal no existe en esta versión de Central');
+      expect(item('TYPOLOGY_SELECTION_REQUIRED', 'invalid_count', { typologyCode: 'T1' }).note).toBe('Se eligieron más opciones de las permitidas');
+      expect(item('TYPOLOGY_SELECTION_REQUIRED', 'missing', { typologyCode: 'T1' }).note).toBeNull();
+      expect(item('TYPOLOGY_SELECTION_REQUIRED', undefined, { typologyCode: 'T1' }).note).toBeNull();
     });
 
     it('leaves empty groups out and tolerates a payload without blockers', () => {
@@ -163,25 +178,44 @@ describe('legalFormModel', () => {
   });
 
   describe('row readiness', () => {
-    const chosenApproved = { selection: { rowId: 1 }, selectedEvaluation: { status: 'approved' } };
     const row = (status, extra) => ({ documentKey: `k-${status}`, evaluation: { status }, ...extra });
-    it('ranks rejected, pending, approved without chosen VR and ready', () => {
+    it('ranks rejected, pending and ready; an approved row needs no chosen VR', () => {
       expect(rowReadiness(row('rejected'))).toBe(0);
       expect(rowReadiness(row('pending'))).toBe(1);
       expect(rowReadiness(row('approved'))).toBe(2);
-      expect(rowReadiness(row('approved', { ldfSelected: true }))).toBe(3);
-      expect(rowReadiness(row('pending'), chosenApproved)).toBe(3);
-      expect(rowReadiness(row('approved'), { selection: { rowId: 1 }, selectedEvaluation: { status: 'rejected' } })).toBe(0);
+      expect(rowReadiness(row('not_applicable'))).toBe(2);
+    });
+
+    it('follows the effective delivery of the instance, not the latest row', () => {
+      expect(rowReadiness(row('pending'), { selectedEvaluation: { status: 'approved' } })).toBe(2);
+      expect(rowReadiness(row('approved'), { selectedEvaluation: { status: 'rejected' } })).toBe(0);
+      expect(rowReadiness(row('approved'), { selectedEvaluation: { status: 'pending' } })).toBe(1);
+      expect(rowReadiness(row('approved'), { verdict: 'does_not_comply' })).toBe(0);
     });
 
     it('sorts stably by readiness and filters Por resolver / Listos with their counts', () => {
-      const rows = [row('approved', { ldfSelected: true }), row('pending'), row('approved'), row('rejected'), row('pending', { documentKey: 'b' })];
-      expect(sortByReadiness(rows).map((item) => item.documentKey)).toEqual(['k-rejected', 'k-pending', 'b', 'k-approved', 'k-approved']);
+      const rows = [row('approved'), row('pending'), row('approved', { documentKey: 'a2' }), row('rejected'), row('pending', { documentKey: 'b' })];
+      expect(sortByReadiness(rows).map((item) => item.documentKey)).toEqual(['k-rejected', 'k-pending', 'b', 'k-approved', 'a2']);
       const unresolved = filterByReadiness(rows, 'unresolved');
-      expect(unresolved.rows).toHaveLength(4);
-      expect(unresolved.counts).toEqual({ all: 5, unresolved: 4, ready: 1 });
-      expect(filterByReadiness(rows, 'ready').rows).toHaveLength(1);
+      expect(unresolved.rows).toHaveLength(3);
+      expect(unresolved.counts).toEqual({ all: 5, unresolved: 3, ready: 2 });
+      expect(filterByReadiness(rows, 'ready').rows).toHaveLength(2);
       expect(filterByReadiness(rows, '').rows).toHaveLength(5);
+    });
+  });
+
+  describe('effective VR', () => {
+    const selection = { rowId: 9, vrLabel: 'VR-1', versionSequence: 1, selectedBy: 4, selectedByName: 'Marta Ruiz' };
+    it('says which delivery is used: the latest by default or the one a person chose', () => {
+      expect(effectiveVrLine({ effective: { rowId: 11, vrLabel: 'VR-2', versionSequence: 2, source: 'latest' }, selection: null })).toBe('Se usa: VR-2 (último)');
+      expect(effectiveVrLine({ effective: { rowId: 9, vrLabel: 'VR-1', versionSequence: 1, source: 'selected' }, selection })).toBe('Se usa: VR-1 (elegido por Marta Ruiz)');
+      expect(effectiveVrLine({ effective: { rowId: 9, vrLabel: 'VR-1', source: 'selected' }, selection: { selectedBy: 4 } })).toBe('Se usa: VR-1 (elegido por usuario 4)');
+      expect(effectiveVrLine({})).toBeNull();
+    });
+    it('falls back to the explicit selection for payloads without effective', () => {
+      expect(effectiveOf({ selection })).toEqual({ rowId: 9, vrLabel: 'VR-1', versionSequence: 1, source: 'selected' });
+      expect(effectiveOf({ selection: null })).toBeNull();
+      expect(effectiveDeliveryLabel({ vrLabel: 'VR-1', versionSequence: 3 })).toBe('VR-1 · v3');
     });
   });
 

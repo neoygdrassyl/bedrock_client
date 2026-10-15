@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import FUN_SERVICE from '@/app/services/fun.service';
-import { declareLegalForm, listTypologySelections, revokeLegalForm } from '@/app/services/documentaryLegalForm.service';
+import { declareLegalForm, listTypologySelections, revokeLegalForm, updateLegalFormDeclaration } from '@/app/services/documentaryLegalForm.service';
 import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
 import { Tag } from '../atoms/Tag';
 import { ChecklistDialog, CommandDialog, TypologySelectionDialog } from './LegalFormDialogs';
@@ -15,6 +15,8 @@ import { formatDocumentaryDate } from '../../canonicalDocumentaryModel';
 import { buildSections, instancesByKey, LEGAL_FORM_STATE_META, missingFactLabels, pendingGroups, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
+/** " por {name}" / " por el usuario {id}" of an actor, or nothing when unknown. */
+const personSuffix = (name, id) => (name ? ` por ${name}` : id != null ? ` por el usuario ${id}` : '');
 const ITEM_ERROR = 'No fue posible cargar el expediente para generar el formato. Cierre e intente nuevamente.';
 
 /** State line of the expediente and the warning of an incomplete evaluation; the pending items live in PendingPanel. */
@@ -43,7 +45,7 @@ function StateBanner({ data }) {
 
 /**
  * Everything still pending before declaring, in one panel: evaluation-level problems as an alert on top, then the
- * groups in a fixed order (sin entregar, rechazados, sin evaluar, falta elegir el VR, opción de tipología). An item
+ * groups in a fixed order (sin entregar, rechazados, sin evaluar, elección de VR inválida, opción de tipología). An item
  * with a delivery opens its evaluation sheet; a typology item offers "Elegir opción".
  */
 function PendingPanel({ data, onOpen, selectable, onChoose }) {
@@ -198,7 +200,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   const titleId = useId();
   const fun0Id = origin?.project?.fun0Id;
   const legal = useLegalForm(fun0Id) || { status: 'loading', data: null, error: '', reload: () => {} };
-  const [dialog, setDialog] = useState(null); // 'declare' | 'revoke'
+  const [dialog, setDialog] = useState(null); // 'declare' | 'revoke' | 'update'
   const [notice, setNotice] = useState('');
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [loadedItem, setLoadedItem] = useState(null);
@@ -262,6 +264,12 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   }
   const declare = (values) => run(declareLegalForm, values, 'Expediente declarado en legal y debida forma.');
   const revoke = (values) => run(revokeLegalForm, values, 'Declaración anulada.');
+  // Updating keeps the state and the legal clock: only this panel reloads, the module has nothing to refresh.
+  async function updateDeclaration(values) {
+    let result;
+    try { result = await updateLegalFormDeclaration(fun0Id, values); } catch (failure) { if (failure.response?.status === 409) legal.reload(); throw failure; }
+    setDialog(null); refresh(result?.wasOutdated === false ? 'La declaración ya estaba al día.' : 'Declaración actualizada.');
+  }
 
   const conflictNotice = notice === CONFLICT_MESSAGE;
   return (
@@ -287,7 +295,10 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
             <RefreshCw aria-hidden="true" className={cn(legal.status === 'loading' && data && 'animate-spin motion-reduce:animate-none')} />Actualizar
           </Button>
           {traditional ? null : declared ? (
-            actions.revoke && canManage ? <Button type="button" variant="outline" size="sm" onClick={() => setDialog('revoke')}>Anular declaración</Button> : null
+            <>
+              {actions.update && canManage ? <Button type="button" size="sm" onClick={() => setDialog('update')}>Actualizar legal y debida forma</Button> : null}
+              {actions.revoke && canManage ? <Button type="button" variant="outline" size="sm" onClick={() => setDialog('revoke')}>Anular declaración</Button> : null}
+            </>
           ) : data ? (
             <Button type="button" size="sm" disabled={!canDeclare} onClick={() => setDialog('declare')}>Declarar legal y debida forma</Button>
           ) : null}
@@ -313,9 +324,17 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           <>
             <StateBanner data={data} />
             {declared ? (
-              <p className="mb-0 border-b px-[1rem] py-2 text-xs leading-5 text-muted-foreground" data-testid="legal-form-declaration">
-                Declarada el {formatDocumentaryDate(data.declaration.at)}{data.declaration.byName ? ` por ${data.declaration.byName}` : data.declaration.by != null ? ` por el usuario ${data.declaration.by}` : ''}.
-              </p>
+              <div className="flex flex-col gap-0.5 border-b px-[1rem] py-2 text-xs leading-5 text-muted-foreground">
+                <p className="mb-0" data-testid="legal-form-declaration">
+                  Declarada el {formatDocumentaryDate(data.declaration.at)}{personSuffix(data.declaration.byName, data.declaration.by)}.
+                </p>
+                {data.declaration.updatedAt ? (
+                  <p className="mb-0" data-testid="legal-form-declaration-updated">
+                    Actualizada el {formatDocumentaryDate(data.declaration.updatedAt)}{personSuffix(data.declaration.updatedByName, data.declaration.updatedBy)}.
+                  </p>
+                ) : null}
+                {data.outdated ? <p role="status" className="mb-0 font-medium text-[hsl(var(--operational-warning-text))]" data-testid="legal-form-outdated">Hay entregas más recientes que las declaradas.</p> : null}
+              </div>
             ) : null}
             {data.checklist ? (
               <p className="mb-0 border-b px-[1rem] py-2 text-[11px] leading-4 text-muted-foreground" data-testid="legal-form-checklist-line">
@@ -372,6 +391,14 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
         confirmLabel="Declarar"
         withDate
         onConfirm={declare}
+        onClose={() => setDialog(null)}
+      />
+      <CommandDialog
+        open={dialog === 'update'}
+        title="Actualizar legal y debida forma"
+        description="La declaración pasa a usar las entregas más recientes. El estado del expediente y el término no cambian."
+        confirmLabel="Actualizar declaración"
+        onConfirm={updateDeclaration}
         onClose={() => setDialog(null)}
       />
       <CommandDialog
