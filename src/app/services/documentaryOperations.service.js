@@ -131,9 +131,22 @@ export async function recoverDocumentarySourceConflict(error, {root,formData,rel
   }
   return true;
 }
+// Files imported from the legacy model are served by the legacy-migration router; the view
+// contract pins that path so a crafted downloadUrl cannot point anywhere else.
+const LEGACY_FILE_PATH = /^\/api\/fun\/documentary\/v1\/projects\/(\d+)\/legacy-migration\/files\/(\d+)\/(digital|scan)$/;
+export function canonicalFileRequest(fun0Id, rowId, slot, file) {
+  const legacy = typeof file?.downloadUrl === 'string' ? LEGACY_FILE_PATH.exec(file.downloadUrl) : null;
+  if (legacy && Number(legacy[1]) === Number(fun0Id) && Number(legacy[2]) === Number(rowId) && legacy[3] === slot) {
+    // The http client already carries the /api prefix in its base URL.
+    return { url: `${projectUrl(fun0Id)}/legacy-migration/files/${documentaryProjectId(rowId)}/${slot}`, params: {} };
+  }
+  return { url: `${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/files/${slot}`, params: { evidenceRevision: file.evidenceRevision } };
+}
 export async function downloadCanonicalFile(fun0Id, rowId, slot, file) {
   if (!['digital', 'scan'].includes(slot)) fail();
-  const { data } = await http.get(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/files/${slot}`, { params: { evidenceRevision: file.evidenceRevision }, responseType: 'blob' });
+  if (file?.missing) throw new Error('El archivo no está disponible en el almacenamiento.');
+  const request = canonicalFileRequest(fun0Id, rowId, slot, file);
+  const { data } = await http.get(request.url, { params: request.params, responseType: 'blob' });
   const url = URL.createObjectURL(data); const link = document.createElement('a');
   link.href = url; link.download = file.originalName || 'documento'; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);

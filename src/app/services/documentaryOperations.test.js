@@ -64,3 +64,14 @@ it('reads the documentary inventory and rejects responses of another expediente 
   http.get.mockResolvedValue({data:{...inventory,mode:'traditional',applicable:false,items:[],requirements:[],evaluation:{state:'not_applicable',evaluatedAt:null}}});
   expect((await api.getDocumentaryInventory(1)).mode).toBe('traditional');
 });
+
+it('downloads migrated legacy files through the legacy-migration route and native files through the documents route', () => {
+  const legacy = api.canonicalFileRequest(1640, 77, 'scan', { downloadUrl: '/api/fun/documentary/v1/projects/1640/legacy-migration/files/77/scan', evidenceRevision: 1 });
+  expect(legacy).toEqual({ url: '/fun/documentary/v1/projects/1640/legacy-migration/files/77/scan', params: {} });
+  // A downloadUrl for another row or project is never trusted.
+  const foreign = api.canonicalFileRequest(1640, 77, 'scan', { downloadUrl: '/api/fun/documentary/v1/projects/1640/legacy-migration/files/78/scan', evidenceRevision: 2 });
+  expect(foreign.url).toBe('/fun/documentary/v1/projects/1640/documents/77/files/scan');
+  expect(foreign.params).toEqual({ evidenceRevision: 2 });
+  const native = api.canonicalFileRequest(1, 21, 'digital', { downloadUrl: '/api/fun/documentary/v1/projects/1/documents/21/files/digital?evidenceRevision=1', evidenceRevision: 1 });
+  expect(native).toEqual({ url: '/fun/documentary/v1/projects/1/documents/21/files/digital', params: { evidenceRevision: 1 } });
+});
