@@ -103,7 +103,6 @@ export async function getCanonicalHistory(fun0Id, afterEventId=0, limit=25) {
   return {events,nextAfterId:events.length===limit?events[events.length-1].id:null};
 }
 export async function getDocumentaryGovernance(fun0Id, signal) {return (await http.get(`${projectUrl(fun0Id)}/governance`,{signal})).data;}
-export async function getDocumentaryConfigurationOptions(configurationId,signal) {return (await http.get(`${ROOT}/configurations/${documentaryProjectId(configurationId)}/options`,{signal})).data;}
 export async function activateDocumentaryProject(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/activation`,command,JSON_BODY)).data;}
 export async function changeDocumentaryConfiguration(fun0Id,command) {return (await http.put(`${projectUrl(fun0Id)}/configuration`,command,JSON_BODY)).data;}
 // Returns the expediente to traditional documentation; allowed only before any received evidence.

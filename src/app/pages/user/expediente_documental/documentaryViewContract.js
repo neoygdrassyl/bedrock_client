@@ -1,23 +1,10 @@
 export const DOCUMENTARY_VIEW_SCHEMA = 'dovela-backoffice/documentary-view/v1';
 
 /**
- * U1 wire contract: legacy-preview, readOnly:true, context:null; every write capability false.
- * project = {fun0Id,idPublic}; configuration = null | {id,tenantCode,sourceReleaseId,
- * releaseVersion,schemaVersion,checksum,selection:'preview-target'}.
- * rows use opaque rowKey, persistence:'legacy-preview', null projectDocumentId/documentId/
- * instanceNumber/currentVersionId/catalogueDisplay and versions:[]. Historical code/title/
- * listTitle/description/pagesRaw/reviewRaw are unchanged nullable strings. Sources carry actual
- * table/id/itemIndex/sourceSnapshotHash, submitId/vrLabel, medium/originEvidence, raw/parent,
- * receipt indicators and legacy URL availability (not proof of file existence).
- * correlation = {status,reasons:[{code,message,evidence}],targets:[{configurationId,
- * configurationChecksum,documentId,sourceDocumentId,code,name,evidence}]}.
- * controls contain null local control/value IDs, opaque source IDs, definition/revision/origins,
- * targetDocumentId, writable:false, review:null. actions mutate nothing; download is optional.
- * requirements = {documents:[{documentId,sourceDocumentId,required,trace,groupCodes}],
- * requirementGroups,typologyOptions,warnings}; counts distinguish raw records/items/pages,
- * relation statuses and canonical entities. warnings = [{code,message,rowKeys}].
- * Canonical rows use the separate strict branch below; preview identities remain null.
- * documentId is the Dovela Central c_document id (string); controlId is the Central control id.
+ * Canonical view wire contract (GET /projects/:fun0Id/view): readOnly flag, project {fun0Id,idPublic},
+ * pinned configuration, governance, requirements {documents,requirementGroups,typologyOptions,warnings},
+ * submits, pagination and rows with persistence:'canonical'. documentId is the Dovela Central c_document
+ * id (string); controlId is the Central control id.
  */
 const object = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const string = (value) => typeof value === 'string';
@@ -29,81 +16,19 @@ const controlId = (value) => string(value) && value.length > 0 && value.length <
 const count = (value) => Number.isSafeInteger(value) && value >= 0;
 const arrayOf = (value, check) => Array.isArray(value) && value.every(check);
 const hash = (value) => string(value) && /^[a-f0-9]{64}$/i.test(value);
-const history = (value) => object(value) && ['code', 'title', 'listTitle', 'description', 'pagesRaw', 'reviewRaw'].every((key) => nullableString(value[key]));
 const warning = (value) => object(value) && string(value.code) && string(value.message);
 const configuration = (value) => object(value) && id(value.id) && id(value.releaseVersion)
   && ['tenantCode', 'sourceReleaseId', 'schemaVersion'].every((key) => string(value[key]) && value[key].length > 0)
   && hash(value.checksum) && value.selection === 'preview-target';
 
-export function isSafeDocumentaryFileUrl(value) {
-  return string(value) && /^\/api\/files\/(?:docs\/process|submit)\/[^/?#]+\/[^/?#]+\/[^/?#]+(?:\?inline=1)?$/.test(value)
-    && !/%(?:2f|5c|00)/i.test(value);
-}
-
-function source(value) {
-  return object(value) && ['sub_lists', 'fun_6s', 'sub_docs'].includes(value.table) && id(value.id)
-    && (value.itemIndex === null || count(value.itemIndex)) && hash(value.sourceSnapshotHash)
-    && (value.submitId === null || id(value.submitId)) && nullableString(value.vrLabel)
-    && ['physical', 'digital', 'scan', 'unknown'].includes(value.medium)
-    && ['explicit', 'inferred', 'unknown'].includes(value.originEvidence)
-    && object(value.raw) && object(value.parent) && history(value.historical)
-    && object(value.receipt) && ['receipt-indicated', 'listed-only', 'file-recorded'].includes(value.receipt.status)
-    && string(value.receipt.basis) && object(value.file)
-    && ['unavailable', 'legacy-url'].includes(value.file.availability) && value.file.existence === 'unverified'
-    && ['downloadUrl', 'previewUrl'].every((key) => value.file[key] === null || isSafeDocumentaryFileUrl(value.file[key]));
-}
-
-function row(value, config) {
-  if (!object(value) || !string(value.rowKey) || !value.rowKey || value.persistence !== 'legacy-preview'
-    || !['projectDocumentId', 'documentId', 'instanceNumber', 'currentVersionId', 'catalogueDisplay'].every((key) => value[key] === null)
-    || !history(value.historical) || !Array.isArray(value.versions) || value.versions.length
-    || !arrayOf(value.sources, source) || value.sources.length !== 1 || !object(value.correlation)) return false;
-  const correlation = value.correlation;
-  if (!['candidate', 'ambiguous', 'unmatched'].includes(correlation.status)
-    || !arrayOf(correlation.reasons, (reason) => warning(reason) && Array.isArray(reason.evidence))
-    || !arrayOf(correlation.targets, (target) => object(target) && config && target.configurationId === config.id
-      && target.configurationChecksum === config.checksum && documentId(target.documentId)
-      && ['sourceDocumentId', 'code', 'name'].every((key) => string(target[key])) && Array.isArray(target.evidence))) return false;
-  const targets = correlation.targets;
-  if (correlation.status !== (targets.length > 1 ? 'ambiguous' : targets.length ? 'candidate' : 'unmatched')) return false;
-  return arrayOf(value.controls, (control) => object(control) && control.controlId === null
-    && string(control.sourceControlId) && count(control.revision) && string(control.title)
-    && targets.some((target) => target.documentId === control.targetDocumentId)
-    && arrayOf(control.origins, string) && control.writable === false && control.review === null
-    && arrayOf(control.values, (item) => object(item) && item.id === null && ['sourceValueId', 'label', 'effect'].every((key) => string(item[key]))))
-    && object(value.actions) && ['receive', 'replace', 'review'].every((key) => value.actions[key] === false)
-    && value.actions.download === Boolean(value.sources[0].file.downloadUrl);
-}
-
 function invalidContract() {
   throw new Error('La respuesta documental no cumple el contrato de vista previa. No se mostraron datos incompletos.');
 }
 
+// GET /projects/:fun0Id/view only answers canonical projects; this client never reads the backend's /legacy-preview endpoint.
 export function validateDocumentaryView(value) {
-  if (value?.mode === 'canonical') return validateCanonicalView(value);
-  if (!object(value) || value.schemaVersion !== DOCUMENTARY_VIEW_SCHEMA || value.mode !== 'legacy-preview'
-    || value.readOnly !== true || value.context !== null || !object(value.project) || !id(value.project.fun0Id)
-    || !nullableString(value.project.idPublic) || !(value.configuration === null || configuration(value.configuration))
-    || !object(value.capabilities) || !['createDocument', 'receivePhysical', 'receiveDigital', 'review'].every((key) => value.capabilities[key] === false)
-    || !arrayOf(value.rows, (item) => row(item, value.configuration)) || value.rows.length > 2000
-    || new Set(value.rows.map((item) => item.rowKey)).size !== value.rows.length
-    || !arrayOf(value.warnings, (item) => warning(item) && arrayOf(item.rowKeys, string))) invalidContract();
-  const requirements = value.requirements;
-  if (!object(requirements) || !arrayOf(requirements.documents, (item) => object(item)
-    && (item.documentId === null || documentId(item.documentId)) && string(item.sourceDocumentId)
-    && string(item.code) && string(item.name) && typeof item.required === 'boolean' && Array.isArray(item.trace) && arrayOf(item.groupCodes, string))
-    || !arrayOf(requirements.requirementGroups, object) || !arrayOf(requirements.typologyOptions, object)
-    || !arrayOf(requirements.warnings, warning)) invalidContract();
-  const counts = value.counts;
-  const fields = ['physicalItems', 'digitalItems', 'attachmentItems', 'listedOnlyItems', 'skippedEmptyPositions',
-    'canonicalDocuments', 'receivedVersions', 'fileRevisions', 'exact-explicit', 'candidate', 'ambiguous', 'unmatched',
-    'visibleRows', 'warningCount', 'physicalPages', 'digitalPages', 'attachmentPages'];
-  if (!object(counts) || !fields.every((key) => count(counts[key])) || !object(counts.sourceRecords)
-    || !['subLists', 'fun6', 'subDocs'].every((key) => count(counts.sourceRecords[key]))
-    || !['canonicalDocuments', 'receivedVersions', 'fileRevisions', 'exact-explicit'].every((key) => counts[key] === 0)
-    || counts.visibleRows !== value.rows.length || counts.warningCount !== value.warnings.length
-    || counts.candidate + counts.ambiguous + counts.unmatched !== counts.visibleRows) invalidContract();
-  return value;
+  if (value?.mode !== 'canonical') invalidContract();
+  return validateCanonicalView(value);
 }
 
 // v5 input documents: requirement rows reference a Central document; annex and vr_slip rows do not.

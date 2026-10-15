@@ -759,7 +759,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                                 <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
                                     <DocumentaryOriginStatus {...sourceProps} />
-                                    {isCanonicalMode(sourceMode) ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
+                                    {isCanonicalMode(sourceMode) ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage /> : null}
                                     {usesExistingIntake ? <SUBMIT_LIST
                                         translation={translation}
                                         swaMsg={swaMsg}
