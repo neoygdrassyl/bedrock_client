@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { CircleAlert, CircleCheck, FileOutput, Inbox, Settings2, TriangleAlert } from 'lucide-react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { CircleAlert, CircleCheck, FileOutput, FilePlus2, Inbox, Settings2, TriangleAlert } from 'lucide-react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,9 @@ import { LegacyMigrationPanel } from './ui/organisms/LegacyMigrationPanel';
 import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
 import { useIssuedDocuments } from './hooks/useIssuedDocuments';
 import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
+
+// The generators pull PDF tooling; load them only when the tab is opened.
+const DocumentGeneratorsPanel = lazy(() => import('./ui/organisms/DocumentGeneratorsPanel'));
 
 function LegacyDocumentalWorkspace({
   currentId,
@@ -80,6 +83,7 @@ function LegacyDocumentalWorkspace({
 
 const TAB_INPUT = 'radicacion';
 const TAB_ISSUED = 'expedidos';
+const TAB_GENERATORS = 'generar';
 const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 // Segmented control with the same rhythm as the expediente module navigation (h-8, text-xs, icon 14px).
@@ -147,6 +151,10 @@ function ProjectDocumentaryWorkspace(props) {
             Expedidos
             {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
           </TabsTrigger>
+          <TabsTrigger value={TAB_GENERATORS} className={TRIGGER_CLASS}>
+            <FilePlus2 aria-hidden="true" />
+            Generar documentos
+          </TabsTrigger>
           {canConfigure ? (
             <TabsTrigger value={TAB_CONFIGURATION} className={TRIGGER_CLASS}>
               <Settings2 aria-hidden="true" />
@@ -167,6 +175,19 @@ function ProjectDocumentaryWorkspace(props) {
 
       <TabsContent value={TAB_ISSUED} className="mt-0 min-w-0">
         <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} />
+      </TabsContent>
+
+      {/* Mounted only while active: it loads the expediente and its generators on demand. */}
+      <TabsContent value={TAB_GENERATORS} className="mt-0 min-w-0">
+        <Suspense fallback={<WorkspaceSkeleton />}>
+          <DocumentGeneratorsPanel
+            currentId={props.currentId}
+            currentVersion={props.currentVersion}
+            translation={props.translation}
+            swaMsg={props.swaMsg}
+            globals={props.globals}
+          />
+        </Suspense>
       </TabsContent>
 
       {canConfigure ? (
