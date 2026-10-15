@@ -1,4 +1,4 @@
-import { isCanonicalExpediente } from '../../expediente_documental/hooks/useDocumentaryInventory';
+import { isCanonicalExpediente } from '../../expediente_documental/expedienteMode';
 
 export const CANONICAL_SAVE_UNAVAILABLE_HINT = 'Guardar no está disponible en el modelo nuevo todavía';
 

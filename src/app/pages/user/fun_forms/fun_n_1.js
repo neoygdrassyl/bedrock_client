@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { isCanonicalExpediente } from '../expediente_documental/expedienteMode';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
 import { Button } from '@/components/ui/button';
 import FUNService from '../../../services/fun.service'
@@ -57,7 +58,7 @@ export function getFun1ForVersion(entries, targetVersion) {
 // Documentary roots only accept an unambiguous version row; legacy roots keep
 // the backend tie-breaker applied by getFun1ForVersion.
 function selectFun1ForVersion(root, targetVersion) {
-    if (root?.centralReleaseId == null) return getFun1ForVersion(root?.fun_1s, targetVersion);
+    if (!isCanonicalExpediente(root)) return getFun1ForVersion(root?.fun_1s, targetVersion);
     const entries = Array.isArray(root.fun_1s) ? root.fun_1s : [];
     return entries[documentaryVersionIndex(root, entries, targetVersion)] || null;
 }
