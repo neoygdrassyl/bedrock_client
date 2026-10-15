@@ -80,6 +80,8 @@ it('shows the pending Central activation notice without a banner', async () => {
 
 describe('documentary tabs', () => {
   it('opens on Radicación and hides Configuración documental for roles without access', async () => {
+    // The role restriction only applies when the temporary access switch is set to 'managers'.
+    vi.stubEnv('VITE_DOCUMENTARY_CONFIGURATION_ACCESS', 'managers');
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     // No module banner: the radicado and the documentary origin are a single caption next to the tabs.
@@ -92,6 +94,7 @@ describe('documentary tabs', () => {
     expect(screen.getByText('Recepción canónica')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('tab', { name: /Radicación/ })).toHaveTextContent('7'));
     await settleIssuedCount();
+    vi.unstubAllEnvs();
   });
 
   it('shows Configuración documental for allowed roles and keeps Radicación mounted', async () => {
