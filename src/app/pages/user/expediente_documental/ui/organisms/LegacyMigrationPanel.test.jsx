@@ -23,9 +23,16 @@ beforeEach(() => {
 });
 
 describe('LegacyMigrationPanel', () => {
-  it('renders issues as count tags instead of sentences', () => {
+  it('summarises what will be migrated without PQRS hints', () => {
     render(<LegacyMigrationPanel fun0Id={1} />);
-    const warning = screen.getByText('Código fuera del catálogo (se importa como anexo)').closest('.d-tag');
+    expect(screen.getByText('VR a migrar').parentElement).toHaveTextContent('14');
+    expect(screen.queryByText(/PQRS/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Incidencias')).not.toBeInTheDocument();
+  });
+
+  it('renders issues as count tags with a short what-to-do sentence', () => {
+    render(<LegacyMigrationPanel fun0Id={1} />);
+    const warning = screen.getByText('Código fuera del catálogo: el documento se importa como anexo.').closest('.d-tag');
     expect(warning).toHaveClass('d-tag--warning');
     expect(within(warning).getByText('2')).toBeInTheDocument();
   });

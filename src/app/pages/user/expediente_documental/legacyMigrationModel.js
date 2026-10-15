@@ -1,18 +1,19 @@
 // Pure presentation model of the legacy -> documentary migration preview.
 
+// One short sentence per code: what happens and, when needed, what to do. Codes come from the backend.
 export const ISSUE_LABELS = {
-  NOT_LEGACY: 'El expediente ya usa el modelo nuevo',
-  EVIDENCE_EXISTS: 'Ya hay documentos registrados en el modelo nuevo',
-  RELEASE_NOT_READY: 'Publicación de Central no lista',
-  DIGITAL_WITHOUT_VR: 'Archivo digital sin VR',
-  AMBIGUOUS_VR: 'VR ambigua',
-  DUPLICATE_IN_VR: 'Documento repetido en la misma VR',
-  MISSING_PAGES: 'Entrega física sin folios',
-  FILE_MISSING: 'Archivo no encontrado en el almacenamiento',
-  UNKNOWN_CODE: 'Código fuera del catálogo (se importa como anexo)',
-  PQRS_VR: 'Ventanilla de PQRS',
-  REPORT_EXCLUDED: 'Informe técnico excluido',
-  CHECKLIST_MISMATCH: 'Diferencia con la lista de chequeo antigua',
+  NOT_LEGACY: 'El expediente ya usa el modelo nuevo: no hay nada que migrar.',
+  EVIDENCE_EXISTS: 'Ya hay documentos registrados en el modelo nuevo: no se puede migrar.',
+  RELEASE_NOT_READY: 'La publicación elegida no está lista: elija otra publicación.',
+  DIGITAL_WITHOUT_VR: 'Archivo digital sin VR: asígnelo a una VR o exclúyalo.',
+  AMBIGUOUS_VR: 'No se puede saber a qué expediente pertenece una VR: revísela antes de migrar.',
+  DUPLICATE_IN_VR: 'Documento repetido en la misma VR: se importa sin perder entregas. No requiere acción.',
+  MISSING_PAGES: 'Entrega física sin folios: se importa sin folios. Puede completarlos después.',
+  FILE_MISSING: 'Archivo no encontrado en el almacenamiento: se conserva su referencia.',
+  UNKNOWN_CODE: 'Código fuera del catálogo: el documento se importa como anexo.',
+  PQRS_VR: 'VR de otro trámite: se importa igual. No requiere acción.',
+  REPORT_EXCLUDED: 'Informe técnico: no se importa, pertenece a los documentos expedidos.',
+  CHECKLIST_MISMATCH: 'La lista de chequeo antigua no coincide con las entregas: no se importa, solo se compara.',
 };
 
 export const SEVERITY_LABELS = { blocking: 'Bloqueantes', warning: 'Advertencias' };
@@ -40,15 +41,14 @@ export function groupIssues(issues) {
     .filter((group) => group.entries.length);
 }
 
-/** Headline figures of the preview. */
+/** Headline figures of the preview: what will be migrated (issues are listed separately). */
 export function summaryFacts(preview) {
   const stats = preview?.stats;
   if (!stats) return [];
   return [
-    { key: 'vrs', label: 'VR', value: stats.vrs, hint: stats.pqrsVrs ? `${stats.pqrsVrs} PQRS` : null },
-    { key: 'deliveries', label: 'Entregas', value: stats.deliveries, hint: `${stats.documents} docs · ${stats.versionedDocuments} versionados` },
+    { key: 'vrs', label: 'VR a migrar', value: stats.vrs, hint: null },
+    { key: 'deliveries', label: 'Entregas', value: stats.deliveries, hint: `${stats.documents} documentos` },
     { key: 'files', label: 'Archivos', value: stats.files.imported, hint: stats.files.missing ? `${stats.files.missing} sin archivo` : null },
-    { key: 'issues', label: 'Incidencias', value: stats.issues.blocking + stats.issues.warning, hint: stats.issues.blocking ? `${stats.issues.blocking} bloqueantes` : null },
   ];
 }
 

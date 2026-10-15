@@ -118,6 +118,9 @@ function ProjectDocumentaryWorkspace(props) {
   const [activeTab, setActiveTab] = useState(TAB_INPUT);
   // Bumped after a configuration command so the Radicación tab and the selector reload.
   const [revision, setRevision] = useState(0);
+  // Bumped when the requirement evaluation or the origin changed, to reload the panels that
+  // fetch on their own (governance, Legal y debida forma, generators) without touching Radicación.
+  const [syncRevision, setSyncRevision] = useState(0);
   const [notice, setNotice] = useState('');
   const [inputCount, setInputCount] = useState(null);
   // Viewing and changing the Central configuration version is limited to abogado,
@@ -138,7 +141,13 @@ function ProjectDocumentaryWorkspace(props) {
   function handleSaved(message, originChanged) {
     setNotice(message || '');
     setRevision((value) => value + 1);
-    if (originChanged) source.refresh();
+    if (originChanged) { setSyncRevision((value) => value + 1); source.refresh(); }
+  }
+  // Refreshing the requirements from the Radicación banner: the workspace reloads itself;
+  // the origin, governance, Legal y debida forma and generators must follow.
+  function handleRequirementsRefreshed() {
+    setSyncRevision((value) => value + 1);
+    source.refresh();
   }
   function handleConflict() {
     setNotice(CONFLICT_NOTICE);
@@ -190,7 +199,7 @@ function ProjectDocumentaryWorkspace(props) {
       {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
       <TabsContent value={TAB_INPUT} forceMount className="mt-0 flex min-w-0 flex-col gap-[0.75rem] data-[state=inactive]:hidden">
         {!origin && !source.error ? <WorkspaceSkeleton /> : null}
-        {isCanonicalMode(mode) ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} embedded /> : null}
+        {isCanonicalMode(mode) ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} onRequirementsRefreshed={handleRequirementsRefreshed} embedded /> : null}
         {mode === EXPEDIENTE_MODE.traditional ? <LegacyDocumentalWorkspace {...props} onCountChange={setInputCount} /> : null}
       </TabsContent>
 
@@ -201,7 +210,7 @@ function ProjectDocumentaryWorkspace(props) {
       {showLegalForm ? (
         <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
           <Suspense fallback={<WorkspaceSkeleton />}>
-            <LegalFormPanel origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
+            <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
           </Suspense>
         </TabsContent>
       ) : null}
@@ -210,7 +219,7 @@ function ProjectDocumentaryWorkspace(props) {
       <TabsContent value={TAB_GENERATORS} className="mt-0 min-w-0">
         <Suspense fallback={<WorkspaceSkeleton />}>
           <DocumentGeneratorsPanel
-            key={`generators:${revision}`}
+            key={`generators:${revision}:${syncRevision}`}
             currentId={props.currentId}
             currentVersion={props.currentVersion}
             translation={props.translation}
@@ -229,12 +238,13 @@ function ProjectDocumentaryWorkspace(props) {
             </Alert>
           ) : null}
           <DocumentaryGovernance
-            key={`governance:${revision}`}
+            key={`governance:${revision}:${syncRevision}`}
             origin={origin}
             canManage={Boolean(props.canManage)}
             defaultOpen
             onSaved={handleSaved}
             onConflict={handleConflict}
+            onFixFun={props.NAVIGATION ? () => props.NAVIGATION(null, 'edit') : undefined}
           />
           {mode === EXPEDIENTE_MODE.traditional ? <LegacyMigrationPanel key={`legacy-migration:${revision}`} fun0Id={origin.project.fun0Id} onMigrated={(message) => handleSaved(message, true)} /> : null}
         </TabsContent>

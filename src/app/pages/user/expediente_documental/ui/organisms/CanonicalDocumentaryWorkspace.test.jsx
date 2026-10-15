@@ -52,10 +52,13 @@ describe('recepción según el catálogo y el expediente', () => {
     unmount();
     window.user = { role_short: 'CUR' };
     api.refreshDocumentaryRequirements.mockResolvedValue({});
-    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    const refreshed = vi.fn();
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage onRequirementsRefreshed={refreshed} />);
     fireEvent.click(await screen.findByRole('button', { name: 'Actualizar requisitos' }));
     await waitFor(() => expect(api.refreshDocumentaryRequirements).toHaveBeenCalledWith(1, expect.objectContaining({ expectedInputRevision: 4 })));
     expect(await screen.findByText('Evaluación de requisitos actualizada.')).toBeInTheDocument();
+    // The module is told so the origin, governance and Legal y debida forma reload too.
+    expect(refreshed).toHaveBeenCalledTimes(1);
   });
 
   it('reloads on 409 and requires a fresh decision instead of retrying the stale command',async()=>{
