@@ -21,6 +21,7 @@ vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: 
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
 vi.mock('../shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
+vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: ({ onDeclarationChanged }) => <button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button> }));
 vi.mock('./ui/organisms/DocumentGeneratorsPanel', () => ({ default: (props) => { mocks.generators(props); return <div>Panel de generadores</div>; } }));
 vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
 vi.mock('@/app/services/data.service', () => ({ default: { getUserData: mocks.user } }));
@@ -168,5 +169,27 @@ describe('documentary tabs', () => {
     await user.click(screen.getByRole('tab', { name: /Expedidos/ }));
     expect(screen.getByText('Aún no hay documentos expedidos para este expediente.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('shows Legal y debida forma only for canonical expedientes and reloads the module after a declaration', async () => {
+    const user = userEvent.setup();
+    const refresh = vi.fn();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh });
+    const { unmount } = render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent);
+    expect(tabs.findIndex((text) => text.includes('Legal y debida forma'))).toBe(tabs.findIndex((text) => text.includes('Generar documentos')) - 1);
+    await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
+    await user.click(await screen.findByRole('button', { name: 'Panel de legal y debida forma' }));
+    expect(refresh).toHaveBeenCalledTimes(1);
+    // The origin refresh must not unmount the open tab.
+    expect(screen.getByRole('tab', { name: /Legal y debida forma/ })).toHaveAttribute('aria-selected', 'true');
+    await user.click(screen.getByRole('tab', { name: /Generar documentos/ }));
+    expect(await screen.findByText('Panel de generadores')).toBeInTheDocument();
+    unmount();
+    mocks.origin.mockReturnValue({ origin: TRADITIONAL, refresh: vi.fn() });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    expect(screen.queryByRole('tab', { name: /Legal y debida forma/ })).not.toBeInTheDocument();
   });
 });
