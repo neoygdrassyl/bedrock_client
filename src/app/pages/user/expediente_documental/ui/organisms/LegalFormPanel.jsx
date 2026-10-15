@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { ChevronDown, CircleAlert, CircleCheck, ListChecks, RefreshCw, Scale, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,26 +12,14 @@ import { ChecklistDialog, CommandDialog, TypologySelectionDialog } from './Legal
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
 import { useLegalForm } from '../../hooks/useLegalForm';
 import { formatDocumentaryDate } from '../../canonicalDocumentaryModel';
-import { buildSections, groupBlockers, groupDisplayName, LEGAL_FORM_STATE_META, missingFactLabels, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
+import { buildSections, instancesByKey, LEGAL_FORM_STATE_META, missingFactLabels, pendingGroups, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const ITEM_ERROR = 'No fue posible cargar el expediente para generar el formato. Cierre e intente nuevamente.';
 
-function blockerTarget(blocker, requirements, data) {
-  const requirement = requirements.find((item) => item.documentCode === blocker.documentCode);
-  const instance = blocker.documentKey ? requirement?.instances.find((item) => item.documentKey === blocker.documentKey) : null;
-  if (requirement) return [requirement.documentCode, requirement.title, instance?.instanceLabel].filter(Boolean).join(' · ');
-  if (blocker.groupCode) return groupDisplayName(blocker.groupCode, data?.groups);
-  if (blocker.typologyCode) return (data?.sections || []).find((section) => section.typologyCode === blocker.typologyCode)?.typologyName || blocker.typologyCode;
-  return blocker.documentCode || null;
-}
-
-/** State line of the expediente plus its blockers grouped by code (expandable). */
+/** State line of the expediente and the warning of an incomplete evaluation; the pending items live in PendingPanel. */
 function StateBanner({ data }) {
-  const ids = useId();
-  const [open, setOpen] = useState(false);
   const meta = LEGAL_FORM_STATE_META[data.state] || LEGAL_FORM_STATE_META.not_ready;
-  const groups = groupBlockers(data.blockers);
   const incomplete = (data.warnings || []).some((warning) => warning.code === 'REQUIREMENTS_INCOMPLETE');
   const missing = missingFactLabels(data);
   return (
@@ -49,50 +37,52 @@ function StateBanner({ data }) {
           {missing.length ? <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0" aria-label="Datos del FUN faltantes">{missing.map((label) => <li key={label}><Tag tone="neutral">{label}</Tag></li>)}</ul> : null}
         </div>
       ) : null}
-      {groups.length ? (
-        <div className="flex flex-wrap items-center gap-1.5">
-          {groups.map((group) => <Tag key={group.code} tone={group.code === 'DOES_NOT_COMPLY' ? 'danger' : 'warning'}>{group.label} · {group.items.length}</Tag>)}
-          <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs" aria-expanded={open} aria-controls={`${ids}-blockers`} onClick={() => setOpen((value) => !value)}>
-            {open ? 'Ocultar pendientes' : 'Ver pendientes'}
-            <ChevronDown aria-hidden="true" className={cn('h-3.5 w-3.5 transition-transform motion-reduce:transition-none', open && 'rotate-180')} />
-          </Button>
-        </div>
-      ) : null}
-      {open && groups.length ? (
-        <ul id={`${ids}-blockers`} className="m-0 flex list-none flex-col gap-1 p-0 text-xs leading-5">
-          {groups.flatMap((group) => group.items.map((blocker, index) => (
-            <li key={`${group.code}:${blocker.documentCode || blocker.groupCode || blocker.typologyCode || ''}:${blocker.documentKey || index}`} className="flex flex-wrap gap-x-2">
-              <span className="font-medium text-foreground">{group.label}</span>
-              <span className="text-muted-foreground">{blockerTarget(blocker, data.requirements, data) || blocker.message}</span>
-            </li>
-          )))}
-        </ul>
-      ) : null}
     </div>
   );
 }
 
-/** Compact list of the requirements still to deliver (NOT_DELIVERED) and the unsatisfied groups. */
-function MissingRequirements({ data }) {
+/**
+ * Everything still pending before declaring, in one panel: evaluation-level problems as an alert on top, then the
+ * groups in a fixed order (sin entregar, rechazados, sin evaluar, falta elegir el VR, opción de tipología). An item
+ * with a delivery opens its evaluation sheet; a typology item offers "Elegir opción".
+ */
+function PendingPanel({ data, onOpen, selectable, onChoose }) {
   const titleId = useId();
-  const items = (data.blockers || []).filter((blocker) => blocker.code === 'NOT_DELIVERED' || blocker.code === 'GROUP_NOT_SATISFIED');
-  if (!items.length) return null;
+  const { alerts, groups } = useMemo(() => pendingGroups(data), [data]);
+  if (!alerts.length && !groups.length) return null;
+  const total = groups.reduce((sum, group) => sum + group.items.length, 0);
   return (
-    <section aria-labelledby={titleId} className="flex flex-col gap-1.5 border-b px-[1rem] py-[0.75rem]" data-testid="legal-form-missing">
+    <section aria-labelledby={titleId} className="flex flex-col gap-2 border-b px-[1rem] py-[0.75rem]" data-testid="legal-form-pending">
       <h3 id={titleId} className="mb-0 flex items-center gap-2 text-sm font-semibold leading-5 text-foreground">
-        Requisitos sin entregar <Tag tone="warning" pill>{items.length}</Tag>
+        Pendientes para declarar {total ? <Tag tone="warning" pill>{total}</Tag> : null}
       </h3>
-      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-        {items.map((blocker, index) => (
-          <li key={`${blocker.code}:${blocker.documentCode || blocker.groupCode || index}`}>
-            <Tag tone="neutral">
-              {blocker.code === 'GROUP_NOT_SATISFIED'
-                ? (blocker.groupCode ? `${groupDisplayName(blocker.groupCode, data.groups)}: falta al menos una alternativa` : 'Grupo sin cumplir')
-                : blockerTarget(blocker, data.requirements, data) || blocker.message}
-            </Tag>
-          </li>
-        ))}
-      </ul>
+      {alerts.length ? (
+        <Alert variant="warning" className="py-2" data-testid="legal-form-pending-alert">
+          <TriangleAlert aria-hidden="true" />
+          <AlertDescription className="min-w-0 flex-1">
+            {alerts.map((alert) => <span key={alert.code} className="block"><span className="font-medium">{alert.label}</span>{alert.message ? ` · ${alert.message}` : ''}</span>)}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+      {groups.map((group) => (
+        <div key={group.key} className="flex flex-col gap-1" data-testid={`legal-form-pending-${group.key}`}>
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h4 className="mb-0 text-xs font-semibold leading-5 text-foreground">{group.title} <span className="font-mono font-normal tabular-nums text-muted-foreground">({group.items.length})</span></h4>
+            {group.hint ? <span className="text-[11px] leading-4 text-muted-foreground">{group.hint}</span> : null}
+          </div>
+          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+            {group.items.map((item) => (
+              <li key={item.key} className="flex flex-wrap items-center gap-x-2 text-xs leading-5">
+                {item.openable ? (
+                  <button type="button" className="min-w-0 bg-transparent p-0 text-left text-foreground underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => onOpen(item.documentKey)}>{item.label}</button>
+                ) : <span className="min-w-0 text-foreground">{item.label}</span>}
+                {item.note ? <span className="text-muted-foreground">{item.note}</span> : null}
+                {item.typologyCode && selectable(item.typologyCode) ? <Button type="button" variant="outline" size="sm" className="ml-auto h-6 px-2 text-xs" onClick={() => onChoose(item.typologyCode)}>Elegir opción</Button> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </section>
   );
 }
@@ -197,7 +187,7 @@ function LegacyConsult({ legacy }) {
 }
 
 /**
- * "Legal y debida forma" tab: state, blockers, requirements still to deliver, the declaration, and the same
+ * "Legal y debida forma" tab: state, the pending panel, the declaration, and the same
  * documents table as Radicación filtered to requirement documents, where each delivery is evaluated with the
  * shared evaluation sheet. Traditional expedientes only get a read-only consult card of the legacy declaration.
  * `onDeclarationChanged` lets the module reload origin, inventory and the expediente state.
@@ -218,12 +208,17 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   // GET /typology-selections (null while unknown or unavailable: older backends answer 404) and the open picker.
   const [selections, setSelections] = useState(null);
   const [choosing, setChoosing] = useState(null);
+  // Asks the documents table to open the evaluation sheet of a document (pending panel item).
+  const [openRequest, setOpenRequest] = useState(null);
+  const openEvaluation = (documentKey) => setOpenRequest({ documentKey, nonce: Date.now() });
   const data = legal.data;
   const traditional = data?.mode === 'traditional';
   const actions = data?.actions || {};
   const canReview = Boolean(canManage && actions.review);
   const canDeclare = Boolean(canManage && actions.declare && data?.state === 'ready');
   const declared = Boolean(data?.declaration);
+  const instances = useMemo(() => instancesByKey(data), [data]);
+  const sheetLegalForm = useMemo(() => ({ data, reload: legal.reload }), [data, legal.reload]);
 
   // Typology options can be chosen by managers until the declaration; the list follows each legal-form load.
   const selectionsEnabled = Boolean(fun0Id && canManage && data && !traditional && !declared);
@@ -327,7 +322,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
                 Lista de chequeo guardada por {data.checklist.updatedByName || (data.checklist.updatedBy != null ? `usuario ${data.checklist.updatedBy}` : 'un usuario')} · {formatDocumentaryDate(data.checklist.updatedAt)}
               </p>
             ) : null}
-            <MissingRequirements data={data} />
+            <PendingPanel data={data} onOpen={openEvaluation} selectable={selectableTypology} onChoose={(code) => { setNotice(''); setChoosing(code); }} />
             <RequirementSections data={data} selectable={selectableTypology} onChoose={(code) => { setNotice(''); setChoosing(code); }} />
           </>
         ) : null}
@@ -341,6 +336,9 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           embedded
           reloadKey={tableRevision}
           onEvaluationSaved={evaluationSaved}
+          legalForm={sheetLegalForm}
+          instances={instances}
+          openRequest={openRequest}
         />
       ) : null}
 

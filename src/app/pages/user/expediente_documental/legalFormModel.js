@@ -26,6 +26,8 @@ export const BLOCKER_LABELS = {
   DOES_NOT_COMPLY: 'No cumple',
   GROUP_NOT_SATISFIED: 'Grupo sin cumplir',
   TYPOLOGY_SELECTION_REQUIRED: 'Falta elegir opción de tipología',
+  VR_NOT_SELECTED: 'Falta elegir el VR',
+  SELECTION_INVALID: 'La entrega elegida ya no está aprobada',
 };
 
 // ---------- sections (typology / option groups) ----------
@@ -113,6 +115,96 @@ export function groupBlockers(blockers = []) {
   const rank = (code) => (order.includes(code) ? order.indexOf(code) : order.length);
   return Array.from(groups, ([code, items]) => ({ code, label: BLOCKER_LABELS[code] || code, items }))
     .sort((left, right) => rank(left.code) - rank(right.code));
+}
+
+// ---------- pending panel ----------
+
+// Blockers about the evaluation as a whole (shown as an alert on top of the pending panel).
+const EVALUATION_BLOCKERS = ['REQUIREMENTS_NOT_EVALUATED', 'REQUIREMENTS_STALE', 'REQUIREMENTS_INCOMPLETE', 'REQUIREMENTS_UNSUPPORTED'];
+
+// Fixed order of the pending groups: what the user must resolve first comes first.
+export const PENDING_GROUPS = [
+  { key: 'not_delivered', title: 'Sin entregar', hint: 'Reciba estos documentos en Radicación.', codes: ['NOT_DELIVERED', 'GROUP_NOT_SATISFIED'] },
+  { key: 'rejected', title: 'Rechazados', hint: 'Pida una nueva entrega o revise la evaluación.', codes: ['DOES_NOT_COMPLY'] },
+  { key: 'pending_review', title: 'Sin evaluar', hint: 'Evalúe la entrega para continuar.', codes: ['VERDICT_PENDING'] },
+  { key: 'vr_not_selected', title: 'Falta elegir el VR', hint: 'Elija la entrega aprobada que se usa para legal y debida forma.', codes: ['VR_NOT_SELECTED', 'SELECTION_INVALID'] },
+  { key: 'typology', title: 'Opción de tipología', hint: 'Elija la opción para conocer los documentos exigidos.', codes: ['TYPOLOGY_SELECTION_REQUIRED'] },
+];
+const KNOWN_PENDING_CODES = new Set([...EVALUATION_BLOCKERS, ...PENDING_GROUPS.flatMap((group) => group.codes)]);
+
+const SELECTION_INVALID_NOTE = 'La entrega elegida ya no está aprobada';
+
+/** Instances of the legal form by documentKey ({ requirement, instance }). */
+export function instancesByKey(data) {
+  const map = new Map();
+  (data?.requirements || []).forEach((requirement) => (requirement.instances || []).forEach((instance) => map.set(instance.documentKey, { requirement, instance })));
+  return map;
+}
+
+function pendingItem(blocker, data, lookup) {
+  const found = blocker.documentKey ? lookup.get(blocker.documentKey) : null;
+  const requirement = found?.requirement || (data?.requirements || []).find((item) => item.documentCode === blocker.documentCode) || null;
+  const instance = found?.instance || null;
+  const invalid = blocker.code === 'SELECTION_INVALID';
+  let title = requirement?.title || null;
+  let code = requirement?.documentCode || blocker.documentCode || null;
+  if (!requirement && blocker.groupCode) title = blocker.code === 'GROUP_NOT_SATISFIED' ? `${groupDisplayName(blocker.groupCode, data?.groups)}: falta al menos una alternativa` : groupDisplayName(blocker.groupCode, data?.groups);
+  if (blocker.typologyCode) title = (data?.sections || []).find((section) => section.typologyCode === blocker.typologyCode)?.typologyName || blocker.typologyCode;
+  const vrLabel = (invalid ? instance?.selection?.vrLabel : instance?.vrLabel) || null;
+  const label = [code, [title, instance?.instanceLabel].filter(Boolean).join(' · ') || null, vrLabel].filter(Boolean).join(' · ');
+  return { key: `${blocker.code}:${blocker.documentKey || code || blocker.groupCode || blocker.typologyCode || ''}`, code: blocker.code, documentCode: code, documentKey: blocker.documentKey || null,
+    typologyCode: blocker.typologyCode || null, title, vrLabel, label: label || blocker.message || blocker.code, note: invalid ? SELECTION_INVALID_NOTE : null,
+    openable: Boolean(blocker.documentKey && instance) };
+}
+
+/**
+ * Blockers of the legal form arranged for the pending panel: `alerts` (evaluation-level blockers, shown first) and
+ * `groups` in the fixed order of PENDING_GROUPS (empty groups left out; blockers with an unknown code go last in
+ * "Otros pendientes"). Item: { key, code, documentCode, documentKey, typologyCode, title, vrLabel, label, note, openable }.
+ */
+export function pendingGroups(data) {
+  const blockers = data?.blockers || [];
+  const lookup = instancesByKey(data);
+  const alerts = blockers.filter((blocker) => EVALUATION_BLOCKERS.includes(blocker.code)).map((blocker) => ({ code: blocker.code, label: BLOCKER_LABELS[blocker.code], message: blocker.message || null }));
+  const groups = PENDING_GROUPS.map((group) => ({ key: group.key, title: group.title, hint: group.hint,
+    items: blockers.filter((blocker) => group.codes.includes(blocker.code)).sort((a, b) => group.codes.indexOf(a.code) - group.codes.indexOf(b.code)).map((blocker) => pendingItem(blocker, data, lookup)) }));
+  const others = blockers.filter((blocker) => !KNOWN_PENDING_CODES.has(blocker.code));
+  if (others.length) groups.push({ key: 'other', title: 'Otros pendientes', hint: null, items: others.map((blocker) => pendingItem(blocker, data, lookup)) });
+  return { alerts, groups: groups.filter((group) => group.items.length) };
+}
+
+// ---------- readiness of a requirement row (LDF table order) ----------
+
+export const READINESS = { REJECTED: 0, PENDING: 1, UNSELECTED: 2, READY: 3 };
+
+/**
+ * Where a requirement row stands: rejected, pending evaluation, approved without a chosen VR, or ready (approved and
+ * chosen). `instance` is the legal-form instance of the row (its selection); `row.ldfSelected` is the fallback.
+ */
+export function rowReadiness(row, instance) {
+  const selected = Boolean(instance?.selection) || Boolean(row?.ldfSelected);
+  const status = (instance?.selection ? instance.selectedEvaluation?.status : null) || row?.evaluation?.status;
+  if (selected && status === 'approved') return READINESS.READY;
+  if (status === 'not_applicable' || !status) return READINESS.READY;
+  if (status === 'rejected' || instance?.verdict === 'does_not_comply') return READINESS.REJECTED;
+  if (status === 'pending') return READINESS.PENDING;
+  return READINESS.UNSELECTED;
+}
+
+/** Rows sorted by readiness (stable inside each level). */
+export function sortByReadiness(rows, lookup) {
+  return rows.map((row, index) => ({ row, index, rank: rowReadiness(row, lookup?.get(row.documentKey)?.instance) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index).map((item) => item.row);
+}
+
+export const READINESS_FILTER = { ALL: '', UNRESOLVED: 'unresolved', READY: 'ready' };
+
+/** Rows kept by the "Todos / Por resolver / Listos" chip, plus the counts of the three chips. */
+export function filterByReadiness(rows, filter, lookup) {
+  const ready = (row) => rowReadiness(row, lookup?.get(row.documentKey)?.instance) === READINESS.READY;
+  const kept = filter === READINESS_FILTER.READY ? rows.filter(ready) : filter === READINESS_FILTER.UNRESOLVED ? rows.filter((row) => !ready(row)) : rows;
+  const readyCount = rows.filter(ready).length;
+  return { rows: kept, counts: { all: rows.length, unresolved: rows.length - readyCount, ready: readyCount } };
 }
 
 /** Where a requirement (or instance) is reviewed: Central controls or a reviewer verdict. */
@@ -221,6 +313,16 @@ export function missingFactLabels(data) {
   const warned = (data?.warnings || []).filter((warning) => warning?.code === 'REQUIREMENTS_INCOMPLETE').flatMap((warning) => warning.sourceKeys || []);
   const keys = [...(data?.evaluation?.missingFacts || []), ...warned].filter((key) => key != null && key !== '');
   return Array.from(new Set(keys.map(String))).map(factLabel);
+}
+
+// ---------- VR selection ----------
+
+/** "Elegido por {name} · {date}" of a chosen VR, or null without a selection. */
+export function selectedByLine(selection) {
+  if (!selection) return null;
+  const who = selection.selectedByName || (selection.selectedBy != null ? `usuario ${selection.selectedBy}` : 'un usuario');
+  const when = selection.selectedAt ? formatDocumentaryDate(selection.selectedAt) : null;
+  return [`Elegido por ${who}`, when && when !== '—' ? when : null].filter(Boolean).join(' · ');
 }
 
 // ---------- reviewer attribution ----------
