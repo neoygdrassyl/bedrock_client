@@ -62,7 +62,7 @@ describe('LegalFormPanel', () => {
     const missing = screen.getByTestId('legal-form-missing');
     expect(within(missing).getByText('Requisitos sin entregar')).toBeInTheDocument();
     expect(within(missing).getByText('600 · Plano')).toBeInTheDocument();
-    expect(within(missing).getByText('Grupo G1: falta cumplir el grupo')).toBeInTheDocument();
+    expect(within(missing).getByText('Grupo G1: falta al menos una alternativa')).toBeInTheDocument();
     expect(within(missing).queryByText(/511/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ver pendientes' }));
     expect(screen.getByText('Grupo G1')).toBeInTheDocument();
