@@ -47,6 +47,8 @@ describe('documentary inventory adapters', () => {
   it('resolves the satisfying VR per code and the latest one among required codes', () => {
     expect(adapted.satisfyingVr.get('511').vr).toBe('VR-11');
     expect(adapted.satisfyingVr.has('512')).toBe(false);
+    // Delivered code that is not an evaluated requirement takes the VR of its current delivery.
+    expect(adapted.satisfyingVr.get('701').vr).toBe('VR-10');
     expect(inventoryLastVr(adapted.satisfyingVr, ['511', '512'], '2026-09-01').vr).toBe('VR-11');
     expect(inventoryLastVr(adapted.satisfyingVr, ['511'], '2026-12-01')).toEqual({ date: '2026-12-01', vr: '' });
   });
