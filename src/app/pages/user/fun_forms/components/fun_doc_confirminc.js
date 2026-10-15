@@ -527,7 +527,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
 
             let desc = document.getElementById('geni_type').value;
             formatData.set('desc', desc);
-            let date = document.getElementById('geng_date_doc').value;
+            let date = document.getElementById('geni_date_doc').value;
 
             formatData.set('date', date);
             if (idCUBxVr) {
