@@ -162,14 +162,14 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[0.75rem]')}
       {...(embedded ? { 'aria-label': 'Documentos recibidos' } : { 'aria-labelledby': `${ids}-title` })}
     >
-      <DocumentalWorkspaceHeader
-        titleId={`${ids}-title`}
-        currentPublic={origin.project.idPublic || view?.project?.idPublic}
-        subtitle="Documentos recibidos del expediente"
-        metrics={headerMetrics}
-        loading={!view}
-        showTitle={!embedded}
-      />
+      {embedded ? null : (
+        <DocumentalWorkspaceHeader
+          variant="title"
+          titleId={`${ids}-title`}
+          currentPublic={origin.project.idPublic || view?.project?.idPublic}
+          subtitle="Documentos recibidos del expediente"
+        />
+      )}
       {notice ? <WorkspaceNotice message={notice} /> : null}
       <ErrorMessage error={error || fileError} />
       {view ? (
@@ -205,12 +205,17 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 {canReceive ? <Button type="button" size="sm" onClick={() => openSheet('receive')}><Plus aria-hidden="true" />Recibir documento</Button> : null}
               </div>
             </div>
-            <DocumentalQuickFilters
-              label="Accesos rápidos de escaneo"
-              options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
-              value={filters.scan}
-              onChange={(value) => setFilter('scan', value)}
-            />
+            <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-1 pr-[1rem]">
+              <DocumentalQuickFilters
+                label="Accesos rápidos de escaneo"
+                options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
+                value={filters.scan}
+                onChange={(value) => setFilter('scan', value)}
+              />
+              <div className="min-w-0 py-1.5 pl-[1rem] sm:pl-0">
+                <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
+              </div>
+            </div>
           </div>
           <div className="grid min-h-0 min-w-0 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]">
             <div className="max-h-[65dvh] min-h-[16rem] min-w-0 overflow-auto overscroll-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" tabIndex={0} role="region" aria-label="Tabla documental desplazable">

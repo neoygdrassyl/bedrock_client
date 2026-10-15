@@ -25,6 +25,7 @@ export function DocumentalTableToolbar({
   setFiltersOpen,
   onFilterChange,
   onResetFilters,
+  summary,
   id,
 }) {
   const medium = filters.mediums?.length === 1 ? filters.mediums[0] : '';
@@ -179,13 +180,16 @@ export function DocumentalTableToolbar({
         </div>
       ) : null}
 
-      <DocumentalQuickFilters
-        label="Accesos rápidos de escaneo"
-        options={[{ value: '', label: 'Todos' }, SCAN_OPTIONS[1], SCAN_OPTIONS[0]]}
-        // Several statuses selected from the filter panel leave no shortcut active.
-        value={filters.statuses?.length ? status || 'multiple' : ''}
-        onChange={(value) => onFilterChange?.('statuses', value ? [value] : [])}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-1 pr-[1rem]">
+        <DocumentalQuickFilters
+          label="Accesos rápidos de escaneo"
+          options={[{ value: '', label: 'Todos' }, SCAN_OPTIONS[1], SCAN_OPTIONS[0]]}
+          // Several statuses selected from the filter panel leave no shortcut active.
+          value={filters.statuses?.length ? status || 'multiple' : ''}
+          onChange={(value) => onFilterChange?.('statuses', value ? [value] : [])}
+        />
+        {summary ? <div className="min-w-0 py-1.5 pl-[1rem] sm:pl-0">{summary}</div> : null}
+      </div>
     </div>
   );
 }

@@ -102,6 +102,7 @@ export function DocumentalReviewTable({
   onResetFilters,
   onPageChange,
   onRowAction,
+  summary,
 }) {
   const [selectedId, setSelectedId] = useState(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -175,6 +176,7 @@ export function DocumentalReviewTable({
         setFiltersOpen={setFiltersOpen}
         onFilterChange={onFilterChange}
         onResetFilters={onResetFilters}
+        summary={summary}
         id={detailId}
       />
       <p role="status" className="sr-only">

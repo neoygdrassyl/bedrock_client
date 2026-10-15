@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useId, useState } from 'react';
-import { CircleAlert, CircleCheck, FileOutput, FolderOpen, Inbox, Settings2, TriangleAlert } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { CircleAlert, CircleCheck, FileOutput, Inbox, Settings2, TriangleAlert } from 'lucide-react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import FunUpdateSectionLegend from '../fun_forms/components/FunUpdateSectionLegend.jsx';
 import UnifiedDocumentEntryModal from '../shared/UnifiedDocumentEntryModal';
 import { useExpedienteDocumental } from './hooks/useExpedienteDocumental';
 import { DocumentalWorkspaceHeader } from './ui/organisms/DocumentalWorkspaceHeader';
 import { DocumentalReviewTable } from './ui/organisms/DocumentalReviewTable';
 import { useDocumentaryOrigin } from './hooks/useDocumentaryOrigin';
-import { DocumentaryOriginStatus } from './ui/organisms/DocumentaryOriginStatus';
+import { OriginCaption, OriginNotices } from './ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from './ui/organisms/CanonicalDocumentaryWorkspace';
 import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
 import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
@@ -43,13 +42,6 @@ function LegacyDocumentalWorkspace({
 
   return (
     <section className="flex min-w-0 flex-col gap-[0.75rem]" aria-label="Documentos recibidos">
-      <DocumentalWorkspaceHeader
-        currentPublic={currentPublic}
-        summary={documental.summary}
-        loading={documental.loading}
-        showTitle={false}
-      />
-
       {documental.error ? (
         <Alert variant="destructive">
           <CircleAlert aria-hidden="true" />
@@ -71,6 +63,7 @@ function LegacyDocumentalWorkspace({
         onResetFilters={documental.resetFilters}
         onPageChange={documental.setPage}
         onRowAction={handleRowAction}
+        summary={<DocumentalWorkspaceHeader variant="chips" currentPublic={currentPublic} summary={documental.summary} loading={documental.loading} />}
       />
       <UnifiedDocumentEntryModal
         open={documental.entrySheet.open}
@@ -105,7 +98,6 @@ function TabCount({ value, label }) {
 function WorkspaceSkeleton() {
   return (
     <div className="flex flex-col gap-[0.75rem]" aria-hidden="true">
-      <Skeleton className="h-[4.25rem] w-full rounded-lg" />
       <Skeleton className="h-12 w-full rounded-lg" />
       <Skeleton className="h-72 w-full rounded-lg" />
     </div>
@@ -113,7 +105,6 @@ function WorkspaceSkeleton() {
 }
 
 function ProjectDocumentaryWorkspace(props) {
-  const titleId = useId();
   const source = useDocumentaryOrigin({ fun0Id: props.currentId });
   const { origin } = source;
   const issued = useIssuedDocuments(props.currentPublic || origin?.project?.idPublic);
@@ -144,32 +135,29 @@ function ProjectDocumentaryWorkspace(props) {
   const conflictNotice = notice === CONFLICT_NOTICE;
 
   return (
-    <Tabs value={currentTab} onValueChange={selectTab} className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[1rem]')} aria-labelledby={titleId}>
-      <header className="flex min-w-0 flex-col gap-2">
-        <FunUpdateSectionLegend as="h2" id={titleId} step={<FolderOpen className="h-4 w-4" aria-hidden="true" />} className="m-0">
-          Gestión documental
-        </FunUpdateSectionLegend>
-        <DocumentaryOriginStatus origin={source.origin} error={source.error} loading={source.loading} refresh={source.refresh} currentPublic={props.currentPublic} />
-      </header>
-
-      <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start gap-1 self-start overflow-x-auto rounded-xl border bg-muted/50 p-1 shadow-sm">
-        <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>
-          <Inbox aria-hidden="true" />
-          Radicación
-          <TabCount value={inputCount} label="documentos recibidos" />
-        </TabsTrigger>
-        <TabsTrigger value={TAB_ISSUED} className={TRIGGER_CLASS}>
-          <FileOutput aria-hidden="true" />
-          Expedidos
-          {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
-        </TabsTrigger>
-        {canConfigure ? (
-          <TabsTrigger value={TAB_CONFIGURATION} className={TRIGGER_CLASS}>
-            <Settings2 aria-hidden="true" />
-            Configuración documental
+    <Tabs value={currentTab} onValueChange={selectTab} className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[0.75rem]')}>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-[1rem] gap-y-2">
+        <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start gap-1 self-start overflow-x-auto rounded-xl border bg-muted/50 p-1 shadow-sm">
+          <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>
+            <Inbox aria-hidden="true" />
+            Radicación
+            <TabCount value={inputCount} label="documentos recibidos" />
           </TabsTrigger>
-        ) : null}
-      </TabsList>
+          <TabsTrigger value={TAB_ISSUED} className={TRIGGER_CLASS}>
+            <FileOutput aria-hidden="true" />
+            Expedidos
+            {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
+          </TabsTrigger>
+          {canConfigure ? (
+            <TabsTrigger value={TAB_CONFIGURATION} className={TRIGGER_CLASS}>
+              <Settings2 aria-hidden="true" />
+              Configuración documental
+            </TabsTrigger>
+          ) : null}
+        </TabsList>
+        <OriginCaption origin={source.origin} error={source.error} currentPublic={props.currentPublic} className="min-w-0 flex-1" />
+      </div>
+      <OriginNotices origin={source.origin} error={source.error} refresh={source.refresh} />
 
       {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
       <TabsContent value={TAB_INPUT} forceMount className="mt-0 flex min-w-0 flex-col gap-[0.75rem] data-[state=inactive]:hidden">
