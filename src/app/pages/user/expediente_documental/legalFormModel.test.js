@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, groupBlockers, inventorySheetCommand, missingFactLabels, reviewedByLine, SOURCE_FACT_LABELS } from './legalFormModel';
+import { checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, controlSheetDefaults, controlSheetReviewPlan, filterByReadiness, groupBlockers, instancesByKey, inventorySheetCommand, missingFactLabels, pendingGroups, reviewedByLine, rowReadiness, selectedByLine, sortByReadiness, SOURCE_FACT_LABELS } from './legalFormModel';
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });
 const requirement = (extra) => ({ documentCode: '511', title: 'Formulario', delivered: true, allowsMultipleInstances: false, instances: [instance()], ...extra });
@@ -111,5 +111,84 @@ describe('legalFormModel', () => {
     expect(reviewedByLine({ name: 'Ana', at: '2026-10-14T15:00:00.000Z' })).toMatch(/^Revisado por Ana · \d/);
     expect(reviewedByLine({ id: 9 })).toBe('Revisado por usuario 9');
     expect(reviewedByLine({ name: 'Ana' })).toBe('Revisado por Ana');
+  });
+
+  describe('pendingGroups', () => {
+    const blocker = (code, extra = {}) => ({ code, message: code, documentCode: null, groupCode: null, documentKey: null, ...extra });
+    const data = {
+      requirements: [
+        { documentCode: '511', title: 'Formulario único', instances: [{ documentKey: 'k-1', instanceLabel: null, vrLabel: 'VR-2', selection: { rowId: 9, vrLabel: 'VR-1' } }] },
+        { documentCode: '600', title: 'Plano', instances: [] },
+      ],
+      groups: [{ code: 'G1', optionLabel: 'Opción A', typologyName: 'Vivienda' }],
+      sections: [{ typologyCode: 'T1', typologyName: 'Tipología uno' }],
+      blockers: [
+        blocker('TYPOLOGY_SELECTION_REQUIRED', { typologyCode: 'T1' }),
+        blocker('VR_NOT_SELECTED', { documentCode: '511', documentKey: 'k-1' }),
+        blocker('VERDICT_PENDING', { documentCode: '511', documentKey: 'k-1' }),
+        blocker('GROUP_NOT_SATISFIED', { groupCode: 'G1' }),
+        blocker('DOES_NOT_COMPLY', { documentCode: '511', documentKey: 'k-1' }),
+        blocker('NOT_DELIVERED', { documentCode: '600' }),
+        blocker('REQUIREMENTS_STALE'),
+        blocker('SELECTION_INVALID', { documentCode: '511', documentKey: 'k-1', rowId: 9 }),
+        blocker('SOMETHING_NEW', { documentCode: '600' }),
+      ],
+    };
+
+    it('puts evaluation blockers as alerts and orders the groups: sin entregar, rechazados, sin evaluar, VR, tipología', () => {
+      const { alerts, groups } = pendingGroups(data);
+      expect(alerts.map((alert) => alert.code)).toEqual(['REQUIREMENTS_STALE']);
+      expect(groups.map((group) => group.key)).toEqual(['not_delivered', 'rejected', 'pending_review', 'vr_not_selected', 'typology', 'other']);
+      expect(groups.find((group) => group.key === 'not_delivered').items.map((item) => item.code)).toEqual(['NOT_DELIVERED', 'GROUP_NOT_SATISFIED']);
+    });
+
+    it('labels each item with code, title and VR; only items with a delivery open the evaluation', () => {
+      const { groups } = pendingGroups(data);
+      const byKey = Object.fromEntries(groups.map((group) => [group.key, group.items]));
+      expect(byKey.not_delivered[0]).toMatchObject({ label: '600 · Plano', openable: false });
+      expect(byKey.not_delivered[1].label).toBe('Vivienda · Opción A: falta al menos una alternativa');
+      expect(byKey.rejected[0]).toMatchObject({ label: '511 · Formulario único · VR-2', openable: true, documentKey: 'k-1' });
+      expect(byKey.typology[0]).toMatchObject({ label: 'Tipología uno', typologyCode: 'T1', openable: false });
+    });
+
+    it('explains an invalid choice with the VR that was chosen', () => {
+      const invalid = pendingGroups(data).groups.find((group) => group.key === 'vr_not_selected').items.find((item) => item.code === 'SELECTION_INVALID');
+      expect(invalid).toMatchObject({ vrLabel: 'VR-1', note: 'La entrega elegida ya no está aprobada', openable: true });
+    });
+
+    it('leaves empty groups out and tolerates a payload without blockers', () => {
+      expect(pendingGroups({ requirements: [], blockers: [] })).toEqual({ alerts: [], groups: [] });
+      expect(pendingGroups(null)).toEqual({ alerts: [], groups: [] });
+    });
+  });
+
+  describe('row readiness', () => {
+    const chosenApproved = { selection: { rowId: 1 }, selectedEvaluation: { status: 'approved' } };
+    const row = (status, extra) => ({ documentKey: `k-${status}`, evaluation: { status }, ...extra });
+    it('ranks rejected, pending, approved without chosen VR and ready', () => {
+      expect(rowReadiness(row('rejected'))).toBe(0);
+      expect(rowReadiness(row('pending'))).toBe(1);
+      expect(rowReadiness(row('approved'))).toBe(2);
+      expect(rowReadiness(row('approved', { ldfSelected: true }))).toBe(3);
+      expect(rowReadiness(row('pending'), chosenApproved)).toBe(3);
+      expect(rowReadiness(row('approved'), { selection: { rowId: 1 }, selectedEvaluation: { status: 'rejected' } })).toBe(0);
+    });
+
+    it('sorts stably by readiness and filters Por resolver / Listos with their counts', () => {
+      const rows = [row('approved', { ldfSelected: true }), row('pending'), row('approved'), row('rejected'), row('pending', { documentKey: 'b' })];
+      expect(sortByReadiness(rows).map((item) => item.documentKey)).toEqual(['k-rejected', 'k-pending', 'b', 'k-approved', 'k-approved']);
+      const unresolved = filterByReadiness(rows, 'unresolved');
+      expect(unresolved.rows).toHaveLength(4);
+      expect(unresolved.counts).toEqual({ all: 5, unresolved: 4, ready: 1 });
+      expect(filterByReadiness(rows, 'ready').rows).toHaveLength(1);
+      expect(filterByReadiness(rows, '').rows).toHaveLength(5);
+    });
+  });
+
+  it('indexes instances by documentKey and writes who chose the VR', () => {
+    expect(instancesByKey({ requirements: [{ documentCode: '1', instances: [{ documentKey: 'a' }] }] }).get('a').requirement.documentCode).toBe('1');
+    expect(selectedByLine(null)).toBeNull();
+    expect(selectedByLine({ selectedBy: 4, selectedByName: 'Marta Ruiz', selectedAt: '2026-10-14T15:00:00.000Z' })).toMatch(/^Elegido por Marta Ruiz · /);
+    expect(selectedByLine({ selectedBy: 4 })).toBe('Elegido por usuario 4');
   });
 });

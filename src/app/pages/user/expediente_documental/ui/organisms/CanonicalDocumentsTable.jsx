@@ -65,7 +65,19 @@ const COLUMN_DEFS = {
     },
   },
   digital: { head: <HeadLabel icon={Monitor}>Digital</HeadLabel>, className: 'w-[9%] px-2', cell: (row) => <ReceiptStatus row={rowSupport(row)} medium="digital" /> },
-  evaluation: { head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]', cell: (row) => <EvaluationStatus row={row} /> },
+  evaluation: {
+    head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]',
+    cell: (row, { instances }) => {
+      const selection = instances?.get(row.documentKey)?.instance?.selection;
+      return (
+        <>
+          <EvaluationStatus row={row} />
+          {row.ldfSelected ? <Tag tone="success" className="mt-1" title="Entrega que usa legal y debida forma">VR elegido</Tag>
+            : selection ? <span className="mt-1 block text-[11px] leading-4 text-muted-foreground" title="Entrega que usa legal y debida forma">Elegido: {selection.vrLabel || 'VR'}{selection.versionSequence != null ? ` · v${selection.versionSequence}` : ''}</span> : null}
+        </>
+      );
+    },
+  },
   versions: { head: <HeadLabel icon={Layers}>Versiones</HeadLabel>, className: 'w-[9%] px-2', cellClassName: 'font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
   actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
 };
@@ -74,9 +86,10 @@ const COLUMN_DEFS = {
  * One row per current document, grouped by ventanilla list. Presentation only.
  * The whole row selects the document (click, Enter or Space); one row is tabbable at a time.
  * `columns` picks the optional columns (see TABLE_COLUMNS); `onEvaluate(row)` adds the per-row
- * "Evaluar" action to the `actions` column for rows the server allows to evaluate.
+ * "Evaluar" action to the `actions` column for rows the server allows to evaluate. `instances` (documentKey -> legal-form
+ * instance, optional) lets the evaluation cell name the chosen VR when the row is not the chosen one.
  */
-export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
+export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, instances, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
   const defs = columns.filter((key) => COLUMN_DEFS[key]).map((key) => ({ key, ...COLUMN_DEFS[key] }));
   const span = defs.length + 1;
   return (
@@ -133,7 +146,7 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                     {def.key === 'actions' ? (onEvaluate && canEvaluateRow(row) ? (
                       <Button type="button" variant="outline" size="sm" className="h-8 text-xs" aria-label={`Evaluar ${[rowCode(row), row.instanceLabel].filter(Boolean).join(' · ') || rowName(row)}`}
                         onClick={(event) => { event.stopPropagation(); onEvaluate(row); }}>Evaluar</Button>
-                    ) : null) : def.cell(row)}
+                    ) : null) : def.cell(row, { instances })}
                   </TableCell>
                 ))}
               </TableRow>

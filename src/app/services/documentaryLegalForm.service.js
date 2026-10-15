@@ -139,6 +139,35 @@ export async function saveTypologySelection(fun0Id, typologyCode, command) {
   return data;
 }
 
+// The server keeps the selection revision of a cleared choice but GET /legal-form only exposes it while a VR is chosen:
+// remember the last revision answered by a command so choosing again after clearing sends the right one.
+const knownSelectionRevisions = new Map();
+
+/** Revision to send as expectedSelectionRevision: the instance's own, else the last one a command answered, else 0. */
+export function selectionRevisionOf(instance) {
+  const own = instance?.selectionRevision ?? instance?.selection?.selectionRevision;
+  if (Number.isSafeInteger(own)) return own;
+  return knownSelectionRevisions.get(instance?.documentKey) ?? 0;
+}
+
+const selectionUrl = (fun0Id, documentKey) => `${legalFormUrl(fun0Id)}/selections/${encodeURIComponent(documentKey)}`;
+
+/** Chooses the VR delivery that legal y debida forma uses for a document instance (body: rowId, expectedSelectionRevision, idempotencyKey, reason). */
+export async function selectLegalFormVr(fun0Id, documentKey, command) {
+  if (!string(documentKey) || !documentKey.trim() || !Number.isInteger(command?.rowId)) invalid();
+  const { data } = await http.put(selectionUrl(fun0Id, documentKey), command, { headers: JSON_HEADERS });
+  if (Number.isSafeInteger(data?.selection?.selectionRevision)) knownSelectionRevisions.set(documentKey, data.selection.selectionRevision);
+  return data;
+}
+
+/** Clears the chosen VR of a document instance (body: expectedSelectionRevision, idempotencyKey, reason). */
+export async function clearLegalFormVr(fun0Id, documentKey, command) {
+  if (!string(documentKey) || !documentKey.trim()) invalid();
+  const { data } = await http.delete(selectionUrl(fun0Id, documentKey), { data: command, headers: JSON_HEADERS });
+  if (Number.isSafeInteger(data?.selectionRevision)) knownSelectionRevisions.set(documentKey, data.selectionRevision);
+  return data;
+}
+
 // Rule errors the user can act on; anything else falls back to the generic documentary message.
 const LEGAL_FORM_ERRORS = {
   CONTROLS_CONFIGURED: 'Este documento tiene controles de Central: decida sus controles en lugar de registrar un veredicto.',
@@ -159,6 +188,10 @@ const LEGAL_FORM_ERRORS = {
   REVISION_CONFLICT: 'La selección de la tipología cambió mientras la editaba. Se recargaron los datos; confirme nuevamente.',
   TYPOLOGY_NOT_FOUND: 'La tipología ya no hace parte de la evaluación de requisitos. Actualice la evaluación e intente nuevamente.',
   UNKNOWN_TYPOLOGY_OPTION: 'Una de las opciones elegidas no pertenece a la tipología.',
+  SELECTION_NOT_APPROVED: 'Solo se puede elegir una entrega aprobada. Apruebe esta entrega para poder elegirla.',
+  SELECTION_REVISION_CONFLICT: 'La elección del VR cambió mientras la editaba. Se recargaron los datos; confirme nuevamente.',
+  SELECTION_SCOPE_MISMATCH: 'La entrega no corresponde a este documento. Actualice la vista e intente nuevamente.',
+  DOCUMENT_NOT_FOUND: 'La entrega ya no existe en este expediente. Actualice la vista e intente nuevamente.',
   INVALID_TYPOLOGY_SELECTION_COUNT: 'Esta tipología admite una sola opción.',
 };
 export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT' || code === 'CHECKLIST_REVISION_CONFLICT' || code === 'REVISION_CONFLICT';

@@ -106,4 +106,25 @@ describe('documentaryLegalForm.service', () => {
     expect(api.legalFormErrorMessage(failure('REVIEW_SCOPE_MISMATCH'))).toMatch(/no corresponde a este documento/);
     expect(api.legalFormErrorMessage(failure('LEGAL_FORM_DECLARED'))).toMatch(/Anule la declaración/);
   });
+
+  it('chooses and clears the VR of an instance and remembers the revision of a cleared choice', async () => {
+    http.put.mockResolvedValue({ data: { unchanged: false, selection: { rowId: 10, selectionRevision: 3 } } });
+    await api.selectLegalFormVr(1, 'k-1', { rowId: 10, expectedSelectionRevision: 2, idempotencyKey: 'i', reason: 'r' });
+    expect(http.put.mock.calls[0][0]).toBe('/fun/documentary/v1/projects/1/legal-form/selections/k-1');
+    http.delete.mockResolvedValue({ data: { unchanged: false, selection: null, selectionRevision: 3, documentKey: 'k-2' } });
+    await api.clearLegalFormVr(1, 'k-2', { expectedSelectionRevision: 3, idempotencyKey: 'i', reason: 'r' });
+    expect(http.delete.mock.calls[0][0]).toBe('/fun/documentary/v1/projects/1/legal-form/selections/k-2');
+    expect(http.delete.mock.calls[0][1].data).toMatchObject({ expectedSelectionRevision: 3 });
+    expect(api.selectionRevisionOf({ documentKey: 'k-2', selection: null })).toBe(3);
+    expect(api.selectionRevisionOf({ documentKey: 'k-9', selection: { selectionRevision: 5 } })).toBe(5);
+    expect(api.selectionRevisionOf({ documentKey: 'k-9', selection: null })).toBe(0);
+    await expect(api.selectLegalFormVr(1, 'k-1', { rowId: 'x' })).rejects.toThrow();
+  });
+
+  it('explains the VR selection rule errors', () => {
+    const failure = (code) => ({ response: { status: 409, data: { error: { code } } } });
+    expect(api.legalFormErrorMessage(failure('SELECTION_NOT_APPROVED'))).toMatch(/entrega aprobada/);
+    expect(api.legalFormErrorMessage(failure('SELECTION_REVISION_CONFLICT'))).toMatch(/elección del VR cambió/);
+    expect(api.legalFormErrorMessage(failure('SELECTION_SCOPE_MISMATCH'))).toMatch(/no corresponde a este documento/);
+  });
 });

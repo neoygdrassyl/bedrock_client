@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Archive, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, ClipboardList, FileText, Files, History, Info, Monitor, Plus, RefreshCw, RotateCcw, ScanLine, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import { EvaluationSheet } from './EvaluationSheet';
 import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
 import { CanonicalRequirementBanner } from './CanonicalRequirementBanner';
 import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForms';
+import { filterByReadiness, READINESS_FILTER, sortByReadiness } from '../../legalFormModel';
 import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, scanCounts, SCAN_FILTER } from '../../canonicalDocumentaryModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
@@ -31,7 +32,7 @@ const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Eviden
 export const WORKSPACE_VARIANTS = {
   input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, scanFilter: true, classFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos recibidos', emptyHint: 'Los documentos que se reciban en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
-  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true,
+  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true,
     emptyText: 'Aún no hay requisitos recibidos', emptyHint: 'Los requisitos que se reciban en este expediente aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
   issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos expedidos para este expediente.', emptyHint: 'Los documentos que se expidan en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
@@ -110,7 +111,7 @@ function InfoNotice({ children }) {
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest }) {
   const ids = useId();
   const config = WORKSPACE_VARIANTS[variant] || WORKSPACE_VARIANTS.input;
   const [evaluating, setEvaluating] = useState(null); // { row, nonce }
@@ -121,6 +122,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const [notice, setNotice] = useState('');
   const [fileError, setFileError] = useState('');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
+  const [readiness, setReadiness] = useState(READINESS_FILTER.ALL);
   const [selectedKey, setSelectedKey] = useState(null);
   const [expandedKey, setExpandedKey] = useState(null);
   const afterId = cursors[cursors.length - 1];
@@ -143,15 +145,20 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   function refresh(message = '') { setSheet(null); reload(message); }
   function conflict() { refresh(CONFLICT_MESSAGE); }
   function setFilter(key, value) { setFilters((current) => ({ ...current, [key]: value })); }
+  function resetFilters() { setFilters(EMPTY_FILTERS); setReadiness(READINESS_FILTER.ALL); }
   function changePage(next) { setSheet(null); setSelectedKey(null); setCursors(next); }
 
   const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
   const canReceive = Boolean(config.receive && canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
   const canReview = Boolean(canManage && view && !view.readOnly && view.capabilities.review);
   const rows = view?.rows || [];
-  const visibleRows = filterCanonicalRows(rows, filters);
+  const filteredRows = filterCanonicalRows(rows, filters);
+  // Legal y debida forma: unresolved rows first (rejected, unevaluated, approved without a chosen VR), then the ready ones.
+  // The order and the chips only see the loaded page: the view has no server-side order for this.
+  const readinessView = config.readinessFilter ? filterByReadiness(filteredRows, readiness, instances) : null;
+  const visibleRows = readinessView ? sortByReadiness(readinessView.rows, instances) : filteredRows;
   const groups = groupRowsByList(visibleRows);
-  const hasFilters = Object.entries(filters).some(([key, value]) => value !== EMPTY_FILTERS[key]);
+  const hasFilters = Object.entries(filters).some(([key, value]) => value !== EMPTY_FILTERS[key]) || readiness !== READINESS_FILTER.ALL;
   const selected = visibleRows.find((row) => row.rowKey === selectedKey) || visibleRows[0] || null;
   const metrics = canonicalMetrics(view, { firstPage: cursors.length === 1 });
   const pageHint = metrics.partial ? 'Contado en la página actual' : undefined;
@@ -173,7 +180,18 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   // After an evaluation the table reloads and the host (e.g. Legal y debida forma) refreshes what depends on it.
   function evaluationSaved(message) { setEvaluating(null); reload(message); onEvaluationSaved?.(); }
   function evaluationConflict() { setEvaluating(null); reload(CONFLICT_MESSAGE); onEvaluationSaved?.(); }
+  // Changing the chosen VR does not close the sheet: the table reloads behind it.
+  function selectionChanged() { reload(); }
   function openSheet(kind, row = null) { setNotice(''); setSheet({ kind, row, nonce: Date.now() }); }
+
+  // A host asks to open the evaluation of a document (e.g. a pending item of Legal y debida forma).
+  const handledRequest = useRef(null);
+  useEffect(() => {
+    if (!openRequest || !view || handledRequest.current === openRequest.nonce) return;
+    handledRequest.current = openRequest.nonce;
+    const target = rows.find((row) => row.documentKey === openRequest.documentKey);
+    if (target) { setNotice(''); setEvaluating({ row: target, nonce: Date.now() }); } else setNotice('No se encontró ese documento en la página actual de la tabla. Búsquelo en las páginas siguientes.');
+  }, [openRequest, view, rows]);
 
   return (
     <section
@@ -212,7 +230,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
               <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
               <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className={FILTER_SELECT_CLASS} />
               {config.classFilter ? <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} /> : null}
-              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={() => setFilters(EMPTY_FILTERS)}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
+              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={resetFilters}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
               <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:ml-auto lg:w-auto">
                 <span className="mr-1 text-xs text-muted-foreground" aria-live="polite">
                   <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {config.countNoun[visibleRows.length === 1 ? 0 : 1]}
@@ -242,6 +260,17 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 ) : null}
               </div>
             ) : null}
+            {readinessView ? (
+              <div className="flex flex-wrap items-center justify-between gap-x-[1rem]">
+                <DocumentalQuickFilters
+                  label="Estado de los requisitos"
+                  options={[{ value: READINESS_FILTER.ALL, label: 'Todos', count: readinessView.counts.all }, { value: READINESS_FILTER.UNRESOLVED, label: 'Por resolver', count: readinessView.counts.unresolved }, { value: READINESS_FILTER.READY, label: 'Listos', count: readinessView.counts.ready }]}
+                  value={readiness}
+                  onChange={setReadiness}
+                />
+                {cursors.length > 1 || view?.pagination.nextAfterId ? <span className="px-[1rem] text-[11px] text-muted-foreground">El orden y el filtro aplican a esta página.</span> : null}
+              </div>
+            ) : null}
           </div>
           <div className={cn('grid min-h-0 min-w-0', config.detail && 'lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]')}>
             <div className="max-h-[65dvh] min-h-[16rem] min-w-0 overflow-auto overscroll-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" tabIndex={0} role="region" aria-label="Tabla documental desplazable">
@@ -252,13 +281,14 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 onSelect={selectRow}
                 loading={!view}
                 hasFilters={hasFilters}
-                onResetFilters={() => setFilters(EMPTY_FILTERS)}
+                onResetFilters={resetFilters}
                 idPrefix={ids}
                 columns={config.columns}
                 ariaLabel={config.label}
                 emptyText={config.emptyText}
                 emptyHint={config.emptyHint}
                 onEvaluate={config.rowEvaluate && canReview ? openEvaluation : undefined}
+                instances={instances}
               />
             </div>
             {!config.detail ? null : view && selected ? (
@@ -309,6 +339,8 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
         target={evaluating}
         origin={origin}
         canEvaluate={canReview}
+        legalForm={legalForm}
+        onSelectionChanged={selectionChanged}
         onClose={() => setEvaluating(null)}
         onSaved={evaluationSaved}
         onPartialSave={() => { reload(); onEvaluationSaved?.(); }}
