@@ -34,6 +34,13 @@ function SourceTag({ source }) {
     : <Tag title="Usa los datos del módulo documental tradicional">Legacy</Tag>;
 }
 
+/** Canonical expedientes only: whether the generator can save its data in the new model. */
+function SaveTag({ entry }) {
+  return entry.canonicalSave
+    ? <Tag title="Puede guardar los datos del documento en el modelo nuevo">Lectura + guardado</Tag>
+    : <Tag title="Solo lee datos del modelo nuevo; guardar no está disponible todavía">Lectura</Tag>;
+}
+
 function GeneratorRow({ entry, ctx, mode, baseProps, open, onToggle }) {
   const { available, reason } = evaluateGenerator(entry, ctx);
   const Generator = entry.component;
@@ -48,6 +55,7 @@ function GeneratorRow({ entry, ctx, mode, baseProps, open, onToggle }) {
         <div className="flex shrink-0 items-center gap-2">
           {available ? null : <Tag tone="warning">No disponible</Tag>}
           <SourceTag source={generatorSource(entry, mode)} />
+          {isCanonicalMode(mode) ? <SaveTag entry={entry} /> : null}
           <Button
             type="button"
             variant={open ? 'secondary' : 'outline'}
