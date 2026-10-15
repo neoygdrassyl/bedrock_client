@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildResolutions, commitCommand, deliveryMedium, EXCLUDE_VALUE, groupIssues, pendingDigitalFiles, summaryFacts } from './legacyMigrationModel';
+import { buildResolutions, commitCommand, deliveryMedium, EXCLUDE_VALUE, groupIssues, ISSUE_LABELS, pendingDigitalFiles, summaryFacts } from './legacyMigrationModel';
 import { validateLegacyMigrationPreview, validateLegacyMigrationResult } from '@/app/services/legacyMigration.service';
 
 const HASH = 'a'.repeat(64);
@@ -19,6 +19,9 @@ describe('legacy migration model', () => {
     expect(groups.map((group) => group.severity)).toEqual(['blocking', 'warning']);
     expect(groups[1].entries[0]).toMatchObject({ code: 'FILE_MISSING', count: 2 });
   });
+  it('words every issue label as one short sentence without mentioning PQRS', () => {
+    Object.values(ISSUE_LABELS).forEach((label) => { expect(label).not.toMatch(/PQRS/i); expect(label).toMatch(/[.]$/); });
+  });
   it('builds resolutions and the commit command from the UI choices', () => {
     const resolutions = buildResolutions({ 12: '40', 9: EXCLUDE_VALUE, 5: '' });
     expect(resolutions).toEqual({ digitalAssignments: [{ fun6Id: 9, submitId: null }, { fun6Id: 12, submitId: 40 }], excludedSources: [] });
@@ -27,7 +30,8 @@ describe('legacy migration model', () => {
   });
   it('lists pending digital files, summary facts and the delivery medium', () => {
     expect(pendingDigitalFiles(preview).map((file) => file.id)).toEqual([9]);
-    expect(summaryFacts(preview).map((fact) => fact.value)).toEqual([2, 1, 1, 3]);
+    expect(summaryFacts(preview).map((fact) => fact.value)).toEqual([2, 1, 1]);
+    expect(summaryFacts({ stats: { ...preview.stats, pqrsVrs: 3 } }).some((fact) => /PQRS/.test(`${fact.label}${fact.hint}`))).toBe(false);
     expect(deliveryMedium(preview.deliveries[0])).toBe('Físico · 4 folios · Escaneo');
   });
   it('validates the preview and result contracts for the expediente', () => {

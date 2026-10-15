@@ -10,18 +10,19 @@ const mocks = vi.hoisted(() => ({
   user: vi.fn(),
   cubByFun: vi.fn(),
   generators: vi.fn(),
+  legalMounts: vi.fn(),
 }));
 vi.mock('./hooks/useDocumentaryOrigin', () => ({ useDocumentaryOrigin: mocks.origin }));
 vi.mock('./hooks/useExpedienteDocumental', () => ({ useExpedienteDocumental: mocks.legacy }));
 vi.mock('./ui/organisms/CanonicalDocumentaryWorkspace', async () => {
   const { useEffect } = await import('react');
-  return { CanonicalDocumentaryWorkspace: ({ onCountChange }) => { useEffect(() => { onCountChange?.(7); }, [onCountChange]); return <div>Recepción canónica</div>; } };
+  return { CanonicalDocumentaryWorkspace: ({ onCountChange, onRequirementsRefreshed }) => { useEffect(() => { onCountChange?.(7); }, [onCountChange]); return <div>Recepción canónica<button type="button" onClick={onRequirementsRefreshed}>Simular actualización de requisitos</button></div>; } };
 });
-vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: () => <div>Selector de configuración</div> }));
+vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: ({ onSaved }) => <div>Selector de configuración<button type="button" onClick={() => onSaved('Requisitos evaluados', true)}>Simular guardado</button></div> }));
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
 vi.mock('../shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
-vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: ({ onDeclarationChanged }) => <button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button> }));
+vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: function LegalMock({ onDeclarationChanged }) { mocks.legalMounts(); return <button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button>; } }));
 vi.mock('./ui/organisms/DocumentGeneratorsPanel', () => ({ default: (props) => { mocks.generators(props); return <div>Panel de generadores</div>; } }));
 vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
 vi.mock('@/app/services/data.service', () => ({ default: { getUserData: mocks.user } }));
@@ -191,5 +192,30 @@ describe('documentary tabs', () => {
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     await settleIssuedCount();
     expect(screen.queryByRole('tab', { name: /Legal y debida forma/ })).not.toBeInTheDocument();
+  });
+
+  it('reloads the origin and remounts Legal y debida forma after the Radicación banner refreshes the requirements', async () => {
+    const user = userEvent.setup();
+    const refresh = vi.fn();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
+    await screen.findByRole('button', { name: 'Panel de legal y debida forma' });
+    const mounts = mocks.legalMounts.mock.calls.length;
+    await user.click(screen.getByRole('button', { name: 'Simular actualización de requisitos' }));
+    expect(refresh).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(mocks.legalMounts.mock.calls.length).toBeGreaterThan(mounts));
+  });
+
+  it('reloads the origin when the governance panel refreshes the requirements', async () => {
+    const user = userEvent.setup();
+    const refresh = vi.fn();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    await user.click(screen.getByRole('tab', { name: /Configuración documental/ }));
+    await user.click(screen.getByRole('button', { name: 'Simular guardado' }));
+    expect(refresh).toHaveBeenCalledTimes(1);
   });
 });

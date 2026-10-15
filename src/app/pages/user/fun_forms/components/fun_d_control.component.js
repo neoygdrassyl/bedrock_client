@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 import Icon from '@/components/icon';
@@ -11,6 +11,7 @@ import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';
+import { CONTROL_SHEET_ALL, CONTROL_SHEET_CATEGORIES, controlSheetCounts, controlSheetGroups, controlSheetRows, filterControlSheetRows } from '../../expediente_documental/controlSheetModel';
 import { useLegalForm } from '../../expediente_documental/hooks/useLegalForm';
 import { controlSheetDefaults, controlSheetReviewPlan, SHEET_SKIP_REASONS } from '../../expediente_documental/legalFormModel';
 import { legalFormErrorMessage, saveLegalFormReview } from '@/app/services/documentaryLegalForm.service';
@@ -36,6 +37,14 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
     // Canonical expedientes keep the reviewer verdicts in legal y debida forma (null for legacy).
     const legalForm = useLegalForm(documentaryInventory ? currentItem.id : null);
     const legalFormBlocker = legalForm && !legalForm.data ? (legalForm.error || LEGAL_FORM_LOADING) : null;
+    // Canonical expedientes list every document of the inventory, filtered by category; edits are
+    // kept per row so switching the filter never loses what was typed.
+    const [category, setCategory] = useState(CONTROL_SHEET_ALL);
+    const [edits, setEdits] = useState({});
+    const canonicalRows = useMemo(
+        () => (documentaryInventory?.status === 'ready' && documentaryInventory.inventory?.raw ? controlSheetRows(documentaryInventory.inventory.raw) : null),
+        [documentaryInventory],
+    );
 
     const _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -189,6 +198,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                     <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
                                 </div>
                             </div>
+                            {canonicalRows ? _CATEGORY_FILTER() : null}
                             <ul className="list-group mx-2">
                                 <li className="list-group-item">
                                     <div className="row">
@@ -217,6 +227,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             const blocker = inventoryBlocker(documentaryInventory);
             if (blocker) return <li className="list-group-item text-center">{documentaryInventory.status === 'loading' ? 'Cargando inventario documental...' : blocker}</li>;
             if (legalFormBlocker) return <li className="list-group-item text-center">{legalFormBlocker}</li>;
+            if (canonicalRows) return _CANONICAL_LIST();
             return _LIST.map((value) => {
                 let _LIST_2 = _SERIES_DOCS[value]
                 if (!_LIST_2) _LIST_2 = _SERIES_DOCS['GENERIC']
@@ -242,6 +253,77 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                     {_RETURN_COMPONENT}
                 </Fragment>
             })
+        }
+        // Category filter of the canonical sheet; the printed PDF uses the filtered selection.
+        let _CATEGORY_FILTER = () => {
+            const counts = controlSheetCounts(canonicalRows);
+            return (
+                <div className="d-flex flex-wrap align-items-center gap-2 mx-2 mb-2" role="group" aria-label="Filtrar documentos por categoría">
+                    <span className="small text-muted me-1">Mostrar e imprimir:</span>
+                    {CONTROL_SHEET_CATEGORIES.map((item) => (
+                        <Button key={item.key} type="button" size="sm" variant={category === item.key ? 'default' : 'outline'} aria-pressed={category === item.key} onClick={() => setCategory(item.key)}>
+                            {item.label} ({counts[item.key]})
+                        </Button>
+                    ))}
+                </div>
+            );
+        }
+        // Reviewer verdict / stored folio range first, then the inventory status and folios of the row.
+        let _CANONICAL_DEFAULTS = (row) => {
+            const reviewed = row.code ? controlSheetDefaults(legalForm?.data, row.code) : null;
+            const edited = edits[row.key] || {};
+            return {
+                pages: edited.pages ?? normalizeDocumentControlPages(reviewed?.folioRange ?? row.pages),
+                check: edited.check ?? String(reviewed?.check ?? row.status),
+            };
+        }
+        let _SET_EDIT = (key, patch) => setEdits((current) => ({ ...current, [key]: { ...current[key], ...patch } }));
+        let _CANONICAL_LIST = () => {
+            const visible = filterControlSheetRows(canonicalRows, category);
+            if (!visible.length) return <li className="list-group-item text-center text-muted">No hay documentos en esta categoría.</li>;
+            return controlSheetGroups(visible).map((group) => (
+                <Fragment key={group.category}>
+                    <li className="list-group-item">
+                        <div className="row">
+                            <div className="col">
+                                <label className="fw-bold" name="title_doc">{group.title}</label>
+                                <input type='hidden' name="title_id" defaultValue={group.offset} />
+                            </div>
+                        </div>
+                    </li>
+                    {group.rows.map((row, index) => {
+                        const values = _CANONICAL_DEFAULTS(row);
+                        return (
+                            <li className="list-group-item" key={row.key}>
+                                <div className="row">
+                                    <div className="col-1 text-center">
+                                        <label className="fw-bold" name="number_doc">{group.offset + index + 1}</label>
+                                    </div>
+                                    <div className="col">
+                                        <label name="name_doc">{row.name}</label>
+                                        {row.vrLabels.length ? <span className="d-block small text-muted">{row.vrLabels.join(', ')}</span> : null}
+                                    </div>
+                                    <div className="col-1 text-center">
+                                        <label className="fw-bold" name="code_doc">{row.code}</label>
+                                    </div>
+                                    <div className="col-2 text-center">
+                                        <input type="text" inputMode="text" className="form-control" name="pages_doc" aria-label={`Folios de ${row.name}`}
+                                            value={values.pages} onChange={(event) => _SET_EDIT(row.key, { pages: event.target.value })} />
+                                    </div>
+                                    <div className="col-2 text-center">
+                                        <select className="form-select" name="select_doc" aria-label={`Estado de ${row.name}`}
+                                            value={values.check} onChange={(event) => _SET_EDIT(row.key, { check: event.target.value })}>
+                                            <option value="2">N/A</option>
+                                            <option value="1">SI</option>
+                                            <option value="0">NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </Fragment>
+            ));
         }
         let _COMPONENT_DOCS = (array, _DOCS_COUNT) => {
             let _COMPONENT = [];
@@ -317,10 +399,11 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
         let save_canonical = async () => {
             if (legalFormBlocker || inventoryBlocker(documentaryInventory)) return swalError({ title: swaMsg.generic_eror_title, text: legalFormBlocker || inventoryBlocker(documentaryInventory) });
             if (!legalForm.data.actions?.review) return swalError({ title: swaMsg.generic_eror_title, text: REVIEW_LOCKED });
-            const codes = document.getElementsByName('code_doc');
-            const selects = document.getElementsByName('select_doc');
-            const pages = document.getElementsByName('pages_doc');
-            const entries = Array.from(selects, (select, index) => ({ code: codes[index].innerText, check: select.value, pages: normalizeDocumentControlPages(pages[index].value) }));
+            // Every inventory row is saved, whatever the category filter currently shows.
+            const entries = (canonicalRows || []).filter((row) => row.code).map((row) => {
+                const values = _CANONICAL_DEFAULTS(row);
+                return { code: row.code, check: values.check, pages: normalizeDocumentControlPages(values.pages) };
+            });
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             try {
                 const result = await saveControlSheetReviews(currentItem.id, legalForm.data, entries);
@@ -373,6 +456,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
         let gen_pdf = () => {
             const blocker = inventoryBlocker(documentaryInventory) || legalFormBlocker;
             if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
+            if (canonicalRows && !filterControlSheetRows(canonicalRows, category).length) return swalError({ title: swaMsg.generic_eror_title, text: 'No hay documentos en la categoría elegida para imprimir.' });
 
             formData = new FormData();
 

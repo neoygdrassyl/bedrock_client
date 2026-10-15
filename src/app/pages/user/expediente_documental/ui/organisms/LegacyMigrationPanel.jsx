@@ -36,7 +36,7 @@ function shortDate(value) {
 
 function SummaryFacts({ preview }) {
   return (
-    <dl className="m-0 grid gap-[0.5rem] sm:grid-cols-2 xl:grid-cols-4">
+    <dl className="m-0 grid gap-[0.5rem] sm:grid-cols-3">
       {summaryFacts(preview).map((fact) => (
         <div key={fact.key} className="flex min-w-0 items-baseline justify-between gap-[0.5rem] rounded-md border bg-card px-[0.75rem] py-[0.375rem]" title={fact.hint || undefined}>
           <dt className="m-0 text-xs font-medium text-slate-600">{fact.label}</dt>
@@ -61,7 +61,7 @@ function IssueGroups({ issues }) {
           <div key={group.severity} role={group.severity === 'blocking' ? 'alert' : 'status'} className="flex flex-wrap items-center gap-1.5">
             <span className="inline-flex items-center gap-1 text-xs font-semibold text-foreground"><style.icon className="h-3.5 w-3.5" aria-hidden="true" />{group.label}</span>
             {group.entries.map((entry) => (
-              <Tag key={entry.code} tone={style.tone} title={entry.message || undefined}>
+              <Tag key={entry.code} tone={style.tone}>
                 {entry.label}<span className="font-bold">{entry.count}</span>
               </Tag>
             ))}
@@ -195,7 +195,7 @@ function ConfirmDialog({ open, onOpenChange, preview, busy, onConfirm }) {
         <DialogHeader>
           <DialogTitle>Migrar el expediente al modelo nuevo</DialogTitle>
           <DialogDescription>
-            Se fijará la {releaseLabel(preview.release)} y se importarán {preview.stats.deliveries} entregas de {preview.stats.vrs} VR. Es atómica y no modifica las tablas antiguas.
+            Se fijará la {releaseLabel(preview.release)} y se importarán {preview.stats.deliveries} entregas de {preview.stats.vrs} VR. Se hace en un solo paso y no modifica los datos antiguos.
           </DialogDescription>
         </DialogHeader>
         <form id={`${reasonId}-form`} onSubmit={(event) => { event.preventDefault(); if (reason.trim()) onConfirm(reason); }} className="flex flex-col gap-1.5">
@@ -233,7 +233,7 @@ export function LegacyMigrationPanel({ fun0Id, onMigrated = () => {} }) {
         <FunUpdateSectionLegend as="h3" id={titleId} step={<ArrowRightLeft className="h-4 w-4" aria-hidden="true" />} className="m-0">
           Migrar al modelo nuevo
         </FunUpdateSectionLegend>
-        <p className="mb-0 text-xs text-slate-600">Importa las entregas antiguas al modelo nuevo.</p>
+        <p className="mb-0 text-xs text-slate-600">Pasa al modelo nuevo las VR con documentos físicos y los archivos del expediente. No modifica los datos antiguos.</p>
       </CardHeader>
       <CardContent className="flex flex-col gap-[1rem] p-[1rem]">
         <div className="flex flex-wrap items-end gap-[0.75rem]">
@@ -257,7 +257,7 @@ export function LegacyMigrationPanel({ fun0Id, onMigrated = () => {} }) {
         {migration.error ? <Alert role="alert" variant="destructive" className="py-2.5"><CircleAlert aria-hidden="true" /><AlertDescription>{migration.error}</AlertDescription></Alert> : null}
         {migration.loading ? <div className="flex flex-col gap-2" aria-hidden="true"><Skeleton className="h-16 w-full" /><Skeleton className="h-24 w-full" /></div> : null}
         {!preview && !migration.loading ? (
-          <Alert variant="neutral" className="py-2.5"><Info aria-hidden="true" /><AlertDescription>Analice el expediente para ver qué se importará.</AlertDescription></Alert>
+          <Alert variant="neutral" className="py-2.5"><Info aria-hidden="true" /><AlertDescription>Pulse «Analizar» para ver las VR, los documentos físicos y los archivos que se migrarán.</AlertDescription></Alert>
         ) : null}
 
         {preview && !migration.loading ? (

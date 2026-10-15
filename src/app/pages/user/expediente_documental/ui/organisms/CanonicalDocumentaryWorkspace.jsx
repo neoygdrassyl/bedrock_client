@@ -98,7 +98,7 @@ function InfoNotice({ children }) {
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, embedded = false }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false }) {
   const ids = useId();
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
@@ -178,7 +178,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
             view={view}
             fun0Id={origin.project.fun0Id}
             canRefresh={Boolean(canManage && !view.readOnly && canManageDocumentaryConfiguration(DataService.getUserData()))}
-            onRefreshed={() => reload('Evaluación de requisitos actualizada.')}
+            onRefreshed={() => { reload('Evaluación de requisitos actualizada.'); onRequirementsRefreshed?.(); }}
             onConflict={conflict}
           />
           {view.readOnly ? <InfoNotice>Puede consultar los documentos. La recepción y la revisión aún no están habilitadas para este expediente.</InfoNotice> : null}
