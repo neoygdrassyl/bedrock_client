@@ -87,7 +87,10 @@ describe('FUN_DOCS (legacy module) rendered from the registry', () => {
     await waitFor(() => expect(screen.getByText('CERTIFICACIONES')).toBeInTheDocument());
     const labels = Array.from(document.querySelectorAll('label.fw-normal.text-info')).map((node) => node.textContent);
     expect(labels).toEqual(LEGACY_LABELS);
-    expect(mocks.received.fun_doc_confirmlegal).toMatchObject({ VIEW_G: true, currentVersion: 1 });
+    // Legacy parity: the FUND module never passes `edit` (SAVE / GENERAR CUB belong to fun_c.js).
+    expect(mocks.received.fun_doc_confirmlegal).toMatchObject({ currentVersion: 1 });
+    expect(mocks.received.fun_doc_confirmlegal).not.toHaveProperty('edit');
+    expect(mocks.received.fun_doc_confirmlegal).not.toHaveProperty('VIEW_G');
     expect(typeof mocks.received.fun_d_control.requestUpdate).toBe('function');
     expect(mocks.received.fun_pdf).not.toHaveProperty('requestUpdate');
     expect(mocks.received.fun_doc_certification).toMatchObject({ id_related: 'FUN-9', related: 'fun' });

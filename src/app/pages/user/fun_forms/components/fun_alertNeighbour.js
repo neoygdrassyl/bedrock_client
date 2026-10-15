@@ -27,8 +27,11 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
             retrieveItem();
         }, []);
 
+        // vr / cubSelected / setVr are optional: fun_alertn.js shares them with its form, the
+        // generators registry (fun_docs and the documentary "Generar documentos" tab) does not.
         useEffect(() => {
-            if (vr) document.getElementById("vr_selected").value = vr;
+            const select = document.getElementById("vr_selected");
+            if (vr && select) select.value = vr;
         });
 
         // DATA GETTERS
@@ -201,7 +204,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                     <div className="col ms-auto" >
                         <label className="mt-1">2.1.3 {infoCud.serials.start}</label>
                         <div className="input-group ">
-                            <select className="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { setVr(e.target.value) }}>
+                            <select className="form-select" id="vr_selected" defaultValue={vr || ""} onChange={(e) => { if (typeof setVr === 'function') setVr(e.target.value); }}>
                                 <option value=''>Seleccione una opción</option>
                                 {vrsRelated.map((value, key) => (
                                     <option key={value.id} value={value.id_public}>
