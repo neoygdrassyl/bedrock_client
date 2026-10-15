@@ -25,7 +25,82 @@ export const BLOCKER_LABELS = {
   VERDICT_PENDING: 'Revisión pendiente',
   DOES_NOT_COMPLY: 'No cumple',
   GROUP_NOT_SATISFIED: 'Grupo sin cumplir',
+  TYPOLOGY_SELECTION_REQUIRED: 'Falta elegir opción de tipología',
 };
+
+// ---------- sections (typology / option groups) ----------
+
+export const SECTION_STATE_META = {
+  satisfied: { label: 'Cumple', tone: 'success' },
+  missing: { label: 'Pendiente', tone: 'warning' },
+  selection_required: { label: 'Debe elegirse una opción', tone: 'warning' },
+  not_applicable: { label: 'No aplica', tone: 'neutral' },
+};
+
+export const SELECTION_SOURCE_LABELS = { portal: 'Ventanilla', backoffice: 'Backoffice' };
+
+export const REQUIREMENT_MODE_LABELS = { all: 'Todos requeridos', at_least_one: 'Al menos uno', complementary: 'Complementarios (opcionales)' };
+
+export const MUTED_ALTERNATIVE_TEXT = 'No requerido: la alternativa ya se cumple';
+
+/** Status line of an option group (null without a group). */
+export function groupStatusLabel(group) {
+  if (!group) return null;
+  const total = group.documentCodes?.length || 0;
+  const favourable = group.favourableCount || 0;
+  if (group.mode === 'at_least_one') return group.satisfied ? `Cumple · ${favourable} de ${total} alternativas` : 'Falta al menos una alternativa';
+  if (group.mode === 'all') return `Todos requeridos · ${favourable} de ${total}`;
+  if (group.mode === 'complementary') return 'Complementarios (opcionales)';
+  return null;
+}
+
+/** Label of a group for blocker lines: its option label (typology name first), else the raw group code. */
+export function groupDisplayName(groupCode, groups = []) {
+  const group = groups.find((item) => item.code === groupCode);
+  if (group?.optionLabel) return [group.typologyName, group.optionLabel].filter(Boolean).join(' · ');
+  return groupCode ? `Grupo ${groupCode}` : null;
+}
+
+/**
+ * Requirements of the LDF grouped for display: one section per typology (with its options, each with its group) and
+ * the general requirements last. Without `data.sections` (older backend) a single untitled section holds every
+ * requirement in the server order, so the view renders as a flat list.
+ * Section: { key, typologyCode, title, state, selectionMode, selectedOptionIds, selectionSource, optionLabels, options:
+ * [{ key, optionId, label, group, statusLabel, items: [{ requirement, muted }] }] }.
+ */
+export function buildSections(data) {
+  const requirements = data?.requirements || [];
+  const groups = data?.groups || [];
+  if (!Array.isArray(data?.sections) || !data.sections.length) {
+    return requirements.length ? [{ key: 'all', typologyCode: null, title: null, state: null, selectionMode: null, selectedOptionIds: [], selectionSource: null, optionLabels: [],
+      options: [{ key: 'all', optionId: null, label: null, group: null, statusLabel: null, items: requirements.map((requirement) => ({ requirement, muted: false })) }] }] : [];
+  }
+  const byCode = new Map(requirements.map((requirement) => [requirement.documentCode, requirement]));
+  return data.sections.map((section) => {
+    const typologyCode = section.typologyCode ?? null;
+    const options = new Map();
+    const optionOf = (optionId, label) => {
+      const key = optionId ?? 'general';
+      if (!options.has(key)) {
+        const group = typologyCode ? groups.find((item) => item.typologyCode === typologyCode && item.optionId === optionId) || null : null;
+        options.set(key, { key, optionId: optionId ?? null, label: label || group?.optionLabel || null, group, statusLabel: groupStatusLabel(group), items: [] });
+      }
+      return options.get(key);
+    };
+    (section.requirementCodes || []).forEach((code) => {
+      const requirement = byCode.get(code);
+      if (!requirement) return;
+      const option = optionOf(requirement.section?.optionId ?? null, requirement.section?.optionLabel);
+      const muted = Boolean(option.group && option.group.mode === 'at_least_one' && option.group.satisfied && !requirement.delivered);
+      option.items.push({ requirement, muted });
+    });
+    (section.groups || []).forEach((code) => { const group = groups.find((item) => item.code === code); if (group) optionOf(group.optionId, group.optionLabel); });
+    const labels = new Map(groups.filter((group) => group.typologyCode === typologyCode && group.optionId).map((group) => [group.optionId, group.optionLabel]));
+    return { key: typologyCode || 'general', typologyCode, title: typologyCode ? section.typologyName || typologyCode : 'Requisitos generales', state: section.state || null,
+      selectionMode: section.selectionMode || null, selectedOptionIds: section.selectedOptionIds || [], selectionSource: section.selectionSource || null,
+      optionLabels: (section.selectedOptionIds || []).map((id) => labels.get(id) || id), options: Array.from(options.values()) };
+  });
+}
 
 /** Blockers grouped by code, in the order of BLOCKER_LABELS (unknown codes last). */
 export function groupBlockers(blockers = []) {

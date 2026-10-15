@@ -29,6 +29,22 @@ function completenessLabel(result) {
   return 'Completitud no establecida';
 }
 
+// Requirements grouped by typology section ({ title, items }), general requirements last. Payloads without
+// `section` (older backends) give a single untitled group, i.e. the flat list.
+function sectionGroups(requirements) {
+  if (!requirements.some((requirement) => requirement.section)) return [{ key: 'all', title: null, items: requirements }];
+  const groups = new Map();
+  requirements.forEach((requirement) => {
+    const section = requirement.section;
+    const key = section ? `${section.typologyCode}:${section.optionId ?? ''}` : 'general';
+    if (!groups.has(key)) groups.set(key, { key, title: section ? [section.typologyName || section.typologyCode, section.optionLabel].filter(Boolean).join(' · ') : 'Requisitos generales', items: [] });
+    groups.get(key).items.push(requirement);
+  });
+  const general = groups.get('general');
+  groups.delete('general');
+  return Array.from(groups.values()).sort((left, right) => left.title.localeCompare(right.title, 'es')).concat(general ? [general] : []);
+}
+
 function RequirementList({ title, tone, requirements, emptyText }) {
   return (
     <section aria-label={title} className="rounded-xl border border-border bg-card text-foreground shadow-sm">
@@ -37,12 +53,17 @@ function RequirementList({ title, tone, requirements, emptyText }) {
         <StatusPill className={tone}>{requirements.length}</StatusPill>
       </div>
       <div className="space-y-2 p-3">
-        {requirements.length ? requirements.map((requirement) => (
-          <article key={`${requirement.documentId}:${requirement.code}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
-            <StatusPill className={tone}>{requirement.code}</StatusPill>
-            <span className="min-w-0 flex-1 font-medium">{requirement.name || 'Documento sin nombre'}</span>
-            {requirement.groupCode ? <StatusPill className="border-border bg-muted/50 text-muted-foreground">Grupo {requirement.groupCode}</StatusPill> : null}
-          </article>
+        {requirements.length ? sectionGroups(requirements).map((group) => (
+          <div key={group.key} className="space-y-2" role={group.title ? 'group' : undefined} aria-label={group.title || undefined}>
+            {group.title ? <h4 className="mb-0 px-1 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{group.title}</h4> : null}
+            {group.items.map((requirement) => (
+              <article key={`${requirement.documentId}:${requirement.code}`} className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm">
+                <StatusPill className={tone}>{requirement.code}</StatusPill>
+                <span className="min-w-0 flex-1 font-medium">{requirement.name || 'Documento sin nombre'}</span>
+                {requirement.groupCode && !requirement.section ? <StatusPill className="border-border bg-muted/50 text-muted-foreground">Grupo {requirement.groupCode}</StatusPill> : null}
+              </article>
+            ))}
+          </div>
         )) : <p className="mb-0 rounded-lg border border-dashed border-border bg-muted/20 px-3 py-4 text-sm text-muted-foreground">{emptyText}</p>}
       </div>
     </section>

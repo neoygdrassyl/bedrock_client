@@ -122,6 +122,23 @@ export async function revokeLegalForm(fun0Id, command) {
   return data;
 }
 
+/**
+ * Typology option selections of the expediente (backoffice selection over the portal choices).
+ * Older backends do not expose the route: callers treat a 404 as "selection unavailable".
+ */
+export async function listTypologySelections(fun0Id, signal) {
+  const { data } = await http.get(`${ROOT}/projects/${documentaryProjectId(fun0Id)}/typology-selections`, { signal });
+  if (!object(data) || !Array.isArray(data.typologies)) invalid();
+  return data;
+}
+
+/** Stores the options chosen for one typology; the backend re-evaluates the requirements in the same command. */
+export async function saveTypologySelection(fun0Id, typologyCode, command) {
+  if (!string(typologyCode) || !typologyCode.trim() || !Array.isArray(command?.optionIds) || !command.optionIds.length) invalid();
+  const { data } = await http.put(`${ROOT}/projects/${documentaryProjectId(fun0Id)}/typology-selections/${encodeURIComponent(typologyCode)}`, command, { headers: JSON_HEADERS });
+  return data;
+}
+
 // Rule errors the user can act on; anything else falls back to the generic documentary message.
 const LEGAL_FORM_ERRORS = {
   CONTROLS_CONFIGURED: 'Este documento tiene controles de Central: decida sus controles en lugar de registrar un veredicto.',
@@ -139,8 +156,12 @@ const LEGAL_FORM_ERRORS = {
   LEGAL_FORM_NOT_DECLARED: 'El expediente no tiene una declaración vigente.',
   LEGAL_FORM_STATE_PROGRESSED: 'El expediente avanzó de estado después de la declaración; ya no puede anularse.',
   LEGAL_FORM_CLOCK_CHANGED: 'El término de legal y debida forma cambió después de la declaración; ya no puede anularse.',
+  REVISION_CONFLICT: 'La selección de la tipología cambió mientras la editaba. Se recargaron los datos; confirme nuevamente.',
+  TYPOLOGY_NOT_FOUND: 'La tipología ya no hace parte de la evaluación de requisitos. Actualice la evaluación e intente nuevamente.',
+  UNKNOWN_TYPOLOGY_OPTION: 'Una de las opciones elegidas no pertenece a la tipología.',
+  INVALID_TYPOLOGY_SELECTION_COUNT: 'Esta tipología admite una sola opción.',
 };
-export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT' || code === 'CHECKLIST_REVISION_CONFLICT';
+export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT' || code === 'CHECKLIST_REVISION_CONFLICT' || code === 'REVISION_CONFLICT';
 
 export function legalFormErrorCode(error) {
   const code = error?.response?.data?.error?.code;

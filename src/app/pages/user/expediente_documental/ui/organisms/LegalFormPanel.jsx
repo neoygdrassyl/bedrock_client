@@ -5,22 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import FUN_SERVICE from '@/app/services/fun.service';
-import { declareLegalForm, revokeLegalForm } from '@/app/services/documentaryLegalForm.service';
+import { declareLegalForm, listTypologySelections, revokeLegalForm } from '@/app/services/documentaryLegalForm.service';
+import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
 import { Tag } from '../atoms/Tag';
-import { ChecklistDialog, CommandDialog } from './LegalFormDialogs';
+import { ChecklistDialog, CommandDialog, TypologySelectionDialog } from './LegalFormDialogs';
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
 import { useLegalForm } from '../../hooks/useLegalForm';
 import { formatDocumentaryDate } from '../../canonicalDocumentaryModel';
-import { groupBlockers, LEGAL_FORM_STATE_META, missingFactLabels } from '../../legalFormModel';
+import { buildSections, groupBlockers, groupDisplayName, LEGAL_FORM_STATE_META, missingFactLabels, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const ITEM_ERROR = 'No fue posible cargar el expediente para generar el formato. Cierre e intente nuevamente.';
 
-function blockerTarget(blocker, requirements) {
+function blockerTarget(blocker, requirements, data) {
   const requirement = requirements.find((item) => item.documentCode === blocker.documentCode);
   const instance = blocker.documentKey ? requirement?.instances.find((item) => item.documentKey === blocker.documentKey) : null;
   if (requirement) return [requirement.documentCode, requirement.title, instance?.instanceLabel].filter(Boolean).join(' · ');
-  if (blocker.groupCode) return `Grupo ${blocker.groupCode}`;
+  if (blocker.groupCode) return groupDisplayName(blocker.groupCode, data?.groups);
+  if (blocker.typologyCode) return (data?.sections || []).find((section) => section.typologyCode === blocker.typologyCode)?.typologyName || blocker.typologyCode;
   return blocker.documentCode || null;
 }
 
@@ -59,9 +61,9 @@ function StateBanner({ data }) {
       {open && groups.length ? (
         <ul id={`${ids}-blockers`} className="m-0 flex list-none flex-col gap-1 p-0 text-xs leading-5">
           {groups.flatMap((group) => group.items.map((blocker, index) => (
-            <li key={`${group.code}:${blocker.documentCode || blocker.groupCode || ''}:${blocker.documentKey || index}`} className="flex flex-wrap gap-x-2">
+            <li key={`${group.code}:${blocker.documentCode || blocker.groupCode || blocker.typologyCode || ''}:${blocker.documentKey || index}`} className="flex flex-wrap gap-x-2">
               <span className="font-medium text-foreground">{group.label}</span>
-              <span className="text-muted-foreground">{blockerTarget(blocker, data.requirements) || blocker.message}</span>
+              <span className="text-muted-foreground">{blockerTarget(blocker, data.requirements, data) || blocker.message}</span>
             </li>
           )))}
         </ul>
@@ -85,13 +87,89 @@ function MissingRequirements({ data }) {
           <li key={`${blocker.code}:${blocker.documentCode || blocker.groupCode || index}`}>
             <Tag tone="neutral">
               {blocker.code === 'GROUP_NOT_SATISFIED'
-                ? (blocker.groupCode ? `Grupo ${blocker.groupCode}: falta cumplir el grupo` : 'Grupo sin cumplir')
-                : blockerTarget(blocker, data.requirements) || blocker.message}
+                ? (blocker.groupCode ? `${groupDisplayName(blocker.groupCode, data.groups)}: falta al menos una alternativa` : 'Grupo sin cumplir')
+                : blockerTarget(blocker, data.requirements, data) || blocker.message}
             </Tag>
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+/** One requirement line of a section: code, title and verdict; muted when an alternative already satisfies its group. */
+function SectionRequirement({ requirement, muted }) {
+  const verdict = requirement.delivered ? VERDICT_META[requirement.verdict] || VERDICT_META.pending : null;
+  return (
+    <li className={cn('flex flex-wrap items-center gap-x-2 gap-y-0.5 py-1 text-xs leading-5', muted && 'opacity-60')} data-testid={`legal-form-section-item-${requirement.documentCode}`}>
+      <span className="w-12 shrink-0 font-mono text-foreground">{requirement.documentCode}</span>
+      <span className="min-w-0 flex-1 text-foreground">{requirement.title || 'Documento sin nombre'}</span>
+      {muted ? <span className="text-muted-foreground">{MUTED_ALTERNATIVE_TEXT}</span>
+        : verdict ? <Tag tone={verdict.tone}>{verdict.label}</Tag>
+          : <Tag tone={requirement.required ? 'warning' : 'neutral'}>{requirement.required ? 'Sin entregar' : 'Opcional'}</Tag>}
+    </li>
+  );
+}
+
+/**
+ * Requirements grouped by typology section (typology name, chosen options with their source, state) and inside each
+ * by option group. Renders nothing unless a typology section exists. `selectable(typologyCode)` tells
+ * whether the "Elegir opción" action applies to a section.
+ */
+function RequirementSections({ data, selectable, onChoose }) {
+  const sections = buildSections(data);
+  const [closed, setClosed] = useState(() => new Set());
+  // Without typology sections (older backend or no typology applies) the panel stays as before: the table lists the documents.
+  if (!sections.some((section) => section.typologyCode)) return null;
+  const toggle = (key) => setClosed((current) => { const next = new Set(current); if (next.has(key)) next.delete(key); else next.add(key); return next; });
+  return (
+    <div className="flex flex-col divide-y border-b" data-testid="legal-form-sections">
+      {sections.map((section) => {
+        const meta = section.state ? SECTION_STATE_META[section.state] : null;
+        const open = !closed.has(section.key);
+        const bodyId = `legal-form-section-${section.key}`;
+        return (
+          <section key={section.key} className="px-[1rem] py-2" aria-label={section.title || 'Requisitos'} data-testid={`legal-form-section-${section.key}`}>
+            {section.title ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" className="flex min-w-0 items-center gap-1.5 bg-transparent p-0 text-left text-sm font-semibold leading-5 text-foreground" aria-expanded={open} aria-controls={bodyId} onClick={() => toggle(section.key)}>
+                  <ChevronDown aria-hidden="true" className={cn('h-3.5 w-3.5 shrink-0 transition-transform motion-reduce:transition-none', !open && '-rotate-90')} />
+                  {section.title}
+                </button>
+                {section.optionLabels.map((label) => <Tag key={label} tone="info">{label}</Tag>)}
+                {section.selectionSource ? <Tag tone="slate" title="Origen de la selección">{SELECTION_SOURCE_LABELS[section.selectionSource] || section.selectionSource}</Tag> : null}
+                {meta ? <Tag tone={meta.tone} data-testid={`legal-form-section-state-${section.key}`}>{meta.label}</Tag> : null}
+                {section.typologyCode && selectable(section.typologyCode) ? (
+                  <Button type="button" variant="outline" size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => onChoose(section.typologyCode)}>Elegir opción</Button>
+                ) : null}
+              </div>
+            ) : null}
+            {open ? (
+              <div id={bodyId} className={cn('flex flex-col gap-1.5', section.title && 'mt-1.5 pl-5')}>
+                {section.options.map((option) => (
+                  <div key={option.key} className="flex flex-col">
+                    {option.label || option.statusLabel ? (
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        {option.label ? <span>{option.label}</span> : null}
+                        {option.statusLabel ? <Tag tone={option.group?.satisfied === false ? 'warning' : 'neutral'}>{option.statusLabel}</Tag> : null}
+                      </div>
+                    ) : null}
+                    {option.items.length ? (
+                      <ul className="m-0 flex list-none flex-col p-0">
+                        {option.items.map(({ requirement, muted }) => <SectionRequirement key={`${requirement.documentId || requirement.documentCode}`} requirement={requirement} muted={muted} />)}
+                      </ul>
+                    ) : null}
+                  </div>
+                ))}
+                {section.state === 'selection_required' && !section.options.some((option) => option.items.length) ? (
+                  <p className="mb-0 text-xs leading-5 text-muted-foreground">Debe elegirse una opción para conocer los documentos exigidos de esta tipología.</p>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
+        );
+      })}
+    </div>
   );
 }
 
@@ -137,12 +215,36 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   const [itemError, setItemError] = useState('');
   // Bumped when the legal-form state is refreshed so the documents table reloads with it.
   const [tableRevision, setTableRevision] = useState(0);
+  // GET /typology-selections (null while unknown or unavailable: older backends answer 404) and the open picker.
+  const [selections, setSelections] = useState(null);
+  const [choosing, setChoosing] = useState(null);
   const data = legal.data;
   const traditional = data?.mode === 'traditional';
   const actions = data?.actions || {};
   const canReview = Boolean(canManage && actions.review);
   const canDeclare = Boolean(canManage && actions.declare && data?.state === 'ready');
   const declared = Boolean(data?.declaration);
+
+  // Typology options can be chosen by managers until the declaration; the list follows each legal-form load.
+  const selectionsEnabled = Boolean(fun0Id && canManage && data && !traditional && !declared);
+  useEffect(() => {
+    if (!selectionsEnabled) { setSelections(null); return undefined; }
+    const controller = new AbortController();
+    listTypologySelections(fun0Id, controller.signal)
+      .then((result) => { if (!controller.signal.aborted) setSelections(result); })
+      .catch(() => { if (!controller.signal.aborted) setSelections(null); });
+    return () => controller.abort();
+  }, [selectionsEnabled, fun0Id, data]);
+  const selectableTypology = (code) => Boolean(selectionsEnabled && selections?.typologies?.some((item) => item.typologyCode === code && item.options?.length));
+  const choosingTypology = choosing ? selections?.typologies?.find((item) => item.typologyCode === choosing) || null : null;
+  async function selectionSaved(result) {
+    setChoosing(null);
+    // The backend re-evaluates in the same command; a stale answer asks for the ordinary refresh.
+    if (result?.cacheState === 'stale' && selections?.inputRevision != null) {
+      try { await refreshRequirementsFor(fun0Id, result.inputRevision ?? selections.inputRevision, 'Actualización tras elegir opción de tipología'); } catch (_) { /* the state banner reports a stale evaluation */ }
+    }
+    refresh('Selección de tipología guardada.');
+  }
 
   // The checklist PDF prints the FUN: use the given one or load a fresh copy each time the dialog opens.
   useEffect(() => {
@@ -226,6 +328,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
               </p>
             ) : null}
             <MissingRequirements data={data} />
+            <RequirementSections data={data} selectable={selectableTypology} onChoose={(code) => { setNotice(''); setChoosing(code); }} />
           </>
         ) : null}
       </div>
@@ -256,6 +359,14 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           onConflict={() => { setChecklistOpen(false); refresh(CONFLICT_MESSAGE); }}
         />
       ) : null}
+      <TypologySelectionDialog
+        open={Boolean(choosingTypology)}
+        typology={choosingTypology}
+        fun0Id={fun0Id}
+        onClose={() => setChoosing(null)}
+        onSaved={selectionSaved}
+        onConflict={() => { setChoosing(null); refresh(CONFLICT_MESSAGE); }}
+      />
       <CommandDialog
         open={dialog === 'declare'}
         title="Declarar legal y debida forma"

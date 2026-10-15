@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { isRevisionConflict, legalFormErrorCode, saveLegalFormChecklist } from '@/app/services/documentaryLegalForm.service';
+import { isRevisionConflict, legalFormErrorCode, legalFormErrorMessage, saveLegalFormChecklist, saveTypologySelection } from '@/app/services/documentaryLegalForm.service';
 import { activeAuthority, activeCity } from '@/app/components/jsons/vars';
 import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/components/checklistPdf';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { fieldClass, FormField } from '../molecules/FormField';
 import { ErrorMessage } from './CanonicalDocumentForms';
 import { commandErrorText } from './EvaluationSheet';
-import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistItemMeta, checklistOverrides, checklistOverridesStored, checklistReviewOf } from '../../legalFormModel';
+import { Tag } from '../atoms/Tag';
+import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistItemMeta, checklistOverrides, checklistOverridesStored, checklistReviewOf, REQUIREMENT_MODE_LABELS } from '../../legalFormModel';
 
 export const CHECKLIST_REASON = 'Lista de chequeo de legal y debida forma';
 const MODEL_ERROR = 'El expediente no tiene el modelo definido, necesario para generar el formato. Defínalo e intente nuevamente.';
@@ -68,6 +69,81 @@ export function CommandDialog({ open, title, description, confirmLabel, destruct
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onClose}>Cancelar</Button>
             <Button type="submit" size="sm" variant={destructive ? 'destructive' : 'default'} disabled={busy || !reason.trim()}>{busy ? 'Guardando…' : confirmLabel}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/**
+ * Option picker of one typology: radios (single) or checkboxes (multiple), each option with its documents and
+ * requirement mode; a motive is required. `typology` is an entry of GET /typology-selections.
+ * `onSaved(result)` receives the command result; `onConflict()` a revision conflict (409).
+ */
+export function TypologySelectionDialog({ open, typology, fun0Id, onClose, onSaved, onConflict }) {
+  const ids = useId();
+  const [selected, setSelected] = useState([]);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const key = useRef(null);
+  useEffect(() => { if (open) { setSelected(typology?.selectedOptionIds || []); setReason(''); setError(''); key.current = null; } }, [open, typology]);
+  const single = (typology?.selectionMode || 'single') === 'single';
+  const toggle = (id) => { key.current = null; setSelected((current) => (single ? [id] : current.includes(id) ? current.filter((item) => item !== id) : [...current, id])); };
+  async function submit(event) {
+    event.preventDefault();
+    if (busy || !typology) return;
+    if (!selected.length) { setError(single ? 'Elija una opción.' : 'Elija al menos una opción.'); return; }
+    if (!reason.trim()) { setError('Indique el motivo.'); return; }
+    setBusy(true); setError('');
+    try {
+      key.current ||= crypto.randomUUID();
+      const result = await saveTypologySelection(fun0Id, typology.typologyCode, { optionIds: selected, expectedSelectionRevision: typology.selectionRevision || 0, reason: reason.trim(), idempotencyKey: key.current });
+      onSaved(result);
+    } catch (failure) {
+      if (failure.response) key.current = null;
+      if (isRevisionConflict(legalFormErrorCode(failure))) onConflict(); else setError(legalFormErrorMessage(failure) || commandErrorText(failure));
+    } finally { setBusy(false); }
+  }
+  return (
+    <Dialog open={open} onOpenChange={(next) => { if (!next && !busy) onClose(); }}>
+      <DialogContent className={cn(DOCUMENTAL_SCOPE, 'max-w-xl')}>
+        <form onSubmit={submit} className="flex min-w-0 flex-col gap-[1rem]" noValidate>
+          <DialogHeader>
+            <DialogTitle className="mb-0 text-base">Elegir opción · {typology?.typologyName || typology?.typologyCode}</DialogTitle>
+            <DialogDescription className="mb-0 text-xs">
+              {single ? 'Elija una opción.' : 'Elija una o varias opciones.'} Los documentos exigidos se recalculan al guardar.
+            </DialogDescription>
+          </DialogHeader>
+          <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-2 p-0 !border-0">
+            <legend className="sr-only">Opciones de la tipología</legend>
+            {(typology?.options || []).map((option) => {
+              const checked = selected.includes(option.id);
+              return (
+                <label key={option.id} className={cn('flex cursor-pointer items-start gap-[0.75rem] rounded-md border px-[0.75rem] py-2 transition-colors motion-reduce:transition-none', checked ? 'border-primary bg-primary/5' : 'hover:bg-muted/50')}>
+                  <input type={single ? 'radio' : 'checkbox'} name={`${ids}-option`} className="mt-1" value={option.id} checked={checked} onChange={() => toggle(option.id)} />
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium text-foreground">{option.label}</span>
+                      <Tag tone="slate">{REQUIREMENT_MODE_LABELS[option.requirementMode] || option.requirementMode}</Tag>
+                    </span>
+                    {option.description ? <span className="text-xs leading-4 text-muted-foreground">{option.description}</span> : null}
+                    {option.documentCodes?.length ? (
+                      <span className="flex flex-wrap gap-1" aria-label="Documentos de la opción">{option.documentCodes.map((code) => <Tag key={code} mono tone="code">{code}</Tag>)}</span>
+                    ) : null}
+                  </span>
+                </label>
+              );
+            })}
+            <FormField id={`${ids}-reason`} label="Motivo" hint="Queda en el historial documental del expediente.">
+              <Input id={`${ids}-reason`} className="text-sm" maxLength={1000} value={reason} onChange={(event) => { key.current = null; setReason(event.target.value); }} required aria-describedby={`${ids}-reason-hint`} />
+            </FormField>
+          </fieldset>
+          <ErrorMessage error={error} />
+          <DialogFooter className="gap-2">
+            <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onClose}>Cancelar</Button>
+            <Button type="submit" size="sm" disabled={busy || !selected.length || !reason.trim()}>{busy ? 'Guardando…' : 'Guardar selección'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
