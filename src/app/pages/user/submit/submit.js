@@ -42,23 +42,24 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
     const submitModalStyles = {
         content: {
-            top: '4dvh',
+            top: '3dvh',
             left: '50%',
             right: 'auto',
             bottom: 'auto',
             transform: 'translateX(-50%)',
-            width: 'min(96vw, 1840px)',
-            height: '92dvh',
+            width: 'min(97vw, 1840px)',
+            height: '94dvh',
             maxWidth: 'none',
             padding: '0',
             border: '1px solid hsl(var(--border))',
-            borderRadius: '18px',
+            borderRadius: '16px',
             overflow: 'hidden',
-            boxShadow: '0 24px 70px rgba(15, 23, 42, 0.22)',
+            boxShadow: '0 24px 60px -15px rgba(0, 0, 0, 0.3)',
             background: 'hsl(var(--background))',
         },
         overlay: {
-            backgroundColor: 'rgba(15, 23, 42, 0.55)',
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
             zIndex: 1050,
         },
     };
@@ -477,18 +478,29 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     style={submitModalStyles}
                     ariaHideApp={false}
                 >
-                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-3 py-2.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
-                                <Icon name="Pencil" size={14} className="text-primary" />
+                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/70 bg-card/90 px-4 py-3 backdrop-blur-md">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+                                <Icon name="FolderOpen" size={16} />
                             </div>
-                            <h2 className="text-sm font-semibold tracking-tight">Actualizar Entrada: {currentIdPublic}</h2>
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ventanilla Única</span>
+                                <span className="text-muted-foreground/40">/</span>
+                                <h2 className="text-sm font-semibold tracking-tight text-foreground truncate">
+                                    Entrada <span className="font-mono text-primary font-bold">{currentIdPublic}</span>
+                                </h2>
+                            </div>
                         </div>
-                        <button type="button" onClick={toggle} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
-                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        <button
+                            type="button"
+                            onClick={toggle}
+                            className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            aria-label="Cerrar ventana"
+                        >
+                            <Icon name="X" size={16} />
                         </button>
                     </div>
-                    <div className="h-[calc(92dvh-3.25rem)] overflow-hidden px-2 py-2">
+                    <div className="h-[calc(94dvh-3.75rem)] overflow-hidden px-3 py-2.5">
                         <SUBTMIT_MANAGE
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             refreshList={refreshList}
@@ -504,18 +516,29 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
                     style={submitModalStyles}
                     ariaHideApp={false}
                 >
-                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-3 py-2.5 backdrop-blur-sm">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
-                                <Icon name="PlusCircle" size={14} className="text-primary" />
+                    <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/70 bg-card/90 px-4 py-3 backdrop-blur-md">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+                                <Icon name="PlusCircle" size={16} />
                             </div>
-                            <h2 className="text-sm font-semibold tracking-tight">Nueva Entrada</h2>
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ventanilla Única</span>
+                                <span className="text-muted-foreground/40">/</span>
+                                <h2 className="text-sm font-semibold tracking-tight text-foreground truncate">
+                                    Nueva Entrada
+                                </h2>
+                            </div>
                         </div>
-                        <button type="button" onClick={() => toggle_new()} className="rounded-md p-1 hover:bg-muted transition-colors" aria-label="Cerrar">
-                            <Icon name="X" size={16} className="text-muted-foreground" />
+                        <button
+                            type="button"
+                            onClick={() => toggle_new()}
+                            className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            aria-label="Cerrar ventana"
+                        >
+                            <Icon name="X" size={16} />
                         </button>
                     </div>
-                    <div className="h-[calc(92dvh-3.25rem)] overflow-auto px-2 py-2">
+                    <div className="h-[calc(94dvh-3.75rem)] overflow-auto px-3 py-2.5">
                         <SUBTMIT_MANAGE
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             refreshList={refreshList}

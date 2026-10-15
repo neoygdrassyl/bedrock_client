@@ -96,7 +96,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
         return (
         <select
-            className={`form-select form-select-sm h-8 text-[0.76rem] ${className}`}
+            className={`h-8 rounded-md border border-input bg-background px-1.5 text-xs text-foreground shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${className}`}
             name={name}
             {...selectProps}
             onChange={onChange}
@@ -301,10 +301,10 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
             const tableGridClass = "grid grid-cols-[52px_58px_74px_70px_minmax(260px,1fr)_62px_74px_124px] gap-1.5 lg:gap-2";
 
             const StatusBadge = ({ active, icon, label, description, tone = 'primary' }) => {
-                const activeClass = tone === 'success'
-                    ? 'border-emerald-500/60 bg-emerald-50 text-emerald-700 shadow-[0_0_0_3px_rgba(16,185,129,0.12)]'
-                    : 'border-primary/60 bg-primary/10 text-primary shadow-[0_0_0_3px_rgba(59,130,246,0.12)]';
-                const inactiveClass = 'border-border/70 bg-muted/30 text-muted-foreground opacity-70';
+                const activeClass = tone === 'success' || active
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    : 'border-primary/60 bg-primary/10 text-primary shadow-xs';
+                const inactiveClass = 'border-border/70 bg-muted/30 text-muted-foreground/60 opacity-70';
 
                 return (
                     <span className="group/status relative inline-flex">
@@ -313,7 +313,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                             aria-label={label}
                             className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-all duration-200 ${active ? activeClass : inactiveClass}`}
                         >
-                            <Icon name={icon} size={16} />
+                            <Icon name={icon} size={15} />
                         </button>
                         <span className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-56 -translate-x-1/2 rounded-lg border border-border bg-popover px-3 py-2 text-left text-[0.72rem] leading-snug text-popover-foreground opacity-0 shadow-lg transition-all duration-150 before:absolute before:-top-1 before:left-1/2 before:h-2 before:w-2 before:-translate-x-1/2 before:rotate-45 before:border-l before:border-t before:border-border before:bg-popover group-hover/status:opacity-100 group-focus-within/status:opacity-100">
                             <span className="block font-semibold">{label}</span>
@@ -332,7 +332,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                         </span>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
+                    <div className="overflow-hidden rounded-lg border border-border bg-background shadow-xs">
                         <div className={`${tableGridClass} border-b border-border/70 bg-muted/25 px-2 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground`}>
                             <span>Estado</span>
                             <span className="text-center">Carga</span>
@@ -399,20 +399,20 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         <div className="flex items-center justify-center gap-1">
                                             <button
                                                 type="button"
-                                                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 ${isUploadingScan ? 'cursor-wait border-primary/60 bg-primary/10 text-primary' : scanned ? 'border-emerald-500/60 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:text-primary'}`}
+                                                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-all duration-200 ${isUploadingScan ? 'cursor-wait border-primary/60 bg-primary/10 text-primary' : scanned ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:text-primary'}`}
                                                 onClick={() => document.getElementById(`direct_scan_${ID}_${i}`)?.click()}
                                                 aria-label={scanned ? 'Reemplazar escaneado' : 'Subir escaneado'}
                                                 title={isUploadingScan ? (uploadState.message || 'Subiendo escaneado...') : scanned ? 'Reemplazar escaneado de esta fila' : 'Subir escaneado para esta fila'}
                                                 disabled={isUploadingScan}
                                             >
-                                                <Icon name={isUploadingScan ? 'Loader2' : scanned ? 'FileCheck' : 'FileUp'} size={16} className={isUploadingScan ? 'animate-spin' : ''} />
+                                                <Icon name={isUploadingScan ? 'Loader2' : scanned ? 'FileCheck' : 'FileUp'} size={15} className={isUploadingScan ? 'animate-spin' : ''} />
                                             </button>
-                                            {scannedDocument ? <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/70 bg-background text-muted-foreground transition-colors hover:text-primary" onClick={() => openScanPreview(scannedDocument)} aria-label="Previsualizar escaneado" title="Previsualizar escaneado"><Icon name="Eye" size={16} /></button> : null}
+                                            {scannedDocument ? <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-background text-muted-foreground transition-colors hover:text-primary" onClick={() => openScanPreview(scannedDocument)} aria-label="Previsualizar escaneado" title="Previsualizar escaneado"><Icon name="Eye" size={15} /></button> : null}
                                         </div>
-                                        <span className={`max-w-[56px] truncate text-[0.62rem] leading-none ${scanned ? 'text-emerald-700' : 'text-muted-foreground'}`}>{isUploadingScan ? 'Subiendo' : scanned ? 'Cargado' : 'Arrastre'}</span>
+                                        <span className={`max-w-[56px] truncate text-[0.62rem] leading-none ${scanned ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-muted-foreground'}`}>{isUploadingScan ? 'Subiendo' : scanned ? 'Cargado' : 'Arrastre'}</span>
                                     </div>
 
-                                    <select className="form-select form-select-sm h-8 w-[78px] px-1 text-[0.76rem]" name={"submit_list_category_" + ID} defaultValue={category[i]}>
+                                    <select className="h-8 w-[74px] rounded-md border border-input bg-background px-1 text-center font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" name={"submit_list_category_" + ID} defaultValue={category[i]}>
                                         <option>DC</option>
                                         <option>DA-OA</option>
                                         <option>DA-LC</option>
@@ -427,7 +427,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                     <div className="flex min-w-0 items-center gap-1">
                                         <input
                                             type="text"
-                                            className="form-control form-control-sm h-8 min-w-0 px-1 text-center font-mono text-[0.74rem]"
+                                            className="h-8 min-w-0 rounded-md border border-input bg-background px-1 text-center font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                             name={"submit_list_code_" + ID}
                                             id={'edit_list_code_' + ID + '_' + i}
                                             defaultValue={code[i]}
@@ -438,7 +438,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
                                     <textarea
                                         rows="1"
-                                        className="form-control form-control-sm min-h-8 resize-y overflow-hidden py-1 text-[0.82rem] leading-tight"
+                                        className="min-h-8 resize-y overflow-hidden rounded-md border border-input bg-background px-2 py-1 text-xs leading-snug text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         name={"submit_list_name_" + ID}
                                         id={'edit_list_name_' + ID + '_' + i}
                                         defaultValue={name[i]}
@@ -449,7 +449,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         type="number"
                                         min="0"
                                         step="1"
-                                        className="form-control form-control-sm h-8 text-center text-[0.78rem]"
+                                        className="h-8 rounded-md border border-input bg-background px-1 text-center font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         name={"submit_list_pages_" + ID}
                                         defaultValue={page[i]}
                                         onChange={(e) => updatePhysicalDraft(ID, i, 'pages', e.target.value)}
@@ -459,7 +459,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         type="number"
                                         min="1"
                                         step="1"
-                                        className="form-control form-control-sm h-8 text-center text-[0.78rem]"
+                                        className="h-8 rounded-md border border-input bg-background px-1 text-center font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         name={"submit_list_digital_pages_" + ID}
                                         value={currentDigitalPages}
                                         placeholder={scannedDocument?.pages || currentPages || 'Auto'}
@@ -601,7 +601,7 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
 
             return (
                 <div className="flex h-full min-h-0 flex-col gap-1.5 overflow-hidden">
-                    <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 bg-background px-2 pt-2">
+                    <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-border/70 bg-muted/20 px-3 pt-2">
                         {currentSubLists.map((row, index) => {
                             const isActive = activePanel === 'physical' && index === activeListIndex;
                             const items = row.list_name ? row.list_name.split(";").length : 0;
@@ -614,44 +614,52 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                         onPanelChange?.('physical');
                                         setActiveListIndex(index);
                                     }}
-                                    className={`-mb-px inline-flex max-w-[220px] items-center gap-2 rounded-t-lg border px-3 py-2 text-left text-[12px] transition-colors ${isActive ? 'border-border border-b-background bg-background text-primary shadow-sm' : 'border-transparent bg-muted/40 text-muted-foreground hover:bg-muted'}`}
+                                    className={`inline-flex max-w-[220px] items-center gap-2 rounded-t-md border-b-2 px-3 py-1.5 text-xs font-medium transition-all ${
+                                        isActive
+                                            ? 'border-primary bg-background text-primary font-semibold shadow-xs'
+                                            : 'border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                                    }`}
                                 >
-                                    <span className="truncate font-semibold">{row.list_title || `Lista ${index + 1}`}</span>
-                                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">{items}</span>
+                                    <span className="truncate">{row.list_title || `Lista ${index + 1}`}</span>
+                                    <span className={`rounded-full px-1.5 py-0.2 text-[10px] font-semibold ${isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>{items}</span>
                                 </button>
-                            )
+                            );
                         })}
                         <button
                             type="button"
                             onClick={() => onPanelChange?.('digital')}
-                            className={`-mb-px inline-flex items-center gap-2 rounded-t-lg border px-3 py-2 text-[12px] transition-colors ${activePanel === 'digital' ? 'border-border border-b-background bg-background text-primary shadow-sm' : 'border-transparent bg-muted/40 text-muted-foreground hover:bg-muted'}`}
+                            className={`inline-flex items-center gap-2 rounded-t-md border-b-2 px-3 py-1.5 text-xs font-medium transition-all ${
+                                activePanel === 'digital'
+                                    ? 'border-primary bg-background text-primary font-semibold shadow-xs'
+                                    : 'border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                            }`}
                         >
                             Digitales
-                            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">{digitalCount}</span>
+                            <span className={`rounded-full px-1.5 py-0.2 text-[10px] font-semibold ${activePanel === 'digital' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>{digitalCount}</span>
                         </button>
                         <div className="ml-auto flex items-center gap-1 pb-1">
-                            <Button variant="outline" size="sm" className="h-8 px-2" disabled={!currentSubLists.length || activeListIndex <= 0} onClick={goToPreviousList}>
-                                <Icon name="chevron-left" size={14} />
+                            <Button variant="outline" size="sm" className="h-7.5 px-2 text-xs" disabled={!currentSubLists.length || activeListIndex <= 0} onClick={goToPreviousList}>
+                                <Icon name="chevron-left" size={13} />
                             </Button>
-                            <Button variant="outline" size="sm" className="h-8 px-2" disabled={!currentSubLists.length || activeListIndex >= currentSubLists.length - 1} onClick={goToNextList}>
-                                <Icon name="chevron-right" size={14} />
+                            <Button variant="outline" size="sm" className="h-7.5 px-2 text-xs" disabled={!currentSubLists.length || activeListIndex >= currentSubLists.length - 1} onClick={goToNextList}>
+                                <Icon name="chevron-right" size={13} />
                             </Button>
                             {_COMPONENT_ADD_LIS()}
                         </div>
                     </div>
 
-                    <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-b-lg border border-t-0 border-border/70 bg-background shadow-sm">
+                    <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-b-lg border border-t-0 border-border/70 bg-background shadow-xs">
                         {activePanel === 'digital'
                             ? renderDigitalPanel?.()
                             : activeList
                             ? <>
-                                <div className="flex shrink-0 flex-col gap-2 border-b border-border/60 bg-muted/20 px-3 py-2 md:flex-row md:items-center md:justify-between">
+                                <div className="flex shrink-0 flex-col gap-2 border-b border-border/70 bg-card/60 px-3 py-2 md:flex-row md:items-center md:justify-between">
                                     <div className="min-w-0 flex-1">
                                         {checkIfExtra(activeList.list_title)
-                                            ? <h4 className="mb-0 truncate text-sm font-semibold text-foreground">{activeList.list_title || 'Lista sin título'}</h4>
+                                            ? <h4 className="mb-0 truncate text-xs font-bold text-foreground">{activeList.list_title || 'Lista sin título'}</h4>
                                             : <input
                                                 type="text"
-                                                className="form-control form-control-sm max-w-xl text-sm font-semibold"
+                                                className="h-8 w-full max-w-md rounded-md border border-input bg-background px-2.5 text-xs font-semibold text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                                 id={"save_list_title_" + activeList.id}
                                                 placeholder="Título de la lista"
                                                 defaultValue={activeList.list_title}
@@ -659,14 +667,14 @@ function SUBMIT_LIST({ translation, swaMsg, globals, currentItem, list, refreshL
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-1.5">
-                                        <Button variant="outline" size="sm" className="h-8 px-2 text-[11px]" title="Guardar Cambios" onClick={() => save_list(activeList.id)}>
-                                            <Icon name="save" size={14} /> Guardar
+                                        <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs font-medium" title="Guardar Cambios" onClick={() => save_list(activeList.id)}>
+                                            <Icon name="save" size={13} /> Guardar
                                         </Button>
-                                        <Button variant="destructive" size="sm" className="h-8 px-2 text-[11px]" title="Eliminar" onClick={() => delete_list(activeList.id)}>
-                                            <Icon name="trash-alt" size={14} /> Eliminar
+                                        <Button variant="destructive" size="sm" className="h-8 px-2.5 text-xs font-medium" title="Eliminar" onClick={() => delete_list(activeList.id)}>
+                                            <Icon name="trash-alt" size={13} /> Eliminar
                                         </Button>
-                                        <Button type="button" size="sm" className="h-8 px-2 text-[11px]" disabled={!activeReviewedDocuments.length} title="Gestionar escaneados" onClick={() => setScanModalOpen(true)}>
-                                            <Icon name="FileUp" size={14} /> Gestionar escaneados
+                                        <Button type="button" size="sm" className="h-8 px-2.5 text-xs font-semibold" disabled={!activeReviewedDocuments.length} title="Gestionar escaneados" onClick={() => setScanModalOpen(true)}>
+                                            <Icon name="FileUp" size={13} /> Gestionar escaneados
                                         </Button>
                                         {renderMissingDocumentsButton()}
                                     </div>
