@@ -14,11 +14,12 @@ import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/component
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { fieldClass, FormField } from '../molecules/FormField';
 import { ControlDecisionFields, ErrorMessage } from './CanonicalDocumentForms';
-import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistReviewOf, instanceKeyFor, reviewedByLine } from '../../legalFormModel';
+import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, instanceKeyFor, reviewedByLine } from '../../legalFormModel';
 
 export const REVIEW_REASON = 'Revisión de legal y debida forma';
 export const CHECKLIST_REASON = 'Lista de chequeo de legal y debida forma';
 const CONTROL_REASON = 'Revisión de Legal y debida forma';
+const MODEL_ERROR = 'El expediente no tiene el modelo definido, necesario para generar el formato. Defínalo e intente nuevamente.';
 const FOLIO_RANGE_MAX = 120;
 const OBSERVATION_MAX = 4000;
 const pad = (value) => String(value).padStart(2, '0');
@@ -129,25 +130,27 @@ const textOf = (value) => String(value ?? '').trim();
 /**
  * One form for every Central control of a delivery: one footer, and "Guardar" sends one command per
  * control whose result or observation changed (sequentially, stopping at the first failure).
+ * A control whose previous decision is stale starts with an empty result and is only sent once the
+ * user picks one. `onControlSaved` fires after each command that went through (partial progress).
  */
-export function ControlsForm({ origin, row, canReview, onSaved, onConflict, onCancel }) {
+export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel }) {
   const ids = useId();
-  const initial = (control) => ({ value: control.review?.selectedSourceValueId || '', observation: control.review?.observation || '' });
+  const initial = (control) => ({ value: control.review?.current === false ? '' : control.review?.selectedSourceValueId || '', observation: control.review?.observation || '' });
   const [drafts, setDrafts] = useState(() => Object.fromEntries(row.controls.map((control) => [control.controlId, initial(control)])));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [invalidId, setInvalidId] = useState(null);
   // Last saved state per control: a retry after a partial failure must not resend (nor 409 on) what already went through.
-  const baseline = useRef(Object.fromEntries(row.controls.map((control) => [control.controlId, { ...initial(control), revision: control.review?.resultRevision || 0, stale: control.review?.current === false }])));
-  const commands = useRef(new Map());
+  const baseline = useRef(Object.fromEntries(row.controls.map((control) => [control.controlId, { ...initial(control), revision: control.review?.resultRevision || 0 }])));
+  const commands = useRef(new Map()); // idempotent command per controlId
   const changed = (control) => {
     const draft = drafts[control.controlId]; const base = baseline.current[control.controlId];
     if (!draft.value) return false;
-    return draft.value !== base.value || textOf(draft.observation) !== textOf(base.observation) || base.stale;
+    return draft.value !== base.value || textOf(draft.observation) !== textOf(base.observation);
   };
   const pending = row.controls.filter(changed);
   function update(controlId, patch) {
-    commands.current.clear(); setInvalidId(null);
+    commands.current.delete(controlId); setInvalidId(null);
     setDrafts((current) => ({ ...current, [controlId]: { ...current[controlId], ...patch } }));
   }
   function validate() {
@@ -181,7 +184,8 @@ export function ControlsForm({ origin, row, canReview, onSaved, onConflict, onCa
           throw Object.assign(failure, { controlId: control.controlId });
         }
         commands.current.delete(control.controlId);
-        baseline.current[control.controlId] = { value: draft.value, observation: draft.observation, revision: base.revision + 1, stale: false };
+        baseline.current[control.controlId] = { value: draft.value, observation: draft.observation, revision: base.revision + 1 };
+        onControlSaved?.();
       }
       onSaved('Revisión guardada.');
     } catch (failure) {
@@ -213,10 +217,12 @@ export function ControlsForm({ origin, row, canReview, onSaved, onConflict, onCa
 
 /**
  * Central controls of one delivery, decided in a single form (one Guardar for all controls). The view
- * row is loaded by its current row id (any page of the view).
+ * row is loaded by its current row id (any page of the view). `onPartialSave` is called when the sheet
+ * is closed after at least one control was saved without finishing the whole batch.
  */
-export function ControlsSheet({ target, origin, canReview, onClose, onSaved, onConflict }) {
+export function ControlsSheet({ target, origin, canReview, onClose, onSaved, onPartialSave, onConflict }) {
   const [state, setState] = useState(null);
+  const savedAny = useRef(false);
   const [nonce, setNonce] = useState(0);
   const rowId = target?.instance.currentRowId;
   useEffect(() => {
@@ -233,12 +239,19 @@ export function ControlsSheet({ target, origin, canReview, onClose, onSaved, onC
   const view = current?.found?.view;
   const allowed = Boolean(canReview && view && !view.readOnly && view.capabilities.review && row?.actions?.review !== false);
   const label = target ? [target.requirement.documentCode, target.requirement.title, target.instance.instanceLabel].filter(Boolean).join(' · ') : '';
-  function saved(message) { setNonce((value) => value + 1); onSaved(message); }
+  function saved(message) { savedAny.current = false; setNonce((value) => value + 1); onSaved(message); }
+  // Closing after some (but not all) controls were saved: the parent must reload what already went through.
+  function close() {
+    const partial = savedAny.current;
+    savedAny.current = false;
+    if (partial) onPartialSave?.();
+    onClose();
+  }
   return (
-    <SheetFrame open={Boolean(target)} onClose={onClose} title="Revisar controles" description={label}>
+    <SheetFrame open={Boolean(target)} onClose={close} title="Revisar controles" description={label}>
       {row ? (
         <ControlsForm key={`${row.receivedDocumentRowId}:${row.receipt.evidenceRevision}:${row.controls.map((control) => control.review?.resultRevision || 0).join(',')}`}
-          origin={origin} row={row} canReview={allowed} onSaved={saved} onConflict={onConflict} onCancel={onClose} />
+          origin={origin} row={row} canReview={allowed} onSaved={saved} onControlSaved={() => { savedAny.current = true; }} onConflict={() => { savedAny.current = false; onConflict(); }} onCancel={close} />
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
           {!current ? <div className="flex flex-col gap-2" aria-hidden="true"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div> : null}
@@ -344,12 +357,16 @@ export function ChecklistDialog({ open, data, fun0Id, currentItem, itemError = '
     event.preventDefault();
     if (busy) return;
     if (!currentItem) { setError(itemError || 'El expediente aún se está cargando. Intente nuevamente en unos segundos.'); return; }
+    // The legacy PDF generator needs the model of the expediente: fail before storing anything.
+    if (!currentItem.model) { setError(MODEL_ERROR); return; }
     setBusy(true); setError('');
     let stored = false;
     try {
-      if (canEdit) {
+      // Stored marks are overrides of the server defaults: send only what differs (`{}` clears them) and skip the PUT when nothing changed.
+      const overrides = canEdit ? checklistOverrides(data, codes, marks) : null;
+      if (canEdit && !checklistOverridesStored(data, overrides)) {
         key.current ||= crypto.randomUUID();
-        await saveLegalFormChecklist(fun0Id, { marks, expectedChecklistRevision: data?.checklist?.checklistRevision || 0, idempotencyKey: key.current, reason: CHECKLIST_REASON });
+        await saveLegalFormChecklist(fun0Id, { marks: overrides, expectedChecklistRevision: data?.checklist?.checklistRevision || 0, idempotencyKey: key.current, reason: CHECKLIST_REASON });
         stored = true;
       }
       const pdfBytes = await buildChecklistPdf({ currentItem, currentVersion, review: checklistReviewOf(codes, marks), city, number, swaMsg });

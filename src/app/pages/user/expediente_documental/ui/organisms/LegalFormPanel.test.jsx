@@ -193,6 +193,82 @@ describe('LegalFormPanel', () => {
     expect(saveCanonicalControl).toHaveBeenCalledTimes(1);
   });
 
+  it('does not resend a stale control until the user picks a result for it', async () => {
+    const stale = { selectedSourceValueId: 'c-1-ok', observation: 'Visto antes', resultRevision: 2, effect: 'complies', current: false };
+    const sheet = await openControls([control('c-1', 'Firma del titular', stale), control('c-2', 'Folios')]);
+    await within(sheet).findByText('Firma del titular');
+    const selects = within(sheet).getAllByLabelText('Resultado');
+    expect(selects[0]).toHaveValue(''); // the stale decision is not preselected
+    expect(within(sheet).getAllByLabelText('Observación')[0]).toHaveValue('Visto antes');
+    expect(within(sheet).getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    fireEvent.change(selects[1], { target: { value: 'c-2-ok' } });
+    saveCanonicalControl.mockResolvedValue({});
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledTimes(1));
+    expect(saveCanonicalControl).toHaveBeenCalledWith(1, 10, 'c-2', expect.any(Object));
+  });
+
+  it('sends a stale control once the user picks a result, against its stored revision', async () => {
+    const stale = { selectedSourceValueId: 'c-1-ok', observation: null, resultRevision: 2, effect: 'complies', current: false };
+    const sheet = await openControls([control('c-1', 'Firma del titular', stale)]);
+    await within(sheet).findByText('Firma del titular');
+    fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 'c-1-ok' } });
+    saveCanonicalControl.mockResolvedValue({});
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledWith(1, 10, 'c-1', expect.objectContaining({ selectedSourceValueId: 'c-1-ok', expectedResultRevision: 2 })));
+  });
+
+  describe('partial failures of the controls form', () => {
+    const failFirstOfTwo = async () => {
+      const sheet = await openControls([control('c-1', 'Firma del titular'), control('c-2', 'Folios')]);
+      await within(sheet).findByText('Firma del titular');
+      const selects = within(sheet).getAllByLabelText('Resultado');
+      fireEvent.change(selects[0], { target: { value: 'c-1-ok' } });
+      fireEvent.change(selects[1], { target: { value: 'c-2-ok' } });
+      saveCanonicalControl.mockResolvedValueOnce({}).mockRejectedValueOnce({ message: 'Fallo de red' });
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+      expect(await within(sheet).findByText('Fallo de red')).toBeInTheDocument();
+      return sheet;
+    };
+
+    it('retries only the failed control with the same idempotency key', async () => {
+      const sheet = await failFirstOfTwo();
+      expect(saveCanonicalControl).toHaveBeenCalledTimes(2);
+      saveCanonicalControl.mockResolvedValue({});
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledTimes(3));
+      expect(saveCanonicalControl.mock.calls[2][2]).toBe('c-2');
+      expect(saveCanonicalControl.mock.calls[2][3].idempotencyKey).toBe(saveCanonicalControl.mock.calls[1][3].idempotencyKey);
+    });
+
+    it('keeps the command of an untouched control when another one is edited', async () => {
+      const sheet = await failFirstOfTwo();
+      fireEvent.change(within(sheet).getAllByLabelText('Observación')[0], { target: { value: 'Nota' } }); // c-1 was saved: only its own command is dropped
+      saveCanonicalControl.mockResolvedValue({});
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledTimes(4));
+      expect(saveCanonicalControl.mock.calls[2][2]).toBe('c-1');
+      expect(saveCanonicalControl.mock.calls[3][2]).toBe('c-2');
+      expect(saveCanonicalControl.mock.calls[3][3].idempotencyKey).toBe(saveCanonicalControl.mock.calls[1][3].idempotencyKey);
+    });
+
+    it('refreshes the panel when the sheet is closed after some controls were saved', async () => {
+      const sheet = await failFirstOfTwo();
+      expect(api.getLegalForm).toHaveBeenCalledTimes(1);
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Cancelar' }));
+      await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    });
+
+    it('does not refresh when the sheet is closed without saving anything', async () => {
+      const sheet = await openControls([control('c-1', 'Firma del titular')]);
+      await within(sheet).findByText('Firma del titular');
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Cancelar' }));
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+      expect(api.getLegalForm).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('shows the incomplete-evaluation warning with human labels and keeps declaring enabled', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       state: 'ready', actions: { review: true, declare: true, revoke: false, sheet: true, checklist: true },
@@ -228,7 +304,7 @@ describe('LegalFormPanel', () => {
       expect(screen.queryByRole('button', { name: 'Lista de chequeo' })).not.toBeInTheDocument();
     });
 
-    it('opens with server defaults, saves the marks and then builds and downloads the PDF', async () => {
+    it('opens with server defaults, saves only the overrides and then builds and downloads the PDF', async () => {
       const pdf = new Uint8Array([1, 2, 3]);
       api.getLegalForm.mockResolvedValue(checklistForm({ checklist: { marks: { 512: '2' }, checklistRevision: 4, updatedBy: 3, updatedByName: 'Eva Mora', updatedAt: '2026-10-14T15:00:00.000Z' } }));
       api.saveLegalFormChecklist.mockResolvedValue({ checklistRevision: 5 });
@@ -248,8 +324,7 @@ describe('LegalFormPanel', () => {
       const command = api.saveLegalFormChecklist.mock.calls[0][1];
       expect(api.saveLegalFormChecklist.mock.calls[0][0]).toBe(1);
       expect(command).toMatchObject({ expectedChecklistRevision: 4, reason: 'Lista de chequeo de legal y debida forma', idempotencyKey: expect.any(String) });
-      expect(Object.keys(command.marks).sort()).toEqual([...CHECKLIST_CODES].sort());
-      expect(command.marks).toMatchObject({ 511: '1', 512: '2', 513: '0' });
+      expect(command.marks).toEqual({ 512: '2', 513: '0' }); // only the overrides of the defaults, never all codes
       const build = buildChecklistPdf.mock.calls[0][0];
       expect(build).toMatchObject({ currentItem: item, currentVersion: 1 });
       expect(build.review.code).toBe(CHECKLIST_CODES.join(','));
@@ -259,16 +334,52 @@ describe('LegalFormPanel', () => {
     });
 
     it('resets the marks to the defaults and reports a revision conflict', async () => {
-      api.getLegalForm.mockResolvedValue(checklistForm());
+      api.getLegalForm.mockResolvedValue(checklistForm({ checklist: { marks: { 511: '0' }, checklistRevision: 2, updatedBy: 3, updatedAt: '2026-10-14T15:00:00.000Z' } }));
       api.saveLegalFormChecklist.mockRejectedValue({ response: { status: 409, data: { error: { code: 'CHECKLIST_REVISION_CONFLICT' } } } });
       renderPanel();
       fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
       const dialog = await screen.findByRole('dialog');
-      fireEvent.click(within(dialog).getByRole('radio', { name: '511: NO' }));
+      expect(within(dialog).getByRole('radio', { name: '511: NO' })).toBeChecked();
       fireEvent.click(within(dialog).getByRole('button', { name: 'Restablecer' }));
       expect(within(dialog).getByRole('radio', { name: '511: SI' })).toBeChecked();
       fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar y descargar' }));
       expect(await screen.findByText(/Los datos cambiaron/)).toBeInTheDocument();
+      expect(api.saveLegalFormChecklist.mock.calls[0][1]).toMatchObject({ marks: {}, expectedChecklistRevision: 2 }); // reset clears the overrides
+      expect(buildChecklistPdf).not.toHaveBeenCalled();
+    });
+
+    it('skips the PUT and only downloads when the marks equal the stored overrides', async () => {
+      const pdf = new Uint8Array([4]);
+      buildChecklistPdf.mockResolvedValue(pdf);
+      api.getLegalForm.mockResolvedValue(checklistForm({ checklist: { marks: { 512: '2' }, checklistRevision: 4, updatedBy: 3, updatedAt: '2026-10-14T15:00:00.000Z' } }));
+      renderPanel();
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar y descargar' }));
+      await waitFor(() => expect(fileDownload).toHaveBeenCalledWith(pdf, 'FORMULARIO DE REVISION GENERALFUN-1.pdf'));
+      expect(api.saveLegalFormChecklist).not.toHaveBeenCalled();
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    });
+
+    it('skips the PUT when nothing is stored and the marks are the defaults', async () => {
+      buildChecklistPdf.mockResolvedValue(new Uint8Array([5]));
+      api.getLegalForm.mockResolvedValue(checklistForm());
+      renderPanel();
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Guardar y descargar' }));
+      await waitFor(() => expect(fileDownload).toHaveBeenCalledTimes(1));
+      expect(api.saveLegalFormChecklist).not.toHaveBeenCalled();
+    });
+
+    it('does not save when the expediente has no model, which the PDF generator requires', async () => {
+      api.getLegalForm.mockResolvedValue(checklistForm());
+      render(<LegalFormPanel origin={origin} canManage currentItem={{ id: 1, id_public: 'FUN-1' }} currentVersion={1} swaMsg={{}} />);
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      fireEvent.click(within(dialog).getByRole('radio', { name: '513: NO' }));
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar y descargar' }));
+      expect(await within(dialog).findByText(/no tiene el modelo definido/)).toBeInTheDocument();
+      expect(api.saveLegalFormChecklist).not.toHaveBeenCalled();
       expect(buildChecklistPdf).not.toHaveBeenCalled();
     });
 
