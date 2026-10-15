@@ -10,8 +10,9 @@ import { normalizeDocumentControlPages } from './documentControlPages';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
+import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';
 
-function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
+function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, canonicalSaveBlocked = false }) {
     // Canonical expedientes read statuses and folios from the documentary inventory (null for legacy).
     const documentaryInventory = useDocumentaryInventory(currentItem);
 
@@ -159,7 +160,9 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                         <form id="form_manage_ph_gen" onSubmit={save_fun_r}>
                             <div className="row mb-3 text-center">
                                 <div className="col">
-                                    <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                                    {canonicalSaveBlocked
+                                        ? <span className="d-block my-3 text-muted small" role="status">{CANONICAL_SAVE_UNAVAILABLE_HINT}</span>
+                                        : <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>}
                                 </div>
                                 <div className="col">
                                     <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
@@ -262,6 +265,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
         let save_fun_r = (e) => {
             e.preventDefault();
+            if (canonicalSaveBlocked) return;
 
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
@@ -300,7 +304,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                     })
                     .catch(e => {
                         console.log(e);
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                        swalError({ title: swaMsg.generic_eror_title, text: generatorSaveErrorText(e, swaMsg.generic_error_text) });
                     });
             }
             else {
@@ -315,7 +319,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                     })
                     .catch(e => {
                         console.log(e);
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                        swalError({ title: swaMsg.generic_eror_title, text: generatorSaveErrorText(e, swaMsg.generic_error_text) });
                     });
             }
 
