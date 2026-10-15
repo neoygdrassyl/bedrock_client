@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useDocumentaryInventory } from './useDocumentaryInventory';
+import { DocumentaryInventoryContext, useDocumentaryInventory } from './useDocumentaryInventory';
 import { getDocumentaryInventory } from '../../../../services/documentaryOperations.service';
 vi.mock('../../../../services/documentaryOperations.service', () => ({ getDocumentaryInventory: vi.fn() }));
 const canonical = { schemaVersion: 'dovela-backoffice/documentary-inventory/v1', mode: 'canonical', applicable: true, project: { fun0Id: 5 }, items: [], requirements: [], evaluation: { state: 'missing', evaluatedAt: null } };
@@ -23,4 +23,12 @@ it('reports an error when the expediente is no longer canonical', async () => {
   const { result } = renderHook(() => useDocumentaryInventory({ id: 5, centralReleaseId: 3 }));
   await waitFor(() => expect(result.current.status).toBe('error'));
   expect(result.current.inventory).toBeNull();
+});
+it('reuses the inventory provided by a container instead of fetching again', () => {
+  getDocumentaryInventory.mockClear();
+  const shared = { fun0Id: 5, inventory: { status: 'ready', inventory: { statusByCode: new Map() }, error: '' } };
+  const wrapper = ({ children }) => <DocumentaryInventoryContext.Provider value={shared}>{children}</DocumentaryInventoryContext.Provider>;
+  const { result } = renderHook(() => useDocumentaryInventory({ id: 5, centralReleaseId: 3 }), { wrapper });
+  expect(result.current).toBe(shared.inventory);
+  expect(getDocumentaryInventory).not.toHaveBeenCalled();
 });

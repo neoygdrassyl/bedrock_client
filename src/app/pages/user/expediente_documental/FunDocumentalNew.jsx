@@ -18,6 +18,7 @@ import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
 import { LegacyMigrationPanel } from './ui/organisms/LegacyMigrationPanel';
 import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
 import { useIssuedDocuments } from './hooks/useIssuedDocuments';
+import { EXPEDIENTE_MODE, isCanonicalMode, useExpedienteMode } from './expedienteMode';
 import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
 
 // The generators pull PDF tooling; load them only when the tab is opened.
@@ -110,6 +111,7 @@ function WorkspaceSkeleton() {
 function ProjectDocumentaryWorkspace(props) {
   const source = useDocumentaryOrigin({ fun0Id: props.currentId });
   const { origin } = source;
+  const mode = useExpedienteMode(null, origin);
   const issued = useIssuedDocuments(props.currentPublic || origin?.project?.idPublic);
   const [activeTab, setActiveTab] = useState(TAB_INPUT);
   // Bumped after a configuration command so the Radicación tab and the selector reload.
@@ -169,8 +171,8 @@ function ProjectDocumentaryWorkspace(props) {
       {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
       <TabsContent value={TAB_INPUT} forceMount className="mt-0 flex min-w-0 flex-col gap-[0.75rem] data-[state=inactive]:hidden">
         {!origin && !source.error ? <WorkspaceSkeleton /> : null}
-        {origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} embedded /> : null}
-        {origin?.mode === 'traditional' ? <LegacyDocumentalWorkspace {...props} onCountChange={setInputCount} /> : null}
+        {isCanonicalMode(mode) ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} embedded /> : null}
+        {mode === EXPEDIENTE_MODE.traditional ? <LegacyDocumentalWorkspace {...props} onCountChange={setInputCount} /> : null}
       </TabsContent>
 
       <TabsContent value={TAB_ISSUED} className="mt-0 min-w-0">
@@ -206,7 +208,7 @@ function ProjectDocumentaryWorkspace(props) {
             onSaved={handleSaved}
             onConflict={handleConflict}
           />
-          {origin?.mode === 'traditional' ? <LegacyMigrationPanel key={`legacy-migration:${revision}`} fun0Id={origin.project.fun0Id} onMigrated={(message) => handleSaved(message, true)} /> : null}
+          {mode === EXPEDIENTE_MODE.traditional ? <LegacyMigrationPanel key={`legacy-migration:${revision}`} fun0Id={origin.project.fun0Id} onMigrated={(message) => handleSaved(message, true)} /> : null}
         </TabsContent>
       ) : null}
     </Tabs>

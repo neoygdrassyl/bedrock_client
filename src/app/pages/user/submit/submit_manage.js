@@ -11,6 +11,7 @@ import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
+import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../expediente_documental/expedienteMode';
 import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from '../expediente_documental/ui/organisms/CanonicalDocumentaryWorkspace';
 
@@ -30,7 +31,8 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const refreshRequestIdRef = useRef(0);
     const source = useDocumentaryOrigin({ submitId: currentItem?.id });
     const { key: _sourceKey, ...sourceProps } = source;
-    const usesExistingIntake = ['traditional', 'unlinked'].includes(source.origin?.mode);
+    const sourceMode = useExpedienteMode(null, source.origin);
+    const usesExistingIntake = usesTraditionalIntake(sourceMode);
     const canEditExistingSubmit = !currentItem ? !currentId : usesExistingIntake;
 
     const normalizedRequestQuery = requestQuery.trim().toLowerCase();
@@ -757,7 +759,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                         ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                                 <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
                                     <DocumentaryOriginStatus {...sourceProps} />
-                                    {source.origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
+                                    {isCanonicalMode(sourceMode) ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
                                     {usesExistingIntake ? <SUBMIT_LIST
                                         translation={translation}
                                         swaMsg={swaMsg}

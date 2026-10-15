@@ -1,5 +1,6 @@
 import http from '../../http-common';
 import { documentaryProjectId } from './documentary.service';
+import { isCanonicalExpediente } from '../pages/user/expediente_documental/expedienteMode';
 import { validateDocumentaryView, validateDocumentaryReceipt, validateDocumentaryInventory } from '../pages/user/expediente_documental/documentaryViewContract';
 const ROOT = '/fun/documentary/v1';
 const projectUrl = (id) => `${ROOT}/projects/${documentaryProjectId(id)}`;
@@ -109,19 +110,19 @@ export async function changeDocumentaryConfiguration(fun0Id,command) {return (aw
 export async function returnDocumentaryProjectToLegacy(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/legacy`,command,JSON_BODY)).data;}
 export async function refreshDocumentaryRequirements(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/requirements/refresh`,command,JSON_BODY)).data;}
 export function appendDocumentarySourceCommand(formData, root) {
-  if (root?.centralReleaseId == null) return formData;
+  if (!isCanonicalExpediente(root)) return formData;
   if (!Number.isInteger(root.documentaryRevision)) throw new Error('Recargue el expediente antes de guardar su versión.');
   formData.set('documentaryExpectedInputRevision',String(root.documentaryRevision));
   if (!formData.has('documentaryCommandKey')) formData.set('documentaryCommandKey',crypto.randomUUID());
   return formData;
 }
 export function documentaryVersionIndex(root, rows, version) {
-  if (root?.centralReleaseId == null) return Number(version)-1;
+  if (!isCanonicalExpediente(root)) return Number(version)-1;
   const matches=(Array.isArray(rows)?rows:[]).map((row,index)=>({row,index})).filter(({row})=>Number(row.version)===Number(version));
   return matches.length===1?matches[0].index:-1;
 }
 export async function recoverDocumentarySourceConflict(error, {root,formData,reload,notify}) {
-  if (root?.centralReleaseId == null || error.response?.status !== 409) return false;
+  if (!isCanonicalExpediente(root) || error.response?.status !== 409) return false;
   formData?.delete('documentaryCommandKey');
   try {
     await reload(root.id);
