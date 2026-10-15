@@ -8,11 +8,20 @@ import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';
+import { useLegalForm } from '../../expediente_documental/hooks/useLegalForm';
+import { inventorySheetCommand } from '../../expediente_documental/legalFormModel';
+import { legalFormErrorMessage, saveLegalFormSheet } from '@/app/services/documentaryLegalForm.service';
+
+const INVENTORY_SHEET_REASON = 'Hoja de control de inventario';
+const SHEET_LOCKED = 'Su usuario no puede guardar la hoja de inventario de este expediente.';
 
 export default function FUN_D_CONTROL_2(props) {
     const { currentItem, swaMsg, requestUpdate, canonicalSaveBlocked = false } = props
     // Canonical expedientes read folios from the documentary inventory (null for legacy).
     const documentaryInventory = useDocumentaryInventory(currentItem);
+    // Canonical expedientes keep the archive sheet in legal y debida forma (null for legacy).
+    const legalForm = useLegalForm(documentaryInventory ? currentItem.id : null);
+    const legalFormBlocker = legalForm && !legalForm.data ? (legalForm.error || 'Cargando legal y debida forma...') : null;
 
     // DATA GETTERS
     let GET_CHILD_1 = () => {
@@ -174,7 +183,8 @@ export default function FUN_D_CONTROL_2(props) {
     }
     
     // DATA CONVERTERS
-    const INVENTORY = GET_CHILD_REVIEW().check_control_inventory ? getJSONFull(GET_CHILD_REVIEW().check_control_inventory) : {};
+    const LEGACY_INVENTORY = () => (GET_CHILD_REVIEW().check_control_inventory ? getJSONFull(GET_CHILD_REVIEW().check_control_inventory) : {});
+    const INVENTORY = legalForm ? (legalForm.data?.sheet?.sheet || {}) : LEGACY_INVENTORY();
     const CHILD_1 = GET_CHILD_1();
     const TYPE = RES_PARSER_1(CHILD_1);
     const ONWER = GET_FUN_51_BY_TITLE('PROPIETARIO') ? `${GET_FUN_51_BY_TITLE('PROPIETARIO').name} ${GET_FUN_51_BY_TITLE('PROPIETARIO').surname}` : '';
@@ -201,8 +211,36 @@ export default function FUN_D_CONTROL_2(props) {
         { name: 'FECHA DE VENCIMIENTO', n: false, i: 15, date: true, },
     ];
     // DATA SAVE
+    // Header/footer fields and items of the sheet, as rendered.
+    const readSheet = () => ({
+        date_create: document.getElementById('date_create').value,
+        user_archive: document.getElementById('user_archive').value,
+        user_retrieve: document.getElementById('user_retrieve').value,
+        date_retrieve: document.getElementById('date_retrieve').value,
+        items: INVENTORY_LIST.map(i => ({
+            name: i.name,
+            date: document.getElementById(`date_${i.n}_${i.i}`) ? document.getElementById(`date_${i.n}_${i.i}`).value : '',
+            n: document.getElementById(`folio_${i.n}_${i.i}`) ? document.getElementById(`folio_${i.n}_${i.i}`).value : '',
+            label: i.label || '',
+        }))
+    });
+    let save_canonical = async () => {
+        const blocker = inventoryBlocker(documentaryInventory) || legalFormBlocker;
+        if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
+        if (!legalForm.data.actions?.sheet) return swalError({ title: swaMsg.generic_eror_title, text: SHEET_LOCKED });
+        swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+        try {
+            await saveLegalFormSheet(currentItem.id, inventorySheetCommand(legalForm.data, readSheet(), INVENTORY_SHEET_REASON));
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+        } catch (e) {
+            swalError({ title: swaMsg.generic_eror_title, text: legalFormErrorMessage(e) || generatorSaveErrorText(e, swaMsg.generic_error_text) });
+        } finally {
+            legalForm.reload();
+        }
+    }
     let save_fun_r = () => {
         if (canonicalSaveBlocked) return;
+        if (legalForm) return save_canonical();
         let formData = new FormData();
         let inventory = {
             date_create: document.getElementById('date_create').value,
@@ -223,7 +261,7 @@ export default function FUN_D_CONTROL_2(props) {
     }
 
     let gen_pdf = () => {
-        const blocker = inventoryBlocker(documentaryInventory);
+        const blocker = inventoryBlocker(documentaryInventory) || legalFormBlocker;
         if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
 
         let formData = new FormData();
@@ -337,7 +375,7 @@ export default function FUN_D_CONTROL_2(props) {
 
     }
     function BODY_DOPCUMENT(item, index) {
-        const find_item = INVENTORY.items ? INVENTORY.items.find(i => i.name == item.name) : {};
+        const find_item = (INVENTORY.items ? INVENTORY.items.find(i => i.name == item.name) : null) || {};
         let df_n = 0
         if(item.n2){
             for (let index = 0; index < item.n2.length; index++) {
@@ -366,10 +404,13 @@ export default function FUN_D_CONTROL_2(props) {
             </div>
             {inventoryBlocker(documentaryInventory)
                 ? <div className='row'><div className='col border text-center'>{documentaryInventory.status === 'loading' ? 'Cargando inventario documental...' : inventoryBlocker(documentaryInventory)}</div></div>
+                : legalFormBlocker ? <div className='row'><div className='col border text-center'>{legalFormBlocker}</div></div>
                 : INVENTORY_LIST.map(BODY_DOPCUMENT)}
         </>
     }
     const FOOTER = () => {
+        // Uncontrolled inputs: render them only once the stored sheet is known.
+        if (legalFormBlocker) return null;
 
         return <>
             <div className='row'>

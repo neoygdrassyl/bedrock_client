@@ -11,10 +11,31 @@ import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';
+import { useLegalForm } from '../../expediente_documental/hooks/useLegalForm';
+import { controlSheetDefaults, controlSheetReviewPlan, SHEET_SKIP_REASONS } from '../../expediente_documental/legalFormModel';
+import { legalFormErrorMessage, saveLegalFormReview } from '@/app/services/documentaryLegalForm.service';
+
+const CONTROL_SHEET_REASON = 'Hoja de control documental';
+const LEGAL_FORM_LOADING = 'Cargando legal y debida forma...';
+const REVIEW_LOCKED = 'Las revisiones no se pueden cambiar: el expediente ya fue declarado en legal y debida forma o su usuario no tiene permiso.';
+
+/** Saves the sheet verdicts and folio ranges as legal y debida forma reviews (canonical expedientes). */
+export async function saveControlSheetReviews(fun0Id, legalForm, entries) {
+    const plan = controlSheetReviewPlan(legalForm, entries, CONTROL_SHEET_REASON);
+    let saved = 0;
+    for (const command of plan.commands) {
+        await saveLegalFormReview(fun0Id, command.documentCode, command.body);
+        saved += 1;
+    }
+    return { saved, skipped: plan.skipped };
+}
 
 function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, canonicalSaveBlocked = false }) {
     // Canonical expedientes read statuses and folios from the documentary inventory (null for legacy).
     const documentaryInventory = useDocumentaryInventory(currentItem);
+    // Canonical expedientes keep the reviewer verdicts in legal y debida forma (null for legacy).
+    const legalForm = useLegalForm(documentaryInventory ? currentItem.id : null);
+    const legalFormBlocker = legalForm && !legalForm.data ? (legalForm.error || LEGAL_FORM_LOADING) : null;
 
     const _GET_CHILD_1 = () => {
         var _CHILD = currentItem.fun_1s;
@@ -195,6 +216,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
             const blocker = inventoryBlocker(documentaryInventory);
             if (blocker) return <li className="list-group-item text-center">{documentaryInventory.status === 'loading' ? 'Cargando inventario documental...' : blocker}</li>;
+            if (legalFormBlocker) return <li className="list-group-item text-center">{legalFormBlocker}</li>;
             return _LIST.map((value) => {
                 let _LIST_2 = _SERIES_DOCS[value]
                 if (!_LIST_2) _LIST_2 = _SERIES_DOCS['GENERIC']
@@ -229,8 +251,10 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 let docName = Codes[array[i].n];
                 let docCode = array[i].n;
                 const canonical = documentaryInventory ? documentaryInventory.inventory : null;
-                let currentPages = canonical ? normalizeDocumentControlPages(canonical.folios.byCode.get(String(docCode))) : normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
-                let defaultState = canonical ? (canonical.statusByCode.get(String(docCode)) ?? 2) : (_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2);
+                // Canonical: the stored reviewer verdict/folio range first, then the inventory.
+                const reviewed = canonical ? controlSheetDefaults(legalForm?.data, docCode) : null;
+                let currentPages = canonical ? normalizeDocumentControlPages(reviewed?.folioRange ?? canonical.folios.byCode.get(String(docCode))) : normalizeDocumentControlPages(_GET_FUNR_CHECK_CONTROL_PAGES(cId));
+                let defaultState = canonical ? (reviewed?.check ?? canonical.statusByCode.get(String(docCode)) ?? 2) : (_GET_FUNR_CHECK_CONTROL(cId) ?? _GET_FUNR_CODE(array[i].i) ?? 2);
                 _COMPONENT.push(<Fragment key={cId}>
                     <li className="list-group-item">
                         <div className="row">
@@ -266,6 +290,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
         let save_fun_r = (e) => {
             e.preventDefault();
             if (canonicalSaveBlocked) return;
+            if (legalForm) return save_canonical();
 
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
@@ -287,6 +312,27 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             formData.set('check_control_pages', check_control_pages.join(','));
             manage_fun_r();
 
+        }
+        // Canonical: one legal y debida forma review per delivered code whose verdict or folios changed.
+        let save_canonical = async () => {
+            if (legalFormBlocker || inventoryBlocker(documentaryInventory)) return swalError({ title: swaMsg.generic_eror_title, text: legalFormBlocker || inventoryBlocker(documentaryInventory) });
+            if (!legalForm.data.actions?.review) return swalError({ title: swaMsg.generic_eror_title, text: REVIEW_LOCKED });
+            const codes = document.getElementsByName('code_doc');
+            const selects = document.getElementsByName('select_doc');
+            const pages = document.getElementsByName('pages_doc');
+            const entries = Array.from(selects, (select, index) => ({ code: codes[index].innerText, check: select.value, pages: normalizeDocumentControlPages(pages[index].value) }));
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            try {
+                const result = await saveControlSheetReviews(currentItem.id, legalForm.data, entries);
+                const skipped = result.skipped.map((item) => `${item.code}: ${SHEET_SKIP_REASONS[item.reason]}`);
+                swalSuccess({ title: swaMsg.publish_success_title, text: [`Revisiones guardadas: ${result.saved}.`, ...(skipped.length ? ['Sin guardar:', ...skipped] : [])].join('\n') });
+                if (result.saved) requestUpdate(currentItem.id);
+            } catch (error) {
+                swalError({ title: swaMsg.generic_eror_title, text: legalFormErrorMessage(error) || generatorSaveErrorText(error, swaMsg.generic_error_text) });
+            } finally {
+                // Saved reviews (or a revision conflict) change the expected revisions of the next save.
+                legalForm.reload();
+            }
         }
         let manage_fun_r = () => {
             var _CHILD = _SET_CHILD_REVIEW();
@@ -325,7 +371,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
 
         }
         let gen_pdf = () => {
-            const blocker = inventoryBlocker(documentaryInventory);
+            const blocker = inventoryBlocker(documentaryInventory) || legalFormBlocker;
             if (blocker) return swalError({ title: swaMsg.generic_eror_title, text: blocker });
 
             formData = new FormData();

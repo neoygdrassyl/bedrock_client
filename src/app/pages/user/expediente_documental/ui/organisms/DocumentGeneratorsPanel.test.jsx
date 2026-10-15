@@ -77,7 +77,9 @@ describe('DocumentGeneratorsPanel', () => {
     // confirminc reads /requirements/missing, so it is part of the new model too.
     expect(within(row('Recordatorio de radicación incompleta')).getByText('Modelo nuevo')).toBeInTheDocument();
     // Save capability tags only appear in the new model.
-    expect(within(row('Hoja de control documental')).getByText('Lectura')).toBeInTheDocument();
+    expect(within(row('Lista de chequeo')).getByText('Lectura')).toBeInTheDocument();
+    expect(within(row('Hoja de control documental')).getByText('Lectura + guardado')).toBeInTheDocument();
+    expect(within(row('Hoja de control de inventario')).getByText('Lectura + guardado')).toBeInTheDocument();
     expect(within(row('Constancia de legal y debida forma')).getByText('Lectura + guardado')).toBeInTheDocument();
   });
 

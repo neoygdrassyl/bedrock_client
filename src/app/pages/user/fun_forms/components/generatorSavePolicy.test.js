@@ -8,15 +8,18 @@ const legacy = { id: 2, id_public: 'F-2', centralReleaseId: null };
 
 describe('generatorSavePolicy', () => {
   it('blocks saving only for generators that cannot save in the canonical model', () => {
-    expect(isCanonicalSaveBlocked(entry('fun_d_control'), canonical)).toBe(true);
-    expect(isCanonicalSaveBlocked(entry('fun_d_control_2'), canonical)).toBe(true);
-    expect(isCanonicalSaveBlocked(entry('fun_d_control'), legacy)).toBe(false);
+    expect(isCanonicalSaveBlocked(entry('fun_alert_neighbour'), canonical)).toBe(true);
+    expect(isCanonicalSaveBlocked(entry('fun_alert_neighbour'), legacy)).toBe(false);
+    // The control sheets save through the legal y debida forma reviews and sheet.
+    expect(isCanonicalSaveBlocked(entry('fun_d_control'), canonical)).toBe(false);
+    expect(isCanonicalSaveBlocked(entry('fun_d_control_2'), canonical)).toBe(false);
     expect(isCanonicalSaveBlocked(entry('fun_report_data_edit'), canonical)).toBe(false);
   });
 
   it('passes canonicalSaveBlocked to the generator', () => {
     const ctx = buildGeneratorContext({ currentItem: canonical, currentVersion: 1, requestUpdate: () => {}, globalId: 'cb2' });
-    expect(getGeneratorProps(entry('fun_d_control_2'), {}, ctx).canonicalSaveBlocked).toBe(true);
+    expect(getGeneratorProps(entry('fun_alert_neighbour'), {}, ctx).canonicalSaveBlocked).toBe(true);
+    expect(getGeneratorProps(entry('fun_d_control_2'), {}, ctx).canonicalSaveBlocked).toBe(false);
     expect(getGeneratorProps(entry('fun_doc_confirmlegal'), {}, ctx).canonicalSaveBlocked).toBe(false);
   });
 
