@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { Archive, FileSearch, History, Layers, Monitor, ScanLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,18 +10,14 @@ import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
-const CLASS_TONES = {
-  requirement: 'border-border bg-muted/40 text-muted-foreground',
-  annex: 'border-primary/20 bg-primary/5 text-[hsl(var(--primary))]',
-  vr_slip: 'border-border bg-card text-foreground',
-};
+const CLASS_TONES = { requirement: 'neutral', annex: 'info', vr_slip: 'code' };
 
 function ClassBadge({ row }) {
   const documentClass = documentClassOf(row);
   return (
-    <span className={cn('rounded border px-1.5 text-[10px] font-medium leading-4', CLASS_TONES[documentClass])}>
+    <Tag tone={CLASS_TONES[documentClass] || 'neutral'}>
       {CLASS_SHORT_LABELS[documentClass] || 'Documento'}
-    </span>
+    </Tag>
   );
 }
 

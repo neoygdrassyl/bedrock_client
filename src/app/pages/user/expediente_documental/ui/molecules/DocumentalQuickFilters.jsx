@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { cn } from '@/lib/utils';
 
 /**
@@ -24,14 +25,7 @@ export function DocumentalQuickFilters({ options, value = '', onChange, label = 
           >
             {option.label}
             {Number.isFinite(option.count) ? (
-              <span
-                className={cn(
-                  'rounded-full px-1.5 text-[10px] font-semibold leading-4 tabular-nums',
-                  active ? 'bg-primary/10 text-[hsl(var(--primary))]' : 'bg-muted text-muted-foreground',
-                )}
-              >
-                {option.count}
-              </span>
+              <Tag tone={active ? 'info' : 'neutral'} pill>{option.count}</Tag>
             ) : null}
           </button>
         );

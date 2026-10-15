@@ -68,7 +68,7 @@ it('shows the referenced expediente data read-only and refreshes from it',async(
   expect(within(panel).getByText('Formulario FUN 1 · versión 3 · registro 40')).toBeInTheDocument();
   expect(within(panel).getByText('Tipo de actuación')).toBeInTheDocument();expect(within(panel).getByText('D')).toBeInTheDocument();
   expect(within(panel).getByText('Sin dato')).toBeInTheDocument();
-  expect(within(panel).getByText(/edite el FUN del expediente/)).toBeInTheDocument();
+  expect(within(panel).getByText(/Corrija el FUN/)).toBeInTheDocument();
   expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();expect(within(panel).queryByRole('checkbox')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button',{name:'Actualizar requisitos'}));
   await waitFor(()=>expect(api.refreshDocumentaryRequirements).toHaveBeenCalledWith(1,{expectedInputRevision:2,idempotencyKey:expect.any(String),reason:expect.any(String)}));

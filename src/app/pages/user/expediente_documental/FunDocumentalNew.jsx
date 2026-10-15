@@ -3,6 +3,7 @@ import { CircleAlert, CircleCheck, FileOutput, Inbox, Settings2, TriangleAlert }
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
+import { Tag } from './ui/atoms/Tag';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -87,12 +88,9 @@ const TRIGGER_CLASS = 'group h-8 gap-1.5 rounded-md border-[1px] border-solid bo
 function TabCount({ value, label }) {
   if (!Number.isFinite(value)) return null;
   return (
-    <span
-      className="rounded-full bg-muted px-1.5 text-[10px] font-semibold leading-4 tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-[hsl(var(--primary))]"
-      aria-label={`${value} ${label}`}
-    >
+    <Tag pill className="group-data-[state=active]:border-blue-200 group-data-[state=active]:bg-blue-50 group-data-[state=active]:text-blue-700" aria-label={`${value} ${label}`}>
       {value}
-    </span>
+    </Tag>
   );
 }
 

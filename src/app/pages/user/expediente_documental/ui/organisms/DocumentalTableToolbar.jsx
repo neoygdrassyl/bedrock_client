@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { ListFilter, RotateCcw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -75,9 +76,9 @@ export function DocumentalTableToolbar({
           <ListFilter aria-hidden="true" />
           Filtros
           {activeFilters.length > 0 ? (
-            <span className="grid h-4 min-w-4 place-items-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold tabular-nums">
+            <Tag tone="info" pill className="justify-center">
               {activeFilters.length}
-            </span>
+            </Tag>
           ) : null}
         </Button>
         {hasFilters ? (

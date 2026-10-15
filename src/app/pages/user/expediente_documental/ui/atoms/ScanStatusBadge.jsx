@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Tag } from './Tag';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Icon } from '@/components/icon';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ export function ScanStatusBadge({ applies = false, value = false, className }) {
         return <TooltipProvider delayDuration={0}>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <span data-testid="scan-status-badge" data-scan-status="not_applicable" className={cn('text-xs text-muted-foreground', className)}>
+                    <span data-testid="scan-status-badge" data-scan-status="not_applicable" className={cn('text-xs text-slate-600', className)}>
                         No aplica
                     </span>
                 </TooltipTrigger>
@@ -27,14 +27,15 @@ export function ScanStatusBadge({ applies = false, value = false, className }) {
     return <TooltipProvider delayDuration={0}>
         <Tooltip>
             <TooltipTrigger asChild>
-                <Badge
+                <Tag
                     data-testid="scan-status-badge"
                     data-scan-status={value ? 'scanned' : 'pending_scan'}
-                    variant="outline"
-                    className={cn('gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold', value ? meta.activeClassName : meta.inactiveClassName, className)}
+                    tone={value ? 'success' : 'neutral'}
+                    pill
+                    className={className}
                 >
                     <Icon name={meta.icon} size={12} aria-hidden="true" /> {value ? 'Sí' : 'No'}
-                </Badge>
+                </Tag>
             </TooltipTrigger>
             <TooltipContent>{value ? SCANNED_TOOLTIP : PENDING_SCAN_TOOLTIP}</TooltipContent>
         </Tooltip>

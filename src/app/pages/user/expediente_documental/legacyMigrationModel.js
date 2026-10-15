@@ -45,10 +45,10 @@ export function summaryFacts(preview) {
   const stats = preview?.stats;
   if (!stats) return [];
   return [
-    { key: 'vrs', label: 'VR', value: stats.vrs, hint: stats.pqrsVrs ? `${stats.pqrsVrs} de PQRS` : null },
-    { key: 'deliveries', label: 'Entregas', value: stats.deliveries, hint: `${stats.documents} documentos · ${stats.versionedDocuments} con versiones` },
-    { key: 'files', label: 'Archivos', value: stats.files.imported, hint: `${stats.files.found} encontrados · ${stats.files.missing} sin archivo` },
-    { key: 'issues', label: 'Incidencias', value: stats.issues.blocking + stats.issues.warning, hint: `${stats.issues.blocking} bloqueantes` },
+    { key: 'vrs', label: 'VR', value: stats.vrs, hint: stats.pqrsVrs ? `${stats.pqrsVrs} PQRS` : null },
+    { key: 'deliveries', label: 'Entregas', value: stats.deliveries, hint: `${stats.documents} docs · ${stats.versionedDocuments} versionados` },
+    { key: 'files', label: 'Archivos', value: stats.files.imported, hint: stats.files.missing ? `${stats.files.missing} sin archivo` : null },
+    { key: 'issues', label: 'Incidencias', value: stats.issues.blocking + stats.issues.warning, hint: stats.issues.blocking ? `${stats.issues.blocking} bloqueantes` : null },
   ];
 }
 

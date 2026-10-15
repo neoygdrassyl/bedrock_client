@@ -1,3 +1,4 @@
+import { Tag } from '../atoms/Tag';
 import { Check } from 'lucide-react';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
@@ -40,7 +41,7 @@ export function CatalogueDocumentPicker({ id, documents, value, onChange, applic
                   {isSelected ? <span className="sr-only"> (seleccionado)</span> : null}
                 </span>
                 {applicableIds?.has(document.documentId) ? (
-                  <span className="shrink-0 rounded-full bg-primary/10 px-2 text-[11px] font-semibold leading-5 text-[hsl(var(--primary))]">Aplicable</span>
+                  <Tag tone="info" pill className="shrink-0">Aplicable</Tag>
                 ) : null}
               </CommandItem>
             );

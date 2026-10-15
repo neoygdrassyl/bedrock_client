@@ -37,7 +37,7 @@ function MetricChips({ metrics, loading }) {
       <dl className="m-0 flex min-w-0 flex-wrap items-center gap-1.5" aria-label="Resumen documental" aria-busy={loading}>
         {metrics.map(({ label, value, icon: Icon, hint }) => (
           <div key={label} className="inline-flex items-center gap-1.5 rounded-full border bg-muted/30 py-0.5 pl-2 pr-2.5">
-            <dt className="flex min-w-0 items-center gap-1 text-[11px] font-medium leading-4 text-muted-foreground">
+            <dt className="flex min-w-0 items-center gap-1 text-[11px] font-medium leading-4 text-slate-600">
               <Icon className="h-3 w-3 shrink-0" aria-hidden="true" />
               <span>{label}</span>
               {hint ? <MetricHint label={label} hint={hint} /> : null}
