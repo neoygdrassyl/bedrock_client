@@ -14,6 +14,7 @@ import { useDocumentaryOrigin } from './hooks/useDocumentaryOrigin';
 import { OriginCaption, OriginNotices } from './ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from './ui/organisms/CanonicalDocumentaryWorkspace';
 import { DocumentaryGovernance } from './ui/organisms/DocumentaryGovernance';
+import { LegacyMigrationPanel } from './ui/organisms/LegacyMigrationPanel';
 import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
 import { useIssuedDocuments } from './hooks/useIssuedDocuments';
 import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
@@ -186,6 +187,7 @@ function ProjectDocumentaryWorkspace(props) {
             onSaved={handleSaved}
             onConflict={handleConflict}
           />
+          {origin?.mode === 'traditional' ? <LegacyMigrationPanel key={`legacy-migration:${revision}`} fun0Id={origin.project.fun0Id} onMigrated={(message) => handleSaved(message, true)} /> : null}
         </TabsContent>
       ) : null}
     </Tabs>
