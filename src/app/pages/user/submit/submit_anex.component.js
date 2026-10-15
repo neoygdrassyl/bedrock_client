@@ -341,73 +341,79 @@ function SUBMIT_ANEX({ swaMsg, currentItem, refreshList: propRefreshList, refres
                     </Button>
                 </div>
 
-                <div className="rounded-md border border-border/70 bg-muted/20 px-2 py-1.5 text-[0.82em] leading-snug text-muted-foreground">
+                <div className="rounded-md border border-border/70 bg-muted/20 px-2.5 py-1.5 text-xs leading-snug text-muted-foreground flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 font-medium text-foreground"><Icon name="Paperclip" size={13} className="text-primary" /> Soporte Primario</span>
                     {_GET_DOC().id
-                        ? <span className="inline-flex items-center gap-1"><Icon name="check" size={14} className="text-success" /> Anexo registrado <VIZUALIZER url={_GET_CURATED_URL()} apipath={'/files/submit/'} /></span>
-                        : <span className="inline-flex items-center gap-1"><Icon name="times" size={14} className="text-danger" /> Sin anexo</span>}
+                        ? <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"><Icon name="Check" size={13} /> Registrado <VIZUALIZER url={_GET_CURATED_URL()} apipath={'/files/submit/'} /></span>
+                        : <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground"><Icon name="X" size={13} /> Sin anexo</span>}
                 </div>
 
                 <form id="form_submit_anex" onSubmit={addDocument} encType="multipart/form-data" className="space-y-2">
                     <div>
-                        <label htmlFor="file_nomen" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Archivo</label>
-                        <input type="file" className="form-control form-control-sm" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
+                        <label htmlFor="file_nomen" className="mb-1 block text-[11px] font-medium text-muted-foreground">Archivo</label>
+                        <input type="file" className="h-8 w-full rounded-md border border-input bg-background px-2.5 py-1 text-xs text-foreground shadow-xs file:mr-2 file:h-6 file:rounded file:border-0 file:bg-muted file:px-2 file:text-xs file:font-medium hover:file:bg-muted/80" id="file_nomen" accept="image/png, image/jpeg application/pdf" />
                     </div>
-                    <div>
-                        <label htmlFor="submit_anex_2" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Consecutivo</label>
-                        <input type="text" className="form-control form-control-sm" id="submit_anex_2" required defaultValue={_GET_DOC().id_public} />
+                    <div className="grid grid-cols-[minmax(0,1fr)_100px] gap-2">
+                        <div>
+                            <label htmlFor="submit_anex_2" className="mb-1 block text-[11px] font-medium text-muted-foreground">Consecutivo</label>
+                            <input type="text" className="h-8 w-full rounded-md border border-input bg-background px-2.5 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_anex_2" required defaultValue={_GET_DOC().id_public} />
+                        </div>
+                        <div>
+                            <label htmlFor="submit_anex_3" className="mb-1 block text-[11px] font-medium text-muted-foreground">Folios</label>
+                            <input type="number" min="1" step="1" className="h-8 w-full rounded-md border border-input bg-background px-2.5 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_anex_3" required defaultValue={_GET_DOC().pages} />
+                        </div>
                     </div>
-                    <div className="max-w-[140px]">
-                        <label htmlFor="submit_anex_3" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Folios</label>
-                        <input type="number" min="1" step="1" className="form-control form-control-sm" id="submit_anex_3" required defaultValue={_GET_DOC().pages} />
-                    </div>
-                    <Button size="sm" className="h-8 w-full justify-center text-[11px]">
-                        <Icon name="edit" size={14} /> ANEXAR DOCUMENTO
+                    <Button size="sm" variant="secondary" className="h-8 w-full justify-center text-xs font-semibold gap-1.5">
+                        <Icon name="Upload" size={13} /> ANEXAR DOCUMENTO
                     </Button>
                 </form>
             </div>
         );
 
         const renderDigitalDocuments = () => (
-            <section className="flex h-full min-h-0 flex-col overflow-hidden bg-background text-[clamp(0.76rem,0.7rem+0.15vw,0.88rem)]">
-                <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-muted/20 px-3 py-2">
-                    <span className="font-semibold text-foreground">Digitales ({fun6.length})</span>
-                    <Button type="button" variant={digitalFormOpen ? 'outline' : 'default'} size="sm" className="h-8 px-2 text-[11px]" onClick={toggleDigitalForm}>
+            <section className="flex h-full min-h-0 flex-col overflow-hidden bg-background text-xs">
+                <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/70 bg-card/60 px-3 py-2">
+                    <span className="font-semibold text-foreground flex items-center gap-1.5">
+                        <Icon name="FileText" size={14} className="text-primary" />
+                        Digitales ({fun6.length})
+                    </span>
+                    <Button type="button" variant={digitalFormOpen ? 'outline' : 'default'} size="sm" className="h-8 px-2.5 text-xs font-semibold gap-1.5" onClick={toggleDigitalForm}>
                         <Icon name={digitalFormOpen ? 'XCircle' : 'PlusCircle'} size={14} />
                         {digitalFormOpen ? 'CANCELAR' : 'AGREGAR DIGITAL'}
                     </Button>
                 </div>
 
                 {digitalFormOpen
-                    ? <div className="shrink-0 border-b border-border/60 bg-muted/10 p-2">
-                        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[180px_minmax(260px,1fr)_minmax(220px,0.8fr)] lg:items-end">
+                    ? <div className="shrink-0 border-b border-border/70 bg-muted/20 p-2.5">
+                        <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-[160px_minmax(220px,1fr)_minmax(200px,0.8fr)] lg:items-end">
                             <div>
-                                <label htmlFor="submit_digital_doc_code_input" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Código</label>
-                                <div className="flex flex-col gap-1 sm:flex-row">
-                                    <input type="text" className="form-control form-control-sm border-input bg-background text-foreground" id="submit_digital_doc_code_input" value={digitalDoc.code} onChange={(e) => setDigitalDoc((current) => ({ ...current, code: e.target.value }))} />
+                                <label htmlFor="submit_digital_doc_code_input" className="mb-1 block text-[11px] font-medium text-muted-foreground">Código</label>
+                                <div className="flex items-center gap-1">
+                                    <input type="text" className="h-8 w-full rounded-md border border-input bg-background px-2 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_digital_doc_code_input" value={digitalDoc.code} onChange={(e) => setDigitalDoc((current) => ({ ...current, code: e.target.value }))} />
                                     <DOCS_LIST idRef="submit_digital_doc_code" text="Buscar" setValues={setDigitalDocValues} />
                                 </div>
                             </div>
                             <div>
-                                <label htmlFor="submit_digital_doc_description" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Descripción</label>
-                                <input type="text" className="form-control form-control-sm border-input bg-background text-foreground" id="submit_digital_doc_description" value={digitalDoc.description} onChange={(e) => setDigitalDoc((current) => ({ ...current, description: e.target.value }))} />
+                                <label htmlFor="submit_digital_doc_description" className="mb-1 block text-[11px] font-medium text-muted-foreground">Descripción</label>
+                                <input type="text" className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_digital_doc_description" value={digitalDoc.description} onChange={(e) => setDigitalDoc((current) => ({ ...current, description: e.target.value }))} />
                             </div>
                             <div>
-                                <label htmlFor="submit_digital_doc_file" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Archivo</label>
-                                <input type="file" className="form-control form-control-sm border-input bg-background text-foreground" id="submit_digital_doc_file" accept="application/pdf,image/jpeg,image/png" onChange={(e) => setDigitalDoc((current) => ({ ...current, file: e.target.files[0] || null }))} />
+                                <label htmlFor="submit_digital_doc_file" className="mb-1 block text-[11px] font-medium text-muted-foreground">Archivo</label>
+                                <input type="file" className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground shadow-xs file:mr-2 file:h-6 file:rounded file:border-0 file:bg-muted file:px-2 file:text-xs file:font-medium hover:file:bg-muted/80" id="submit_digital_doc_file" accept="application/pdf,image/jpeg,image/png" onChange={(e) => setDigitalDoc((current) => ({ ...current, file: e.target.files[0] || null }))} />
                             </div>
-                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[110px_150px_minmax(170px,0.8fr)_minmax(170px,0.8fr)_minmax(150px,auto)] lg:col-span-3 lg:items-end">
+                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[90px_130px_minmax(140px,0.8fr)_minmax(140px,0.8fr)_auto] lg:col-span-3 lg:items-end">
                                 <div>
-                                    <label htmlFor="submit_digital_doc_pages" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Folios</label>
-                                    <input type="number" min="1" step="1" className="form-control form-control-sm border-input bg-background text-foreground" id="submit_digital_doc_pages" value={digitalDoc.pages} onChange={(e) => setDigitalDoc((current) => ({ ...current, pages: e.target.value }))} />
+                                    <label htmlFor="submit_digital_doc_pages" className="mb-1 block text-[11px] font-medium text-muted-foreground">Folios</label>
+                                    <input type="number" min="1" step="1" className="h-8 w-full rounded-md border border-input bg-background px-2 text-center font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_digital_doc_pages" value={digitalDoc.pages} onChange={(e) => setDigitalDoc((current) => ({ ...current, pages: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label htmlFor="submit_digital_doc_date" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Fecha</label>
-                                    <input type="date" className="form-control form-control-sm border-input bg-background text-foreground" id="submit_digital_doc_date" value={digitalDoc.date} onChange={(e) => setDigitalDoc((current) => ({ ...current, date: e.target.value }))} />
+                                    <label htmlFor="submit_digital_doc_date" className="mb-1 block text-[11px] font-medium text-muted-foreground">Fecha</label>
+                                    <input type="date" className="h-8 w-full rounded-md border border-input bg-background px-2 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" id="submit_digital_doc_date" value={digitalDoc.date} onChange={(e) => setDigitalDoc((current) => ({ ...current, date: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label htmlFor="submit_digital_doc_origin" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Origen</label>
+                                    <label htmlFor="submit_digital_doc_origin" className="mb-1 block text-[11px] font-medium text-muted-foreground">Origen</label>
                                     <select
-                                        className="form-select form-select-sm border-input bg-background text-foreground"
+                                        className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         id="submit_digital_doc_origin"
                                         value={digitalDoc.originState}
                                         onChange={(e) => setDigitalDoc((current) => ({
@@ -421,9 +427,9 @@ function SUBMIT_ANEX({ swaMsg, currentItem, refreshList: propRefreshList, refres
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="submit_digital_doc_medium" className="mb-1 block text-[0.78em] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Medio</label>
+                                    <label htmlFor="submit_digital_doc_medium" className="mb-1 block text-[11px] font-medium text-muted-foreground">Medio</label>
                                     <select
-                                        className="form-select form-select-sm border-input bg-background text-foreground"
+                                        className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                         id="submit_digital_doc_medium"
                                         value={digitalDoc.receptionMedium}
                                         disabled={digitalDoc.originState !== DOCUMENT_ORIGIN_STATE.DIGITAL}
@@ -433,8 +439,8 @@ function SUBMIT_ANEX({ swaMsg, currentItem, refreshList: propRefreshList, refres
                                         {DOCUMENT_RECEPTION_MEDIUM_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                                     </select>
                                 </div>
-                                <Button type="button" size="sm" className="h-8 justify-center px-2 text-[11px]" onClick={createDigitalFun6}>
-                                    <Icon name="FilePlus" size={14} /> GUARDAR DIGITAL
+                                <Button type="button" size="sm" className="h-8 justify-center px-3 text-xs font-semibold gap-1.5" onClick={createDigitalFun6}>
+                                    <Icon name="FilePlus" size={14} /> GUARDAR
                                 </Button>
                             </div>
                         </div>
@@ -442,7 +448,7 @@ function SUBMIT_ANEX({ swaMsg, currentItem, refreshList: propRefreshList, refres
                     : null}
 
                 <div className="min-h-0 flex-1 overflow-hidden p-2">
-                    <div className="h-full min-h-0 overflow-hidden rounded-lg border border-border bg-background text-[0.76rem]">
+                    <div className="h-full min-h-0 overflow-hidden rounded-lg border border-border bg-background text-xs">
                         {_CHILD_6_LIST()}
                     </div>
                 </div>

@@ -29,6 +29,7 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
     const [isRequestMenuOpen, setIsRequestMenuOpen] = useState(false);
     const refreshRequestIdRef = useRef(0);
     const source = useDocumentaryOrigin({ submitId: currentItem?.id });
+    const { key: _sourceKey, ...sourceProps } = source;
     const usesExistingIntake = ['traditional', 'unlinked'].includes(source.origin?.mode);
     const canEditExistingSubmit = !currentItem ? !currentId : usesExistingIntake;
 
@@ -279,125 +280,203 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
         // COMPONENT JSX
         let COMPONENT_NEW = () => {
             let _CHILD = GET_SUBMIT();
-            return <>
-                <div className="space-y-3 text-[clamp(0.78rem,0.72rem+0.2vw,0.92rem)] leading-snug">
-                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <label htmlFor="submit_1" className="mb-1 block font-semibold text-foreground">1. Número de radicación</label>
-                        <div className="input-group input-group-sm">
-                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
-                            <input type="text" className="form-control form-control-sm" id="submit_1" required defaultValue={_CHILD.id_public} onBlur={() => _VERIFY_VR_DUPLICATE()} />
-                            <Button size="sm" type="button" className="h-[31px] px-2 text-[11px]" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+            return (
+                <div className="space-y-3.5 text-xs">
+                    {/* BLOQUE 1: RADICACIÓN Y EXPEDIENTE */}
+                    <div className="rounded-lg border border-border/80 bg-background/60 p-3 shadow-xs space-y-3">
+                        <div className="flex items-center gap-2 border-b border-border/60 pb-1.5 text-xs font-semibold text-foreground">
+                            <Icon name="FileText" size={14} className="text-primary" />
+                            <span>Radicación y Expediente</span>
                         </div>
-                        {vrWarning ? <div className="mt-1 text-[11px] leading-snug">{vrWarning}</div> : null}
-                    </div>
 
-                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <label htmlFor="submit_2" className="mb-1 block font-semibold text-foreground">2. Número de solicitud</label>
-                        <div className="relative">
-                            <div className="input-group input-group-sm">
-                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
-                                <input
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    id="submit_2"
-                                    defaultValue={_CHILD.id_related}
-                                    autoComplete="off"
-                                    aria-autocomplete="list"
-                                    aria-controls="submit_2_options"
-                                    aria-expanded={isRequestMenuOpen && requestSuggestions.length > 0}
-                                    onChange={event => {
-                                        setRequestQuery(event.target.value);
-                                        setIsRequestMenuOpen(true);
-                                    }}
-                                    onFocus={() => setIsRequestMenuOpen(true)}
-                                    onBlur={() => setIsRequestMenuOpen(false)}
-                                />
-                                <Button size="sm" type="button" className="h-[31px] bg-warning px-2 text-[11px] text-warning-foreground hover:bg-warning/90" onClick={() => _VERIFY_RELATED_ID()}>VERIFICAR</Button>
+                        <div>
+                            <label htmlFor="submit_1" className="mb-1 block text-[11px] font-medium text-foreground">
+                                1. Número de radicación <span className="text-destructive">*</span>
+                            </label>
+                            <div className="flex items-stretch gap-1">
+                                <div className="relative flex-1">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-muted-foreground pointer-events-none">
+                                        <Icon name="Hashtag" size={13} />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="h-8 w-full rounded-md border border-input bg-background pl-7 pr-2.5 font-mono text-xs font-semibold text-foreground shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                        id="submit_1"
+                                        required
+                                        defaultValue={_CHILD.id_public}
+                                        onBlur={() => _VERIFY_VR_DUPLICATE()}
+                                    />
+                                </div>
+                                <Button size="sm" type="button" variant="secondary" className="h-8 px-2.5 text-[11px] font-semibold" onClick={() => _GET_LAST_ID()}>
+                                    GENERAR
+                                </Button>
                             </div>
-                            {isRequestMenuOpen && requestSuggestions.length > 0 ? (
-                                <div
-                                    id="submit_2_options"
-                                    role="listbox"
-                                    className="absolute left-[31px] top-full z-[60] mt-1 max-h-52 min-w-[250px] overflow-y-auto rounded-md border border-border bg-popover py-1 text-popover-foreground shadow-lg"
-                                >
-                                    {requestSuggestions.map(id => (
-                                        <button
-                                            key={id}
-                                            type="button"
-                                            role="option"
-                                            aria-selected={requestQuery === id}
-                                            className="block w-full cursor-pointer whitespace-nowrap px-3 py-2 text-left text-xs text-popover-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
-                                            onMouseDown={event => event.preventDefault()}
-                                            onClick={() => selectRequest(id)}
-                                        >
-                                            {id}
-                                        </button>
-                                    ))}
+                            {vrWarning ? <div className="mt-1 text-[11px] leading-snug">{vrWarning}</div> : null}
+                        </div>
+
+                        <div>
+                            <label htmlFor="submit_2" className="mb-1 block text-[11px] font-medium text-foreground">
+                                2. Número de solicitud relacionada
+                            </label>
+                            <div className="relative">
+                                <div className="flex items-stretch gap-1">
+                                    <div className="relative flex-1">
+                                        <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-muted-foreground pointer-events-none">
+                                            <Icon name="FileCode" size={13} />
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="h-8 w-full rounded-md border border-input bg-background pl-7 pr-2.5 font-mono text-xs text-foreground shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                            id="submit_2"
+                                            defaultValue={_CHILD.id_related}
+                                            autoComplete="off"
+                                            aria-autocomplete="list"
+                                            aria-controls="submit_2_options"
+                                            aria-expanded={isRequestMenuOpen && requestSuggestions.length > 0}
+                                            onChange={event => {
+                                                setRequestQuery(event.target.value);
+                                                setIsRequestMenuOpen(true);
+                                            }}
+                                            onFocus={() => setIsRequestMenuOpen(true)}
+                                            onBlur={() => setIsRequestMenuOpen(false)}
+                                        />
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        type="button"
+                                        variant="outline"
+                                        className="h-8 border-amber-500/40 px-2.5 text-[11px] font-semibold text-amber-600 hover:bg-amber-500/10 dark:text-amber-400"
+                                        onClick={() => _VERIFY_RELATED_ID()}
+                                    >
+                                        VERIFICAR
+                                    </Button>
+                                </div>
+                                {isRequestMenuOpen && requestSuggestions.length > 0 ? (
+                                    <div
+                                        id="submit_2_options"
+                                        role="listbox"
+                                        className="absolute left-0 top-full z-[60] mt-1 max-h-52 w-full overflow-y-auto rounded-md border border-border bg-popover py-1 text-popover-foreground shadow-lg"
+                                    >
+                                        {requestSuggestions.map(id => (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                role="option"
+                                                aria-selected={requestQuery === id}
+                                                className="block w-full cursor-pointer whitespace-nowrap px-3 py-1.5 text-left font-mono text-xs text-popover-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+                                                onMouseDown={event => event.preventDefault()}
+                                                onClick={() => selectRequest(id)}
+                                            >
+                                                {id}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </div>
+                            {verifyMSG ? <div className="mt-1 text-[11px] leading-snug">{verifyMSG}</div> : null}
+                        </div>
+
+                        <div className="rounded-md border border-border/70 bg-muted/20 p-2.5">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                    className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-ring"
+                                    type="checkbox"
+                                    id="payment_cb"
+                                    onChange={(e) => setPayment(e.target.checked)}
+                                />
+                                <span className="text-[11px] font-medium leading-snug text-foreground">
+                                    Se entrega pago de expensas fijas y generar solicitud
+                                </span>
+                            </label>
+                            {payment ? (
+                                <div className="mt-2.5 space-y-2 border-t border-border/60 pt-2">
+                                    <label htmlFor="submit_21" className="block text-[11px] font-medium text-muted-foreground">
+                                        2.1 Consecutivo pago
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="h-8 w-full rounded-md border border-input bg-background px-2.5 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                        id="submit_21"
+                                        required
+                                        defaultValue={_CHILD.id_related}
+                                    />
+                                    <div className="grid grid-cols-2 gap-2 pt-0.5">
+                                        <Button size="sm" type="button" variant="secondary" className="h-7.5 text-[11px]" onClick={() => _GET_LAST_ID_PUBLIC()}>
+                                            GENERAR LIC
+                                        </Button>
+                                        <Button size="sm" type="button" variant="secondary" className="h-7.5 text-[11px]" onClick={() => _GET_LAST_ID('submit_2')}>
+                                            GENERAR VR
+                                        </Button>
+                                    </div>
                                 </div>
                             ) : null}
                         </div>
-                        {verifyMSG ? <div className="mt-1 text-[11px] leading-snug">{verifyMSG}</div> : null}
                     </div>
 
-                    <div className="rounded-lg border border-border/70 bg-muted/10 p-2.5">
-                        <div className="form-check m-0 flex items-start gap-2 p-0">
-                            <input className="form-check-input mt-1 ms-0" type="checkbox" id="payment_cb" onChange={(e) => setPayment(e.target.checked)} />
-                            <label className="form-check-label flex-1 text-[0.82em] font-semibold leading-snug text-foreground" htmlFor="payment_cb">Se entrega pago de expensas fijas y generar solicitud</label>
+                    {/* BLOQUE 2: CLASIFICACIÓN Y TIEMPOS */}
+                    <div className="rounded-lg border border-border/80 bg-background/60 p-3 shadow-xs space-y-3">
+                        <div className="flex items-center gap-2 border-b border-border/60 pb-1.5 text-xs font-semibold text-foreground">
+                            <Icon name="Layers" size={14} className="text-primary" />
+                            <span>Clasificación y Tiempos</span>
                         </div>
-                        {payment
-                            ? <div className="mt-2 space-y-2 border-t border-border/60 pt-2">
-                                <label htmlFor="submit_21" className="mb-1 block text-[0.82em] font-semibold text-muted-foreground">2.1 Consecutivo pago</label>
-                                <div className="input-group input-group-sm">
-                                    <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
-                                    <input type="text" className="form-control form-control-sm" id="submit_21" required defaultValue={_CHILD.id_related} />
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID_PUBLIC()}>GENERAR LIC</Button>
-                                    <Button size="sm" type="button" className="h-8 text-[11px]" onClick={() => _GET_LAST_ID('submit_2')}>GENERAR VR</Button>
-                                </div>
+
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            <div>
+                                <label htmlFor="submit_4" className="mb-1 block text-[11px] font-medium text-foreground">
+                                    3.1 Tipo
+                                </label>
+                                <input
+                                    list="submit_type"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_4"
+                                    defaultValue={_CHILD.type}
+                                    autoComplete="off"
+                                    maxLength={250}
+                                    placeholder="Seleccione o escriba..."
+                                />
+                                <datalist id="submit_type">
+                                    <option value="LICENCIA" />
+                                    <option value="URBANIZACION" />
+                                    <option value="PARCELACION" />
+                                    <option value="SUBDIVISION" />
+                                    <option value="RECONOCIMIENTO" />
+                                    <option value="COSTRUCCION" />
+                                    <option value="OTRAS ACTUACIONES" />
+                                    <option value="VISTO BUENO" />
+                                    <option value="PROPIEDAD HORIZONTAL" />
+                                    <option value="EXPENSAS / IMPUESTOS " />
+                                </datalist>
                             </div>
-                            : null}
-                    </div>
-
-                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <label htmlFor="submit_4" className="mb-1 block font-semibold text-foreground">3.1 Tipo</label>
-                        <div className="input-group input-group-sm">
-                            <span className="input-group-text bg-primary text-primary-foreground"><Icon name="check-square" size={14} /></span>
-                            <input list="submit_type" className="form-control form-control-sm" id="submit_4" defaultValue={_CHILD.type} autoComplete="off" maxLength={250} placeholder="Seleccione o escriba un tipo..." />
-                            <datalist id="submit_type">
-                                <option value="LICENCIA" />
-                                <option value="URBANIZACION" />
-                                <option value="PARCELACION" />
-                                <option value="SUBDIVISION" />
-                                <option value="RECONOCIMIENTO" />
-                                <option value="COSTRUCCION" />
-                                <option value="OTRAS ACTUACIONES" />
-                                <option value="VISTO BUENO" />
-                                <option value="PROPIEDAD HORIZONTAL" />
-                                <option value="EXPENSAS / IMPUESTOS " />
-                            </datalist>
-                        </div>
-                        <p className="mb-0 mt-1 text-[0.75em] leading-snug text-muted-foreground"><Icon name="info-circle" size={12} /> Puede escoger una opción o escribir un valor libre.</p>
-                    </div>
-
-                    <div className="grid gap-2 sm:grid-cols-2">
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_42" className="mb-1 block font-semibold text-foreground">3.2 Estado</label>
-                            <div className="input-group input-group-sm">
-                                <span className="input-group-text bg-primary text-primary-foreground"><Icon name="hashtag" size={14} /></span>
-                                <input type="text" className="form-control form-control-sm" id="submit_42" defaultValue={_CHILD.list_type_str} maxLength={250} />
+                            <div>
+                                <label htmlFor="submit_42" className="mb-1 block text-[11px] font-medium text-foreground">
+                                    3.2 Estado
+                                </label>
+                                <input
+                                    type="text"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_42"
+                                    defaultValue={_CHILD.list_type_str}
+                                    maxLength={250}
+                                />
                             </div>
                         </div>
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_41" className="mb-1 block font-semibold text-foreground">3.3 Tipo de radicación</label>
-                            <select className='form-select form-select-sm' id="submit_41" defaultValue={_CHILD.list_type}>
+
+                        <div>
+                            <label htmlFor="submit_41" className="mb-1 block text-[11px] font-medium text-foreground">
+                                3.3 Tipo de radicación
+                            </label>
+                            <select
+                                className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                id="submit_41"
+                                defaultValue={_CHILD.list_type}
+                            >
                                 <option value={1}>RADICACIÓN SOLICITUD</option>
                                 <option value={2}>ASESORÍA TÉCNICA</option>
                                 <option value={3}>CORRECCIONES SOLICITUD</option>
                                 <option value={4}>TRAMITE</option>
                                 <option value={5}>PQRS</option>
                                 <option value={0}>OTRO</option>
-                                {_GLOBAL_ID == 'cp1' ?
+                                {_GLOBAL_ID == 'cp1' ? (
                                     <>
                                         <option value={6}>FOTO VALLA</option>
                                         <option value={7}>SOLICITUD LICENCIAS URBANISTICA </option>
@@ -412,57 +491,110 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
                                         <option value={16}>DOCUMENTOS ACTAS OBSERVACIONES</option>
                                         <option value={17}>DOCUMENTOS TRAMITE</option>
                                     </>
-                                    : null}
+                                ) : null}
                             </select>
                         </div>
-                    </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2">
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_3" className="mb-1 block font-semibold text-foreground">4. Fecha y hora de ingreso</label>
-                            <div className="grid grid-cols-[minmax(0,1fr)_112px] gap-2">
-                                <input type="date" max="2100-01-01" className="form-control form-control-sm" id="submit_3" required defaultValue={_CHILD.date} />
-                                <input type="time" className="form-control form-control-sm" id="submit_32" defaultValue={_CHILD.time} />
+                        <div>
+                            <label htmlFor="submit_3" className="mb-1 block text-[11px] font-medium text-foreground">
+                                4. Fecha y hora de ingreso
+                            </label>
+                            <div className="grid grid-cols-[minmax(0,1fr)_105px] gap-2">
+                                <input
+                                    type="date"
+                                    max="2100-01-01"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_3"
+                                    required
+                                    defaultValue={_CHILD.date}
+                                />
+                                <input
+                                    type="time"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_32"
+                                    defaultValue={_CHILD.time}
+                                />
                             </div>
                         </div>
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_5" className="mb-1 block font-semibold text-foreground">5. Propietarios</label>
-                            <input type="text" className="form-control form-control-sm" id="submit_5" maxLength={250} defaultValue={_CHILD.owner} />
-                        </div>
                     </div>
 
-                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <label htmlFor="submit_7" className="mb-1 block font-semibold text-foreground">7. Funcionario que recibe</label>
-                        <input type="text" className="form-control form-control-sm" id="submit_7" disabled defaultValue={_CHILD.worker_reciever} />
-                    </div>
-
-                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_150px]">
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_8" className="mb-1 block font-semibold text-foreground">8. Persona que entrega</label>
-                            <input type="text" className="form-control form-control-sm" id="submit_8" maxLength={250} defaultValue={_CHILD.name_retriever} />
+                    {/* BLOQUE 3: INTERVINIENTES Y OBSERVACIONES */}
+                    <div className="rounded-lg border border-border/80 bg-background/60 p-3 shadow-xs space-y-3">
+                        <div className="flex items-center gap-2 border-b border-border/60 pb-1.5 text-xs font-semibold text-foreground">
+                            <Icon name="Users" size={14} className="text-primary" />
+                            <span>Intervinientes y Recepción</span>
                         </div>
-                        <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                            <label htmlFor="submit_81" className="mb-1 block font-semibold text-foreground">8.1 C.C.</label>
-                            <input type="text" className="form-control form-control-sm" id="submit_81" maxLength={250} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} defaultValue={_CHILD.id_number_retriever} />
-                        </div>
-                    </div>
 
-                    <div className="rounded-lg border border-border/70 bg-background p-2.5 shadow-sm">
-                        <ObservationPanel
-                            title="9. Observaciones y detalles"
-                            textareaProps={{
-                                className: 'form-control form-control-sm',
-                                rows: '4',
-                                maxLength: '2000',
-                                id: 'submit_9',
-                                defaultValue: _CHILD.details,
-                            }}
-                        />
+                        <div>
+                            <label htmlFor="submit_5" className="mb-1 block text-[11px] font-medium text-foreground">
+                                5. Propietarios
+                            </label>
+                            <input
+                                type="text"
+                                className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                id="submit_5"
+                                maxLength={250}
+                                defaultValue={_CHILD.owner}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="submit_7" className="mb-1 block text-[11px] font-medium text-muted-foreground">
+                                7. Funcionario receptor
+                            </label>
+                            <input
+                                type="text"
+                                className="h-8 w-full rounded-md border border-border/60 bg-muted/40 px-2.5 text-xs text-muted-foreground shadow-xs cursor-not-allowed"
+                                id="submit_7"
+                                disabled
+                                defaultValue={_CHILD.worker_reciever}
+                            />
+                        </div>
+
+                        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_135px]">
+                            <div>
+                                <label htmlFor="submit_8" className="mb-1 block text-[11px] font-medium text-foreground">
+                                    8. Persona que entrega
+                                </label>
+                                <input
+                                    type="text"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_8"
+                                    maxLength={250}
+                                    defaultValue={_CHILD.name_retriever}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="submit_81" className="mb-1 block text-[11px] font-medium text-foreground">
+                                    8.1 C.C.
+                                </label>
+                                <input
+                                    type="text"
+                                    className="h-8 w-full rounded-md border border-input bg-background px-2.5 font-mono text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    id="submit_81"
+                                    maxLength={250}
+                                    onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e); }}
+                                    defaultValue={_CHILD.id_number_retriever}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <ObservationPanel
+                                title="9. Observaciones y detalles"
+                                textareaProps={{
+                                    className: 'w-full rounded-md border border-input bg-background p-2 text-xs text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y min-h-[70px]',
+                                    rows: '3',
+                                    maxLength: '2000',
+                                    id: 'submit_9',
+                                    defaultValue: _CHILD.details,
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
-
-            </>
-        }
+            );
+        };
         // FUNCTIONS AND APIS
         var formData = new FormData();
 
@@ -585,44 +717,46 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
 
         let renderPrimarySubmitAction = () => (
             edit || currentItem
-                ? <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
-                : <Button type="submit" size="sm" className="w-full justify-center md:w-auto"><Icon name="plus-circle" size={16} /> CREAR </Button>
+                ? <Button form="form_manage_submit" type="submit" size="sm" className="w-full justify-center md:w-auto font-semibold gap-1.5"><Icon name="Save" size={14} /> GUARDAR CAMBIOS</Button>
+                : <Button form="form_manage_submit" type="submit" size="sm" className="w-full justify-center md:w-auto font-semibold gap-1.5"><Icon name="PlusCircle" size={14} /> CREAR ENTRADA</Button>
         );
 
         return (
             <div className="grid h-full min-h-0 grid-cols-1 gap-2 xl:grid-cols-[minmax(390px,0.36fr)_minmax(0,0.64fr)]">
                 <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
-                    <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown} className="flex min-h-0 flex-1 flex-col">
-                        <fieldset disabled={!canEditExistingSubmit} className="min-h-0 flex-1 overflow-y-auto p-2">
-                            <div className="space-y-3">
+                    <div className="min-h-0 flex-1 overflow-y-auto p-2.5 space-y-3">
+                        <form id="form_manage_submit" onSubmit={save_submit} onKeyDown={handleFormKeyDown}>
+                            <fieldset disabled={!canEditExistingSubmit} className="space-y-3">
                                 {COMPONENT_NEW()}
-                            </div>
-                        </fieldset>
+                            </fieldset>
+                        </form>
 
-                        <div className="sticky bottom-0 z-10 shrink-0 space-y-2 border-t border-border/60 bg-card/95 px-3 py-2 backdrop-blur">
-                            <div className="flex justify-end">
-                                {canEditExistingSubmit ? renderPrimarySubmitAction() : <p className="text-xs text-muted-foreground">La recepción documental se gestiona desde el expediente y su publicación.</p>}
+                        {currentItem && usesExistingIntake ? (
+                            <div className="pt-1">
+                                <SUBMIT_ANEX
+                                    swaMsg={swaMsg}
+                                    currentItem={currentItem}
+                                    refreshList={refreshList}
+                                    refreshItem={refreshItem}
+                                    variant="primary"
+                                    onDigitalCountChange={handleDigitalDocumentsChange}
+                                />
                             </div>
+                        ) : null}
+                    </div>
+
+                    <div className="shrink-0 border-t border-border/70 bg-card/95 px-3 py-2.5 backdrop-blur-sm">
+                        <div className="flex items-center justify-end">
+                            {canEditExistingSubmit ? renderPrimarySubmitAction() : <p className="text-xs text-muted-foreground">La recepción documental se gestiona desde el expediente y su publicación.</p>}
                         </div>
-                    </form>
-
-                    {currentItem && usesExistingIntake ? <div className="shrink-0 border-t border-border/60 bg-card px-2 py-2">
-                        <SUBMIT_ANEX
-                            swaMsg={swaMsg}
-                            currentItem={currentItem}
-                            refreshList={refreshList}
-                            refreshItem={refreshItem}
-                            variant="primary"
-                            onDigitalCountChange={handleDigitalDocumentsChange}
-                        />
-                    </div> : null}
+                    </div>
                 </aside>
 
                 <section className="flex min-h-0 flex-col overflow-hidden">
                     {currentItem
                         ? <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
                                 <div className="min-h-0 flex-1 overflow-y-auto p-1.5">
-                                    <DocumentaryOriginStatus {...source} />
+                                    <DocumentaryOriginStatus {...sourceProps} />
                                     {source.origin?.mode === 'canonical' ? <CanonicalDocumentaryWorkspace key={`${source.origin.project.fun0Id}:${source.origin.publication.configurationId}`} origin={source.origin} fixedSubmitId={currentItem.id} canManage onOriginChange={source.refresh} /> : null}
                                     {usesExistingIntake ? <SUBMIT_LIST
                                         translation={translation}
