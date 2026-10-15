@@ -10,7 +10,7 @@ import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
-const CLASS_TONES = { requirement: 'neutral', annex: 'info', vr_slip: 'code' };
+const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
 
 function ClassBadge({ row }) {
   const documentClass = documentClassOf(row);
