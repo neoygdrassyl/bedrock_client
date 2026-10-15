@@ -23,8 +23,9 @@ const SEVERITY_STYLE = {
   warning: { tone: 'warning', icon: TriangleAlert },
 };
 
-const CLASS_TONES = { requirement: 'neutral', annex: 'info', vr_slip: 'code' };
+const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
 const DELIVERY_STATUS = { import: { label: 'Importar', tone: 'success' }, merged: { label: 'Unida', tone: 'neutral' }, excluded: { label: 'Excluida', tone: 'warning' } };
+const DIGITAL_CELL = 'px-[0.5rem] py-1 text-sm align-middle';
 const TIGHT_CELL = 'px-[0.5rem] py-[0.25rem] text-xs align-middle';
 const TIGHT_HEAD = 'h-[2rem] px-[0.5rem] py-[0.25rem] text-[11px] font-semibold uppercase tracking-wide text-slate-600';
 
@@ -91,17 +92,17 @@ function DigitalResolutions({ preview, choices, onChoose, disabled }) {
                 const name = file.description || file.originalName || `Archivo ${file.id}`;
                 return (
                   <TableRow key={file.id}>
-                    <TableCell className={cn(TIGHT_CELL, 'max-w-[20rem]')}>
+                    <TableCell className={cn(DIGITAL_CELL, 'max-w-[20rem]')}>
                       <Tooltip>
                         <TooltipTrigger asChild><span className="block truncate" tabIndex={0}>{name}</span></TooltipTrigger>
                         <TooltipContent className="max-w-sm break-words text-xs">{file.originalName && file.originalName !== name ? `${name} (${file.originalName})` : name}</TooltipContent>
                       </Tooltip>
                     </TableCell>
-                    <TableCell className={TIGHT_CELL}>{file.code ? <Tag tone="code" mono>{file.code}</Tag> : <span className="text-slate-600">—</span>}</TableCell>
-                    <TableCell className={cn(TIGHT_CELL, 'whitespace-nowrap tabular-nums text-slate-700')}>{shortDate(file.createdAt)}</TableCell>
-                    <TableCell className={TIGHT_CELL}>
+                    <TableCell className={DIGITAL_CELL}>{file.code ? <Tag tone="code" mono>{file.code}</Tag> : <span className="text-slate-600">—</span>}</TableCell>
+                    <TableCell className={cn(DIGITAL_CELL, 'whitespace-nowrap tabular-nums text-slate-700')}>{shortDate(file.createdAt)}</TableCell>
+                    <TableCell className={DIGITAL_CELL}>
                       <Select value={choices[file.id] || ''} onValueChange={(value) => onChoose(file.id, value)} disabled={disabled}>
-                        <SelectTrigger aria-label={`Decisión para el archivo ${file.id}`} className="h-7 w-[11rem] px-2 text-xs"><SelectValue placeholder="Elegir…" /></SelectTrigger>
+                        <SelectTrigger aria-label={`Decisión para el archivo ${file.id}`} className="h-8 w-[11rem] px-2 text-sm"><SelectValue placeholder="Elegir…" /></SelectTrigger>
                         <SelectContent>
                           {preview.vrs.map((vr) => <SelectItem key={vr.submitId} value={String(vr.submitId)} className="text-xs">{`${vr.vrLabel}${vr.date ? ` · ${vr.date}` : ''}`}</SelectItem>)}
                           <SelectItem value={EXCLUDE_VALUE} className="text-xs">Excluir</SelectItem>

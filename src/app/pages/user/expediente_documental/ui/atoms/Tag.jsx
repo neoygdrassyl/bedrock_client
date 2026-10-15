@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export const TAG_TONES = ['neutral', 'info', 'success', 'warning', 'danger', 'code'];
+export const TAG_TONES = ['neutral', 'info', 'success', 'warning', 'danger', 'code', 'slate', 'teal'];
 
 /** Class string of a documentary tag (palette lives in documental.css under `.documental-ui`). */
 export function tagClass({ tone = 'neutral', mono = false, pill = false, className } = {}) {
