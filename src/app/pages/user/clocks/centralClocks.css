@@ -2513,7 +2513,6 @@ from {
 }
 
 
-
 .actor-panel.single:hover {
   border-color: #a5d8ff;
   background: linear-gradient(135deg, #f8f9fa 0%, #e7f5ff 100%);
@@ -3225,28 +3224,6 @@ from {
 
 /* Mejoras para el scroll */
 
-.schedule-modal-table-container .table-responsive::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.schedule-modal-table-container .table-responsive::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-}
-
-.schedule-modal-table-container .table-responsive::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-}
-
-.schedule-modal-table-container .table-responsive::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.schedule-modal-table-container .table-responsive::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
-}
-
 /* Contador de tiempos programados */
 
 .schedule-modal-table-container .alert-success {
@@ -3763,27 +3740,6 @@ from { transform: translateY(20px); opacity: 0; }
   gap: 0.75rem;
 }
 
-.alarm-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.alarm-body::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-}
-
-.alarm-body::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 3px;
-}
-
-.alarm-body::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.alarm-body::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
-}
-
 /* --- Estilos para la Tarjeta de Alarma --- */
 
 .alarm-item {
@@ -4025,27 +3981,6 @@ from { transform: translateY(30px); opacity: 0; }
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.widget-preview-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.widget-preview-body::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-}
-
-.widget-preview-body::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 3px;
-}
-
-.widget-preview-body::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.widget-preview-body::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
 }
 
 .widget-preview-empty {
@@ -4505,27 +4440,6 @@ from { transform: translateY(30px); opacity: 0; }
 /* ... (Keep existing sidebar styles) ... */
 
 /* --- SCROLLBAR --- */
-
-.exp-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.exp-scroll::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-}
-
-.exp-scroll::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-}
-
-.exp-scroll::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.exp-scroll::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
-}
 
 /* Responsive tweaks */
 
@@ -5519,11 +5433,7 @@ from { opacity: 0; transform: translateY(-5px); }
   overflow-y: hidden;
   gap: 0.5rem;
   padding-bottom: 2px;
-  scrollbar-width: thin;
 }
-.phase-sub-row::-webkit-scrollbar{ height: 6px; }
-.phase-sub-row::-webkit-scrollbar-thumb{ background: hsl(var(--scrollbar-thumb) / 0.55); border-radius: 99px; }
-.phase-sub-row::-webkit-scrollbar-track{ background: transparent; }
 
 .phase-pill, .phase-date-pill{
   white-space: nowrap;
@@ -5542,11 +5452,7 @@ from { opacity: 0; transform: translateY(-5px); }
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 6px;
-  scrollbar-width: thin;
 }
-.phase-actors-scroll::-webkit-scrollbar{ height: 7px; }
-.phase-actors-scroll::-webkit-scrollbar-thumb{ background: hsl(var(--scrollbar-thumb) / 0.6); border-radius: 99px; }
-.phase-actors-scroll::-webkit-scrollbar-track{ background: transparent; }
 
 .phase-actors-row{
   display: flex;
@@ -6283,7 +6189,6 @@ from { opacity: 0; transform: translateY(-5px); }
 }
 
 
-
 /* 6) IMPORTANTE: neutraliza reglas viejas que estaban pintando TODO.
    Si tenías definiciones previas tipo:
    .phase-highlight-xxx { background-color: ... !important; }
@@ -6415,7 +6320,6 @@ from { opacity: 0; transform: translateY(-5px); }
 }
 
 /* (fin del bloque de armonización visual) */
-
 
 
 /* ================================
@@ -7306,22 +7210,6 @@ from { opacity: 0; transform: translateY(-5px); }
 }
 
 /* Scrollbar personalizado para la tabla */
-.schedule-modal-table-area::-webkit-scrollbar {
-    width: 8px;
-}
-.schedule-modal-table-area::-webkit-scrollbar-track {
-    background: hsl(var(--scrollbar-track));
-}
-.schedule-modal-table-area::-webkit-scrollbar-thumb {
-    background: hsl(var(--scrollbar-thumb));
-    border-radius: 4px;
-}
-.schedule-modal-table-area::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--scrollbar-thumb-hover));
-}
-.schedule-modal-table-area::-webkit-scrollbar-thumb:active {
-    background: hsl(var(--scrollbar-thumb-active));
-}
 
 /* ...existing css... */
 
@@ -7380,23 +7268,6 @@ from { opacity: 0; transform: translateY(-5px); }
 
 
 /* Scrollbar personalizado */
-.exp-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.exp-scroll::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-  border-radius: 4px;
-}
-
-.exp-scroll::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-}
-
-.exp-scroll::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
 
 /* Efecto hover en filas */
 .exp-scroll > div:hover {
@@ -7508,38 +7379,9 @@ from { opacity: 0; transform: translateY(-5px); }
 }
 
 /* --- Scrollbars personalizados para un look más limpio --- */
-.top-scroll-wrapper::-webkit-scrollbar,
-.exp-scroll::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.top-scroll-wrapper::-webkit-scrollbar-track,
-.exp-scroll::-webkit-scrollbar-track {
-  background: hsl(var(--scrollbar-track));
-}
-
-.top-scroll-wrapper::-webkit-scrollbar-thumb,
-.exp-scroll::-webkit-scrollbar-thumb {
-  background: hsl(var(--scrollbar-thumb));
-  border-radius: 4px;
-  border: 2px solid hsl(var(--scrollbar-track));
-}
-
-.top-scroll-wrapper::-webkit-scrollbar-thumb:hover,
-.exp-scroll::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--scrollbar-thumb-hover));
-}
-
-.top-scroll-wrapper::-webkit-scrollbar-thumb:active,
-.exp-scroll::-webkit-scrollbar-thumb:active {
-  background: hsl(var(--scrollbar-thumb-active));
-}
 
 /* Para navegadores Firefox */
 .top-scroll-wrapper, .exp-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
 }
 
 .exp-wrapper {

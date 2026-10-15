@@ -11,6 +11,7 @@ import '@blocknote/mantine/style.css';
 // MDB CSS removed — mdb-react-ui-kit eliminated, using Bootstrap 5 classes directly
 
 import './index.css'; // MUST load after Bootstrap so our tokens/fonts/resets win
+import './styles/scrollbar.css'; // Scroll unificado (capa nativa); debe ir tras las libs de terceros
 import './app/utils/dayjs.config'; // dayjs plugins + locale (must load before any component)
 import './app/components/jsons/global-id';
 import App from './app/App';
