@@ -7,9 +7,10 @@ import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swal
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
+import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';
 
 export default function FUN_D_CONTROL_2(props) {
-    const { currentItem, swaMsg, requestUpdate } = props
+    const { currentItem, swaMsg, requestUpdate, canonicalSaveBlocked = false } = props
     // Canonical expedientes read folios from the documentary inventory (null for legacy).
     const documentaryInventory = useDocumentaryInventory(currentItem);
 
@@ -201,6 +202,7 @@ export default function FUN_D_CONTROL_2(props) {
     ];
     // DATA SAVE
     let save_fun_r = () => {
+        if (canonicalSaveBlocked) return;
         let formData = new FormData();
         let inventory = {
             date_create: document.getElementById('date_create').value,
@@ -282,7 +284,7 @@ export default function FUN_D_CONTROL_2(props) {
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: generatorSaveErrorText(e, swaMsg.generic_error_text) });
                 });
         }
         else {
@@ -298,7 +300,7 @@ export default function FUN_D_CONTROL_2(props) {
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: generatorSaveErrorText(e, swaMsg.generic_error_text) });
                 });
         }
 
@@ -389,7 +391,9 @@ export default function FUN_D_CONTROL_2(props) {
             <div className="row my-2">
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                        {canonicalSaveBlocked
+                            ? <span className="d-block my-3 text-muted small" role="status">{CANONICAL_SAVE_UNAVAILABLE_HINT}</span>
+                            : <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>}
                     </div>
                     <div className="col">
                         <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>

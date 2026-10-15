@@ -10,6 +10,7 @@ import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.compoent';
 import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -19,6 +20,8 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
     const [cubSelected, setCubSelected] = useState(null);
     const [idCUBxVr, setIdCUBxVr] = useState(null);
     const [pdf, setPdf] = useState(false);
+    // Canonical expedientes list the received documents of the documentary inventory (null for legacy).
+    const documentaryInventory = useDocumentaryInventory(currentItem);
 
     const retrieveItem = useCallback(async () => {
         try {
@@ -44,21 +47,18 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
     }, [retrieveItem]);
 
         // DATA GETERS
-        let _GET_CHILD_6 = () => {
-            var _CHILD = currentItem.fun_6s;
-            var _LIST = [];
-            if (_CHILD) {
-                _LIST = _CHILD;
-            }
-            return _LIST;
-        }
+        // Legacy: fun_6 rows (value = fun_6 id). Canonical: received items of the inventory
+        // (value = "<VR label>|<document code>", there is no fun_6 id in the new model).
         let _CHILD_6_SELECT = () => {
-            let _LIST = _GET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
+            if (documentaryInventory) {
+                const received = documentaryInventory.inventory?.receivedItems || [];
+                return <>{received.map((doc, index) => {
+                    const value = `${doc.id_public}|${doc.code}`;
+                    return <option key={`${value}-${index}`} value={value}>{`${doc.id_public} - ${doc.name}`}</option>;
+                })}</>;
             }
-            return <>{_COMPONENT}</>
+            const _LIST = currentItem.fun_6s || [];
+            return <>{_LIST.map((row) => <option key={row.id} value={row.id}>{row.description}</option>)}</>;
         }
         let _GET_CHILD_LAW = () => {
             var _CHILD = currentItem.fun_law;
@@ -177,7 +177,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                         <label>Documento</label>
                     </div>
                     <div className="col-4 p-2">
-                        <select className="form-select" id="fun_report_data_6" defaultValue={_CHILD[6]} >
+                        <select key={documentaryInventory ? documentaryInventory.status : 'legacy'} className="form-select" id="fun_report_data_6" defaultValue={_CHILD[6]} >
                             <option value="-1">APORTADO FÍSICAMENTE</option>
                             <option value="0">SIN DOCUMENTO</option>
                             {_CHILD_6_SELECT()}

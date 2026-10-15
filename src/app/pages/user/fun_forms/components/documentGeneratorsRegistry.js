@@ -11,6 +11,7 @@ import FUN_D_CONTROL_2 from './fun_d_control.component_2';
 import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_REPORT_DATA_EDIT from './fun_report_data_edit';
 import FUN_CERTIFICATION from './fun_doc_certification.component';
+import { isCanonicalSaveBlocked } from './generatorSavePolicy';
 
 export const GENERATOR_SECTION_AUTOMATIC = 'automatic';
 export const GENERATOR_SECTION_SPECIAL = 'special';
@@ -27,22 +28,25 @@ const withRequestUpdate = (ctx) => ({ requestUpdate: ctx.requestUpdate });
  *
  * - label: exact legacy collapsible text; title/description: copy of the documentary module.
  * - gates: minState (fun0.state), neighbourNotice (rules[0] != 1 or OA modality), tenant (VITE_GLOBAL_ID).
+ * - canonicalSave: false when the generator has no save action that works on a canonical expediente
+ *   (it never saves, or it writes tables the backend protects: fun_r). Such generators receive
+ *   `canonicalSaveBlocked` and must hide their save buttons in the new model.
  * - usesDocumentaryInventory: the generator reads the canonical inventory when the expediente is in
  *   the new documentary model (useDocumentaryInventory) and its legacy data otherwise.
  */
 export const DOCUMENT_GENERATORS = Object.freeze([
-  { id: 'fun_pdf', domId: 'fund_pdf', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF, label: 'PDF Formulario Único Nacional', title: 'Formulario Único Nacional', description: 'PDF del FUN con los datos del expediente.', gates: {} },
-  { id: 'fun_pdf_check', domId: 'fund_pdf2', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF_CHECK, label: 'PDF Lista de Chekeo', title: 'Lista de chequeo', description: 'PDF de la lista de chequeo documental.', gates: {}, usesDocumentaryInventory: true },
-  { id: 'fun_doc_confirminc', domId: 'fund_212', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRM_INCOMPLETE, label: 'Documento de recordatorio incompleto', title: 'Recordatorio de radicación incompleta', description: 'Carta de documentos faltantes.', gates: {}, extraProps: withRequestUpdate },
-  { id: 'fun_doc_confirmlegal', domId: 'fund_21', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRMLEGAL, label: 'Documento de Confirmación Legal y Debida Forma', title: 'Constancia de legal y debida forma', description: 'Confirmación de radicación en legal y debida forma.', gates: { minState: 5 }, usesDocumentaryInventory: true, extraProps: (ctx) => ({ requestUpdate: ctx.requestUpdate, VIEW_G: true }) },
-  { id: 'fun_sign_pdf', domId: 'fund_sign', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SIGN_PDF, label: 'Valla', title: 'Valla', description: 'Valla informativa del trámite.', gates: { minState: 5, neighbourNotice: true } },
-  { id: 'fun_seals', domId: 'fund_seal', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SEAL, label: 'Sello', title: 'Sello', description: 'Sello de radicación.', gates: { tenant: 'cb1' } },
-  { id: 'fun_alert_neighbour', domId: 'fund_22', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_ALERT_NEIGHBOUR, label: 'DOCUMENTOS DE CITACIÓN A VECINOS', title: 'Citación a vecinos', description: 'Comunicaciones y publicación a vecinos.', gates: { neighbourNotice: true } },
-  { id: 'fun_d_control', domId: 'fund_doc_control', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_CONTROL, label: 'HOJA DE CONTROL DOCUMENTAL', title: 'Hoja de control documental', description: 'Control de documentos y folios del expediente.', gates: { minState: 5 }, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
-  { id: 'fun_d_control_2', domId: 'fund_doc_control', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_CONTROL_2, label: 'HOJA DE CONTROL DE INVENTARIO', title: 'Hoja de control de inventario', description: 'Inventario documental del expediente.', gates: { minState: 5 }, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
-  { id: 'fun_doc_abdicate', domId: 'fund_doc_not_abdicate', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_ABDICATE, label: 'Notificación Licencia - Renuncia de terminos', title: 'Notificación de licencia y renuncia de términos', description: 'Notificación con renuncia a términos.', gates: {}, extraProps: withRequestUpdate },
-  { id: 'fun_report_data_edit', domId: 'fund_23', section: GENERATOR_SECTION_SPECIAL, component: FUN_REPORT_DATA_EDIT, label: 'CONTROL DE DOCUMENTO DE RECONOCIMIENTO', title: 'Documento de reconocimiento', description: 'Control del documento de reconocimiento.', gates: {}, extraProps: withRequestUpdate },
-  { id: 'fun_doc_certification', domId: 'fund_23', section: GENERATOR_SECTION_SPECIAL, component: FUN_CERTIFICATION, label: 'CERTIFICACIONES', title: 'Certificaciones', description: 'Certificaciones del expediente.', gates: {}, extraProps: (ctx) => ({ id_related: ctx.currentItem.id_public, related: 'fun' }) },
+  { id: 'fun_pdf', domId: 'fund_pdf', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF, label: 'PDF Formulario Único Nacional', title: 'Formulario Único Nacional', description: 'PDF del FUN con los datos del expediente.', gates: {}, canonicalSave: false },
+  { id: 'fun_pdf_check', domId: 'fund_pdf2', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF_CHECK, label: 'PDF Lista de Chekeo', title: 'Lista de chequeo', description: 'PDF de la lista de chequeo documental.', gates: {}, canonicalSave: false, usesDocumentaryInventory: true },
+  { id: 'fun_doc_confirminc', domId: 'fund_212', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRM_INCOMPLETE, label: 'Documento de recordatorio incompleto', title: 'Recordatorio de radicación incompleta', description: 'Carta de documentos faltantes.', gates: {}, canonicalSave: true, extraProps: withRequestUpdate },
+  { id: 'fun_doc_confirmlegal', domId: 'fund_21', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRMLEGAL, label: 'Documento de Confirmación Legal y Debida Forma', title: 'Constancia de legal y debida forma', description: 'Confirmación de radicación en legal y debida forma.', gates: { minState: 5 }, canonicalSave: true, usesDocumentaryInventory: true, extraProps: (ctx) => ({ requestUpdate: ctx.requestUpdate, VIEW_G: true }) },
+  { id: 'fun_sign_pdf', domId: 'fund_sign', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SIGN_PDF, label: 'Valla', title: 'Valla', description: 'Valla informativa del trámite.', gates: { minState: 5, neighbourNotice: true }, canonicalSave: false },
+  { id: 'fun_seals', domId: 'fund_seal', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SEAL, label: 'Sello', title: 'Sello', description: 'Sello de radicación.', gates: { tenant: 'cb1' }, canonicalSave: true },
+  { id: 'fun_alert_neighbour', domId: 'fund_22', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_ALERT_NEIGHBOUR, label: 'DOCUMENTOS DE CITACIÓN A VECINOS', title: 'Citación a vecinos', description: 'Comunicaciones y publicación a vecinos.', gates: { neighbourNotice: true }, canonicalSave: false },
+  { id: 'fun_d_control', domId: 'fund_doc_control', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_CONTROL, label: 'HOJA DE CONTROL DOCUMENTAL', title: 'Hoja de control documental', description: 'Control de documentos y folios del expediente.', gates: { minState: 5 }, canonicalSave: false, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
+  { id: 'fun_d_control_2', domId: 'fund_doc_control', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_CONTROL_2, label: 'HOJA DE CONTROL DE INVENTARIO', title: 'Hoja de control de inventario', description: 'Inventario documental del expediente.', gates: { minState: 5 }, canonicalSave: false, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
+  { id: 'fun_doc_abdicate', domId: 'fund_doc_not_abdicate', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_D_ABDICATE, label: 'Notificación Licencia - Renuncia de terminos', title: 'Notificación de licencia y renuncia de términos', description: 'Notificación con renuncia a términos.', gates: {}, canonicalSave: false, extraProps: withRequestUpdate },
+  { id: 'fun_report_data_edit', domId: 'fund_23', section: GENERATOR_SECTION_SPECIAL, component: FUN_REPORT_DATA_EDIT, label: 'CONTROL DE DOCUMENTO DE RECONOCIMIENTO', title: 'Documento de reconocimiento', description: 'Control del documento de reconocimiento.', gates: {}, canonicalSave: true, extraProps: withRequestUpdate },
+  { id: 'fun_doc_certification', domId: 'fund_23', section: GENERATOR_SECTION_SPECIAL, component: FUN_CERTIFICATION, label: 'CERTIFICACIONES', title: 'Certificaciones', description: 'Certificaciones del expediente.', gates: {}, canonicalSave: true, extraProps: (ctx) => ({ id_related: ctx.currentItem.id_public, related: 'fun' }) },
 ]);
 
 // Same lookup the legacy module used: the FUN 1 row of the current version.
@@ -77,7 +81,7 @@ export function evaluateGenerator(entry, ctx) {
 }
 
 export function getGeneratorProps(entry, baseProps, ctx) {
-  return { ...baseProps, ...(entry.extraProps ? entry.extraProps(ctx) : {}) };
+  return { ...baseProps, canonicalSaveBlocked: isCanonicalSaveBlocked(entry, ctx.currentItem), ...(entry.extraProps ? entry.extraProps(ctx) : {}) };
 }
 
 export function generatorsBySection(section) {
