@@ -1,6 +1,6 @@
 import http from '../../http-common';
 import { documentaryProjectId } from './documentary.service';
-import { getCanonicalDocuments } from './documentaryOperations.service';
+import { isRowEvaluation } from '../pages/user/expediente_documental/documentaryViewContract';
 
 /**
  * Legal y debida forma (LDF) of canonical expedientes
@@ -30,10 +30,20 @@ function validControls(value) {
   return object(value) && ['total', 'complies', 'doesNotComply', 'unreviewed'].every((key) => value[key] === undefined || count(value[key]));
 }
 
+// One delivery (VR version) of an instance, newest first, with its own evaluation.
+function validVersion(value) {
+  return object(value) && Number.isInteger(value.rowId) && nullableString(value.vrLabel) && isRowEvaluation(value.evaluation);
+}
+
+function validChecklistItem(value) {
+  return object(value) && string(value.code) && nullableString(value.name);
+}
+
 function validInstance(value) {
   return object(value) && string(value.documentKey) && nullableString(value.instanceLabel)
     && LEGAL_FORM_VERDICTS.includes(value.verdict) && ['controls', 'review'].includes(value.source)
-    && (value.reviewRevision === undefined || count(value.reviewRevision)) && (value.controls === undefined || validControls(value.controls));
+    && (value.reviewRevision === undefined || count(value.reviewRevision)) && (value.controls === undefined || validControls(value.controls))
+    && (value.versions === undefined || (Array.isArray(value.versions) && value.versions.every(validVersion)));
 }
 
 function validRequirement(value) {
@@ -47,7 +57,19 @@ const validBlocker = (value) => object(value) && string(value.code) && nullableS
 
 const validWarning = (value) => object(value) && string(value.code) && (value.sourceKeys === undefined || (Array.isArray(value.sourceKeys) && value.sourceKeys.every(string)));
 
+// Traditional expedientes only expose a read-only summary of the legacy declaration (`legacy`).
+function validLegacySummary(value) {
+  return value === undefined || value === null || (object(value) && nullableString(value.state == null ? null : String(value.state))
+    && (value.declared === undefined || typeof value.declared === 'boolean') && nullableString(value.declaredAt)
+    && nullableString(value.clockName) && nullableString(value.clockDesc));
+}
+
 export function validateLegalForm(data, fun0Id) {
+  if (object(data) && data.mode === 'traditional') {
+    if (data.schemaVersion !== LEGAL_FORM_SCHEMA || !object(data.project) || data.project.fun0Id !== Number(fun0Id)
+      || data.applicable !== false || data.state !== 'not_applicable' || !validLegacySummary(data.legacy)) invalid();
+    return data;
+  }
   if (!object(data) || data.schemaVersion !== LEGAL_FORM_SCHEMA || !['canonical', 'traditional'].includes(data.mode)
     || !object(data.project) || data.project.fun0Id !== Number(fun0Id) || !LEGAL_FORM_STATES.includes(data.state)
     || data.applicable !== (data.mode === 'canonical') || (!data.applicable && data.state !== 'not_applicable')
@@ -58,6 +80,7 @@ export function validateLegalForm(data, fun0Id) {
     || !(data.warnings === undefined || (Array.isArray(data.warnings) && data.warnings.every(validWarning)))
     || !(data.checklist == null || (object(data.checklist) && object(data.checklist.marks)))
     || !(data.checklistDefaults == null || object(data.checklistDefaults))
+    || !(data.checklistItems === undefined || (Array.isArray(data.checklistItems) && data.checklistItems.every(validChecklistItem)))
     || !object(data.actions)) invalid();
   return data;
 }
@@ -99,26 +122,11 @@ export async function revokeLegalForm(fun0Id, command) {
   return data;
 }
 
-const MAX_VIEW_PAGES = 40;
-/**
- * View row (with its Central controls) of a current delivery, paging the canonical view until it
- * is found. Returns { view, row } or null when the delivery is no longer current.
- */
-export async function findCanonicalRow(origin, rowId, signal) {
-  let afterId = 0;
-  for (let page = 0; page < MAX_VIEW_PAGES; page += 1) {
-    const view = await getCanonicalDocuments(origin, afterId, signal);
-    const row = view.rows.find((item) => item.receivedDocumentRowId === Number(rowId));
-    if (row) return { view, row };
-    if (!view.pagination.nextAfterId) return null;
-    afterId = view.pagination.nextAfterId;
-  }
-  return null;
-}
-
 // Rule errors the user can act on; anything else falls back to the generic documentary message.
 const LEGAL_FORM_ERRORS = {
   CONTROLS_CONFIGURED: 'Este documento tiene controles de Central: decida sus controles en lugar de registrar un veredicto.',
+  DOCUMENT_HAS_CONTROLS: 'Este documento tiene controles de Central: decida sus controles en lugar de registrar un veredicto.',
+  REVIEW_SCOPE_MISMATCH: 'La entrega que intenta evaluar no corresponde a este documento. Actualice la vista e intente nuevamente.',
   OBSERVATION_REQUIRED: 'Escriba la observación: es obligatoria cuando el documento no cumple.',
   DOCUMENT_NOT_DELIVERED: 'El documento no tiene una entrega vigente para revisar.',
   INSTANCE_REQUIRED: 'El documento tiene varias instancias: revise cada una por separado.',

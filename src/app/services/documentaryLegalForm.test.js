@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import http from '../../http-common';
-import * as operations from './documentaryOperations.service';
 import * as api from './documentaryLegalForm.service';
 
 vi.mock('../../http-common', () => ({ default: { get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn() } }));
-vi.mock('./documentaryOperations.service', () => ({ getCanonicalDocuments: vi.fn() }));
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, evidenceRevision: 1, vrLabel: 'VR-1', controls: { status: 'no_configured_controls', total: 0, complies: 0, doesNotComply: 0, unreviewed: 0 },
   review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });
@@ -79,13 +77,33 @@ describe('documentaryLegalForm.service', () => {
     expect(api.isRevisionConflict(api.legalFormErrorCode(failure('REVIEW_REVISION_CONFLICT')))).toBe(true);
   });
 
-  it('finds a delivery row across the pages of the canonical view', async () => {
-    const page = (rows, nextAfterId) => ({ rows, pagination: { nextAfterId } });
-    operations.getCanonicalDocuments.mockResolvedValueOnce(page([{ receivedDocumentRowId: 1 }], 25)).mockResolvedValueOnce(page([{ receivedDocumentRowId: 30 }], null));
-    const found = await api.findCanonicalRow({ project: { fun0Id: 1 } }, 30);
-    expect(found.row.receivedDocumentRowId).toBe(30);
-    expect(operations.getCanonicalDocuments.mock.calls[1][1]).toBe(25);
-    operations.getCanonicalDocuments.mockResolvedValueOnce(page([], null));
-    await expect(api.findCanonicalRow({ project: { fun0Id: 1 } }, 99)).resolves.toBeNull();
+  it('accepts the legacy summary of a traditional expediente without the canonical lists', () => {
+    const legacy = { state: 5, declared: true, declaredAt: '2026-03-02', clockName: 'Legal y debida forma', clockDesc: '30 días hábiles' };
+    const traditional = { schemaVersion: api.LEGAL_FORM_SCHEMA, mode: 'traditional', applicable: false, project: { fun0Id: 1 }, state: 'not_applicable', legacy };
+    expect(api.validateLegalForm(traditional, 1).legacy).toEqual(legacy);
+    expect(api.validateLegalForm({ ...traditional, legacy: { ...legacy, declared: false, declaredAt: null, clockName: null, clockDesc: null } }, 1).legacy.declared).toBe(false);
+    expect(api.validateLegalForm({ ...traditional, legacy: undefined }, 1).mode).toBe('traditional');
+    expect(() => api.validateLegalForm({ ...traditional, legacy: { ...legacy, declared: 'yes' } }, 1)).toThrow();
+    expect(() => api.validateLegalForm({ ...traditional, project: { fun0Id: 2 } }, 1)).toThrow();
+  });
+
+  it('validates the per-delivery versions and the checklist items leniently', () => {
+    const approved = { status: 'approved', source: 'review', verdict: 'complies', reviewRevision: 2, reviewedByName: 'Marta Ruiz', reviewedAt: '2026-10-14T15:00:00.000Z' };
+    const withVersions = legalFormFixture({
+      requirements: [{ ...legalFormFixture().requirements[0], instances: [instance({ versions: [{ rowId: 11, vrLabel: 'VR-2', versionSequence: 2, isCurrent: true, evaluation: approved }, { rowId: 10, vrLabel: 'VR-1', versionSequence: 1, isCurrent: false, evaluation: { status: 'pending' } }] })] }],
+      checklistItems: [{ code: '511', name: 'Formulario único', applies: true, delivered: true, verdict: 'complies', defaultMark: '1' }],
+    });
+    expect(api.validateLegalForm(withVersions, 1).requirements[0].instances[0].versions).toHaveLength(2);
+    expect(api.validateLegalForm(legalFormFixture(), 1).checklistItems).toBeUndefined(); // older payloads still pass
+    const badEvaluation = legalFormFixture({ requirements: [{ ...legalFormFixture().requirements[0], instances: [instance({ versions: [{ rowId: 10, vrLabel: 'VR-1', evaluation: { status: 'maybe' } }] })] }] });
+    expect(() => api.validateLegalForm(badEvaluation, 1)).toThrow();
+    expect(() => api.validateLegalForm(legalFormFixture({ checklistItems: [{ name: 'sin código' }] }), 1)).toThrow();
+  });
+
+  it('explains the review rule errors of the per-delivery evaluation', () => {
+    const failure = (code) => ({ response: { status: 409, data: { error: { code } } } });
+    expect(api.legalFormErrorMessage(failure('DOCUMENT_HAS_CONTROLS'))).toMatch(/controles de Central/);
+    expect(api.legalFormErrorMessage(failure('REVIEW_SCOPE_MISMATCH'))).toMatch(/no corresponde a este documento/);
+    expect(api.legalFormErrorMessage(failure('LEGAL_FORM_DECLARED'))).toMatch(/Anule la declaración/);
   });
 });

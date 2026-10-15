@@ -123,6 +123,8 @@ function ProjectDocumentaryWorkspace(props) {
   const [syncRevision, setSyncRevision] = useState(0);
   const [notice, setNotice] = useState('');
   const [inputCount, setInputCount] = useState(null);
+  // Expedidos of the new model (view scope=issued); the CUB registry count is added to it.
+  const [issuedCount, setIssuedCount] = useState(null);
   // Viewing and changing the Central configuration version is limited to abogado,
   // curador and programador; the tab (and its requests) must not exist for other roles.
   const canConfigure = canManageDocumentaryConfiguration(DataService.getUserData()) && Boolean(origin);
@@ -130,9 +132,7 @@ function ProjectDocumentaryWorkspace(props) {
   const [lastOrigin, setLastOrigin] = useState(null);
   if (origin && origin !== lastOrigin) setLastOrigin(origin);
   const stableOrigin = origin || lastOrigin;
-  // Legal y debida forma exists only in the new documentary model (legacy keeps its checklist).
-  const showLegalForm = isCanonicalMode(stableOrigin?.mode);
-  const currentTab = (activeTab === TAB_CONFIGURATION && !canConfigure) || (activeTab === TAB_LEGAL_FORM && !showLegalForm) ? TAB_INPUT : activeTab;
+  const currentTab = activeTab === TAB_CONFIGURATION && !canConfigure ? TAB_INPUT : activeTab;
 
   function selectTab(key) {
     setNotice('');
@@ -173,14 +173,12 @@ function ProjectDocumentaryWorkspace(props) {
           <TabsTrigger value={TAB_ISSUED} className={TRIGGER_CLASS}>
             <FileOutput aria-hidden="true" />
             Expedidos
-            {issued.loading || issued.error ? null : <TabCount value={issued.rows.length} label="documentos expedidos" />}
+            {issued.loading || issued.error ? null : <TabCount value={issued.rows.length + (isCanonicalMode(mode) && Number.isFinite(issuedCount) ? issuedCount : 0)} label="documentos expedidos" />}
           </TabsTrigger>
-          {showLegalForm ? (
-            <TabsTrigger value={TAB_LEGAL_FORM} className={TRIGGER_CLASS}>
-              <Scale aria-hidden="true" />
-              Legal y debida forma
-            </TabsTrigger>
-          ) : null}
+          <TabsTrigger value={TAB_LEGAL_FORM} className={TRIGGER_CLASS}>
+            <Scale aria-hidden="true" />
+            Legal y debida forma
+          </TabsTrigger>
           <TabsTrigger value={TAB_GENERATORS} className={TRIGGER_CLASS}>
             <FilePlus2 aria-hidden="true" />
             Generar documentos
@@ -204,16 +202,24 @@ function ProjectDocumentaryWorkspace(props) {
       </TabsContent>
 
       <TabsContent value={TAB_ISSUED} className="mt-0 min-w-0">
-        <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} />
+        {isCanonicalMode(mode) ? (
+          <div className="flex min-w-0 flex-col gap-[0.75rem]">
+            <CanonicalDocumentaryWorkspace key={`issued:${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} variant="issued" onCountChange={setIssuedCount} embedded />
+            <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} title="Consecutivos de salida (CUB)" note="Consecutivos de salida registrados para el expediente." hideWhenEmpty />
+          </div>
+        ) : (
+          <IssuedDocumentsPanel rows={issued.rows} loading={issued.loading} error={issued.error} onRetry={issued.refresh} />
+        )}
       </TabsContent>
 
-      {showLegalForm ? (
-        <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
+      {/* Every expediente has the tab: canonical ones evaluate here, traditional ones only consult the legacy declaration. */}
+      <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
+        {stableOrigin ? (
           <Suspense fallback={<WorkspaceSkeleton />}>
             <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
           </Suspense>
-        </TabsContent>
-      ) : null}
+        ) : <WorkspaceSkeleton />}
+      </TabsContent>
 
       {/* Mounted only while active: it loads the expediente (state) and its generators on demand. */}
       <TabsContent value={TAB_GENERATORS} className="mt-0 min-w-0">

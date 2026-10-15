@@ -2,7 +2,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 import {fireEvent,render,screen,waitFor,within} from '@testing-library/react';
 import {DocumentaryGovernance} from './DocumentaryGovernance';
 import * as api from '@/app/services/documentaryOperations.service';
-vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),activateDocumentaryProject:vi.fn(),changeDocumentaryConfiguration:vi.fn(),returnDocumentaryProjectToLegacy:vi.fn(),refreshDocumentaryRequirements:vi.fn()}));
+vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),activateDocumentaryProject:vi.fn(),changeDocumentaryConfiguration:vi.fn(),returnDocumentaryProjectToLegacy:vi.fn(),refreshDocumentaryRequirements:vi.fn(),getRequirementAdditions:vi.fn(),addRequirementAddition:vi.fn(),removeRequirementAddition:vi.fn()}));
 vi.mock('@/app/services/documentary.service',()=>({documentaryError:error=>error.message||'Error'}));
 
 const source={table:'fun_1s',selectedFunVersion:3,sourceRowId:40,diagnostics:[],fields:[{field:'tipo',sourceKey:'tipoAny',value:'D',tokens:['D']},{field:'cultural',sourceKey:'culturalAny',value:null,tokens:['UNSET']}]};
@@ -18,7 +18,7 @@ const current=()=>screen.findByTestId('governance-current');
 const openDialog=async()=>{await current();fireEvent.click(screen.getByRole('button',{name:'Cambiar versión'}));return screen.findByRole('dialog');};
 const choose=(dialog,name)=>fireEvent.click(within(dialog).getByRole('radio',{name}));
 // Selection no longer waits on a projection readiness check; options are never requested.
-beforeEach(()=>{vi.clearAllMocks();});
+beforeEach(()=>{vi.clearAllMocks();api.getRequirementAdditions.mockResolvedValue({additions:[],catalogue:[]});});
 
 it('summarises the version in use and the vigente, and lists every option in the dialog',async()=>{
   api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
@@ -113,4 +113,93 @@ it('shows plain-language diagnostics and a link to correct the FUN',async()=>{
   expect(within(panel).queryByText(/valor no reconocido/)).not.toBeInTheDocument();
   fireEvent.click(within(panel).getByRole('button',{name:'Corregir datos del FUN'}));
   expect(fix).toHaveBeenCalledTimes(1);
+});
+
+const addition={documentId:'D-1',documentCode:'511',title:'Plano extra',reason:'Pedido del curador',addedBy:7,addedByName:'Ana Pérez',addedAt:'2026-10-14T15:00:00.000Z'};
+const catalogue=[
+  {documentId:'D-1',code:'511',name:'Plano extra',alreadyRequired:false},
+  {documentId:'D-2',code:'600',name:'Plano de localización',alreadyRequired:false},
+  {documentId:'D-3',code:'601',name:'Ya exigido por la configuración',alreadyRequired:true},
+];
+const additionsSection=()=>screen.findByRole('region',{name:'Documentos agregados al expediente'});
+
+it('lists the documents added to the expediente with motive, author and date',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  api.getRequirementAdditions.mockResolvedValue({additions:[addition],catalogue});
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
+  const section=await additionsSection();
+  const item=await within(section).findByTestId('addition-D-1');
+  expect(item).toHaveTextContent('511');expect(item).toHaveTextContent('Plano extra');
+  expect(item).toHaveTextContent('Motivo: Pedido del curador');expect(item).toHaveTextContent('Agregado por Ana Pérez');expect(item).toHaveTextContent('2026');
+  expect(api.getRequirementAdditions).toHaveBeenCalledWith(1,expect.any(AbortSignal));
+});
+
+it('hides the additions for legacy expedientes and the add/remove actions without permission',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance());
+  const {unmount}=render(<DocumentaryGovernance origin={{mode:'traditional',project:{fun0Id:1}}} canManage/>);
+  await current();
+  expect(screen.queryByRole('region',{name:'Documentos agregados al expediente'})).not.toBeInTheDocument();
+  expect(api.getRequirementAdditions).not.toHaveBeenCalled();
+  unmount();
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  api.getRequirementAdditions.mockResolvedValue({additions:[addition],catalogue});
+  render(<DocumentaryGovernance origin={canonicalOrigin}/>);
+  const section=await additionsSection();
+  await within(section).findByTestId('addition-D-1');
+  expect(within(section).queryByRole('button',{name:'Agregar documento'})).not.toBeInTheDocument();
+  expect(within(section).queryByRole('button',{name:/^Quitar/})).not.toBeInTheDocument();
+});
+
+it('adds a catalogue document with a motive, excluding the ones already required, and refreshes the module',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  api.getRequirementAdditions.mockResolvedValue({additions:[addition],catalogue});
+  api.addRequirementAddition.mockResolvedValue({});const saved=vi.fn();
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage onSaved={saved}/>);
+  const section=await additionsSection();
+  await within(section).findByTestId('addition-D-1');
+  fireEvent.click(within(section).getByRole('button',{name:'Agregar documento'}));
+  const dialog=await screen.findByRole('dialog');
+  // Neither the documents the configuration already requires nor the ones already added are offered.
+  const options=within(dialog).getAllByRole('option');
+  expect(options).toHaveLength(1);expect(options[0]).toHaveTextContent('600');
+  const confirm=within(dialog).getByRole('button',{name:'Agregar'});expect(confirm).toBeDisabled();
+  fireEvent.click(options[0]);
+  fireEvent.change(within(dialog).getByLabelText('Motivo'),{target:{value:'Lo exige el predio'}});
+  await waitFor(()=>expect(confirm).toBeEnabled());fireEvent.click(confirm);
+  await waitFor(()=>expect(api.addRequirementAddition).toHaveBeenCalledWith(1,{documentId:'D-2',reason:'Lo exige el predio',idempotencyKey:expect.any(String)}));
+  expect(saved).toHaveBeenCalledWith('Documento agregado a los requisitos del expediente.',true);
+  await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+});
+
+it('keeps the add dialog open with the rule message when the document is already added',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  api.getRequirementAdditions.mockResolvedValue({additions:[],catalogue});
+  api.addRequirementAddition.mockRejectedValue({response:{status:409,data:{error:{code:'REQUIREMENT_ALREADY_ADDED'}}}});const saved=vi.fn();
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage onSaved={saved}/>);
+  const section=await additionsSection();
+  await waitFor(()=>expect(within(section).getByRole('button',{name:'Agregar documento'})).toBeEnabled());
+  fireEvent.click(within(section).getByRole('button',{name:'Agregar documento'}));
+  const dialog=await screen.findByRole('dialog');
+  fireEvent.click(within(dialog).getAllByRole('option')[0]);
+  fireEvent.change(within(dialog).getByLabelText('Motivo'),{target:{value:'Otro intento'}});
+  fireEvent.click(within(dialog).getByRole('button',{name:'Agregar'}));
+  expect(await within(dialog).findByText('Este documento ya fue agregado al expediente.')).toBeInTheDocument();
+  expect(saved).not.toHaveBeenCalled();
+});
+
+it('removes an added document only after confirming with a motive',async()=>{
+  api.getDocumentaryGovernance.mockResolvedValue(governance({selected:3}));
+  api.getRequirementAdditions.mockResolvedValue({additions:[addition],catalogue});
+  api.removeRequirementAddition.mockResolvedValue({});const saved=vi.fn();
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage onSaved={saved}/>);
+  const section=await additionsSection();
+  fireEvent.click(await within(section).findByRole('button',{name:'Quitar 511 · Plano extra'}));
+  const dialog=await screen.findByRole('dialog');
+  expect(dialog).toHaveTextContent('Se dejará de exigir «511 · Plano extra» en este expediente.');
+  const confirm=within(dialog).getByRole('button',{name:'Quitar'});expect(confirm).toBeDisabled();
+  expect(api.removeRequirementAddition).not.toHaveBeenCalled();
+  fireEvent.change(within(dialog).getByLabelText('Motivo'),{target:{value:'Ya no aplica'}});
+  fireEvent.click(confirm);
+  await waitFor(()=>expect(api.removeRequirementAddition).toHaveBeenCalledWith(1,'D-1',{reason:'Ya no aplica',idempotencyKey:expect.any(String)}));
+  expect(saved).toHaveBeenCalledWith('Documento quitado de los requisitos del expediente.',true);
 });

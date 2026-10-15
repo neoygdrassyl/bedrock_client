@@ -1,27 +1,20 @@
-import { Fragment, useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { ChevronDown, CircleAlert, CircleCheck, ListChecks, RefreshCw, Scale, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import FUN_SERVICE from '@/app/services/fun.service';
 import { declareLegalForm, revokeLegalForm } from '@/app/services/documentaryLegalForm.service';
 import { Tag } from '../atoms/Tag';
-import { VrBadge } from '../atoms/VrBadge';
-import { ChecklistDialog, CommandDialog, ControlsSheet, ReviewSheet } from './LegalFormDialogs';
+import { ChecklistDialog, CommandDialog } from './LegalFormDialogs';
+import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
 import { useLegalForm } from '../../hooks/useLegalForm';
 import { formatDocumentaryDate } from '../../canonicalDocumentaryModel';
-import { controlsSummary, groupBlockers, LEGAL_FORM_STATE_META, missingFactLabels, reviewSourceOf, VERDICT_META } from '../../legalFormModel';
+import { groupBlockers, LEGAL_FORM_STATE_META, missingFactLabels } from '../../legalFormModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const ITEM_ERROR = 'No fue posible cargar el expediente para generar el formato. Cierre e intente nuevamente.';
-const HEAD_CLASS = 'h-9 px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground';
-
-function VerdictTag({ verdict }) {
-  const meta = VERDICT_META[verdict] || VERDICT_META.pending;
-  return <Tag tone={meta.tone}>{meta.label}</Tag>;
-}
 
 function blockerTarget(blocker, requirements) {
   const requirement = requirements.find((item) => item.documentCode === blocker.documentCode);
@@ -77,84 +70,75 @@ function StateBanner({ data }) {
   );
 }
 
-function RowAction({ requirement, instance, canReview, onReview, onControls }) {
-  if (!instance) return null;
-  const label = [requirement.documentCode, instance.instanceLabel].filter(Boolean).join(' · ');
-  if (reviewSourceOf(instance) === 'controls') {
-    return <Button type="button" variant="outline" size="sm" className="h-8 text-xs" aria-label={`Revisar controles ${label}`} onClick={() => onControls(requirement, instance)}>Revisar controles</Button>;
-  }
-  if (!canReview) return null;
-  return <Button type="button" variant="outline" size="sm" className="h-8 text-xs" aria-label={`Revisar ${label}`} onClick={() => onReview(requirement, instance)}>Revisar</Button>;
-}
-
-function InstanceCells({ instance }) {
-  const summary = controlsSummary(instance.controls);
+/** Compact list of the requirements still to deliver (NOT_DELIVERED) and the unsatisfied groups. */
+function MissingRequirements({ data }) {
+  const titleId = useId();
+  const items = (data.blockers || []).filter((blocker) => blocker.code === 'NOT_DELIVERED' || blocker.code === 'GROUP_NOT_SATISFIED');
+  if (!items.length) return null;
   return (
-    <>
-      <TableCell className="px-[0.75rem] py-2">{instance.vrLabel ? <VrBadge value={instance.vrLabel} /> : null}</TableCell>
-      <TableCell className="px-[0.75rem] py-2 font-mono text-xs tabular-nums">{summary || <span className="font-sans text-muted-foreground">Revisión</span>}</TableCell>
-      <TableCell className="px-[0.75rem] py-2"><VerdictTag verdict={instance.verdict} />{instance.review?.stale ? <span className="mt-0.5 block text-[11px] text-muted-foreground">Desactualizada</span> : null}</TableCell>
-    </>
+    <section aria-labelledby={titleId} className="flex flex-col gap-1.5 border-b px-[1rem] py-[0.75rem]" data-testid="legal-form-missing">
+      <h3 id={titleId} className="mb-0 flex items-center gap-2 text-sm font-semibold leading-5 text-foreground">
+        Requisitos sin entregar <Tag tone="warning" pill>{items.length}</Tag>
+      </h3>
+      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+        {items.map((blocker, index) => (
+          <li key={`${blocker.code}:${blocker.documentCode || blocker.groupCode || index}`}>
+            <Tag tone="neutral">
+              {blocker.code === 'GROUP_NOT_SATISFIED'
+                ? (blocker.groupCode ? `Grupo ${blocker.groupCode}: falta cumplir el grupo` : 'Grupo sin cumplir')
+                : blockerTarget(blocker, data.requirements) || blocker.message}
+            </Tag>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
-function RequirementRows({ requirement, canReview, onReview, onControls }) {
-  const multi = requirement.instances.length > 1;
-  const single = requirement.instances.length === 1 ? requirement.instances[0] : null;
+/** Read-only legal-form summary of a traditional expediente (declaration and clock of the legacy module). */
+function LegacyConsult({ legacy }) {
+  const declared = Boolean(legacy?.declared);
+  const state = legacy?.state;
   return (
-    <>
-      <TableRow className="border-border/60" data-testid={`legal-form-row-${requirement.documentCode}`}>
-        <TableCell className="px-[1rem] py-2 font-mono text-xs">{requirement.documentCode || '—'}</TableCell>
-        <TableCell className="px-[0.75rem] py-2">
-          <span className="block text-[13px] font-medium leading-5 text-foreground">{requirement.title || 'Documento sin nombre'}</span>
-          <span className="mt-0.5 flex flex-wrap gap-1">
-            {requirement.required ? <Tag>Requerido</Tag> : null}
-            {requirement.additional ? <Tag tone="slate">Adicional</Tag> : null}
-            {requirement.groupCode ? <Tag tone="code" mono>{requirement.groupCode}</Tag> : null}
-          </span>
-        </TableCell>
-        {single ? <InstanceCells instance={single} /> : (
-          <>
-            <TableCell className="px-[0.75rem] py-2 text-xs text-muted-foreground">{requirement.delivered ? `${requirement.instances.length} instancias` : 'Sin entrega'}</TableCell>
-            <TableCell className="px-[0.75rem] py-2 font-mono text-xs tabular-nums">{controlsSummary(requirement.controls) || ''}</TableCell>
-            <TableCell className="px-[0.75rem] py-2"><VerdictTag verdict={requirement.verdict} /></TableCell>
-          </>
-        )}
-        <TableCell className="px-[0.75rem] py-2 text-right">
-          {multi ? null : <RowAction requirement={requirement} instance={single} canReview={canReview} onReview={onReview} onControls={onControls} />}
-        </TableCell>
-      </TableRow>
-      {multi ? requirement.instances.map((instance) => (
-        <TableRow key={instance.documentKey} className="border-border/40 bg-muted/10" data-testid={`legal-form-instance-${instance.documentKey}`}>
-          <TableCell className="px-[1rem] py-1.5" />
-          <TableCell className="px-[0.75rem] py-1.5 pl-[1.5rem] text-xs text-foreground">{instance.instanceLabel || 'Instancia sin nombre'}</TableCell>
-          <InstanceCells instance={instance} />
-          <TableCell className="px-[0.75rem] py-1.5 text-right"><RowAction requirement={requirement} instance={instance} canReview={canReview} onReview={onReview} onControls={onControls} /></TableCell>
-        </TableRow>
-      )) : null}
-    </>
+    <div className="flex flex-col gap-[0.75rem] px-[1rem] py-[1rem]" data-testid="legal-form-legacy" role="region" aria-label="Legal y debida forma de la documentación tradicional">
+      <div className="flex flex-wrap items-center gap-2">
+        <Tag tone={declared ? 'info' : 'neutral'}>
+          {declared ? `Declarada el ${formatDocumentaryDate(legacy.declaredAt)}` : 'No declarada'}
+        </Tag>
+        {state != null && state !== '' ? <span className="text-xs text-muted-foreground">Estado actual del expediente: <span className="font-medium text-foreground">{String(state)}</span></span> : null}
+      </div>
+      {legacy?.clockName || legacy?.clockDesc ? (
+        <dl className="m-0 grid gap-x-[1rem] gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+          <dt className="text-xs font-medium text-muted-foreground">Término</dt>
+          <dd className="mb-0 text-foreground">{[legacy.clockName, legacy.clockDesc].filter(Boolean).join(' · ')}</dd>
+        </dl>
+      ) : null}
+      <p className="mb-0 text-xs leading-5 text-muted-foreground">Este expediente usa la documentación tradicional: la evaluación de los documentos se hace en el módulo «Chequeo». Aquí solo puede consultar el resultado.</p>
+    </div>
   );
 }
 
 /**
- * "Legal y debida forma" tab of canonical expedientes: state, blockers, per-document verdicts,
- * reviewer verdicts (documents without Central controls), Central controls and the declaration.
+ * "Legal y debida forma" tab: state, blockers, requirements still to deliver, the declaration, and the same
+ * documents table as Radicación filtered to requirement documents, where each delivery is evaluated with the
+ * shared evaluation sheet. Traditional expedientes only get a read-only consult card of the legacy declaration.
  * `onDeclarationChanged` lets the module reload origin, inventory and the expediente state.
  * The "Lista de chequeo" action needs `currentVersion` (hidden without it); the FUN it prints is
  * `currentItem` or, when absent, loaded from the expediente when the dialog opens.
  */
 export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged, currentItem = null, currentVersion = null, swaMsg }) {
   const titleId = useId();
-  const fun0Id = origin.project.fun0Id;
-  const legal = useLegalForm(fun0Id);
-  const [review, setReview] = useState(null);
-  const [controls, setControls] = useState(null);
+  const fun0Id = origin?.project?.fun0Id;
+  const legal = useLegalForm(fun0Id) || { status: 'loading', data: null, error: '', reload: () => {} };
   const [dialog, setDialog] = useState(null); // 'declare' | 'revoke'
   const [notice, setNotice] = useState('');
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [loadedItem, setLoadedItem] = useState(null);
   const [itemError, setItemError] = useState('');
-  const data = legal?.data;
+  // Bumped when the legal-form state is refreshed so the documents table reloads with it.
+  const [tableRevision, setTableRevision] = useState(0);
+  const data = legal.data;
+  const traditional = data?.mode === 'traditional';
   const actions = data?.actions || {};
   const canReview = Boolean(canManage && actions.review);
   const canDeclare = Boolean(canManage && actions.declare && data?.state === 'ready');
@@ -171,8 +155,9 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
     return () => { ignore = true; };
   }, [checklistOpen, currentItem, fun0Id]);
 
-  function refresh(message = '') { setNotice(message); legal.reload(); }
-  function conflict() { setReview(null); refresh(CONFLICT_MESSAGE); }
+  function refresh(message = '') { setNotice(message); legal.reload(); setTableRevision((value) => value + 1); }
+  // An evaluation saved in the table: the table reloads itself, the legal-form state follows.
+  const evaluationSaved = () => legal.reload();
   // A rejected declaration command (409) means the state moved: reload it behind the dialog.
   async function run(command, values, message) {
     try { await command(fun0Id, values); } catch (failure) { if (failure.response?.status === 409) legal.reload(); throw failure; }
@@ -196,7 +181,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
             <Scale className="h-4 w-4" aria-hidden="true" />
           </span>
           <h2 id={titleId} className="mb-0 min-w-0 flex-1 text-[15px] font-semibold leading-5 text-foreground">Legal y debida forma</h2>
-          {data && currentVersion != null ? (
+          {data && !traditional && currentVersion != null ? (
             <Button type="button" variant="outline" size="sm" onClick={() => { setNotice(''); setChecklistOpen(true); }}>
               <ListChecks aria-hidden="true" />Lista de chequeo
             </Button>
@@ -204,11 +189,11 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           <Button type="button" variant="outline" size="sm" disabled={legal.status === 'loading'} onClick={() => refresh()}>
             <RefreshCw aria-hidden="true" className={cn(legal.status === 'loading' && data && 'animate-spin motion-reduce:animate-none')} />Actualizar
           </Button>
-          {declared ? (
+          {traditional ? null : declared ? (
             actions.revoke && canManage ? <Button type="button" variant="outline" size="sm" onClick={() => setDialog('revoke')}>Anular declaración</Button> : null
-          ) : (
+          ) : data ? (
             <Button type="button" size="sm" disabled={!canDeclare} onClick={() => setDialog('declare')}>Declarar legal y debida forma</Button>
-          )}
+          ) : null}
         </header>
 
         {legal.error ? (
@@ -225,7 +210,9 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           <div className="flex flex-col gap-2 p-[1rem]" aria-hidden="true"><Skeleton className="h-10 w-full" /><Skeleton className="h-40 w-full" /></div>
         ) : null}
 
-        {data ? (
+        {traditional ? <LegacyConsult legacy={data.legacy} /> : null}
+
+        {data && !traditional ? (
           <>
             <StateBanner data={data} />
             {declared ? (
@@ -238,37 +225,23 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
                 Lista de chequeo guardada por {data.checklist.updatedByName || (data.checklist.updatedBy != null ? `usuario ${data.checklist.updatedBy}` : 'un usuario')} · {formatDocumentaryDate(data.checklist.updatedAt)}
               </p>
             ) : null}
-            <div className="max-h-[60dvh] min-w-0 overflow-auto" role="region" aria-label="Documentos de legal y debida forma" tabIndex={0}>
-              <table className="w-full min-w-[760px] table-fixed border-collapse text-sm" aria-label="Documentos de legal y debida forma">
-                <TableHeader className="sticky top-0 z-10 bg-[hsl(var(--card))]">
-                  <TableRow className="bg-muted/30 hover:bg-muted/30">
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[9%] px-[1rem]')}>Código</TableHead>
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[35%]')}>Documento</TableHead>
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[13%]')}>Entrega</TableHead>
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[11%]')}>Controles</TableHead>
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[13%]')}>Veredicto</TableHead>
-                    <TableHead scope="col" className={cn(HEAD_CLASS, 'w-[19%] text-right')}><span className="sr-only">Acción</span></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.requirements.map((requirement) => (
-                    <Fragment key={requirement.documentId || requirement.documentCode}>
-                      <RequirementRows requirement={requirement} canReview={canReview} onReview={(req, instance) => { setNotice(''); setReview({ requirement: req, instance }); }} onControls={(req, instance) => { setNotice(''); setControls({ requirement: req, instance }); }} />
-                    </Fragment>
-                  ))}
-                  {!data.requirements.length ? (
-                    <TableRow><TableCell colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">Aún no hay requisitos evaluados para este expediente.</TableCell></TableRow>
-                  ) : null}
-                </TableBody>
-              </table>
-            </div>
+            <MissingRequirements data={data} />
           </>
         ) : null}
       </div>
 
-      <ReviewSheet target={review} fun0Id={fun0Id} onClose={() => setReview(null)} onSaved={(message) => { setReview(null); refresh(message); }} onConflict={conflict} />
-      <ControlsSheet target={controls} origin={origin} canReview={canReview} onClose={() => setControls(null)} onSaved={(message) => { setControls(null); refresh(message); }} onPartialSave={() => refresh()} onConflict={() => { setControls(null); refresh(CONFLICT_MESSAGE); }} />
-      {currentVersion != null ? (
+      {data && !traditional && origin?.publication ? (
+        <CanonicalDocumentaryWorkspace
+          origin={origin}
+          canManage={canReview}
+          variant="legalForm"
+          embedded
+          reloadKey={tableRevision}
+          onEvaluationSaved={evaluationSaved}
+        />
+      ) : null}
+
+      {currentVersion != null && data && !traditional ? (
         <ChecklistDialog
           open={checklistOpen}
           data={data}

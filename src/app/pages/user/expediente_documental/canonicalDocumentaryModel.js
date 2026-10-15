@@ -167,3 +167,26 @@ export function requirementStatus(view) {
   }
   return { tone: 'complete', message: 'Todos los requisitos tienen al menos una entrega.', detail: 'La revisión de legal y debida forma se registra por documento.' };
 }
+
+// ---------- per-delivery evaluation ----------
+
+/** Evaluation statuses of a delivery row (view / versions / legal form). `not_applicable` renders as a dash. */
+export const EVALUATION_META = {
+  approved: { label: 'Aprobado', tone: 'success' },
+  rejected: { label: 'Rechazado', tone: 'danger' },
+  pending: { label: 'Sin evaluar', tone: 'warning' },
+  not_applicable: { label: EMPTY_VALUE, tone: 'neutral' },
+};
+
+/** Evaluation of a row; rows from older backends have none and are shown as not evaluable. */
+export const evaluationOf = (row) => row?.evaluation || { status: 'not_applicable', source: null };
+
+/** Name of the reviewer of an evaluation ("usuario {id}" when only the id is known), or null. */
+export function evaluationReviewer(evaluation) {
+  if (!evaluation || !['approved', 'rejected'].includes(evaluation.status)) return null;
+  if (evaluation.reviewedByName) return evaluation.reviewedByName;
+  return evaluation.reviewedBy != null && evaluation.reviewedBy !== '' ? `usuario ${evaluation.reviewedBy}` : null;
+}
+
+/** Whether the row can be evaluated by the current user (server flag: `actions.evaluate` or `actions.review`). */
+export const canEvaluateRow = (row) => Boolean(row?.actions?.evaluate || row?.actions?.review);

@@ -3,264 +3,24 @@ import fileDownload from 'js-file-download';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { documentaryError } from '@/app/services/documentary.service';
-import { saveCanonicalControl } from '@/app/services/documentaryOperations.service';
-import { findCanonicalRow, isRevisionConflict, legalFormErrorCode, legalFormErrorMessage, saveLegalFormChecklist, saveLegalFormReview } from '@/app/services/documentaryLegalForm.service';
+import { isRevisionConflict, legalFormErrorCode, saveLegalFormChecklist } from '@/app/services/documentaryLegalForm.service';
 import { activeAuthority, activeCity } from '@/app/components/jsons/vars';
 import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/components/checklistPdf';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { fieldClass, FormField } from '../molecules/FormField';
-import { ControlDecisionFields, ErrorMessage } from './CanonicalDocumentForms';
-import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistOverrides, checklistOverridesStored, checklistReviewOf, instanceKeyFor, reviewedByLine } from '../../legalFormModel';
+import { ErrorMessage } from './CanonicalDocumentForms';
+import { commandErrorText } from './EvaluationSheet';
+import { CHECKLIST_MARKS, checklistDefaultMarks, checklistInitialMarks, checklistItemMeta, checklistOverrides, checklistOverridesStored, checklistReviewOf } from '../../legalFormModel';
 
-export const REVIEW_REASON = 'Revisión de legal y debida forma';
 export const CHECKLIST_REASON = 'Lista de chequeo de legal y debida forma';
-const CONTROL_REASON = 'Revisión de Legal y debida forma';
 const MODEL_ERROR = 'El expediente no tiene el modelo definido, necesario para generar el formato. Defínalo e intente nuevamente.';
-const FOLIO_RANGE_MAX = 120;
-const OBSERVATION_MAX = 4000;
 const pad = (value) => String(value).padStart(2, '0');
 export function todayIso(now = new Date()) {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** Error text of a legal-form command: known rule codes first, then the documentary message. */
-export const commandErrorText = (failure) => legalFormErrorMessage(failure) || documentaryError(failure);
-
-function SheetFrame({ open, onClose, title, description, children }) {
-  return (
-    <Sheet open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
-      <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>
-        <SheetHeader className="shrink-0 space-y-1 border-b px-6 py-[1rem] pr-12 text-left">
-          <SheetTitle className="mb-0 text-base leading-6">{title}</SheetTitle>
-          <SheetDescription className="mb-0 text-xs leading-4">{description}</SheetDescription>
-        </SheetHeader>
-        {children}
-      </SheetContent>
-    </Sheet>
-  );
-}
-
-const VERDICT_OPTIONS = [
-  { value: 'complies', label: 'Cumple' },
-  { value: 'does_not_comply', label: 'No cumple' },
-  { value: 'not_applicable', label: 'No aplica' },
-];
-
-/** "Revisado por {name} · {date}" of a previous decision; nothing when there is none. */
-function ReviewedBy({ name, id, at }) {
-  const line = reviewedByLine({ name, id, at });
-  return line ? <p className="mb-0 text-[11px] leading-4 text-muted-foreground">{line}</p> : null;
-}
-
-/** Reviewer verdict of one delivered instance of a document without Central controls. */
-export function ReviewForm({ fun0Id, requirement, instance, onSaved, onConflict, onCancel }) {
-  const ids = useId();
-  const review = instance.review && !instance.review.stale ? instance.review : null;
-  const [verdict, setVerdict] = useState(review?.verdict || '');
-  const [folioRange, setFolioRange] = useState(instance.review?.folioRange || '');
-  const [observation, setObservation] = useState(instance.review?.observation || '');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const command = useRef(null);
-  const needsObservation = verdict === 'does_not_comply' && !observation.trim();
-  async function save(event) {
-    event.preventDefault();
-    if (busy) return;
-    if (!verdict) { setError('Seleccione el veredicto.'); return; }
-    if (needsObservation) { setError('Escriba la observación: es obligatoria cuando el documento no cumple.'); return; }
-    setBusy(true); setError('');
-    try {
-      const documentKey = instanceKeyFor(requirement, instance);
-      command.current ||= { ...(documentKey ? { documentKey } : {}), verdict, folioRange: folioRange.trim() || null, observation: observation.trim() || null,
-        expectedReviewRevision: instance.reviewRevision || 0, idempotencyKey: crypto.randomUUID(), reason: REVIEW_REASON };
-      await saveLegalFormReview(fun0Id, requirement.documentCode, command.current);
-      onSaved('Revisión guardada.');
-    } catch (failure) {
-      if (failure.response) command.current = null;
-      if (isRevisionConflict(legalFormErrorCode(failure))) onConflict(); else setError(commandErrorText(failure));
-    } finally { setBusy(false); }
-  }
-  return (
-    <form onSubmit={save} onChange={() => { command.current = null; }} className="flex min-h-0 flex-1 flex-col" aria-label="Revisión del documento" noValidate>
-      <fieldset disabled={busy} className="m-0 flex min-h-0 min-w-0 flex-1 flex-col p-0 !border-0">
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
-          <div className="flex flex-col gap-[1rem]">
-            {instance.review ? <ReviewedBy name={instance.review.reviewedByName} id={instance.review.reviewedBy} at={instance.review.reviewedAt} /> : null}
-            {instance.review?.stale ? <p role="status" className="mb-0 text-xs font-medium leading-4 text-[hsl(var(--operational-warning-text))]">La entrega cambió desde la última revisión. Confirme nuevamente el veredicto.</p> : null}
-            <FormField id={`${ids}-verdict`} label="Veredicto">
-              <select id={`${ids}-verdict`} name="verdict" className={fieldClass} value={verdict} onChange={(event) => setVerdict(event.target.value)}>
-                <option value="">Seleccione el veredicto</option>
-                {VERDICT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
-            </FormField>
-            <FormField id={`${ids}-folios`} label="Rango de folios" hint="Opcional. Ejemplo: 1-12.">
-              <Input id={`${ids}-folios`} name="folioRange" className="text-sm" maxLength={FOLIO_RANGE_MAX} value={folioRange} onChange={(event) => setFolioRange(event.target.value)} aria-describedby={`${ids}-folios-hint`} />
-            </FormField>
-            <FormField id={`${ids}-observation`} label={verdict === 'does_not_comply' ? 'Observación (obligatoria)' : 'Observación'} error={verdict === 'does_not_comply' && needsObservation && error ? 'Obligatoria cuando no cumple.' : undefined}>
-              <textarea id={`${ids}-observation`} name="observation" rows={4} className={cn(fieldClass, 'min-h-[5rem] resize-y')} maxLength={OBSERVATION_MAX}
-                value={observation} onChange={(event) => setObservation(event.target.value)} aria-required={verdict === 'does_not_comply'} aria-invalid={Boolean(error) && needsObservation} />
-            </FormField>
-            <ErrorMessage error={error} />
-          </div>
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t bg-muted/30 px-6 py-[0.75rem]">
-          <Button type="button" variant="outline" size="sm" onClick={onCancel}>Cancelar</Button>
-          <Button type="submit" size="sm" disabled={busy || !verdict || needsObservation}>{busy ? 'Guardando…' : 'Guardar revisión'}</Button>
-        </div>
-      </fieldset>
-    </form>
-  );
-}
-
-export function ReviewSheet({ target, fun0Id, onClose, onSaved, onConflict }) {
-  const label = target ? [target.requirement.documentCode, target.requirement.title, target.instance.instanceLabel].filter(Boolean).join(' · ') : '';
-  return (
-    <SheetFrame open={Boolean(target)} onClose={onClose} title="Revisar documento" description={label}>
-      {target ? <ReviewForm key={target.instance.documentKey} fun0Id={fun0Id} requirement={target.requirement} instance={target.instance} onSaved={onSaved} onConflict={onConflict} onCancel={onClose} /> : null}
-    </SheetFrame>
-  );
-}
-
-const textOf = (value) => String(value ?? '').trim();
-
-/**
- * One form for every Central control of a delivery: one footer, and "Guardar" sends one command per
- * control whose result or observation changed (sequentially, stopping at the first failure).
- * A control whose previous decision is stale starts with an empty result and is only sent once the
- * user picks one. `onControlSaved` fires after each command that went through (partial progress).
- */
-export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel }) {
-  const ids = useId();
-  const initial = (control) => ({ value: control.review?.current === false ? '' : control.review?.selectedSourceValueId || '', observation: control.review?.observation || '' });
-  const [drafts, setDrafts] = useState(() => Object.fromEntries(row.controls.map((control) => [control.controlId, initial(control)])));
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [invalidId, setInvalidId] = useState(null);
-  // Last saved state per control: a retry after a partial failure must not resend (nor 409 on) what already went through.
-  const baseline = useRef(Object.fromEntries(row.controls.map((control) => [control.controlId, { ...initial(control), revision: control.review?.resultRevision || 0 }])));
-  const commands = useRef(new Map()); // idempotent command per controlId
-  const changed = (control) => {
-    const draft = drafts[control.controlId]; const base = baseline.current[control.controlId];
-    if (!draft.value) return false;
-    return draft.value !== base.value || textOf(draft.observation) !== textOf(base.observation);
-  };
-  const pending = row.controls.filter(changed);
-  function update(controlId, patch) {
-    commands.current.delete(controlId); setInvalidId(null);
-    setDrafts((current) => ({ ...current, [controlId]: { ...current[controlId], ...patch } }));
-  }
-  function validate() {
-    for (const control of row.controls) {
-      const draft = drafts[control.controlId];
-      if (!draft.value && textOf(draft.observation) && textOf(draft.observation) !== textOf(baseline.current[control.controlId].observation)) return { id: control.controlId, message: `Seleccione el resultado de «${control.title}».` };
-      const effect = control.values.find((item) => item.sourceValueId === draft.value)?.effect;
-      if (changed(control) && effect === 'does_not_comply' && !textOf(draft.observation)) return { id: control.controlId, message: `Escriba la observación de «${control.title}»: es obligatoria cuando no cumple.` };
-    }
-    return null;
-  }
-  async function save(event) {
-    event.preventDefault();
-    if (busy || !canReview) return;
-    const problem = validate();
-    if (problem) { setInvalidId(problem.id); setError(problem.message); return; }
-    if (!pending.length) { setError('No hay cambios por guardar.'); return; }
-    setBusy(true); setError(''); setInvalidId(null);
-    try {
-      for (const control of pending) {
-        const draft = drafts[control.controlId]; const base = baseline.current[control.controlId];
-        if (!commands.current.has(control.controlId)) {
-          commands.current.set(control.controlId, { selectedSourceValueId: draft.value, observation: textOf(draft.observation) || null,
-            expectedEvidenceRevision: row.receipt.evidenceRevision, expectedResultRevision: base.revision, idempotencyKey: crypto.randomUUID(), reason: CONTROL_REASON });
-        }
-        try {
-          await saveCanonicalControl(origin.project.fun0Id, row.receivedDocumentRowId, control.controlId, commands.current.get(control.controlId));
-        } catch (failure) {
-          // A server answer invalidates the command; a network failure keeps it for an idempotent retry.
-          if (failure.response) commands.current.delete(control.controlId);
-          throw Object.assign(failure, { controlId: control.controlId });
-        }
-        commands.current.delete(control.controlId);
-        baseline.current[control.controlId] = { value: draft.value, observation: draft.observation, revision: base.revision + 1 };
-        onControlSaved?.();
-      }
-      onSaved('Revisión guardada.');
-    } catch (failure) {
-      if (failure.response?.status === 409) onConflict(); else { setInvalidId(failure.controlId ?? null); setError(commandErrorText(failure)); }
-    } finally { setBusy(false); }
-  }
-  return (
-    <form onSubmit={save} className="flex min-h-0 flex-1 flex-col" aria-label="Revisión de controles" noValidate>
-      <fieldset disabled={busy} className="m-0 flex min-h-0 min-w-0 flex-1 flex-col p-0 !border-0">
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
-          <div className="flex flex-col divide-y [&>*:first-child]:pt-0 [&>*:last-child]:pb-0 [&>*]:py-[0.75rem]">
-            {row.controls.map((control) => (
-              <div key={control.controlId} className="flex flex-col gap-[0.75rem]">
-                <ControlDecisionFields idPrefix={`${ids}-${control.controlId}`} control={control} value={drafts[control.controlId].value} observation={drafts[control.controlId].observation}
-                  onValueChange={(value) => update(control.controlId, { value })} onObservationChange={(observation) => update(control.controlId, { observation })} disabled={busy || !canReview} invalid={invalidId === control.controlId} />
-              </div>
-            ))}
-          </div>
-          <ErrorMessage error={error} className="mt-[0.75rem]" />
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t bg-muted/30 px-6 py-[0.75rem]">
-          <Button type="button" variant="outline" size="sm" onClick={onCancel}>{canReview ? 'Cancelar' : 'Cerrar'}</Button>
-          {canReview ? <Button type="submit" size="sm" disabled={busy || !pending.length}>{busy ? 'Guardando…' : 'Guardar'}</Button> : null}
-        </div>
-      </fieldset>
-    </form>
-  );
-}
-
-/**
- * Central controls of one delivery, decided in a single form (one Guardar for all controls). The view
- * row is loaded by its current row id (any page of the view). `onPartialSave` is called when the sheet
- * is closed after at least one control was saved without finishing the whole batch.
- */
-export function ControlsSheet({ target, origin, canReview, onClose, onSaved, onPartialSave, onConflict }) {
-  const [state, setState] = useState(null);
-  const savedAny = useRef(false);
-  const [nonce, setNonce] = useState(0);
-  const rowId = target?.instance.currentRowId;
-  useEffect(() => {
-    if (!rowId) return undefined;
-    const controller = new AbortController();
-    setState((current) => (current?.rowId === rowId ? current : null));
-    findCanonicalRow(origin, rowId, controller.signal)
-      .then((found) => { if (!controller.signal.aborted) setState({ rowId, found, error: found ? '' : 'La entrega ya no está vigente. Actualice la vista.' }); })
-      .catch((failure) => { if (!controller.signal.aborted) setState({ rowId, found: null, error: documentaryError(failure) }); });
-    return () => controller.abort();
-  }, [origin, rowId, nonce]);
-  const current = state?.rowId === rowId ? state : null;
-  const row = current?.found?.row;
-  const view = current?.found?.view;
-  const allowed = Boolean(canReview && view && !view.readOnly && view.capabilities.review && row?.actions?.review !== false);
-  const label = target ? [target.requirement.documentCode, target.requirement.title, target.instance.instanceLabel].filter(Boolean).join(' · ') : '';
-  function saved(message) { savedAny.current = false; setNonce((value) => value + 1); onSaved(message); }
-  // Closing after some (but not all) controls were saved: the parent must reload what already went through.
-  function close() {
-    const partial = savedAny.current;
-    savedAny.current = false;
-    if (partial) onPartialSave?.();
-    onClose();
-  }
-  return (
-    <SheetFrame open={Boolean(target)} onClose={close} title="Revisar controles" description={label}>
-      {row ? (
-        <ControlsForm key={`${row.receivedDocumentRowId}:${row.receipt.evidenceRevision}:${row.controls.map((control) => control.review?.resultRevision || 0).join(',')}`}
-          origin={origin} row={row} canReview={allowed} onSaved={saved} onControlSaved={() => { savedAny.current = true; }} onConflict={() => { savedAny.current = false; onConflict(); }} onCancel={close} />
-      ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
-          {!current ? <div className="flex flex-col gap-2" aria-hidden="true"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div> : null}
-          <ErrorMessage error={current?.error} />
-        </div>
-      )}
-    </SheetFrame>
-  );
-}
+export { commandErrorText };
 
 /**
  * Confirmation of a declaration command: motive (always) and legal date (declare only).
@@ -349,7 +109,7 @@ export function ChecklistDialog({ open, data, fun0Id, currentItem, itemError = '
   const [error, setError] = useState('');
   const key = useRef(null);
   useEffect(() => { if (open) { setMarks(checklistInitialMarks(data, codes)); setCity(activeCity); setNumber(activeAuthority.value); setError(''); key.current = null; } }, [open]);
-  const titles = new Map((data?.requirements || []).filter((item) => item.documentCode).map((item) => [String(item.documentCode).trim(), item.title]));
+  const meta = checklistItemMeta(data);
   const defaults = checklistDefaultMarks(data, codes);
   const mark = (code, value) => { key.current = null; setMarks((current) => ({ ...current, [code]: value })); };
 
@@ -406,7 +166,10 @@ export function ChecklistDialog({ open, data, fun0Id, currentItem, itemError = '
               {codes.map((code) => (
                 <li key={code} className="flex items-center gap-[0.75rem] px-[0.75rem] py-1.5" data-testid={`checklist-row-${code}`}>
                   <span className="w-12 shrink-0 font-mono text-xs text-foreground">{code}</span>
-                  <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground" title={titles.get(code) || undefined}>{titles.get(code) || code}</span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-xs text-muted-foreground" title={meta.get(code)?.name || undefined}>{meta.get(code)?.name || code}</span>
+                    {meta.get(code)?.hint ? <span className="text-[11px] leading-4 text-muted-foreground/80" data-testid={`checklist-hint-${code}`}>{meta.get(code).hint}</span> : null}
+                  </span>
                   <MarkToggle code={code} name={`${ids}-${code}`} value={marks[code]} disabled={!canEdit || busy} onChange={(value) => mark(code, value)} />
                 </li>
               ))}

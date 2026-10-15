@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, FilePlus2, Info, RefreshCw } from 'lucide-react';
+import { ClipboardCheck, Download, FilePlus2, Info, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import { downloadCanonicalFile, getCanonicalVersions } from '@/app/services/documentaryOperations.service';
 import { VrBadge } from '../atoms/VrBadge';
+import { reviewedByLine } from '../../legalFormModel';
 import { DetailFact, DetailPill, DetailSection } from '../molecules/DetailSection';
 import { DocumentSupportList } from '../molecules/DocumentSupportList';
 import { DocumentalDetailShell } from './DocumentalDetailShell';
-import { ControlDecision, ErrorMessage } from './CanonicalDocumentForms';
-import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf, EMPTY_VALUE, formatDocumentaryDate, rowCode, rowListTitle, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
+import { EvaluationStatus } from '../molecules/EvaluationStatus';
+import { effectLabel, ErrorMessage } from './CanonicalDocumentForms';
+import { canEvaluateRow, CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf, EMPTY_VALUE, evaluationOf, formatDocumentaryDate, rowCode, rowListTitle, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
 /** Download buttons for the files of one receipt (digital and/or scan of the physical copy). */
 export function DocumentFiles({ origin, receipt, onError, size = 'sm' }) {
@@ -107,15 +109,24 @@ function VersionTimeline({ origin, row }) {
 }
 
 /** "Ficha documental" of a catalogue-based document. */
-export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, headingId, onReceiveVersion, onUpdateEvidence, onSaved, onConflict }) {
+export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, headingId, onReceiveVersion, onUpdateEvidence, onEvaluate }) {
   const documentClass = documentClassOf(row);
   const support = rowSupport(row);
   const receipt = row.receipt;
   // vr_slip rows cannot get new versions; their evidence can still be corrected.
   const canUpdateEvidence = canReceive && (row.actions?.replace || (documentClass === 'vr_slip' && row.actions?.receive));
   const canReceiveVersion = canReceive && row.actions?.replace;
-  const footer = canUpdateEvidence || canReceiveVersion ? (
+  const evaluation = evaluationOf(row);
+  const reviewedBy = reviewedByLine({ name: evaluation.reviewedByName, id: evaluation.reviewedBy, at: evaluation.reviewedAt });
+  // Only requirements are evaluated; the server flags the rows the user may evaluate.
+  const canEvaluate = Boolean(canReview && onEvaluate && canEvaluateRow(row));
+  const footer = canUpdateEvidence || canReceiveVersion || canEvaluate ? (
     <>
+      {canEvaluate ? (
+        <Button type="button" size="sm" onClick={() => onEvaluate(row)}>
+          <ClipboardCheck aria-hidden="true" />Evaluar
+        </Button>
+      ) : null}
       {canReceiveVersion ? (
         <Button type="button" size="sm" onClick={() => onReceiveVersion(row)}>
           <FilePlus2 aria-hidden="true" />Recibir nueva versión
@@ -154,12 +165,22 @@ export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, he
         </dl>
       </DetailSection>
       <VersionTimeline origin={origin} row={row} />
-      {row.controls.length ? (
-        <DetailSection id={`controls-${row.rowKey}`} title="Legal y debida forma">
-          <div className="flex flex-col divide-y [&>*:first-child]:pt-0 [&>*:last-child]:pb-0 [&>*]:py-[0.75rem]">
-            {row.controls.map((control) => (
-              <ControlDecision key={control.controlId} origin={origin} row={row} control={control} canReview={canReview} onSaved={onSaved} onConflict={onConflict} />
-            ))}
+      {documentClass === 'requirement' ? (
+        <DetailSection id={`evaluation-${row.rowKey}`} title="Evaluación">
+          <div className="flex flex-col gap-2">
+            <div><EvaluationStatus row={row} showReviewer={false} /></div>
+            {reviewedBy ? <p className="mb-0 text-xs leading-4 text-muted-foreground">{reviewedBy}</p> : null}
+            {evaluation.observation ? <p className="mb-0 text-xs leading-5 text-foreground">{evaluation.observation}</p> : null}
+            {row.controls.length ? (
+              <ul className="m-0 flex list-none flex-col gap-1 p-0 text-xs leading-4">
+                {row.controls.map((control) => (
+                  <li key={control.controlId} className="flex flex-wrap justify-between gap-x-2">
+                    <span className="text-foreground">{control.title}</span>
+                    <span className="text-muted-foreground">{control.review?.current === false ? 'Requiere nueva revisión' : effectLabel(control.review?.effect)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </DetailSection>
       ) : null}

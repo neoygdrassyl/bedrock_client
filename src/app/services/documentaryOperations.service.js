@@ -1,7 +1,7 @@
 import http from '../../http-common';
 import { documentaryProjectId } from './documentary.service';
 import { isCanonicalExpediente } from '../pages/user/expediente_documental/expedienteMode';
-import { validateDocumentaryView, validateDocumentaryReceipt, validateDocumentaryInventory } from '../pages/user/expediente_documental/documentaryViewContract';
+import { validateDocumentaryView, validateDocumentaryReceipt, validateDocumentaryInventory, validateRowEvaluation } from '../pages/user/expediente_documental/documentaryViewContract';
 const ROOT = '/fun/documentary/v1';
 const projectUrl = (id) => `${ROOT}/projects/${documentaryProjectId(id)}`;
 const fail = () => { throw new Error('La respuesta no corresponde al expediente o a su publicación.'); };
@@ -21,8 +21,12 @@ export async function getDocumentaryOrigin({ fun0Id, submitId }, signal) {
   if (data.mode === 'canonical' && (!data.publication?.checksum || !Array.isArray(data.catalogue?.documents) || !Array.isArray(data.catalogue?.classifications))) fail();
   return data;
 }
-export async function getCanonicalDocuments(origin, afterId = 0, signal) {
-  const { data } = await http.get(`${projectUrl(origin.project.fun0Id)}/view`, { signal, params: { afterId, limit: 25 } });
+// `scope` ('input' | 'issued') and `documentClass` filter on the server; both are optional (default: input, every class).
+export async function getCanonicalDocuments(origin, afterId = 0, signal, { scope, documentClass } = {}) {
+  const params = { afterId, limit: 25 };
+  if (scope) params.scope = scope;
+  if (documentClass) params.documentClass = documentClass;
+  const { data } = await http.get(`${projectUrl(origin.project.fun0Id)}/view`, { signal, params });
   validateDocumentaryView(data);
   if (data?.schemaVersion !== 'dovela-backoffice/documentary-view/v1' || data.mode !== 'canonical'
     || data.project?.fun0Id !== origin.project.fun0Id || data.configuration?.id !== origin.publication.configurationId
@@ -58,13 +62,19 @@ export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
 export async function saveCanonicalControl(fun0Id, rowId, controlId, command) {
   return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/controls/${centralControlId(controlId)}`, command, JSON_BODY)).data;
 }
+const REVIEW_VERDICTS = ['complies', 'does_not_comply', 'not_applicable'];
+/** Reviewer verdict of ONE delivery row (a VR version) of a document without Central controls. */
+export async function saveCanonicalReview(fun0Id, rowId, command) {
+  if (!REVIEW_VERDICTS.includes(command?.verdict)) throw new Error('Seleccione un veredicto válido.');
+  return (await http.put(`${projectUrl(fun0Id)}/documents/${documentaryProjectId(rowId)}/review`, command, JSON_BODY)).data;
+}
 export async function createCanonicalSubmit(fun0Id, command) {
   return (await http.post(`${projectUrl(fun0Id)}/submits`, command, JSON_BODY)).data;
 }
 export async function getCanonicalVersions(fun0Id, row, afterId = 0) {
   const { data } = await http.get(`${projectUrl(fun0Id)}/documents/${row.receivedDocumentRowId}/versions`, { params: { afterId, limit: 25 } });
   if (data?.schemaVersion !== 'dovela-backoffice/documentary-versions/v1' || data.documentKey !== row.documentKey || !Array.isArray(data.rows)) fail();
-  data.rows.forEach(receipt=>{ validateDocumentaryReceipt(receipt,fun0Id); });
+  data.rows.forEach(receipt=>{ validateDocumentaryReceipt(receipt,fun0Id); validateRowEvaluation(receipt.evaluation); });
   return data;
 }
 
@@ -101,6 +111,22 @@ export async function getCanonicalHistory(fun0Id, afterEventId=0, limit=25) {
   if(!Array.isArray(data)||data.length>limit||data.some(event=>!Number.isInteger(event.id)||event.id<=afterEventId||event.fun0Id!==Number(fun0Id))) fail();
   const events=data.map(event=>({...event,beforeJson:typeof event.beforeJson==='string'?JSON.parse(event.beforeJson):event.beforeJson,afterJson:typeof event.afterJson==='string'?JSON.parse(event.afterJson):event.afterJson}));
   return {events,nextAfterId:events.length===limit?events[events.length-1].id:null};
+}
+// Documents added by hand to the requirements of an expediente (from the pinned Central catalogue).
+const centralDocumentId = (value) => {
+  if (typeof value !== 'string' || !value.trim() || value.length > 36) fail();
+  return encodeURIComponent(value);
+};
+export async function getRequirementAdditions(fun0Id, signal) {
+  const { data } = await http.get(`${projectUrl(fun0Id)}/requirements/additions`, { signal });
+  if (!data || !Array.isArray(data.additions) || !Array.isArray(data.catalogue)) fail();
+  return data;
+}
+export async function addRequirementAddition(fun0Id, command) {
+  return (await http.post(`${projectUrl(fun0Id)}/requirements/additions`, command, JSON_BODY)).data;
+}
+export async function removeRequirementAddition(fun0Id, documentId, command) {
+  return (await http.delete(`${projectUrl(fun0Id)}/requirements/additions/${centralDocumentId(documentId)}`, { data: command, headers: JSON_BODY.headers })).data;
 }
 export async function getDocumentaryGovernance(fun0Id, signal) {return (await http.get(`${projectUrl(fun0Id)}/governance`,{signal})).data;}
 export async function activateDocumentaryProject(fun0Id,command) {return (await http.post(`${projectUrl(fun0Id)}/activation`,command,JSON_BODY)).data;}

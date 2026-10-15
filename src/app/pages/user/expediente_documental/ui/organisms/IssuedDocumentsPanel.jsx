@@ -33,8 +33,12 @@ function LoadingRows() {
   );
 }
 
-/** Read-only list of the documents issued for an expediente (CUB registry). */
-export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', onRetry }) {
+/**
+ * Read-only list of the outgoing consecutivos of an expediente (CUB registry). Traditional expedientes use it as
+ * their whole Expedidos tab; canonical ones show it under the issued-documents table (`hideWhenEmpty`).
+ */
+export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', onRetry, title = 'Documentos expedidos', note = SCOPE_NOTE, hideWhenEmpty = false }) {
+  if (hideWhenEmpty && !loading && !error && !rows.length) return null;
   return (
     <section className="overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm" aria-labelledby="issued-documents-title">
       <header className="flex flex-wrap items-start justify-between gap-x-[1rem] gap-y-2 border-b bg-muted/30 px-[1rem] py-[0.75rem]">
@@ -43,8 +47,8 @@ export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', o
             <FileOutput className="h-4 w-4" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <h2 id="issued-documents-title" className="mb-0 text-[15px] font-semibold leading-5 text-foreground">Documentos expedidos</h2>
-            <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">{SCOPE_NOTE}</p>
+            <h2 id="issued-documents-title" className="mb-0 text-[15px] font-semibold leading-5 text-foreground">{title}</h2>
+            <p className="mb-0 mt-0.5 text-xs leading-4 text-muted-foreground">{note}</p>
           </div>
         </div>
         {!loading && !error ? <DetailPill>{rows.length} {rows.length === 1 ? 'consecutivo' : 'consecutivos'}</DetailPill> : null}
@@ -77,7 +81,7 @@ export function IssuedDocumentsPanel({ rows = [], loading = false, error = '', o
       ) : null}
 
       {!loading && rows.length ? (
-        <Table aria-label="Documentos expedidos">
+        <Table aria-label={title}>
           <TableHeader className="bg-muted/40">
             <TableRow className="hover:bg-transparent">
               {COLUMNS.map((column) => <TableHead key={column} scope="col" className={HEAD_CLASS}>{column}</TableHead>)}

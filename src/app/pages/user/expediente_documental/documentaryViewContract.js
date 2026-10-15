@@ -44,6 +44,15 @@ function documentIdentity(value) {
   if (!DOCUMENT_CLASSES.includes(documentClass)) return false;
   return documentClass === 'requirement' ? documentId(value.documentId) : value.documentId === null || value.documentId === undefined;
 }
+// Per-delivery evaluation (view rows, version rows, legal-form versions). Optional so older payloads still pass.
+export const EVALUATION_STATUSES = ['approved', 'rejected', 'pending', 'not_applicable'];
+export const isRowEvaluation = (value) => value === undefined || value === null || (object(value) && EVALUATION_STATUSES.includes(value.status)
+  && (value.source === undefined || value.source === null || ['controls', 'review'].includes(value.source))
+  && ['verdict', 'observation', 'folioRange', 'reviewedByName', 'reviewedAt'].every((key) => optionalString(value[key])) && optionalCount(value.reviewRevision));
+export function validateRowEvaluation(value) {
+  if (!isRowEvaluation(value)) invalidContract();
+  return value;
+}
 // New v5 fields are validated leniently so v3/v4 responses keep passing.
 const inputDocumentFields = (value) => ['documentCode', 'title', 'instanceLabel', 'listKey', 'listTitle'].every((key) => optionalString(value[key]))
   && optionalCount(value.versionCount) && optionalId(value.inputDocumentId) && optionalId(value.currentVersionId);
@@ -88,7 +97,7 @@ function validateCanonicalView(value) {
       || row.receipt?.id!==row.receivedDocumentRowId || row.receipt?.documentKey!==row.documentKey || row.receipt?.documentId!==row.documentId
       || row.receipt?.configurationId!==value.configuration.id || !object(row.catalogueDisplay)
       || !arrayOf(row.controls,control=>object(control)&&controlId(control.controlId)&&control.sourceControlId===control.controlId&&Array.isArray(control.values))
-      || !Array.isArray(row.sources) || row.sources.length || !Array.isArray(row.versions)) invalidContract();
+      || !Array.isArray(row.sources) || row.sources.length || !Array.isArray(row.versions) || !isRowEvaluation(row.evaluation)) invalidContract();
     validateDocumentaryReceipt(row.receipt,value.project.fun0Id); seen.add(row.rowKey);
   }
   return value;

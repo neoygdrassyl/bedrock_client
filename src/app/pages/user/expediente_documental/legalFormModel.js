@@ -177,6 +177,23 @@ export function checklistInitialMarks(data, codes) {
   return Object.fromEntries(codes.map((code) => [code, validMark(data?.checklist?.marks?.[code]) ?? defaults[code]]));
 }
 
+/**
+ * Name and hint of each checklist code: `checklistItems` (legacy checklist catalogue names), falling back to the
+ * requirement titles of older payloads and finally to the code. The hint explains rows that do not apply to the
+ * expediente or whose document has not been delivered yet.
+ */
+export function checklistItemMeta(data) {
+  const titles = new Map((data?.requirements || []).filter((item) => item.documentCode).map((item) => [String(item.documentCode).trim(), item.title]));
+  const meta = new Map();
+  (data?.checklistItems || []).forEach((item) => {
+    const code = String(item.code).trim();
+    const hint = item.applies === false ? 'No aplica a este expediente' : item.delivered === false ? 'Sin entregar' : null;
+    meta.set(code, { name: item.name || titles.get(code) || null, hint });
+  });
+  titles.forEach((title, code) => { if (!meta.has(code)) meta.set(code, { name: title, hint: null }); });
+  return meta;
+}
+
 /** Legacy `fun_rs` shape the checklist PDF reads: { code: 'a,b', checked: '1,0' }. */
 export const checklistReviewOf = (codes, marks) => ({ code: codes.join(','), checked: codes.map((code) => marks[code] ?? '2').join(',') });
 
