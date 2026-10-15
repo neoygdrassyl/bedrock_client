@@ -112,8 +112,58 @@ export function VrCreateInline({ origin, onCreated, onConflict, onCancel }) {
   );
 }
 
+const INSTANCE_CHOICE = { instance: 'instance', version: 'version' };
+
+/**
+ * Current rows (loaded page of the view) of the catalogue document being received. A document that
+ * allows multiple instances may get a new instance or a new version of one of them.
+ */
+export function existingInstancesOf(view, documentId) {
+  if (!documentId) return [];
+  // Rows from backends without the allowsMultipleInstances flag keep the previous behaviour (no choice).
+  return (view.rows || []).filter((row) => documentClassOf(row) === 'requirement' && row.documentId === documentId && typeof row.allowsMultipleInstances === 'boolean');
+}
+
+/** Choice between a new instance and a new version of an existing one (multi-instance documents). */
+function InstanceChoice({ ids, instances, multiple, choice, onChoice, versionKey, onVersionKey, onReceiveVersion }) {
+  const target = instances.find((row) => row.rowKey === versionKey) || null;
+  if (!multiple) {
+    const row = instances[0];
+    return (
+      <Alert role="note" variant="warning" className="flex-wrap items-center">
+        <TriangleAlert aria-hidden="true" />
+        <AlertDescription className="min-w-0 flex-1">Este documento ya fue recibido y no admite otra instancia. Registre una nueva versión.</AlertDescription>
+        {onReceiveVersion && row?.actions?.replace ? <Button type="button" variant="outline" size="sm" onClick={() => onReceiveVersion(row)}>Recibir nueva versión</Button> : null}
+      </Alert>
+    );
+  }
+  return (
+    <FormFieldset legend="Instancias del documento" description={`Ya hay ${instances.length} ${instances.length === 1 ? 'instancia recibida' : 'instancias recibidas'}.`}>
+      <div className="flex flex-col gap-2" role="radiogroup" aria-label="Tipo de recepción">
+        {[{ value: INSTANCE_CHOICE.instance, label: 'Nueva instancia' }, { value: INSTANCE_CHOICE.version, label: 'Nueva versión de una instancia existente' }].map((option) => (
+          <div key={option.value} className="flex items-center gap-2.5">
+            <input id={`${ids}-choice-${option.value}`} type="radio" name="instanceChoice" value={option.value} checked={choice === option.value} onChange={() => onChoice(option.value)} className="h-4 w-4 accent-[hsl(var(--primary))]" />
+            <label htmlFor={`${ids}-choice-${option.value}`} className="text-sm leading-5 text-foreground">{option.label}</label>
+          </div>
+        ))}
+      </div>
+      {choice === INSTANCE_CHOICE.version ? (
+        <div className="flex flex-wrap items-end gap-2">
+          <FormField id={`${ids}-version-of`} label="Instancia" className="min-w-[12rem] flex-1">
+            <select id={`${ids}-version-of`} className={fieldClass} value={versionKey} onChange={(event) => onVersionKey(event.target.value)}>
+              <option value="">Seleccione la instancia</option>
+              {instances.map((row) => <option key={row.rowKey} value={row.rowKey} disabled={!row.actions?.replace}>{row.instanceLabel || 'Sin identificación'} · {row.receipt.vrLabel || 'VR'}</option>)}
+            </select>
+          </FormField>
+          <Button type="button" size="sm" className="mb-0.5" disabled={!target} onClick={() => onReceiveVersion?.(target)}>Continuar</Button>
+        </div>
+      ) : null}
+    </FormFieldset>
+  );
+}
+
 /** Receives a new document or a new version (`previous`) of an existing one. */
-export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSubmit = false, onSubmitCreated, onSaved, onCancel, onConflict }) {
+export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSubmit = false, onSubmitCreated, onSaved, onCancel, onConflict, onReceiveVersion }) {
   const ids = useId();
   const previousClass = previous ? documentClassOf(previous) : null;
   const [documentClass, setDocumentClass] = useState(previousClass || 'requirement');
@@ -125,6 +175,9 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
   const [draft, setDraft] = useState(EMPTY_DRAFT);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [instanceChoice, setInstanceChoice] = useState(INSTANCE_CHOICE.instance);
+  const [versionKey, setVersionKey] = useState('');
+  const [instanceLabel, setInstanceLabel] = useState('');
   // A new version must come from a VR not used by the previous versions of the document.
   const [usedSubmits, setUsedSubmits] = useState(() => new Set(previous && Number.isInteger(previous.receipt.submitId) ? [previous.receipt.submitId] : []));
   const command = useRef(null);
@@ -144,9 +197,16 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
   const createdSubmit = createdLabel ? view.submits.find((submit) => submit.idPublic === createdLabel) : null;
   const chosenSubmitId = submitId || (createdSubmit ? String(createdSubmit.id) : '');
   const submitUsed = Boolean(previous) && usedSubmits.has(Number(chosenSubmitId));
+  const instances = previous || isAnnex ? [] : existingInstancesOf(view, selected?.documentId);
+  const multipleInstances = instances.some((row) => row.allowsMultipleInstances === true);
+  // A received single-instance document only accepts new versions; a new instance needs its own label.
+  const newInstance = instances.length > 0 && multipleInstances && instanceChoice === INSTANCE_CHOICE.instance;
+  const usedLabels = new Set(instances.map((row) => String(row.instanceLabel || '').trim().toLowerCase()));
+  const labelTaken = newInstance && usedLabels.has(instanceLabel.trim().toLowerCase());
+  const instanceBlocked = instances.length > 0 && (!multipleInstances || instanceChoice === INSTANCE_CHOICE.version);
   const availableSubmits = previous ? view.submits.filter((submit) => !usedSubmits.has(submit.id)) : view.submits;
   const noVrLeft = !fixedSubmitId && (previous ? availableSubmits.length === 0 : view.submits.length === 0);
-  const blocked = noVrLeft || submitUsed;
+  const blocked = noVrLeft || submitUsed || instanceBlocked;
   const hasTitle = isAnnex ? Boolean(String(previous?.title || draft.title).trim()) : Boolean(selected);
   const hasSubmit = view.submits.some((submit) => submit.id === Number(chosenSubmitId));
   const pages = Number(draft.pages);
@@ -157,6 +217,8 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
     physical && !draft.location.trim() && 'Indique la ubicación o referencia física.',
     !physical && !draft.hasDigital && 'Registre el soporte físico o adjunte un archivo digital.',
     !draft.reason.trim() && 'Escriba la nota de recepción.',
+    newInstance && !instanceLabel.trim() && 'Indique la identificación de la nueva instancia (por ejemplo, «Hoja 2»).',
+    labelTaken && 'Ya existe una instancia con esa identificación.',
   ].filter(Boolean);
   function vrCreated(label) {
     setCreatedLabel(label); setSubmitId(''); setCreatingVr(false);
@@ -169,12 +231,13 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
     const title = isAnnex ? String(previous?.title || data.get('title') || '').trim() : selected?.name;
     if ((isAnnex ? !title : !selected) || !view.submits.some((submit) => submit.id === Number(chosenSubmitId))) { setError(isAnnex ? 'Indique el título del anexo y una VR del expediente.' : 'Seleccione un documento del catálogo y una VR del expediente.'); return; }
     if (submitUsed) { setError('Este documento ya tiene una versión en esa VR. Seleccione una VR diferente a las de las versiones anteriores.'); return; }
+    if (newInstance && (!instanceLabel.trim() || labelTaken)) { setError('Indique una identificación nueva para la instancia.'); return; }
     if (!physical && !digital?.size) { setError('Registre el soporte físico o adjunte un archivo digital.'); return; }
     if ([digital, scan].some((file) => file?.size > MAX_FILE_BYTES)) { setError('Cada archivo debe pesar como máximo 50 MB.'); return; }
     setBusy(true); setError('');
     try {
       command.current ||= { documentClass, ...(isAnnex ? {} : { documentId: selected.documentId }), submitId: Number(chosenSubmitId), title,
-        instanceLabel: String(data.get('instanceLabel') || '').trim() || null, documentKey: previous?.documentKey || null,
+        instanceLabel: previous ? previous.instanceLabel || null : instanceLabel.trim() || null, documentKey: previous?.documentKey || null,
         previousVersionId: previous?.receivedDocumentRowId || null, expectedRowVersion: previous?.receipt.rowVersion || null,
         contributor: String(data.get('contributor') || '') || null, channel: String(data.get('channel') || 'counter'),
         receivedAt: new Date().toISOString(), physical: physical ? { pages: Number(data.get('pages')), location: String(data.get('location')).trim(), reference: null } : null,
@@ -219,6 +282,10 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
             {previous ? null : isAnnex
               ? <FormField id={`${ids}-title`} label="Título del anexo"><Input id={`${ids}-title`} className="text-sm" name="title" maxLength={255} required /></FormField>
               : <CatalogueDocumentPicker id={`${ids}-catalogue`} documents={documents} value={documentId} onChange={setDocumentId} applicableIds={applicableIds} />}
+            {instances.length ? (
+              <InstanceChoice ids={ids} instances={instances} multiple={multipleInstances} choice={instanceChoice} onChoice={setInstanceChoice}
+                versionKey={versionKey} onVersionKey={setVersionKey} onReceiveVersion={onReceiveVersion} />
+            ) : null}
             {!isAnnex && selected && !previous ? <p className={hintClass}>Lista: {selected.listKey || 'Sin lista'} · Categorías: {origin.catalogue.classifications.filter((item) => selected.classificationIds?.includes(item.id)).map((item) => item.name).join(' · ') || 'Sin categoría'}</p> : null}
           </FormSection>
 
@@ -252,9 +319,13 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
                   {Object.entries(CHANNEL_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                 </select>
               </FormField>
-              <FormField id={`${ids}-instance`} label="Identificación adicional (opcional)" className="sm:col-span-2">
-                <Input id={`${ids}-instance`} className="text-sm" name="instanceLabel" maxLength={255} />
-              </FormField>
+              {previous ? null : (
+                <FormField id={`${ids}-instance`} label={newInstance ? 'Identificación de la instancia' : 'Identificación adicional (opcional)'} hint={newInstance ? 'Por ejemplo, «Hoja 2».' : undefined}
+                  error={labelTaken ? 'Ya existe una instancia con esa identificación.' : undefined} className="sm:col-span-2">
+                  <Input id={`${ids}-instance`} className="text-sm" name="instanceLabel" maxLength={255} value={instanceLabel} onChange={(event) => setInstanceLabel(event.target.value)}
+                    required={newInstance} aria-invalid={labelTaken} aria-describedby={newInstance ? `${ids}-instance-hint` : undefined} />
+                </FormField>
+              )}
             </div>
           </FormSection>
 

@@ -294,6 +294,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                   previous={sheet.row}
                   canCreateSubmit={canReceive && !fixedSubmitId}
                   onSubmitCreated={(label) => reload(`VR ${label} creada.`)}
+                  onReceiveVersion={(row) => openSheet('receive', row)}
                   onSaved={(message) => { setCursors([0]); refresh(message); }}
                   onCancel={() => setSheet(null)}
                   onConflict={conflict}

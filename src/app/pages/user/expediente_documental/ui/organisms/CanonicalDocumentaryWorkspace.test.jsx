@@ -298,4 +298,53 @@ describe('presentación alineada con Actualizar', () => {
     expect(save.parentElement).not.toContainElement(within(dialog).getByLabelText('Nota de recepción'));
     expect(within(dialog).getByText('Para guardar la recepción:').closest('[role="status"]')).toHaveAttribute('aria-live', 'polite');
   });
+
+  it('offers a new instance (label required) or a new version of an existing one for multi-instance documents', async () => {
+    const sheet1 = docRow({ instanceLabel: 'Hoja 1', allowsMultipleInstances: true });
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), submits: [{ id: 11, idPublic: 'VR-A' }, { id: 12, idPublic: 'VR-B' }], rows: [sheet1] });
+    api.receiveCanonicalDocument.mockResolvedValue({});
+    render(<CanonicalDocumentaryWorkspace origin={origin} fixedSubmitId={12} canManage />);
+    expect(await screen.findByText('Hoja 1')).toHaveAttribute('data-tone', 'teal');
+    const dialog = await openReceive();
+    fireEvent.click(within(dialog).getByRole('option', { name: /DOC-A/ }));
+    expect(within(dialog).getByRole('radio', { name: 'Nueva instancia' })).toBeChecked();
+    fillPhysicalReceipt(dialog);
+    const save = within(dialog).getByRole('button', { name: 'Guardar recepción' });
+    expect(save).toBeDisabled();
+    const label = within(dialog).getByLabelText('Identificación de la instancia');
+    fireEvent.change(label, { target: { value: 'hoja 1' } });
+    expect(within(dialog).getAllByText('Ya existe una instancia con esa identificación.').length).toBeGreaterThan(0);
+    expect(save).toBeDisabled();
+    fireEvent.change(label, { target: { value: 'Hoja 2' } });
+    expect(save).toBeEnabled();
+    fireEvent.click(save);
+    await waitFor(() => expect(api.receiveCanonicalDocument).toHaveBeenCalledWith(1, expect.objectContaining({ documentId: 'C-DOC-A', instanceLabel: 'Hoja 2', documentKey: null, previousVersionId: null }), null, null));
+  });
+
+  it('switches to a new version of the chosen instance', async () => {
+    const sheet1 = docRow({ instanceLabel: 'Hoja 1', allowsMultipleInstances: true });
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), submits: [{ id: 11, idPublic: 'VR-A' }, { id: 12, idPublic: 'VR-B' }], rows: [sheet1] });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    const dialog = await openReceive();
+    fireEvent.click(within(dialog).getByRole('option', { name: /DOC-A/ }));
+    fireEvent.click(within(dialog).getByRole('radio', { name: 'Nueva versión de una instancia existente' }));
+    expect(within(dialog).getByRole('button', { name: 'Guardar recepción' })).toBeDisabled();
+    const continueButton = within(dialog).getByRole('button', { name: 'Continuar' });
+    expect(continueButton).toBeDisabled();
+    fireEvent.change(within(dialog).getByLabelText('Instancia'), { target: { value: 'canonical:a' } });
+    fireEvent.click(continueButton);
+    expect(await screen.findByText('Recibir nueva versión', { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveTextContent('Documento publicado · Hoja 1');
+  });
+
+  it('asks for a new version when a single-instance document was already received', async () => {
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [docRow({ allowsMultipleInstances: false })] });
+    render(<CanonicalDocumentaryWorkspace origin={origin} fixedSubmitId={11} canManage />);
+    const dialog = await openReceive();
+    fireEvent.click(within(dialog).getByRole('option', { name: /DOC-A/ }));
+    expect(within(dialog).getByText(/no admite otra instancia/)).toBeInTheDocument();
+    expect(within(dialog).queryByRole('radio')).not.toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Guardar recepción' })).toBeDisabled();
+    expect(within(dialog).getByRole('button', { name: 'Recibir nueva versión' })).toBeInTheDocument();
+  });
 });
