@@ -34,13 +34,14 @@ const withRequestUpdate = (ctx) => ({ requestUpdate: ctx.requestUpdate });
  * - canonicalSave: false when the generator has no save action that works on a canonical expediente
  *   (it never saves, or it writes tables the backend protects: fun_r). Such generators receive
  *   `canonicalSaveBlocked` and must hide their save buttons in the new model.
- * - usesDocumentaryInventory: the generator reads the canonical inventory when the expediente is in
- *   the new documentary model (useDocumentaryInventory) and its legacy data otherwise.
+ * - usesDocumentaryInventory: the generator reads the new documentary model when the expediente is in it
+ *   (the inventory through useDocumentaryInventory, or /requirements/missing for confirminc) and its
+ *   legacy data otherwise.
  */
 export const DOCUMENT_GENERATORS = Object.freeze([
   { id: 'fun_pdf', domId: 'fund_pdf', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF, label: 'PDF Formulario Único Nacional', title: 'Formulario Único Nacional', description: 'PDF del FUN con los datos del expediente.', gates: {}, canonicalSave: false },
   { id: 'fun_pdf_check', domId: 'fund_pdf2', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_PDF_CHECK, label: 'PDF Lista de Chekeo', title: 'Lista de chequeo', description: 'PDF de la lista de chequeo documental.', gates: {}, canonicalSave: false, usesDocumentaryInventory: true },
-  { id: 'fun_doc_confirminc', domId: 'fund_212', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRM_INCOMPLETE, label: 'Documento de recordatorio incompleto', title: 'Recordatorio de radicación incompleta', description: 'Carta de documentos faltantes.', gates: {}, canonicalSave: true, extraProps: withRequestUpdate },
+  { id: 'fun_doc_confirminc', domId: 'fund_212', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRM_INCOMPLETE, label: 'Documento de recordatorio incompleto', title: 'Recordatorio de radicación incompleta', description: 'Carta de documentos faltantes.', gates: {}, canonicalSave: true, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
   { id: 'fun_doc_confirmlegal', domId: 'fund_21', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_DOC_CONFIRMLEGAL, label: 'Documento de Confirmación Legal y Debida Forma', title: 'Constancia de legal y debida forma', description: 'Confirmación de radicación en legal y debida forma.', gates: { minState: 5 }, canonicalSave: true, usesDocumentaryInventory: true, extraProps: withRequestUpdate },
   { id: 'fun_sign_pdf', domId: 'fund_sign', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SIGN_PDF, label: 'Valla', title: 'Valla', description: 'Valla informativa del trámite.', gates: { minState: 5, neighbourNotice: true }, canonicalSave: false },
   { id: 'fun_seals', domId: 'fund_seal', section: GENERATOR_SECTION_AUTOMATIC, component: FUN_SEAL, label: 'Sello', title: 'Sello', description: 'Sello de radicación.', gates: { tenant: 'cb1' }, canonicalSave: true },

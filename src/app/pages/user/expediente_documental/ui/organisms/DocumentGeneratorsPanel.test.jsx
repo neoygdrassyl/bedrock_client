@@ -45,6 +45,7 @@ describe('DocumentGeneratorsPanel', () => {
     const expected = DOCUMENT_GENERATORS.filter((entry) => !entry.gates.tenant).map((entry) => entry.title);
     expect(screen.getAllByRole('listitem').map((item) => item.querySelector('p').textContent)).toEqual(expected);
     expect(within(row('Hoja de control documental')).getByText('Legacy')).toHaveAttribute('data-tone', 'neutral');
+    expect(within(row('Hoja de control documental')).queryByText('Lectura')).not.toBeInTheDocument();
     expect(screen.queryByTestId('generator-fun_d_control')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Generar Hoja de control documental' }));
@@ -73,6 +74,11 @@ describe('DocumentGeneratorsPanel', () => {
     expect(within(row('Hoja de control documental')).getByText('Modelo nuevo')).toHaveAttribute('data-tone', 'info');
     expect(within(row('Lista de chequeo')).getByText('Modelo nuevo')).toBeInTheDocument();
     expect(within(row('Valla')).getByText('Legacy')).toBeInTheDocument();
+    // confirminc reads /requirements/missing, so it is part of the new model too.
+    expect(within(row('Recordatorio de radicación incompleta')).getByText('Modelo nuevo')).toBeInTheDocument();
+    // Save capability tags only appear in the new model.
+    expect(within(row('Hoja de control documental')).getByText('Lectura')).toBeInTheDocument();
+    expect(within(row('Constancia de legal y debida forma')).getByText('Lectura + guardado')).toBeInTheDocument();
   });
 
   it('disables state-gated generators with the reason', async () => {
