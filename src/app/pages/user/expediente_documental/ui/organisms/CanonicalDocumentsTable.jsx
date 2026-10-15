@@ -84,9 +84,9 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
               >
                 <TableCell className={cn('relative px-[1rem] py-2', selected && selectedRowAccent)}>
                   <DocumentTitleButton
-                    name={rowName(row)}
+                    name={rowName({ ...row, instanceLabel: null })}
                     code={rowCode(row)}
-                    extra={<ClassBadge row={row} />}
+                    extra={<><ClassBadge row={row} />{row.instanceLabel ? <Tag tone="teal" title="Instancia del documento">{row.instanceLabel}</Tag> : null}</>}
                     selected={selected}
                     expanded={expandedKey === row.rowKey}
                     controlsId={`${idPrefix}-${row.receivedDocumentRowId}`}
