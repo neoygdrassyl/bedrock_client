@@ -53,6 +53,19 @@ describe('DocumentGeneratorsPanel', () => {
     expect(typeof mocks.received.fun_d_control.requestUpdate).toBe('function');
   });
 
+  it('keeps one generator open at a time so shared DOM ids never collide', async () => {
+    const user = userEvent.setup();
+    mocks.get.mockResolvedValue({ data: LEGACY_ITEM });
+    render(<DocumentGeneratorsPanel currentId={9} currentVersion={1} swaMsg={{}} translation={{}} globals={{}} />);
+    await screen.findByText('Hoja de control documental');
+    await user.click(screen.getByRole('button', { name: 'Generar Hoja de control documental' }));
+    await user.click(screen.getByRole('button', { name: 'Generar Citación a vecinos' }));
+    expect(screen.getByTestId('generator-fun_alert_neighbour')).toBeInTheDocument();
+    expect(screen.queryByTestId('generator-fun_d_control')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Cerrar Citación a vecinos' }));
+    expect(screen.queryByTestId('generator-fun_alert_neighbour')).not.toBeInTheDocument();
+  });
+
   it('tags inventory-aware generators as new model for canonical expedientes', async () => {
     mocks.get.mockResolvedValue({ data: { ...LEGACY_ITEM, centralReleaseId: 'rel-1' } });
     render(<DocumentGeneratorsPanel currentId={9} currentVersion={1} />);

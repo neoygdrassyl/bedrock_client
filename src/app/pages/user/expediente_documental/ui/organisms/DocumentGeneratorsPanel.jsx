@@ -79,7 +79,9 @@ function GeneratorRow({ entry, ctx, baseProps, open, onToggle }) {
 export function DocumentGeneratorsPanel({ currentId, currentVersion, translation, swaMsg, globals }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [error, setError] = useState('');
-  const [openIds, setOpenIds] = useState(() => new Set());
+  // One generator at a time: generators address their inputs by DOM id (vr_selected, geng_type,
+  // genc_doc_form...) and several share them, so two mounted at once would read each other's fields.
+  const [openId, setOpenId] = useState(null);
 
   const load = useCallback(() => {
     setError('');
@@ -96,13 +98,7 @@ export function DocumentGeneratorsPanel({ currentId, currentVersion, translation
   );
   const baseProps = { translation, swaMsg, globals, currentItem, currentVersion };
 
-  function toggle(id) {
-    setOpenIds((previous) => {
-      const next = new Set(previous);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  }
+  const toggle = (id) => setOpenId((previous) => (previous === id ? null : id));
 
   return (
     <section className="overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm" aria-labelledby="document-generators-title">
@@ -141,7 +137,7 @@ export function DocumentGeneratorsPanel({ currentId, currentVersion, translation
             </h3>
             <ul className="m-0 list-none p-0">
               {entries.map((entry) => (
-                <GeneratorRow key={entry.id} entry={entry} ctx={ctx} baseProps={baseProps} open={openIds.has(entry.id)} onToggle={toggle} />
+                <GeneratorRow key={entry.id} entry={entry} ctx={ctx} baseProps={baseProps} open={openId === entry.id} onToggle={toggle} />
               ))}
             </ul>
           </div>
