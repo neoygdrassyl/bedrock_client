@@ -12,6 +12,7 @@ import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swal
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryLastVr } from '../../expediente_documental/documentaryInventoryModel';
+import { buildCuratedVrList, legacyLastVr } from './confirmLegalVr';
 
 export function extractConfirmLegalProcessData(items) {
     const match = Array.isArray(items)
@@ -76,6 +77,9 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
         try {
             await SubmitService.getIdRelated(currentItem.id_public).then(response => {
                 setVrsRelated(response.data)
+                // Feeds the legacy path of _GET_LAST_VR (the canonical one reads the inventory).
+                setCuratedList(buildCuratedVrList(response.data));
+                setLoad(true);
             })
             const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
             const data = extractConfirmLegalProcessData(responseCubXVr.data);
@@ -88,35 +92,6 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             console.log(error);
         }
     }
-    const buildCuratedList = (List) => {
-        let newList = [];
-        if (!List) return;
-        List.map((value, i) => {
-            let subList = value.sub_lists;
-            subList.map(valuej => {
-                let name = valuej.list_name ? valuej.list_name.split(";") : []
-                let category = valuej.list_category ? valuej.list_category.split(",") : []
-                let code = valuej.list_code ? valuej.list_code.split(",") : []
-                let page = valuej.list_pages ? valuej.list_pages.split(",") : []
-                let review = valuej.list_review ? valuej.list_review.split(",") : []
-
-                review.map((valuek, k) => {
-                    if (valuek == 'SI') newList.push({
-                        id_public: value.id_public,
-                        date: value.date,
-                        time: value.time,
-                        name: name[k],
-                        category: category[k],
-                        page: page[k],
-                        code: code[k],
-                    })
-                })
-            })
-        })
-        setCuratedList(newList);
-        setLoad(true)
-    }
-
         function capitalize(s) {
             return s && s[0].toUpperCase() + s.slice(1);
         }
@@ -423,25 +398,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 const required = Array.from(canonical.statusByCode.entries()).filter(([, value]) => value === '1' || value === '0').map(([code]) => code);
                 return inventoryLastVr(canonical.satisfyingVr, required, _GET_CLOCK_STATE(3).date_start);
             }
-            let fun_r = _SET_CHILD_REVIEW();
-            let checks = fun_r.checked ? fun_r.checked.split(',') : [];
-            let codes = fun_r.code ? fun_r.code.split(',') : [];
-
-            let docsToCheck = codes.filter((code, i) => checks[i] == '1' || checks[i] == '0')
-
-            let lastDate = _GET_CLOCK_STATE(3).date_start;
-            let last_vr = ''
-
-            curatedList.map(obj => {
-                let date = obj.date
-                if (docsToCheck.includes(obj.code)) {
-                    if (dayjs(date).isAfter(lastDate)) {
-                        lastDate = date
-                        last_vr = obj.id_public
-                    }
-                }
-            })
-            return { date: lastDate, vr: last_vr }
+            return legacyLastVr(curatedList, _SET_CHILD_REVIEW(), _GET_CLOCK_STATE(3).date_start);
         }
 
         let _CONTROL_COMPONENTN = () => {
