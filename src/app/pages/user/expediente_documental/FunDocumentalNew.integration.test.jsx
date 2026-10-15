@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   fund: vi.fn(),
   user: vi.fn(),
   cubByFun: vi.fn(),
+  generators: vi.fn(),
 }));
 vi.mock('./hooks/useDocumentaryOrigin', () => ({ useDocumentaryOrigin: mocks.origin }));
 vi.mock('./hooks/useExpedienteDocumental', () => ({ useExpedienteDocumental: mocks.legacy }));
@@ -20,6 +21,7 @@ vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: 
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
 vi.mock('../shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
+vi.mock('./ui/organisms/DocumentGeneratorsPanel', () => ({ default: (props) => { mocks.generators(props); return <div>Panel de generadores</div>; } }));
 vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
 vi.mock('@/app/services/data.service', () => ({ default: { getUserData: mocks.user } }));
 vi.mock('@/app/services/cubXvr.service', () => ({ default: { getByFUN: mocks.cubByFun } }));
@@ -79,6 +81,20 @@ it('shows the pending Central activation notice without a banner', async () => {
 });
 
 describe('documentary tabs', () => {
+  it.each([['canonical', CANONICAL], ['traditional', TRADITIONAL]])('offers Generar documentos to any role for a %s expediente', async (_, origin) => {
+    const user = userEvent.setup();
+    vi.stubEnv('VITE_DOCUMENTARY_CONFIGURATION_ACCESS', 'managers');
+    mocks.origin.mockReturnValue({ origin, refresh: vi.fn() });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" currentVersion={2} swaMsg={{ ok: 1 }} />);
+    await settleIssuedCount();
+    expect(screen.queryByRole('tab', { name: /Configuración documental/ })).not.toBeInTheDocument();
+    expect(mocks.generators).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('tab', { name: /Generar documentos/ }));
+    expect(await screen.findByText('Panel de generadores')).toBeInTheDocument();
+    expect(mocks.generators).toHaveBeenCalledWith(expect.objectContaining({ currentId: 1, currentVersion: 2, swaMsg: { ok: 1 } }));
+    vi.unstubAllEnvs();
+  });
+
   it('opens on Radicación and hides Configuración documental for roles without access', async () => {
     // The role restriction only applies when the temporary access switch is set to 'managers'.
     vi.stubEnv('VITE_DOCUMENTARY_CONFIGURATION_ACCESS', 'managers');

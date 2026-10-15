@@ -5,33 +5,20 @@ import Collapsible from '../../../../components/Collapsible';
 import dayjs from 'dayjs';
 import FUN6DATALIST from './fun_6_datalist';
 
-import FUN_DOC_CONFIRMLEGAL from './fun_doc_confirmlegal';
 import FUND_NAV from './fun_d_nav';
 import FUN_MODULE_NAV from './fun_moduleNav';
 import FUN_VERSION_NAV from './fun_versionNav';
-import FUN_ALERT_NEIGHBOUR from './fun_alertNeighbour';
-import FUN_REPORT_DATA_EDIT from './fun_report_data_edit';
-import FUN_PDF from './fun_pdf';
 
 import FUN_SERVICE from '../../../../services/fun.service';
-import FUN_PDF_CHECK from './fun_pdf_check';
-import FUN_SEAL from './fun_seals';
-import FUN_SIGN_PDF from './fun_sign_pdf.component';
 import DOCS_LIST from './docs_list.component';
-import FUN_D_CONTROL from './fun_d_control.component';
 import FUN_6_VIEW from '../fun_6.view';
-import FUN_DOC_CONFIRM_INCOMPLETE from './fun_doc_confirminc';
-import { regexChecker_isOA, regexChecker_isOA_2, regexChecker_isOA_3 } from '../../../../components/customClasses/typeParse';
-import FUN_CERTIFICATION from './fun_doc_certification.component';
 
 import { PDFDocument } from 'pdf-lib'
-import FUN_D_ABDICATE from './fun_doc_abdicate.component';
-import FUN_D_CONTROL_2 from './fun_d_control.component_2';
+import { buildGeneratorContext, evaluateGenerator, generatorsBySection, getGeneratorProps, GENERATOR_SECTION_AUTOMATIC, GENERATOR_SECTION_SPECIAL } from './documentGeneratorsRegistry';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { Button } from '@/components/ui/button';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
         const [attachs, setAttachs] = useState(0);
         const [edit, setEdit] = useState(false);
@@ -99,22 +86,6 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
 
         var formData = new FormData();
 
-        let _GET_CHILD_1 = () => {
-            var _CHILD = currentItem.fun_1s;
-            var _CURRENT_VERSION = currentVersion - 1;
-            var _CHILD_VARS = {
-                item_0: "",
-                description: "",
-            }
-            if (_CHILD) {
-                if (_CHILD[_CURRENT_VERSION] != null) {
-                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
-                    _CHILD_VARS.tramite = _CHILD[_CURRENT_VERSION].tramite;
-                    _CHILD_VARS.description = _CHILD[_CURRENT_VERSION].description ? _CHILD[_CURRENT_VERSION].description : "";
-                }
-            }
-            return _CHILD_VARS;
-        }
         let setValues = (refs, values) => {
             document.getElementById('fun6_codes_' + refs).value = values[0];
             document.getElementById('fun6_descriptions_' + refs).value = values[1];
@@ -254,8 +225,24 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
             link.click();
         }
 
-        let conOA = () => regexChecker_isOA_3(currentItem ? _GET_CHILD_1() : {})
-        let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
+        // Generators come from the shared registry (also used by the documentary module's
+        // "Generar documentos" tab); the markup below is the legacy one.
+        let renderGenerators = (section) => {
+            const ctx = buildGeneratorContext({ currentItem, currentVersion, requestUpdate });
+            const baseProps = { translation, swaMsg, globals, currentItem, currentVersion };
+            return generatorsBySection(section).map((entry) => {
+                const { visible, available } = evaluateGenerator(entry, ctx);
+                if (!visible || !available) return null;
+                const Generator = entry.component;
+                return <div id={entry.domId} key={entry.id}>
+                    <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">{entry.label}</label>}>
+                        <div className='text-start'>
+                            <Generator {...getGeneratorProps(entry, baseProps, ctx)} />
+                        </div>
+                    </Collapsible>
+                </div>
+            });
+        }
         return (
             <div>
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1" id="fund_11">
@@ -280,199 +267,10 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                     />
 
                     <h3 className="text-center py-3" id="fund_4">3. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
-
-                    <div id="fund_pdf">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">PDF Formulario Único Nacional</label>}>
-                            <div className='text-start'>
-                                <FUN_PDF
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                />
-                            </div>
-                        </Collapsible>
-
-                    </div>
-
-                    <div id="fund_pdf2">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">PDF Lista de Chekeo</label>}>
-                            <div className='text-start'>
-                                <FUN_PDF_CHECK
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
-                    <div id="fund_212">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Documento de recordatorio incompleto</label>}>
-                            <div className='text-start'>
-                                <FUN_DOC_CONFIRM_INCOMPLETE
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
-                    {currentItem.state >= 5
-                        ? <>
-                            <div id="fund_21">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Documento de Confirmación Legal y Debida Forma</label>}>
-                                    <div className='text-start'>
-                                        <FUN_DOC_CONFIRMLEGAL
-                                            translation={translation}
-                                            swaMsg={swaMsg}
-                                            globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            requestUpdate={requestUpdate}
-                                            VIEW_G
-                                        />
-                                    </div>
-                                </Collapsible>
-                            </div>
-                            {rules[0] != 1 || conOA() ?
-                                <div id="fund_sign">
-                                    <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Valla</label>}>
-                                        <div className='text-start'>
-                                            <FUN_SIGN_PDF
-                                                translation={translation}
-                                                swaMsg={swaMsg}
-                                                globals={globals}
-                                                currentItem={currentItem}
-                                                currentVersion={currentVersion}
-                                            />
-                                        </div>
-                                    </Collapsible>
-                                </div>
-
-                                : ''}
-
-                        </>
-                        : ""}
-
-                    {_GLOBAL_ID == "cb1" ?
-                        <div id="fund_seal">
-                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Sello</label>}>
-                                <div className='text-start'>
-                                    <FUN_SEAL
-                                        translation={translation}
-                                        swaMsg={swaMsg}
-                                        globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                    />
-                                </div>
-                            </Collapsible>
-                        </div>
-                        : null}
-
-                    {rules[0] != 1 || conOA() ?
-                        <div id="fund_22">
-                            <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">DOCUMENTOS DE CITACIÓN A VECINOS</label>}>
-                                <div className='text-start'>
-                                    <FUN_ALERT_NEIGHBOUR
-                                        translation={translation}
-                                        swaMsg={swaMsg}
-                                        globals={globals}
-                                        currentItem={currentItem}
-                                        currentVersion={currentVersion}
-                                    />
-                                </div>
-                            </Collapsible>
-                        </div>
-                        : ''}
-
-                    {currentItem.state >= 5
-                        ? <>
-                            <div id="fund_doc_control">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">HOJA DE CONTROL DOCUMENTAL</label>}>
-                                    <div className='text-start'>
-                                        <FUN_D_CONTROL
-                                            translation={translation}
-                                            swaMsg={swaMsg}
-                                            globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            requestUpdate={requestUpdate}
-                                        />
-                                    </div>
-                                </Collapsible>
-                            </div>
-
-                            <div id="fund_doc_control">
-                                <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">HOJA DE CONTROL DE INVENTARIO</label>}>
-                                    <div className='text-start'>
-                                        <FUN_D_CONTROL_2
-                                            translation={translation}
-                                            swaMsg={swaMsg}
-                                            globals={globals}
-                                            currentItem={currentItem}
-                                            currentVersion={currentVersion}
-                                            requestUpdate={requestUpdate}
-                                        />
-                                    </div>
-                                </Collapsible>
-                            </div>
-                        </>
-                        : ""}
-
-                    <div id="fund_doc_not_abdicate">
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">Notificación Licencia - Renuncia de terminos</label>}>
-                            <div className='text-start'>
-                                <FUN_D_ABDICATE
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
+                    {renderGenerators(GENERATOR_SECTION_AUTOMATIC)}
 
                     <h3 className="text-center py-3" id="fund_5">4. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
-                    <div id="fund_23" >
-                        <Collapsible className='bg-light border border-info' openedClassName='bg-light border border-info' trigger={<label className="fw-normal text-info">CONTROL DE DOCUMENTO DE RECONOCIMIENTO</label>}>
-                            <div className='text-start'>
-                                <FUN_REPORT_DATA_EDIT
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    requestUpdate={requestUpdate}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
-                    <div id="fund_23" >
-                        <Collapsible className='bg-light border border-info'
-                            openedClassName='bg-light border border-info'
-                            trigger={<label className="fw-normal text-info">CERTIFICACIONES</label>}>
-                            <div className='text-start'>
-                                <FUN_CERTIFICATION
-                                    translation={translation}
-                                    swaMsg={swaMsg}
-                                    globals={globals}
-                                    currentItem={currentItem}
-                                    currentVersion={currentVersion}
-                                    id_related={currentItem.id_public}
-                                    related={'fun'}
-                                />
-                            </div>
-                        </Collapsible>
-                    </div>
+                    {renderGenerators(GENERATOR_SECTION_SPECIAL)}
 
                     {/* <FUND_NAV currentItem={currentItem} /> */}
                     <FUN_MODULE_NAV
