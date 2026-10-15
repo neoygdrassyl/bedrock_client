@@ -236,11 +236,14 @@ function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate }) {
   );
 }
 
-/** View row shown by the sheet for a chosen version: same document and Central controls, the version's own receipt and evaluation. */
+/**
+ * View row shown by the sheet for a chosen version: same document, the version's own receipt,
+ * evaluation and Central control decisions (older backends omit `controls` on version rows).
+ */
 function rowForVersion(baseRow, version) {
   if (!version || version.id === baseRow.receivedDocumentRowId) return baseRow;
-  return { ...baseRow, receivedDocumentRowId: version.id, receipt: version, versionSequence: version.versionSequence,
-    evaluation: version.evaluation, controls: baseRow.controls.map((control) => ({ ...control, review: null })) };
+  const controls = Array.isArray(version.controls) ? version.controls : baseRow.controls.map((control) => ({ ...control, review: null }));
+  return { ...baseRow, receivedDocumentRowId: version.id, receipt: version, versionSequence: version.versionSequence, evaluation: version.evaluation, controls };
 }
 
 function EvaluationBody({ baseRow, origin, canEvaluate, onClose, onSaved, onPartialSave, onConflict }) {
