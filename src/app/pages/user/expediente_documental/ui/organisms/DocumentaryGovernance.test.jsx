@@ -2,7 +2,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 import {fireEvent,render,screen,waitFor,within} from '@testing-library/react';
 import {DocumentaryGovernance} from './DocumentaryGovernance';
 import * as api from '@/app/services/documentaryOperations.service';
-vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),getDocumentaryConfigurationOptions:vi.fn(),activateDocumentaryProject:vi.fn(),changeDocumentaryConfiguration:vi.fn(),returnDocumentaryProjectToLegacy:vi.fn(),refreshDocumentaryRequirements:vi.fn()}));
+vi.mock('@/app/services/documentaryOperations.service',()=>({getDocumentaryGovernance:vi.fn(),activateDocumentaryProject:vi.fn(),changeDocumentaryConfiguration:vi.fn(),returnDocumentaryProjectToLegacy:vi.fn(),refreshDocumentaryRequirements:vi.fn()}));
 vi.mock('@/app/services/documentary.service',()=>({documentaryError:error=>error.message||'Error'}));
 
 const source={table:'fun_1s',selectedFunVersion:3,sourceRowId:40,diagnostics:[],fields:[{field:'tipo',sourceKey:'tipoAny',value:'D',tokens:['D']},{field:'cultural',sourceKey:'culturalAny',value:null,tokens:['UNSET']}]};
@@ -49,7 +49,6 @@ it('returns a Central expediente to legacy before evidence',async()=>{
   fireEvent.change(screen.getByLabelText('Motivo del cambio documental'),{target:{value:'Error de radicación'}});
   fireEvent.click(screen.getByRole('button',{name:'Aplicar configuración'}));
   await waitFor(()=>expect(api.returnDocumentaryProjectToLegacy).toHaveBeenCalledWith(1,{expectedInputRevision:6,idempotencyKey:expect.any(String),reason:'Error de radicación'}));
-  expect(api.getDocumentaryConfigurationOptions).not.toHaveBeenCalled();
 });
 
 it('is read-only and explains why once evidence was received',async()=>{

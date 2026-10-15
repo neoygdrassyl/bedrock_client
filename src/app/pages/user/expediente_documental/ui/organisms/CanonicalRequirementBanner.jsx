@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
-import { refreshDocumentaryRequirements } from '@/app/services/documentaryOperations.service';
+import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
 import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal.jsx';
 import { requirementStatus } from '../../canonicalDocumentaryModel';
 
@@ -33,11 +33,7 @@ export function CanonicalRequirementBanner({ view, fun0Id, canRefresh = false, o
   async function refresh() {
     setBusy(true); setError('');
     try {
-      await refreshDocumentaryRequirements(fun0Id, {
-        expectedInputRevision: view.governance?.inputRevision ?? 0,
-        idempotencyKey: crypto.randomUUID(),
-        reason: 'Actualización de la evaluación de requisitos',
-      });
+      await refreshRequirementsFor(fun0Id, view.governance?.inputRevision, 'Actualización de la evaluación de requisitos');
       onRefreshed?.();
     } catch (failure) {
       if (failure.response?.status === 409) onConflict?.(); else setError(documentaryError(failure));

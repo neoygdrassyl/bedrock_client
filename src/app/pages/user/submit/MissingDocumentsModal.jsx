@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { LegacyModal } from '@/components/legacy-modal';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/icon';
-import { getMissingRequirements, refreshDocumentaryRequirements } from '@/app/services/documentaryOperations.service';
+import { getMissingRequirements } from '@/app/services/documentaryOperations.service';
+import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
 import { documentaryError } from '@/app/services/documentary.service';
 
 const STATE_NOTICES = {
@@ -83,11 +84,7 @@ export default function MissingDocumentsModal({ open, fun0Id, onClose, onRefresh
   const refresh = async () => {
     setRefreshing(true); setError('');
     try {
-      await refreshDocumentaryRequirements(fun0Id, {
-        expectedInputRevision: result.refresh.expectedInputRevision ?? 0,
-        idempotencyKey: crypto.randomUUID(),
-        reason: 'Actualización de la evaluación de documentos faltantes',
-      });
+      await refreshRequirementsFor(fun0Id, result.refresh.expectedInputRevision, 'Actualización de la evaluación de documentos faltantes');
       onRefreshed?.();
       await load();
     } catch (failure) {

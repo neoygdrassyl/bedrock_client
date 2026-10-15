@@ -41,8 +41,3 @@ export async function commitLegacyMigration(fun0Id, command) {
   const { data } = await http.post(migrationUrl(fun0Id), command, JSON_BODY);
   return validateLegacyMigrationResult(data, fun0Id);
 }
-
-/** Download path of a legacy-manifest file of an imported row. */
-export function legacyMigrationFilePath(fun0Id, rowId, slot) {
-  return `${migrationUrl(fun0Id)}/files/${documentaryProjectId(rowId)}/${slot === 'scan' ? 'scan' : 'digital'}`;
-}

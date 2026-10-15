@@ -14,6 +14,7 @@ import {
   returnDocumentaryProjectToLegacy,
   refreshDocumentaryRequirements,
 } from '@/app/services/documentaryOperations.service';
+import { buildDocumentaryCommand } from '@/app/services/documentaryRequirements.service';
 import { DetailFact } from '../molecules/DetailSection';
 import { CheckboxField, fieldClass, FormField } from '../molecules/FormField';
 
@@ -187,7 +188,7 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
       if (!motive) throw new Error('Indique el motivo del cambio.');
       if (command.current?.operation !== kind) command.current = null;
       if (!command.current) {
-        const body = { expectedInputRevision: governance?.inputRevision || 0, idempotencyKey: crypto.randomUUID(), reason: motive };
+        const body = buildDocumentaryCommand(governance?.inputRevision, motive);
         if (kind === 'activate' || kind === 'configuration') {
           const configuration = options.find((option) => optionValue(option) === target);
           Object.assign(body, { configurationId: configuration.configurationId, expectedChecksum: configuration.checksum });
