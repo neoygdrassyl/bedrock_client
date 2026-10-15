@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
-import { createCanonicalSubmit, documentaryReceiptRuleError, getCanonicalVersionSubmitIds, receiveCanonicalDocument, saveCanonicalControl, updateCanonicalEvidence } from '@/app/services/documentaryOperations.service';
+import { createCanonicalSubmit, documentaryReceiptRuleError, getCanonicalVersionSubmitIds, receiveCanonicalDocument, updateCanonicalEvidence } from '@/app/services/documentaryOperations.service';
 import { CatalogueDocumentPicker } from '../molecules/CatalogueDocumentPicker';
 import { CheckboxField, fieldClass, fileFieldClass, FormField, FormFieldset, FormSection, hintClass } from '../molecules/FormField';
 import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf } from '../../canonicalDocumentaryModel';
@@ -466,36 +466,5 @@ export function ControlDecisionFields({ idPrefix, control, value, observation, o
         {children}
       </fieldset>
     </>
-  );
-}
-
-/** Legal y debida forma decision for one control of the current evidence. */
-export function ControlDecision({ origin, row, control, canReview, onSaved, onConflict }) {
-  const ids = useId();
-  const [value, setValue] = useState(control.review?.selectedSourceValueId || '');
-  const [observation, setObservation] = useState(control.review?.observation || '');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const command = useRef(null);
-  async function save(event) {
-    event.preventDefault();
-    if (busy || !canReview) return;
-    setBusy(true); setError('');
-    try {
-      command.current ||= { selectedSourceValueId: value, observation: observation.trim() || null,
-        expectedEvidenceRevision: row.receipt.evidenceRevision, expectedResultRevision: control.review?.resultRevision || 0,
-        idempotencyKey: crypto.randomUUID(), reason: 'Revisión de Legal y debida forma' };
-      await saveCanonicalControl(origin.project.fun0Id, row.receivedDocumentRowId, control.controlId, command.current);
-      onSaved('Revisión guardada.');
-    } catch (failure) { failureHandler(command, setError, onConflict)(failure); }
-    finally { setBusy(false); }
-  }
-  return (
-    <form onSubmit={save} onChange={() => { command.current = null; }} className="flex flex-col gap-[0.75rem]">
-      <ControlDecisionFields idPrefix={ids} control={control} value={value} observation={observation} onValueChange={setValue} onObservationChange={setObservation} disabled={busy || !canReview}>
-        {canReview ? <div className="flex justify-end"><Button type="submit" size="sm" disabled={busy}>{busy ? 'Guardando…' : 'Guardar revisión'}</Button></div> : null}
-      </ControlDecisionFields>
-      <ErrorMessage error={error} />
-    </form>
   );
 }

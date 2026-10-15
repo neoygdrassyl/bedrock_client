@@ -1,14 +1,15 @@
 import { Tag } from '../atoms/Tag';
-import { Archive, FileSearch, History, Layers, Monitor, ScanLine } from 'lucide-react';
+import { Archive, ClipboardCheck, FileSearch, History, Layers, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
-import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
+import { ReceiptStatus } from '../molecules/DocumentReceiptStatus';
+import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
-import { CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
+import { canEvaluateRow, CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 
 const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
 
@@ -30,23 +31,60 @@ function HeadLabel({ icon: Icon, children }) {
   );
 }
 
-const COLUMNS = 6;
+const HEAD = 'h-10 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground';
+
+/**
+ * Optional columns after the document title, in display order. A table shows the ones it is given
+ * (`columns` prop): Radicación shows all but `actions`; Expedidos hides physical/digital/evaluation.
+ */
+export const TABLE_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'versions', 'actions'];
+export const INPUT_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'versions'];
+export const LEGAL_FORM_COLUMNS = ['delivery', 'evaluation', 'versions', 'actions'];
+export const ISSUED_COLUMNS = ['delivery', 'versions'];
+
+const COLUMN_DEFS = {
+  delivery: {
+    head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[18%] px-[0.75rem]',
+    cell: (row) => (
+      <>
+        <VrBadge value={row.receipt.vrLabel} />
+        <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
+      </>
+    ),
+  },
+  physical: {
+    head: <HeadLabel icon={Archive}>Físico</HeadLabel>, className: 'w-[11%] px-2',
+    cell: (row) => {
+      const support = rowSupport(row);
+      return (
+        <>
+          <ReceiptStatus row={support} medium="physical" />
+          {support.pagesPhysical !== null ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
+        </>
+      );
+    },
+  },
+  digital: { head: <HeadLabel icon={Monitor}>Digital</HeadLabel>, className: 'w-[9%] px-2', cell: (row) => <ReceiptStatus row={rowSupport(row)} medium="digital" /> },
+  evaluation: { head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]', cell: (row) => <EvaluationStatus row={row} /> },
+  versions: { head: <HeadLabel icon={Layers}>Versiones</HeadLabel>, className: 'w-[9%] px-2', cellClassName: 'font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
+  actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
+};
 
 /**
  * One row per current document, grouped by ventanilla list. Presentation only.
  * The whole row selects the document (click, Enter or Space); one row is tabbable at a time.
+ * `columns` picks the optional columns (see TABLE_COLUMNS); `onEvaluate(row)` adds the per-row
+ * "Evaluar" action to the `actions` column for rows the server allows to evaluate.
  */
-export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix }) {
+export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
+  const defs = columns.filter((key) => COLUMN_DEFS[key]).map((key) => ({ key, ...COLUMN_DEFS[key] }));
+  const span = defs.length + 1;
   return (
-    <table role="grid" className="w-full min-w-[720px] table-fixed border-collapse text-sm" aria-label="Documentos recibidos" aria-busy={loading}>
+    <table role="grid" className="w-full min-w-[720px] table-fixed border-collapse text-sm" aria-label={ariaLabel} aria-busy={loading}>
       <TableHeader className="sticky top-0 z-10 bg-[hsl(var(--card))]">
         <TableRow className="border-border bg-muted/30 hover:bg-muted/30">
-          <TableHead scope="col" className="h-10 w-[38%] px-[1rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Documento</TableHead>
-          <TableHead scope="col" className="h-10 w-[20%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={History}>Última entrega</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[11%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Archive}>Físico</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Monitor}>Digital</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[13%] px-[0.75rem] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={ScanLine}>Escaneado</HeadLabel></TableHead>
-          <TableHead scope="col" className="h-10 w-[9%] px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"><HeadLabel icon={Layers}>Versiones</HeadLabel></TableHead>
+          <TableHead scope="col" className={cn(HEAD, 'px-[1rem]')}>Documento</TableHead>
+          {defs.map((def) => <TableHead key={def.key} scope="col" className={cn(HEAD, def.className)}>{def.head}</TableHead>)}
         </TableRow>
       </TableHeader>
       {loading ? (
@@ -56,22 +94,19 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
               <TableCell className="px-[1rem] py-[0.75rem]">
                 <div className="flex items-center gap-[0.75rem]"><Skeleton className="h-8 w-8 shrink-0" /><div className="flex-1 space-y-2"><Skeleton className="h-3 w-4/5" /><Skeleton className="h-2 w-12" /></div></div>
               </TableCell>
-              {Array.from({ length: COLUMNS - 1 }, (_, cell) => <TableCell key={cell} className="px-2"><Skeleton className="h-4 w-12" /></TableCell>)}
+              {defs.map((def) => <TableCell key={def.key} className="px-2"><Skeleton className="h-4 w-12" /></TableCell>)}
             </TableRow>
           ))}
         </TableBody>
       ) : groups.map((group) => (
         <TableBody key={group.title} aria-label={group.title}>
-          {(
-            <TableRow className="border-border/60 bg-muted/15 hover:bg-muted/15">
-              <TableHead scope="colgroup" colSpan={COLUMNS} className="h-8 px-[1rem] text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {group.title} <span className="font-mono font-normal tabular-nums">({group.rows.length})</span>
-              </TableHead>
-            </TableRow>
-          )}
+          <TableRow className="border-border/60 bg-muted/15 hover:bg-muted/15">
+            <TableHead scope="colgroup" colSpan={span} className="h-8 px-[1rem] text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {group.title} <span className="font-mono font-normal tabular-nums">({group.rows.length})</span>
+            </TableHead>
+          </TableRow>
           {group.rows.map((row) => {
             const selected = row.rowKey === selectedKey;
-            const support = rowSupport(row);
             return (
               <TableRow
                 key={row.rowKey}
@@ -93,17 +128,14 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                     tabIndex={-1}
                   />
                 </TableCell>
-                <TableCell className="px-[0.75rem] py-2">
-                  <VrBadge value={row.receipt.vrLabel} />
-                  <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
-                </TableCell>
-                <TableCell className="px-2 py-2">
-                  <ReceiptStatus row={support} medium="physical" />
-                  {support.pagesPhysical !== null ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
-                </TableCell>
-                <TableCell className="px-2 py-2"><ReceiptStatus row={support} medium="digital" /></TableCell>
-                <TableCell className="px-[0.75rem] py-2"><ScanStatus scanned={support.scanned} /></TableCell>
-                <TableCell className="px-2 py-2 font-mono text-xs tabular-nums text-foreground">{versionCountOf(row)}</TableCell>
+                {defs.map((def) => (
+                  <TableCell key={def.key} className={cn('px-[0.75rem] py-2', def.key === 'physical' || def.key === 'digital' || def.key === 'versions' ? 'px-2' : null, def.cellClassName)}>
+                    {def.key === 'actions' ? (onEvaluate && canEvaluateRow(row) ? (
+                      <Button type="button" variant="outline" size="sm" className="h-8 text-xs" aria-label={`Evaluar ${[rowCode(row), row.instanceLabel].filter(Boolean).join(' · ') || rowName(row)}`}
+                        onClick={(event) => { event.stopPropagation(); onEvaluate(row); }}>Evaluar</Button>
+                    ) : null) : def.cell(row)}
+                  </TableCell>
+                ))}
               </TableRow>
             );
           })}
@@ -112,11 +144,11 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
       {!loading && !groups.length ? (
         <TableBody>
           <TableRow>
-            <TableCell colSpan={COLUMNS} className="px-6 py-16 text-center">
+            <TableCell colSpan={span} className="px-6 py-16 text-center">
               <FileSearch className="mx-auto mb-[0.75rem] h-8 w-8 text-muted-foreground" aria-hidden="true" />
-              <p className="mb-1 text-sm font-semibold text-foreground">{hasFilters ? 'Sin coincidencias' : 'Aún no hay documentos recibidos'}</p>
+              <p className="mb-1 text-sm font-semibold text-foreground">{hasFilters ? 'Sin coincidencias' : emptyText}</p>
               <p className="mb-[1rem] text-xs text-muted-foreground">
-                {hasFilters ? 'Pruebe con otro nombre, código o combinación de filtros.' : 'Los documentos que se reciban en este expediente aparecerán aquí.'}
+                {hasFilters ? 'Pruebe con otro nombre, código o combinación de filtros.' : emptyHint}
               </p>
               {hasFilters ? <Button type="button" variant="outline" size="sm" onClick={onResetFilters}>Limpiar filtros</Button> : null}
             </TableCell>

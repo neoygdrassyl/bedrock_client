@@ -2,7 +2,7 @@ import { expect, it, vi } from 'vitest';
 import { validateDocumentaryView } from '../pages/user/expediente_documental/documentaryViewContract';
 import * as api from './documentaryOperations.service';
 import http from '../../http-common';
-vi.mock('../../http-common',()=>({default:{get:vi.fn(),put:vi.fn(),post:vi.fn(),patch:vi.fn()}}));
+vi.mock('../../http-common',()=>({default:{get:vi.fn(),put:vi.fn(),post:vi.fn(),patch:vi.fn(),delete:vi.fn()}}));
 const checksum='a'.repeat(64), key='11111111-1111-4111-8111-111111111111';
 const documentId='c-doc-1';
 const receipt={id:10,fun0Id:1,configurationId:2,documentClass:'requirement',documentId,listTitle:'Lista A',versionCount:1,documentKey:key,versionSequence:1,rowVersion:1,evidenceRevision:1,hasPhysical:true,hasDigital:false,hasScan:false,files:{digital:null,scan:null}};
@@ -74,4 +74,66 @@ it('downloads migrated legacy files through the legacy-migration route and nativ
   expect(foreign.params).toEqual({ evidenceRevision: 2 });
   const native = api.canonicalFileRequest(1, 21, 'digital', { downloadUrl: '/api/fun/documentary/v1/projects/1/documents/21/files/digital?evidenceRevision=1', evidenceRevision: 1 });
   expect(native).toEqual({ url: '/fun/documentary/v1/projects/1/documents/21/files/digital', params: { evidenceRevision: 1 } });
+});
+
+const evaluationView=(evaluation)=>{const value=view();value.rows[0].evaluation=evaluation;return value;};
+it('validates the per-delivery evaluation of view rows leniently',()=>{
+  expect(validateDocumentaryView(view()).rows[0].evaluation).toBeUndefined(); // older backends
+  const approved={status:'approved',source:'review',verdict:'complies',reviewRevision:2,observation:null,folioRange:'1-3',reviewedBy:4,reviewedByName:'Marta Ruiz',reviewedAt:'2026-10-14T15:00:00.000Z'};
+  expect(validateDocumentaryView(evaluationView(approved)).rows[0].evaluation.status).toBe('approved');
+  expect(validateDocumentaryView(evaluationView({status:'not_applicable',source:null})).rows[0].evaluation.source).toBeNull();
+  expect(()=>validateDocumentaryView(evaluationView({status:'done'}))).toThrow();
+  expect(()=>validateDocumentaryView(evaluationView({status:'approved',source:'magic'}))).toThrow();
+  expect(()=>validateDocumentaryView(evaluationView('approved'))).toThrow();
+});
+it('requests the view with the scope and class filters only when they are given',async()=>{
+  const origin={project:{fun0Id:1},publication:{configurationId:2,checksum}};
+  http.get.mockResolvedValue({data:view()});
+  await api.getCanonicalDocuments(origin,0);
+  expect(http.get.mock.calls.at(-1)[1].params).toEqual({afterId:0,limit:25});
+  await api.getCanonicalDocuments(origin,25,undefined,{scope:'input',documentClass:'requirement'});
+  expect(http.get.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/view');
+  expect(http.get.mock.calls.at(-1)[1].params).toEqual({afterId:25,limit:25,scope:'input',documentClass:'requirement'});
+  await api.getCanonicalDocuments(origin,0,undefined,{scope:'issued'});
+  expect(http.get.mock.calls.at(-1)[1].params).toEqual({afterId:0,limit:25,scope:'issued'});
+});
+it('validates the evaluation of the version rows',async()=>{
+  const row={...receipt,evaluation:{status:'pending',source:'review',reviewRevision:0}};
+  http.get.mockResolvedValue({data:{schemaVersion:'dovela-backoffice/documentary-versions/v1',documentKey:key,rows:[row],nextAfterId:null}});
+  const page=await api.getCanonicalVersions(1,{receivedDocumentRowId:10,documentKey:key});
+  expect(page.rows[0].evaluation.status).toBe('pending');
+  http.get.mockResolvedValue({data:{schemaVersion:'dovela-backoffice/documentary-versions/v1',documentKey:key,rows:[{...receipt,evaluation:{status:'weird'}}],nextAfterId:null}});
+  await expect(api.getCanonicalVersions(1,{receivedDocumentRowId:10,documentKey:key})).rejects.toThrow();
+});
+it('PUTs the reviewer verdict of one delivery row as a JSON command and rejects invalid verdicts before sending',async()=>{
+  http.put.mockResolvedValue({data:{unchanged:false,review:{},evaluation:{status:'approved'}}});
+  const command={verdict:'complies',folioRange:'1-3',observation:null,expectedReviewRevision:0,idempotencyKey:'k',reason:'Revisión'};
+  await expect(api.saveCanonicalReview(1,21,command)).resolves.toMatchObject({unchanged:false});
+  expect(http.put.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/documents/21/review');
+  expect(http.put.mock.calls.at(-1)[1]).toEqual(command);
+  expect(http.put.mock.calls.at(-1)[2].headers['Content-Type']).toBe('application/json');
+  http.put.mockClear();
+  await expect(api.saveCanonicalReview(1,21,{...command,verdict:'pending'})).rejects.toThrow(/veredicto/);
+  await expect(api.saveCanonicalReview(1,'x',command)).rejects.toThrow();
+  expect(http.put).not.toHaveBeenCalled();
+});
+it('reads, adds and removes requirement additions with JSON commands',async()=>{
+  http.get.mockResolvedValue({data:{additions:[{documentId:'D-1',documentCode:'511',title:'Plano',reason:'x',addedBy:1,addedByName:'Ana',addedAt:'2026-10-14T15:00:00.000Z'}],catalogue:[{documentId:'D-2',code:'600',name:'Otro',alreadyRequired:false}]}});
+  const data=await api.getRequirementAdditions(1);
+  expect(http.get.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/requirements/additions');
+  expect(data.additions).toHaveLength(1);
+  http.get.mockResolvedValue({data:{additions:null,catalogue:[]}});
+  await expect(api.getRequirementAdditions(1)).rejects.toThrow();
+  http.post.mockResolvedValue({data:{ok:true}});
+  const add={documentId:'D-2',reason:'Lo exige el predio',idempotencyKey:'k'};
+  await api.addRequirementAddition(1,add);
+  expect(http.post.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/requirements/additions');
+  expect(http.post.mock.calls.at(-1)[1]).toEqual(add);
+  expect(http.post.mock.calls.at(-1)[2].headers['Content-Type']).toBe('application/json');
+  http.delete.mockResolvedValue({data:{ok:true}});
+  const remove={reason:'Ya no aplica',idempotencyKey:'k2'};
+  await api.removeRequirementAddition(1,'D 1/2',remove);
+  expect(http.delete.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/requirements/additions/D%201%2F2');
+  expect(http.delete.mock.calls.at(-1)[1]).toEqual({data:remove,headers:{'Content-Type':'application/json'}});
+  await expect(api.removeRequirementAddition(1,'x'.repeat(37),remove)).rejects.toThrow();
 });

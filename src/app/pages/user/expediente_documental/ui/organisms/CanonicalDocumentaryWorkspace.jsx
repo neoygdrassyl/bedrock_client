@@ -14,7 +14,8 @@ import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
-import { CanonicalDocumentsTable } from './CanonicalDocumentsTable';
+import { CanonicalDocumentsTable, INPUT_COLUMNS, ISSUED_COLUMNS, LEGAL_FORM_COLUMNS } from './CanonicalDocumentsTable';
+import { EvaluationSheet } from './EvaluationSheet';
 import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
 import { CanonicalRequirementBanner } from './CanonicalRequirementBanner';
 import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForms';
@@ -24,6 +25,17 @@ const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y co
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
 const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL };
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
+
+// What each use of the workspace loads and shows. `input` is Radicación; `legalForm` embeds the same table in
+// Legal y debida forma (requirements only, row action "Evaluar"); `issued` lists the expedidos of the expediente.
+export const WORKSPACE_VARIANTS = {
+  input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, scanFilter: true, classFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
+    emptyText: 'Aún no hay documentos recibidos', emptyHint: 'Los documentos que se reciban en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
+  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true,
+    emptyText: 'Aún no hay requisitos recibidos', emptyHint: 'Los requisitos que se reciban en este expediente aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
+  issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
+    emptyText: 'Aún no hay documentos expedidos para este expediente.', emptyHint: 'Los documentos que se expidan en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
+};
 const FILTER_SELECT_CLASS = 'h-9 min-w-[10rem] flex-1 text-sm sm:w-auto sm:flex-none';
 
 function AuditHistory({ origin }) {
@@ -98,8 +110,10 @@ function InfoNotice({ children }) {
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved }) {
   const ids = useId();
+  const config = WORKSPACE_VARIANTS[variant] || WORKSPACE_VARIANTS.input;
+  const [evaluating, setEvaluating] = useState(null); // { row, nonce }
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
   const [result, setResult] = useState(null);
@@ -110,14 +124,14 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const [selectedKey, setSelectedKey] = useState(null);
   const [expandedKey, setExpandedKey] = useState(null);
   const afterId = cursors[cursors.length - 1];
-  const requestKey = `${origin.project.fun0Id}:${origin.publication.configurationId}:${origin.publication.checksum}:${afterId}:${revision}`;
+  const requestKey = `${variant}:${origin.project.fun0Id}:${origin.publication.configurationId}:${origin.publication.checksum}:${afterId}:${revision}:${reloadKey}`;
   useEffect(() => {
     const controller = new AbortController();
-    getCanonicalDocuments(origin, afterId, controller.signal)
+    getCanonicalDocuments(origin, afterId, controller.signal, { scope: config.scope, documentClass: config.documentClass })
       .then((view) => { if (!controller.signal.aborted) setResult({ key: requestKey, view }); })
       .catch((failure) => { if (!controller.signal.aborted) setResult({ key: requestKey, error: documentaryError(failure) }); });
     return () => controller.abort();
-  }, [origin, afterId, requestKey]);
+  }, [origin, afterId, requestKey]); // eslint-disable-line react-hooks/exhaustive-deps -- config is constant per variant
   const loading = result?.key !== requestKey;
   // While reloading, the last view stays visible (busy) so open forms keep their input.
   const view = result?.view;
@@ -132,7 +146,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   function changePage(next) { setSheet(null); setSelectedKey(null); setCursors(next); }
 
   const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
-  const canReceive = Boolean(canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
+  const canReceive = Boolean(config.receive && canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
   const canReview = Boolean(canManage && view && !view.readOnly && view.capabilities.review);
   const rows = view?.rows || [];
   const visibleRows = filterCanonicalRows(rows, filters);
@@ -155,12 +169,16 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
     setSelectedKey(row.rowKey);
     setExpandedKey((current) => (current === row.rowKey ? null : row.rowKey));
   }
+  function openEvaluation(row) { setNotice(''); setEvaluating({ row, nonce: Date.now() }); }
+  // After an evaluation the table reloads and the host (e.g. Legal y debida forma) refreshes what depends on it.
+  function evaluationSaved(message) { setEvaluating(null); reload(message); onEvaluationSaved?.(); }
+  function evaluationConflict() { setEvaluating(null); reload(CONFLICT_MESSAGE); onEvaluationSaved?.(); }
   function openSheet(kind, row = null) { setNotice(''); setSheet({ kind, row, nonce: Date.now() }); }
 
   return (
     <section
       className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[0.75rem]')}
-      {...(embedded ? { 'aria-label': 'Documentos recibidos' } : { 'aria-labelledby': `${ids}-title` })}
+      {...(embedded ? { 'aria-label': config.label } : { 'aria-labelledby': `${ids}-title` })}
     >
       {embedded ? null : (
         <DocumentalWorkspaceHeader
@@ -172,7 +190,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
       )}
       {notice ? <WorkspaceNotice message={notice} /> : null}
       <ErrorMessage error={error || fileError} />
-      {view ? (
+      {view && config.banner ? (
         <>
           <CanonicalRequirementBanner
             view={view}
@@ -193,31 +211,39 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
             <div className="flex flex-wrap items-center gap-2 px-[1rem] py-[0.75rem]">
               <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
               <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className={FILTER_SELECT_CLASS} />
-              <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} />
+              {config.classFilter ? <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} /> : null}
               {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={() => setFilters(EMPTY_FILTERS)}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
               <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:ml-auto lg:w-auto">
                 <span className="mr-1 text-xs text-muted-foreground" aria-live="polite">
-                  <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {visibleRows.length === 1 ? 'documento' : 'documentos'}
+                  <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {config.countNoun[visibleRows.length === 1 ? 0 : 1]}
                 </span>
-                <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => refresh()}>
-                  <RefreshCw className={cn(loading && view && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />Actualizar documentos
-                </Button>
+                {config.refreshButton ? (
+                  <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => refresh()}>
+                    <RefreshCw className={cn(loading && view && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />Actualizar documentos
+                  </Button>
+                ) : null}
                 {canReceive ? <Button type="button" size="sm" onClick={() => openSheet('receive')}><Plus aria-hidden="true" />Recibir documento</Button> : null}
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-1 pr-[1rem]">
-              <DocumentalQuickFilters
-                label="Accesos rápidos de escaneo"
-                options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
-                value={filters.scan}
-                onChange={(value) => setFilter('scan', value)}
-              />
-              <div className="min-w-0 py-1.5 pl-[1rem] sm:pl-0">
-                <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
+            {config.metrics || config.scanFilter ? (
+              <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-1 pr-[1rem]">
+                {config.scanFilter ? (
+                  <DocumentalQuickFilters
+                    label="Accesos rápidos de escaneo"
+                    options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
+                    value={filters.scan}
+                    onChange={(value) => setFilter('scan', value)}
+                  />
+                ) : <span />}
+                {config.metrics ? (
+                  <div className="min-w-0 py-1.5 pl-[1rem] sm:pl-0">
+                    <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
+                  </div>
+                ) : null}
               </div>
-            </div>
+            ) : null}
           </div>
-          <div className="grid min-h-0 min-w-0 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]">
+          <div className={cn('grid min-h-0 min-w-0', config.detail && 'lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]')}>
             <div className="max-h-[65dvh] min-h-[16rem] min-w-0 overflow-auto overscroll-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" tabIndex={0} role="region" aria-label="Tabla documental desplazable">
               <CanonicalDocumentsTable
                 groups={groups}
@@ -228,21 +254,25 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 hasFilters={hasFilters}
                 onResetFilters={() => setFilters(EMPTY_FILTERS)}
                 idPrefix={ids}
+                columns={config.columns}
+                ariaLabel={config.label}
+                emptyText={config.emptyText}
+                emptyHint={config.emptyHint}
+                onEvaluate={config.rowEvaluate && canReview ? openEvaluation : undefined}
               />
             </div>
-            {view && selected ? (
+            {!config.detail ? null : view && selected ? (
               <div className="grid max-h-[65dvh] min-h-0 min-w-0">
                 <CanonicalDocumentDetail
                   key={selected.rowKey}
                   origin={origin}
                   row={selected}
                   canReceive={canReceive}
-                  canReview={canReview && Boolean(selected.actions?.review)}
+                  canReview={canReview}
                   headingId={`${ids}-detail`}
                   onReceiveVersion={(row) => openSheet('receive', row)}
                   onUpdateEvidence={(row) => openSheet('evidence', row)}
-                  onSaved={refresh}
-                  onConflict={conflict}
+                  onEvaluate={openEvaluation}
                 />
               </div>
             ) : !view ? (
@@ -273,7 +303,17 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
         </div>
       ) : null}
 
-      {view ? <AuditHistory key={`history:${revision}`} origin={origin} /> : null}
+      {view && config.history ? <AuditHistory key={`history:${revision}`} origin={origin} /> : null}
+
+      <EvaluationSheet
+        target={evaluating}
+        origin={origin}
+        canEvaluate={canReview}
+        onClose={() => setEvaluating(null)}
+        onSaved={evaluationSaved}
+        onPartialSave={() => { reload(); onEvaluationSaved?.(); }}
+        onConflict={evaluationConflict}
+      />
 
       <Sheet open={Boolean(sheet && view && canReceive)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
         <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>

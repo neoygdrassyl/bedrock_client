@@ -2,16 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import fileDownload from 'js-file-download';
 import * as api from '@/app/services/documentaryLegalForm.service';
-import { saveCanonicalControl } from '@/app/services/documentaryOperations.service';
+import * as operations from '@/app/services/documentaryOperations.service';
+
 import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/components/checklistPdf';
 import { LegalFormPanel } from './LegalFormPanel';
 
+const { saveCanonicalControl } = operations;
+
 vi.mock('@/app/services/documentaryLegalForm.service', async (importOriginal) => ({
   ...(await importOriginal()),
-  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), saveLegalFormChecklist: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(), findCanonicalRow: vi.fn(),
+  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), saveLegalFormChecklist: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(),
 }));
-vi.mock('@/app/services/documentaryOperations.service', () => ({ saveCanonicalControl: vi.fn(), getCanonicalDocuments: vi.fn(), createCanonicalSubmit: vi.fn(),
-  documentaryReceiptRuleError: vi.fn(), getCanonicalVersionSubmitIds: vi.fn(), receiveCanonicalDocument: vi.fn(), updateCanonicalEvidence: vi.fn() }));
+vi.mock('@/app/services/documentaryOperations.service', () => ({ saveCanonicalControl: vi.fn(), saveCanonicalReview: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), createCanonicalSubmit: vi.fn(),
+  documentaryReceiptRuleError: vi.fn(), getCanonicalVersionSubmitIds: vi.fn(), receiveCanonicalDocument: vi.fn(), updateCanonicalEvidence: vi.fn(), getCanonicalHistory: vi.fn(), getMissingRequirements: vi.fn(), refreshDocumentaryRequirements: vi.fn(), downloadCanonicalFile: vi.fn() }));
 vi.mock('../../../fun_forms/components/checklistPdf', async (importOriginal) => ({ ...(await importOriginal()), buildChecklistPdf: vi.fn() }));
 vi.mock('js-file-download', () => ({ default: vi.fn() }));
 vi.mock('@/app/services/documentary.service', () => ({ documentaryError: (error) => error.message || 'Error' }));
@@ -25,10 +28,24 @@ const legalForm = (extra = {}) => ({ schemaVersion: api.LEGAL_FORM_SCHEMA, mode:
   requirements: [requirement()], groups: [], blockers: [], declaration: null, sheet: null, actions: { review: true, declare: false, revoke: false, sheet: true },
   evaluation: { cacheState: 'current', status: 'complete' }, ...extra });
 
-beforeEach(() => { vi.clearAllMocks(); });
+// View rows of the shared documents table (scope=input, requirement documents only).
+const receipt = (id, extra) => ({ id, submitId: 11, rowVersion: 1, evidenceRevision: 1, hasPhysical: false, files: { digital: null, scan: null }, vrLabel: 'VR-1', ...extra });
+const pendingEvaluation = { status: 'pending', source: 'review', verdict: null, reviewRevision: 0 };
+const viewRow = (extra = {}) => ({ rowKey: 'canonical:k-1', documentKey: 'k-1', documentClass: 'requirement', documentId: 'd-511', documentCode: '511', title: 'Formulario único', receivedDocumentRowId: 10,
+  versionSequence: 1, versionCount: 1, catalogueDisplay: { code: '511', name: 'Formulario único' }, receipt: receipt(10), controls: [], evaluation: pendingEvaluation, actions: { evaluate: true }, ...extra });
+const viewOf = (rows = [viewRow()]) => ({ readOnly: false, capabilities: { createDocument: true, receivePhysical: true, receiveDigital: true, review: true }, governance: { inputRevision: 1 },
+  requirements: { documents: [] }, warnings: [], submits: [], rows, pagination: { nextAfterId: null }, counts: { canonicalDocuments: rows.length } });
+const version = (id, sequence, evaluation, extra) => ({ ...receipt(id, { vrLabel: `VR-${sequence}` }), versionSequence: sequence, evaluation, ...extra });
+const approved = { status: 'approved', source: 'review', verdict: 'complies', reviewRevision: 3, reviewedBy: 4, reviewedByName: 'Marta Ruiz', reviewedAt: '2026-10-14T15:00:00.000Z' };
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  operations.getCanonicalDocuments.mockResolvedValue(viewOf());
+  operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, pendingEvaluation)], nextAfterId: null });
+});
 
 describe('LegalFormPanel', () => {
-  it('shows a not-ready expediente with grouped, expandable blockers and the declare action disabled', async () => {
+  it('shows a not-ready expediente with blockers, the requirements still to deliver and the declare action disabled', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       requirements: [requirement(), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null })],
       blockers: [
@@ -42,10 +59,41 @@ describe('LegalFormPanel', () => {
     expect(screen.getByText('Sin entregar · 1')).toBeInTheDocument();
     expect(screen.getByText('Revisión pendiente · 1')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Declarar legal y debida forma' })).toBeDisabled();
+    const missing = screen.getByTestId('legal-form-missing');
+    expect(within(missing).getByText('Requisitos sin entregar')).toBeInTheDocument();
+    expect(within(missing).getByText('600 · Plano')).toBeInTheDocument();
+    expect(within(missing).getByText('Grupo G1: falta cumplir el grupo')).toBeInTheDocument();
+    expect(within(missing).queryByText(/511/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ver pendientes' }));
-    expect(screen.getByText('600 · Plano')).toBeInTheDocument();
     expect(screen.getByText('Grupo G1')).toBeInTheDocument();
-    expect(within(screen.getByTestId('legal-form-row-600')).getByText('Sin entrega')).toBeInTheDocument();
+  });
+
+  it('renders the shared documents table filtered to requirements, with Evaluación and no scan or medium columns', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([
+      viewRow({ evaluation: approved }),
+      viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11), evaluation: { status: 'rejected', source: 'review', reviewedByName: 'Luis Gómez' } }),
+    ]));
+    render(<LegalFormPanel origin={origin} canManage />);
+    const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    await within(table).findByText('Aprobado');
+    expect(operations.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
+    const headers = within(table).getAllByRole('columnheader').map((header) => header.textContent);
+    expect(headers).toEqual(expect.arrayContaining(['Documento', 'Última entrega', 'Evaluación', 'Versiones']));
+    ['Físico', 'Digital', 'Escaneado'].forEach((name) => expect(headers).not.toContain(name));
+    const rows = within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
+    expect(rows[0]).toHaveTextContent('Aprobado');
+    expect(rows[0]).toHaveTextContent('por Marta Ruiz');
+    expect(rows[1]).toHaveTextContent('Rechazado');
+    expect(within(table).getAllByRole('button', { name: /^Evaluar 51/ })).toHaveLength(2);
+  });
+
+  it('shows the table without Evaluar actions when the expediente cannot be reviewed (declared)', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7 }, actions: { review: false, declare: false, revoke: true, sheet: true } }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    await screen.findByText('Formulario único');
+    expect(screen.queryByRole('button', { name: /^Evaluar 511/ })).not.toBeInTheDocument();
   });
 
   it('declares a ready expediente with legal date and motive, then notifies the module', async () => {
@@ -95,13 +143,18 @@ describe('LegalFormPanel', () => {
     expect(changed).toHaveBeenCalledTimes(1);
   });
 
-  it('requires an observation for a non-complying reviewer verdict', async () => {
+  const openSheet = async (name = 'Evaluar 511') => {
+    fireEvent.click(await screen.findByRole('button', { name }));
+    return screen.findByRole('dialog');
+  };
+
+  it('evaluates a delivery without controls with the reviewer verdict and reloads the table and the legal-form state', async () => {
     api.getLegalForm.mockResolvedValue(legalForm());
-    api.saveLegalFormReview.mockResolvedValue({ unchanged: false });
+    operations.saveCanonicalReview.mockResolvedValue({ unchanged: false });
     render(<LegalFormPanel origin={origin} canManage />);
-    fireEvent.click(await screen.findByRole('button', { name: 'Revisar 511' }));
-    const sheet = await screen.findByRole('dialog');
-    const save = within(sheet).getByRole('button', { name: 'Guardar revisión' });
+    const sheet = await openSheet();
+    expect(within(sheet).getByText(/Formulario único · VR-1 · Versión 1/)).toBeInTheDocument();
+    const save = within(sheet).getByRole('button', { name: 'Guardar evaluación' });
     expect(save).toBeDisabled();
     fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'does_not_comply' } });
     expect(save).toBeDisabled();
@@ -109,47 +162,85 @@ describe('LegalFormPanel', () => {
     fireEvent.change(within(sheet).getByLabelText('Rango de folios'), { target: { value: '1-12' } });
     fireEvent.change(within(sheet).getByLabelText('Observación (obligatoria)'), { target: { value: 'Falta la firma' } });
     fireEvent.click(save);
-    await waitFor(() => expect(api.saveLegalFormReview).toHaveBeenCalledWith(1, '511', expect.objectContaining({
-      verdict: 'does_not_comply', folioRange: '1-12', observation: 'Falta la firma', expectedReviewRevision: 0, reason: 'Revisión de legal y debida forma',
-    })));
-    expect(api.saveLegalFormReview.mock.calls[0][2]).not.toHaveProperty('documentKey');
-    expect(await screen.findByText('Revisión guardada.')).toBeInTheDocument();
+    await waitFor(() => expect(operations.saveCanonicalReview).toHaveBeenCalledWith(1, 10, {
+      verdict: 'does_not_comply', folioRange: '1-12', observation: 'Falta la firma', expectedReviewRevision: 0, idempotencyKey: expect.any(String), reason: 'Revisión de legal y debida forma',
+    }));
+    expect(await screen.findByText('Evaluación guardada.')).toBeInTheDocument();
+    await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(operations.getCanonicalDocuments).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
-  it('lists one row per instance and sends the documentKey of the reviewed instance', async () => {
-    api.getLegalForm.mockResolvedValue(legalForm({ requirements: [requirement({ allowsMultipleInstances: true, instances: [
-      instance({ documentKey: 'a', instanceLabel: 'Hoja 1', verdict: 'complies', review: { verdict: 'complies', stale: false }, reviewRevision: 2 }),
-      instance({ documentKey: 'b', instanceLabel: 'Hoja 2', currentRowId: 11 }),
-    ] })] }));
-    api.saveLegalFormReview.mockResolvedValue({ unchanged: false });
+  it('reuses the idempotent command after a network failure and reloads on a revision conflict', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.saveCanonicalReview.mockRejectedValueOnce({ message: 'Fallo de red' });
     render(<LegalFormPanel origin={origin} canManage />);
-    expect(await screen.findByText('2 instancias')).toBeInTheDocument();
-    expect(within(screen.getByTestId('legal-form-instance-a')).getByText('Cumple')).toBeInTheDocument();
-    expect(within(screen.getByTestId('legal-form-instance-b')).getByText('Pendiente')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Revisar 511 · Hoja 1' }));
-    const sheet = await screen.findByRole('dialog');
-    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar revisión' }));
-    await waitFor(() => expect(api.saveLegalFormReview).toHaveBeenCalledWith(1, '511', expect.objectContaining({ documentKey: 'a', verdict: 'complies', expectedReviewRevision: 2 })));
+    const sheet = await openSheet();
+    fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'complies' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
+    expect(await within(sheet).findByText('Fallo de red')).toBeInTheDocument();
+    operations.saveCanonicalReview.mockRejectedValueOnce({ response: { status: 409, data: { error: { code: 'REVIEW_REVISION_CONFLICT' } } } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
+    await waitFor(() => expect(operations.saveCanonicalReview).toHaveBeenCalledTimes(2));
+    expect(operations.saveCanonicalReview.mock.calls[1][2].idempotencyKey).toBe(operations.saveCanonicalReview.mock.calls[0][2].idempotencyKey);
+    expect(await screen.findByText(/Los datos cambiaron/)).toBeInTheDocument();
+    await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
   });
 
-  const controlRow = (controls) => ({ receivedDocumentRowId: 10, receipt: { evidenceRevision: 1 }, actions: { review: true }, controls });
+  it('explains rule errors of the review instead of treating them as a conflict', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.saveCanonicalReview.mockRejectedValue({ response: { status: 409, data: { error: { code: 'DOCUMENT_HAS_CONTROLS' } } } });
+    render(<LegalFormPanel origin={origin} canManage />);
+    const sheet = await openSheet();
+    fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'complies' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
+    expect(await within(sheet).findByText(/tiene controles de Central/)).toBeInTheDocument();
+    expect(api.getLegalForm).toHaveBeenCalledTimes(1);
+  });
+
+  it('lists the evaluations of every version and switches the sheet to another version', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ receivedDocumentRowId: 11, versionSequence: 2, versionCount: 2, receipt: receipt(11, { vrLabel: 'VR-2' }) })]));
+    operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, approved), version(11, 2, pendingEvaluation)], nextAfterId: null });
+    operations.saveCanonicalReview.mockResolvedValue({ unchanged: false });
+    render(<LegalFormPanel origin={origin} canManage />);
+    const sheet = await openSheet();
+    expect(within(sheet).getByText(/Formulario único · VR-2 · Versión 2/)).toBeInTheDocument();
+    expect(within(sheet).getByLabelText('Veredicto')).toHaveValue('');
+    const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+    const [newest, oldest] = within(previous).getAllByRole('listitem');
+    expect(newest).toHaveTextContent('VR-2 · Versión 2');
+    expect(newest).toHaveTextContent('Sin evaluar');
+    expect(newest).toHaveTextContent('En evaluación');
+    expect(oldest).toHaveTextContent('VR-1 · Versión 1');
+    expect(oldest).toHaveTextContent('Aprobado');
+    expect(oldest).toHaveTextContent('por Marta Ruiz');
+    fireEvent.click(within(oldest).getByRole('button', { name: /^Evaluar VR-1/ }));
+    expect(await within(sheet).findByText(/Formulario único · VR-1 · Versión 1/)).toBeInTheDocument();
+    expect(within(sheet).getByLabelText('Veredicto')).toHaveValue('complies');
+    expect(within(sheet).getByText(/Revisado por Marta Ruiz · /)).toBeInTheDocument();
+    fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'not_applicable' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
+    await waitFor(() => expect(operations.saveCanonicalReview).toHaveBeenCalledWith(1, 10, expect.objectContaining({ verdict: 'not_applicable', expectedReviewRevision: 3 })));
+    // Switching versions reuses the loaded list.
+    expect(operations.getCanonicalVersions).toHaveBeenCalledTimes(1);
+  });
+
   const control = (id, title, review = null) => ({ controlId: id, title, review, values: [
     { sourceValueId: `${id}-ok`, label: 'Cumple', effect: 'complies' }, { sourceValueId: `${id}-no`, label: 'No cumple', effect: 'does_not_comply' }] });
-  const openControls = async (controls) => {
-    api.getLegalForm.mockResolvedValue(legalForm({ requirements: [requirement({ controls: controlsOf(controls.length), instances: [instance({ source: 'controls', controls: controlsOf(controls.length) })] })] }));
-    api.findCanonicalRow.mockResolvedValue({ view: { readOnly: false, capabilities: { review: true } }, row: controlRow(controls) });
+  const openControls = async (list) => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ controls: list, actions: { review: true }, evaluation: { status: 'pending', source: 'controls' } })]));
     render(<LegalFormPanel origin={origin} canManage />);
-    fireEvent.click(await screen.findByRole('button', { name: 'Revisar controles 511' }));
-    return screen.findByRole('dialog');
+    return openSheet();
   };
-  const controlsOf = (total) => controls(total, 0);
 
   it('opens the Central controls of a delivery in one form with a single Guardar', async () => {
     const sheet = await openControls([control('c-1', 'Firma del titular')]);
     expect(await within(sheet).findByText('Firma del titular')).toBeInTheDocument();
-    expect(api.findCanonicalRow).toHaveBeenCalledWith(origin, 10, expect.any(AbortSignal));
     expect(within(sheet).getAllByRole('button', { name: /^Guardar/ })).toHaveLength(1);
     expect(within(sheet).getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    expect(within(sheet).queryByLabelText('Veredicto')).not.toBeInTheDocument();
     fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 'c-1-ok' } });
     expect(within(sheet).getByRole('button', { name: 'Guardar' })).toBeEnabled();
   });
@@ -174,7 +265,8 @@ describe('LegalFormPanel', () => {
     expect(order).toEqual(['c-1', 'c-2']);
     expect(saveCanonicalControl).toHaveBeenNthCalledWith(1, 1, 10, 'c-1', expect.objectContaining({ selectedSourceValueId: 'c-1-ok', observation: null, expectedEvidenceRevision: 1, expectedResultRevision: 0, reason: expect.any(String) }));
     expect(saveCanonicalControl).toHaveBeenNthCalledWith(2, 1, 10, 'c-2', expect.objectContaining({ selectedSourceValueId: 'c-2-no', observation: 'Faltan folios', expectedResultRevision: 3 }));
-    expect(await screen.findByText('Revisión guardada.')).toBeInTheDocument();
+    expect(await screen.findByText('Evaluación guardada.')).toBeInTheDocument();
+    await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
   });
 
   it('requires an observation for a non-complying control before sending anything, and stops at the first failure', async () => {
@@ -218,6 +310,23 @@ describe('LegalFormPanel', () => {
     await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledWith(1, 10, 'c-1', expect.objectContaining({ selectedSourceValueId: 'c-1-ok', expectedResultRevision: 2 })));
   });
 
+  it('evaluates an older version of a document with controls from its own receipt, starting from empty results', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm());
+    const current = { selectedSourceValueId: 'c-1-ok', observation: null, resultRevision: 4, effect: 'complies', current: true };
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ receivedDocumentRowId: 11, versionSequence: 2, versionCount: 2, receipt: receipt(11, { evidenceRevision: 2 }), controls: [control('c-1', 'Firma del titular', current)], actions: { review: true }, evaluation: { status: 'approved', source: 'controls' } })]));
+    operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, { status: 'pending', source: 'controls' }, { evidenceRevision: 5 }), version(11, 2, { status: 'approved', source: 'controls' }, { evidenceRevision: 2 })], nextAfterId: null });
+    saveCanonicalControl.mockResolvedValue({});
+    render(<LegalFormPanel origin={origin} canManage />);
+    const sheet = await openSheet();
+    expect(within(sheet).getByLabelText('Resultado')).toHaveValue('c-1-ok');
+    const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
+    fireEvent.click(within(previous).getByRole('button', { name: /^Evaluar VR-1/ }));
+    await waitFor(() => expect(within(sheet).getByLabelText('Resultado')).toHaveValue(''));
+    fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 'c-1-ok' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledWith(1, 10, 'c-1', expect.objectContaining({ expectedEvidenceRevision: 5, expectedResultRevision: 0 })));
+  });
+
   describe('partial failures of the controls form', () => {
     const failFirstOfTwo = async () => {
       const sheet = await openControls([control('c-1', 'Firma del titular'), control('c-2', 'Folios')]);
@@ -252,11 +361,12 @@ describe('LegalFormPanel', () => {
       expect(saveCanonicalControl.mock.calls[3][3].idempotencyKey).toBe(saveCanonicalControl.mock.calls[1][3].idempotencyKey);
     });
 
-    it('refreshes the panel when the sheet is closed after some controls were saved', async () => {
+    it('refreshes the table and the legal-form state when the sheet is closed after some controls were saved', async () => {
       const sheet = await failFirstOfTwo();
       expect(api.getLegalForm).toHaveBeenCalledTimes(1);
       fireEvent.click(within(sheet).getByRole('button', { name: 'Cancelar' }));
       await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(operations.getCanonicalDocuments).toHaveBeenCalledTimes(2));
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     });
 
@@ -266,6 +376,7 @@ describe('LegalFormPanel', () => {
       fireEvent.click(within(sheet).getByRole('button', { name: 'Cancelar' }));
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
       expect(api.getLegalForm).toHaveBeenCalledTimes(1);
+      expect(operations.getCanonicalDocuments).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -283,12 +394,37 @@ describe('LegalFormPanel', () => {
   });
 
   it('names who declared and who reviewed when the server provides it', async () => {
-    api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez' }, actions: { review: true, declare: false, revoke: true, sheet: true },
-      requirements: [requirement({ instances: [instance({ verdict: 'complies', review: { verdict: 'complies', stale: false, reviewedBy: 4, reviewedByName: 'Marta Ruiz', reviewedAt: '2026-10-14T15:00:00.000Z' } })] })] }));
+    api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez' }, actions: { review: true, declare: false, revoke: true, sheet: true } }));
+    operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ evaluation: approved })]));
     render(<LegalFormPanel origin={origin} canManage />);
     expect(await screen.findByTestId('legal-form-declaration')).toHaveTextContent('por Luis Gómez');
-    fireEvent.click(screen.getByRole('button', { name: 'Revisar 511' }));
-    expect(await screen.findByText(/Revisado por Marta Ruiz · /)).toBeInTheDocument();
+    const sheet = await openSheet();
+    expect(within(sheet).getByText(/Revisado por Marta Ruiz · /)).toBeInTheDocument();
+  });
+
+  describe('traditional expedientes', () => {
+    const traditionalOrigin = { mode: 'traditional', project: { fun0Id: 1, idPublic: 'FUN-1' } };
+    const traditionalForm = (legacy) => ({ schemaVersion: api.LEGAL_FORM_SCHEMA, mode: 'traditional', applicable: false, project: { fun0Id: 1 }, state: 'not_applicable', legacy });
+
+    it('shows a read-only consult card of the legacy declaration with no actions and no documents table', async () => {
+      api.getLegalForm.mockResolvedValue(traditionalForm({ state: 5, declared: true, declaredAt: '2026-03-02', clockName: 'Legal y debida forma', clockDesc: '30 días hábiles' }));
+      render(<LegalFormPanel origin={traditionalOrigin} canManage currentVersion={1} />);
+      const card = await screen.findByTestId('legal-form-legacy');
+      expect(card).toHaveTextContent('Declarada el 2 mar 2026');
+      expect(card).toHaveTextContent('Legal y debida forma · 30 días hábiles');
+      expect(card).toHaveTextContent('Estado actual del expediente: 5');
+      expect(card).toHaveTextContent('módulo «Chequeo»');
+      ['Declarar legal y debida forma', 'Anular declaración', 'Lista de chequeo'].forEach((name) => expect(screen.queryByRole('button', { name })).not.toBeInTheDocument());
+      expect(screen.getByRole('button', { name: 'Actualizar' })).toBeInTheDocument();
+      expect(screen.queryByRole('grid')).not.toBeInTheDocument();
+      expect(operations.getCanonicalDocuments).not.toHaveBeenCalled();
+    });
+
+    it('says when the legacy declaration does not exist yet', async () => {
+      api.getLegalForm.mockResolvedValue(traditionalForm({ state: 3, declared: false, declaredAt: null, clockName: null, clockDesc: null }));
+      render(<LegalFormPanel origin={traditionalOrigin} canManage />);
+      expect(await screen.findByTestId('legal-form-legacy')).toHaveTextContent('No declarada');
+    });
   });
 
   describe('checklist', () => {
@@ -296,6 +432,31 @@ describe('LegalFormPanel', () => {
     const checklistForm = (extra = {}) => legalForm({ actions: { review: true, declare: false, revoke: false, sheet: true, checklist: true }, checklistDefaults: { 511: '1', 512: '0' }, checklist: null,
       requirements: [requirement({ title: 'Formulario único nacional' })], ...extra });
     const renderPanel = () => render(<LegalFormPanel origin={origin} canManage currentItem={item} currentVersion={1} swaMsg={{}} />);
+
+    it('names every code with the legacy checklist catalogue and hints at rows that do not apply or are not delivered', async () => {
+      api.getLegalForm.mockResolvedValue(checklistForm({
+        requirements: [requirement({ title: 'Título del requisito' })],
+        checklistItems: [
+          { code: '511', name: 'Formulario único nacional', applies: true, delivered: true, verdict: 'complies', defaultMark: '1' },
+          { code: '512', name: 'Memoria de cálculo estructural', applies: false, delivered: false, verdict: null, defaultMark: '2' },
+          { code: '513', name: 'Planos arquitectónicos', applies: true, delivered: false, verdict: null, defaultMark: '0' },
+        ],
+      }));
+      renderPanel();
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      expect(within(dialog).getByTestId('checklist-row-511')).toHaveTextContent('Formulario único nacional');
+      expect(within(dialog).getByTestId('checklist-row-511')).not.toHaveTextContent('Título del requisito');
+      expect(within(dialog).getByTestId('checklist-hint-512')).toHaveTextContent('No aplica a este expediente');
+      expect(within(dialog).getByTestId('checklist-hint-513')).toHaveTextContent('Sin entregar');
+      expect(within(dialog).queryByTestId('checklist-hint-511')).not.toBeInTheDocument();
+      // A code the catalogue does not name falls back to the code itself.
+      const unnamed = CHECKLIST_CODES.find((code) => !['511', '512', '513'].includes(String(code)));
+      expect(within(dialog).getByTestId(`checklist-row-${unnamed}`)).toHaveTextContent(String(unnamed));
+      // Print order is the order of the PDF template, not the order of the payload.
+      const rendered = within(dialog).getAllByTestId(/^checklist-row-/).map((row) => row.getAttribute('data-testid').replace('checklist-row-', ''));
+      expect(rendered).toEqual(CHECKLIST_CODES.map(String));
+    });
 
     it('hides the action when the panel is mounted without the expediente version', async () => {
       api.getLegalForm.mockResolvedValue(checklistForm());

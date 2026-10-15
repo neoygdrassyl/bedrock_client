@@ -20,6 +20,7 @@ import { DetailFact } from '../molecules/DetailSection';
 import { CheckboxField, FormField } from '../molecules/FormField';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { funFactLabel } from '../../funFactLabels';
+import { RequirementAdditions } from './RequirementAdditions';
 
 export const LEGACY_VALUE = 'legacy';
 const REFRESH_REASON = 'Actualización de requisitos con los datos del expediente';
@@ -332,6 +333,7 @@ export function DocumentaryGovernance({ origin, view, canManage = false, default
         />
       ) : null}
       <ReferencedExpedienteData source={governance?.source} onFixFun={onFixFun} />
+      {governance && canonical ? <RequirementAdditions fun0Id={fun0Id} canManage={canManage} onChanged={(message) => onSaved(message, true)} /> : null}
     </GovernanceFrame>
   );
 }

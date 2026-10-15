@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
 import * as api from '@/app/services/documentaryOperations.service';
-vi.mock('@/app/services/documentaryOperations.service', () => ({ getMissingRequirements: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), downloadCanonicalFile: vi.fn(), receiveCanonicalDocument: vi.fn(), saveCanonicalControl: vi.fn(), createCanonicalSubmit: vi.fn(), updateCanonicalEvidence:vi.fn(), getCanonicalHistory:vi.fn(), refreshDocumentaryRequirements:vi.fn(), getCanonicalVersionSubmitIds:vi.fn(), documentaryReceiptRuleError:vi.fn(() => null) }));
+vi.mock('@/app/services/documentaryOperations.service', () => ({ getMissingRequirements: vi.fn(), getCanonicalDocuments: vi.fn(), getCanonicalVersions: vi.fn(), downloadCanonicalFile: vi.fn(), receiveCanonicalDocument: vi.fn(), saveCanonicalControl: vi.fn(), saveCanonicalReview: vi.fn(), createCanonicalSubmit: vi.fn(), updateCanonicalEvidence:vi.fn(), getCanonicalHistory:vi.fn(), refreshDocumentaryRequirements:vi.fn(), getCanonicalVersionSubmitIds:vi.fn(), documentaryReceiptRuleError:vi.fn(() => null) }));
 vi.mock('@/app/services/documentary.service', () => ({ documentaryError:error=>error.message||'Error' }));
 const origin = { mode:'canonical', project: { fun0Id: 1, idPublic: 'FUN-1' }, publication: { configurationId: 2, checksum: 'pinned' }, catalogue: {
   documents: [
@@ -28,7 +28,7 @@ function fillPhysicalReceipt(dialog, { pages = '2', location = 'Archivo 1', note
   fireEvent.change(within(dialog).getByLabelText('Nota de recepción'), { target: { value: note } });
 }
 
-beforeEach(() => { vi.clearAllMocks(); delete window.user; api.getCanonicalDocuments.mockResolvedValue(view()); api.getCanonicalHistory.mockResolvedValue({events:[],nextAfterId:null}); });
+beforeEach(() => { vi.clearAllMocks(); delete window.user; api.getCanonicalDocuments.mockResolvedValue(view()); api.getCanonicalHistory.mockResolvedValue({events:[],nextAfterId:null}); api.getCanonicalVersions.mockResolvedValue({rows:[],nextAfterId:null}); });
 afterEach(() => { delete window.user; });
 
 describe('recepción según el catálogo y el expediente', () => {
@@ -215,19 +215,107 @@ describe('recepción según el catálogo y el expediente', () => {
     expect(screen.queryByRole('button', { name: 'Recibir documento' })).not.toBeInTheDocument();
   });
 
-  it('revisa el control de la evidencia vigente con las revisiones de concurrencia', async () => {
-    const row = docRow({ actions: { review: true }, receipt: receipt(21, { evidenceRevision: 4, files: {} }), controls: [{ controlId: 'CTRL-31', title: 'Firma válida', values: [{ sourceValueId: 'NO', label: 'Firma pendiente', effect: 'does_not_comply' }], review: { resultRevision: 2, current: false } }] });
+  it('evaluates the controls of the current evidence from the ficha with the concurrency revisions', async () => {
+    const row = docRow({ actions: { review: true }, evaluation: { status: 'pending', source: 'controls' }, receipt: receipt(21, { evidenceRevision: 4, files: {} }), controls: [{ controlId: 'CTRL-31', title: 'Firma válida', values: [{ sourceValueId: 'NO', label: 'Firma pendiente', effect: 'does_not_comply' }], review: { resultRevision: 2, current: false } }] });
     api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [row] });
     api.saveCanonicalControl.mockResolvedValue({});
     render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
     await screen.findByRole('heading', { name: 'Documento publicado' });
     const detail = screen.getByRole('complementary');
-    expect(within(detail).getByText('Legal y debida forma')).toBeInTheDocument();
-    fireEvent.change(within(detail).getByLabelText('Resultado'), { target: { value: 'NO' } });
-    expect(within(detail).getByLabelText('Observación')).toBeRequired();
-    fireEvent.change(within(detail).getByLabelText('Observación'), { target: { value: 'Falta firma' } });
-    fireEvent.click(within(detail).getByRole('button', { name: 'Guardar revisión' }));
+    // The ficha only summarises the evaluation; deciding happens in the shared sheet.
+    expect(within(detail).getByText('Evaluación')).toBeInTheDocument();
+    expect(within(detail).queryByLabelText('Resultado')).not.toBeInTheDocument();
+    fireEvent.click(within(detail).getByRole('button', { name: 'Evaluar' }));
+    const sheet = await screen.findByRole('dialog');
+    fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 'NO' } });
+    expect(within(sheet).getByLabelText('Observación')).toBeRequired();
+    fireEvent.change(within(sheet).getByLabelText('Observación'), { target: { value: 'Falta firma' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(api.saveCanonicalControl).toHaveBeenCalledWith(1, 21, 'CTRL-31', expect.objectContaining({ selectedSourceValueId: 'NO', observation: 'Falta firma', expectedEvidenceRevision: 4, expectedResultRevision: 2 })));
+    expect(await screen.findByText('Evaluación guardada.')).toBeInTheDocument();
+    await waitFor(() => expect(api.getCanonicalDocuments).toHaveBeenCalledTimes(2));
+  });
+
+  it('evaluates a document without controls from the ficha with the reviewer verdict', async () => {
+    const row = docRow({ actions: { evaluate: true }, evaluation: { status: 'pending', source: 'review', reviewRevision: 2 } });
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [row] });
+    api.getCanonicalVersions.mockResolvedValue({ rows: [{ ...receipt(21), versionSequence: 1, evaluation: row.evaluation }], nextAfterId: null });
+    api.saveCanonicalReview.mockResolvedValue({ unchanged: false });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    await screen.findByRole('heading', { name: 'Documento publicado' });
+    fireEvent.click(within(screen.getByRole('complementary')).getByRole('button', { name: 'Evaluar' }));
+    const sheet = await screen.findByRole('dialog');
+    expect(within(sheet).getByText(/DOC-A · Documento publicado · VR-A · Versión 1/)).toBeInTheDocument();
+    expect(await within(sheet).findByText('Este documento solo tiene una versión.')).toBeInTheDocument();
+    fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'complies' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
+    await waitFor(() => expect(api.saveCanonicalReview).toHaveBeenCalledWith(1, 21, expect.objectContaining({ verdict: 'complies', expectedReviewRevision: 2 })));
+    expect(await screen.findByText('Evaluación guardada.')).toBeInTheDocument();
+  });
+
+  it('offers Evaluar only to managers and only for evaluable rows', async () => {
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [docRow({ actions: { evaluate: true } })] });
+    const { unmount } = render(<CanonicalDocumentaryWorkspace origin={origin} />);
+    await screen.findByRole('heading', { name: 'Documento publicado' });
+    expect(screen.queryByRole('button', { name: 'Evaluar' })).not.toBeInTheDocument();
+    unmount();
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [docRow({ actions: {} })] });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    await screen.findByRole('heading', { name: 'Documento publicado' });
+    expect(screen.queryByRole('button', { name: 'Evaluar' })).not.toBeInTheDocument();
+  });
+
+  it('replaces the Escaneado column with Evaluación: tag by status, reviewer line and a dash when it does not apply', async () => {
+    const rows = [
+      docRow({ evaluation: { status: 'approved', source: 'review', reviewedByName: 'Marta Ruiz' } }),
+      docRow({ rowKey: 'canonical:b', documentKey: 'b', receivedDocumentRowId: 22, receipt: receipt(22), evaluation: { status: 'rejected', source: 'controls', reviewedBy: 9 } }),
+      docRow({ rowKey: 'canonical:c', documentKey: 'c', receivedDocumentRowId: 23, receipt: receipt(23), evaluation: { status: 'pending', source: 'review' } }),
+      { rowKey: 'canonical:d', documentKey: 'd', documentClass: 'annex', documentId: null, title: 'Anexo', receivedDocumentRowId: 24, versionSequence: 1, versionCount: 1, catalogueDisplay: {}, receipt: receipt(24), actions: {}, controls: [], evaluation: { status: 'not_applicable', source: null } },
+    ];
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows });
+    render(<CanonicalDocumentaryWorkspace origin={origin} />);
+    await screen.findByRole('heading', { name: 'Documento publicado' });
+    const table = screen.getByRole('grid', { name: 'Documentos recibidos' });
+    const headers = [...table.querySelectorAll('th[scope="col"]')].map((header) => header.textContent);
+    expect(headers).toEqual(['Documento', 'Última entrega', 'Físico', 'Digital', 'Evaluación', 'Versiones']);
+    const [approvedRow, rejectedRow, pendingRow, annexRow] = within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
+    expect(within(approvedRow).getByText('Aprobado')).toHaveAttribute('data-tone', 'success');
+    expect(approvedRow).toHaveTextContent('por Marta Ruiz');
+    expect(within(rejectedRow).getByText('Rechazado')).toHaveAttribute('data-tone', 'danger');
+    expect(rejectedRow).toHaveTextContent('por usuario 9');
+    expect(within(pendingRow).getByText('Sin evaluar')).toHaveAttribute('data-tone', 'warning');
+    expect(pendingRow).not.toHaveTextContent('por ');
+    expect(within(annexRow).queryByText(/Aprobado|Rechazado|Sin evaluar/)).not.toBeInTheDocument();
+    expect(within(annexRow).getByLabelText('No aplica')).toHaveTextContent('—');
+    // The scan information stays in the ficha.
+    expect(screen.getByRole('complementary')).toHaveTextContent('Soportes recibidos');
+  });
+
+  it('requests the input scope in Radicación and filters the class on the server only when the host fixes it', async () => {
+    render(<CanonicalDocumentaryWorkspace origin={origin} />);
+    await screen.findByRole('grid', { name: 'Documentos recibidos' });
+    expect(api.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: '' });
+  });
+
+  it('shows the expedidos of the expediente without Físico, Digital and Evaluación and without receive actions', async () => {
+    const issuedRow = docRow({ rowKey: 'canonical:z', documentKey: 'z', documentClass: 'annex', documentId: null, title: 'Resolución de licencia', catalogueDisplay: {}, listTitle: 'Expedidos', evaluation: { status: 'not_applicable', source: null } });
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [issuedRow], counts: { canonicalDocuments: 1 } });
+    const onCountChange = vi.fn();
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="issued" embedded onCountChange={onCountChange} />);
+    const table = await screen.findByRole('grid', { name: 'Documentos expedidos' });
+    expect(api.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'issued', documentClass: '' });
+    expect([...table.querySelectorAll('th[scope="col"]')].map((header) => header.textContent)).toEqual(['Documento', 'Última entrega', 'Versiones']);
+    expect(within(table).getByText('Resolución de licencia')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Recibir documento' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Evaluar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Estado de los requisitos' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Historial documental' })).not.toBeInTheDocument();
+    await waitFor(() => expect(onCountChange).toHaveBeenCalledWith(1));
+  });
+
+  it('shows an empty state of expedidos when there are none', async () => {
+    render(<CanonicalDocumentaryWorkspace origin={origin} variant="issued" embedded />);
+    expect(await screen.findByText('Aún no hay documentos expedidos para este expediente.')).toBeInTheDocument();
   });
 
   it('lists one row per document grouped by list, with class, formatted date and version count', async () => {

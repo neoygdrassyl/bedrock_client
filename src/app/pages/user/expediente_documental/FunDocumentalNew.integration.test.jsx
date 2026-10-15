@@ -11,12 +11,18 @@ const mocks = vi.hoisted(() => ({
   cubByFun: vi.fn(),
   generators: vi.fn(),
   legalMounts: vi.fn(),
+  workspaceVariant: vi.fn(),
 }));
 vi.mock('./hooks/useDocumentaryOrigin', () => ({ useDocumentaryOrigin: mocks.origin }));
 vi.mock('./hooks/useExpedienteDocumental', () => ({ useExpedienteDocumental: mocks.legacy }));
 vi.mock('./ui/organisms/CanonicalDocumentaryWorkspace', async () => {
   const { useEffect } = await import('react');
-  return { CanonicalDocumentaryWorkspace: ({ onCountChange, onRequirementsRefreshed }) => { useEffect(() => { onCountChange?.(7); }, [onCountChange]); return <div>Recepción canónica<button type="button" onClick={onRequirementsRefreshed}>Simular actualización de requisitos</button></div>; } };
+  return { CanonicalDocumentaryWorkspace: ({ onCountChange, onRequirementsRefreshed, variant = 'input' }) => {
+    useEffect(() => { onCountChange?.(variant === 'issued' ? 3 : 7); }, [onCountChange, variant]);
+    mocks.workspaceVariant(variant);
+    if (variant === 'issued') return <div>Expedidos canónicos</div>;
+    return <div>Recepción canónica<button type="button" onClick={onRequirementsRefreshed}>Simular actualización de requisitos</button></div>;
+  } };
 });
 vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: ({ onSaved }) => <div>Selector de configuración<button type="button" onClick={() => onSaved('Requisitos evaluados', true)}>Simular guardado</button></div> }));
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
@@ -162,17 +168,33 @@ describe('documentary tabs', () => {
     expect(within(row).getAllByText('—')).toHaveLength(3);
   });
 
-  it('shows a clean empty state when the expediente has no issued documents', async () => {
+  it('shows the issued documents table of the new model above the CUB consecutivos, and counts both', async () => {
+    const user = userEvent.setup();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
+    mocks.cubByFun.mockResolvedValue({ data: [{ id: 1, cub: 'CUB-0001', process: 'ACTA PARTE 1', vr: 'VR-10', date: '2026-01-05', desc: 'Acta de observaciones' }] });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveTextContent('1'));
+    expect(mocks.workspaceVariant).not.toHaveBeenCalledWith('issued'); // loads only when the tab opens
+    await user.click(screen.getByRole('tab', { name: /Expedidos/ }));
+    expect(await screen.findByText('Expedidos canónicos')).toBeInTheDocument();
+    expect(mocks.workspaceVariant).toHaveBeenCalledWith('issued');
+    expect(screen.getByRole('heading', { name: 'Consecutivos de salida (CUB)' })).toBeInTheDocument();
+    expect(within(screen.getByRole('table', { name: 'Consecutivos de salida (CUB)' })).getByText('CUB-0001')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveTextContent('4'));
+  });
+
+  it('does not add an empty CUB card below the issued table of the new model', async () => {
     const user = userEvent.setup();
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     await settleIssuedCount();
     await user.click(screen.getByRole('tab', { name: /Expedidos/ }));
-    expect(screen.getByText('Aún no hay documentos expedidos para este expediente.')).toBeInTheDocument();
+    expect(await screen.findByText('Expedidos canónicos')).toBeInTheDocument();
+    expect(screen.queryByText('Aún no hay documentos expedidos para este expediente.')).not.toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  it('shows Legal y debida forma only for canonical expedientes and reloads the module after a declaration', async () => {
+  it('shows Legal y debida forma for every expediente and reloads the module after a declaration', async () => {
     const user = userEvent.setup();
     const refresh = vi.fn();
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh });
@@ -191,7 +213,8 @@ describe('documentary tabs', () => {
     mocks.origin.mockReturnValue({ origin: TRADITIONAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     await settleIssuedCount();
-    expect(screen.queryByRole('tab', { name: /Legal y debida forma/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
+    expect(await screen.findByRole('button', { name: 'Panel de legal y debida forma' })).toBeInTheDocument();
   });
 
   it('reloads the origin and remounts Legal y debida forma after the Radicación banner refreshes the requirements', async () => {
