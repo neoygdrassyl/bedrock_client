@@ -51,6 +51,16 @@ describe('documentaryLegalForm.service', () => {
     expect(http.delete).toHaveBeenCalledWith('/fun/documentary/v1/projects/1/legal-form/declaration', { data: { idempotencyKey: 'k', reason: 'r' }, headers: { 'Content-Type': 'application/json' } });
   });
 
+  it('updates the declaration with PUT and a JSON body, and accepts the new effective-VR fields of the legal form', async () => {
+    http.put.mockResolvedValue({ data: { wasOutdated: true, state: 'declared' } });
+    await expect(api.updateLegalFormDeclaration(1, { idempotencyKey: 'k', reason: 'r' })).resolves.toMatchObject({ wasOutdated: true });
+    expect(http.put).toHaveBeenCalledWith('/fun/documentary/v1/projects/1/legal-form/declaration', { idempotencyKey: 'k', reason: 'r' }, { headers: { 'Content-Type': 'application/json' } });
+    const effective = { rowId: 11, vrLabel: 'VR-2', versionSequence: 2, source: 'latest' };
+    http.get.mockResolvedValue({ data: legalFormFixture({ outdated: false, declaration: { at: '2026-10-15T15:00:00.000Z', updatedAt: '2026-10-16T15:00:00.000Z', updatedBy: 3 },
+      requirements: [{ ...legalFormFixture().requirements[0], effectiveSource: 'latest', referenceVerdict: 'pending', instances: [instance({ selection: null, selectionRevision: 0, effective, declared: null, outdated: false, controls: { total: 2, complies: 1, noDecision: 1 } })] }] }) });
+    await expect(api.getLegalForm(1)).resolves.toMatchObject({ outdated: false });
+  });
+
   it('sends the checklist marks as a JSON command and recognizes its revision conflict', async () => {
     http.put.mockResolvedValue({ data: { checklistRevision: 1 } });
     const command = { marks: { 511: '1' }, expectedChecklistRevision: 0, idempotencyKey: 'k', reason: 'r' };

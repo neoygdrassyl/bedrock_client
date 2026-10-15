@@ -14,7 +14,7 @@ import { fieldClass, FormField } from '../molecules/FormField';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { ControlDecisionFields, ErrorMessage } from './CanonicalDocumentForms';
 import { evaluationOf, formatDocumentaryDate, rowCode, rowName } from '../../canonicalDocumentaryModel';
-import { instancesByKey, reviewedByLine, selectedByLine } from '../../legalFormModel';
+import { effectiveOf, effectiveVrLine, instancesByKey, reviewedByLine, selectedByLine } from '../../legalFormModel';
 
 export const REVIEW_REASON = 'Revisión de legal y debida forma';
 const CONTROL_REASON = 'Revisión de Legal y debida forma';
@@ -207,17 +207,24 @@ function useDocumentVersions(origin, row) {
 
 /**
  * Compact list of the evaluations of every version of the document, with an "Evaluar" link to switch to one.
- * With `choice` (the legal-form instance of the document) each approved version can be chosen as the one legal y
- * debida forma uses; the chosen one is tagged and can be cleared.
+ * With `choice` (the legal-form instance of the document) it names the delivery legal y debida forma uses (the latest
+ * one unless a manager chose another); each approved version can optionally be chosen, and the choice can be cleared.
  */
 function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choice }) {
   const versions = [...state.rows].sort(byVersionDesc);
   const instance = choice?.instance || null;
+  const effective = effectiveOf(instance);
+  const useLine = effectiveVrLine(instance);
   const showList = versions.length > 1 || (Boolean(instance) && versions.length > 0);
   return (
     <section className="mt-[1.5rem] flex min-w-0 flex-col gap-2 border-t pt-[1rem]" aria-label="Evaluaciones anteriores">
       <h3 className="mb-0 text-sm font-semibold leading-5 text-foreground">Evaluaciones anteriores</h3>
-      {instance && !instance.selection ? <p className="mb-0 text-xs leading-4 text-muted-foreground">Elija la entrega aprobada que se usa para legal y debida forma.</p> : null}
+      {useLine ? (
+        <div className="flex flex-wrap items-center gap-x-[0.75rem] gap-y-1">
+          <p className="mb-0 text-xs font-medium leading-4 text-foreground" data-testid="effective-vr-line">{useLine}</p>
+          {instance.selection && choice.canChange ? <Button type="button" variant="link" size="sm" className="h-6 px-1 text-xs" disabled={choice.busy} onClick={choice.onClear}>Volver al último</Button> : null}
+        </div>
+      ) : null}
       {!state.loaded ? <div className="flex flex-col gap-2" aria-hidden="true"><Skeleton className="h-8 w-full" /><Skeleton className="h-8 w-full" /></div> : null}
       {state.loaded && !state.error && versions.length <= 1 && !showList ? <p className="mb-0 text-xs leading-4 text-muted-foreground">Este documento solo tiene una versión.</p> : null}
       {showList ? (
@@ -228,27 +235,27 @@ function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choi
             const reviewer = evaluation.reviewedByName || (evaluation.reviewedBy != null ? `usuario ${evaluation.reviewedBy}` : null);
             const when = evaluation.reviewedAt ? formatDocumentaryDate(evaluation.reviewedAt) : null;
             const isApproved = evaluation.status === 'approved';
+            const inUse = effective ? effective.rowId === version.id : Boolean(version.ldfSelected);
             const chosen = instance ? instance.selection?.rowId === version.id : Boolean(version.ldfSelected);
             return (
               <li key={version.id} className="flex flex-wrap items-center gap-x-[0.75rem] gap-y-1 px-[0.75rem] py-2" data-testid={`evaluation-version-${version.id}`}>
                 <span className="min-w-0 flex-1 text-xs text-foreground">{version.vrLabel || 'Sin VR'} · Versión {version.versionSequence}</span>
-                {chosen ? <Tag tone="success" title="Entrega que usa legal y debida forma">VR elegido</Tag> : null}
+                {inUse ? <Tag tone="success" title="Entrega que usa legal y debida forma">En uso</Tag> : null}
                 <EvaluationStatus evaluation={evaluation} showReviewer={false} />
                 {isApproved || evaluation.status === 'rejected' ? <span className="text-[11px] text-muted-foreground">{[reviewer && `por ${reviewer}`, when].filter(Boolean).join(' · ')}</span> : null}
                 {active ? <span className="text-[11px] font-medium text-muted-foreground">En evaluación</span> : canEvaluate && evaluation.status !== 'not_applicable' ? (
                   <Button type="button" variant="link" size="sm" className="h-6 px-1 text-xs" aria-label={`Evaluar ${version.vrLabel || 'versión'} versión ${version.versionSequence}`} onClick={() => onEvaluate(version)}>Evaluar</Button>
                 ) : null}
-                {chosen && instance ? (
+                {chosen && instance && instance.selection ? (
                   <div className="flex w-full flex-wrap items-center gap-x-[0.75rem] gap-y-1">
                     <span className="text-[11px] text-muted-foreground">{selectedByLine(instance.selection)}</span>
-                    {!isApproved ? <span role="status" className="text-[11px] font-medium text-[hsl(var(--operational-warning-text))]">La entrega elegida ya no está aprobada. Elija otra.</span> : null}
-                    {choice.canChange ? <Button type="button" variant="link" size="sm" className="h-6 px-1 text-xs" disabled={choice.busy} onClick={choice.onClear}>Quitar elección</Button> : null}
+                    {!isApproved ? <span role="status" className="text-[11px] font-medium text-[hsl(var(--operational-warning-text))]">La entrega elegida ya no está aprobada. Elija otra o vuelva al último.</span> : null}
                   </div>
                 ) : null}
-                {instance && !chosen && choice.canChange ? (
+                {instance && !chosen && !inUse && choice.canChange ? (
                   <div className="flex w-full flex-wrap items-center gap-x-[0.75rem] gap-y-1">
-                    <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={!isApproved || choice.busy} aria-label={`Usar ${version.vrLabel || 'versión'} versión ${version.versionSequence} para legal y debida forma`} onClick={() => choice.onSelect(version)}>Usar para legal y debida forma</Button>
-                    {!isApproved ? <span className="text-[11px] text-muted-foreground">Apruebe esta entrega para poder elegirla</span> : null}
+                    <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={!isApproved || choice.busy} aria-label={`Usar ${version.vrLabel || 'versión'} versión ${version.versionSequence} para legal y debida forma`} onClick={() => choice.onSelect(version)}>Usar esta entrega</Button>
+                    {!isApproved ? <span className="text-[11px] text-muted-foreground">Apruebe esta entrega para poder usarla</span> : null}
                   </div>
                 ) : null}
               </li>
@@ -256,7 +263,7 @@ function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choi
           })}
         </ul>
       ) : null}
-      {choice?.declared && instance ? <p className="mb-0 text-[11px] leading-4 text-muted-foreground">El expediente está declarado: anule la declaración para cambiar el VR elegido.</p> : null}
+      {choice?.declared && instance ? <p className="mb-0 text-[11px] leading-4 text-muted-foreground">El expediente está declarado: anule la declaración para cambiar la entrega en uso.</p> : null}
       {choice?.message ? <p role="status" className="mb-0 text-xs font-medium leading-4 text-foreground">{choice.message}</p> : null}
       <ErrorMessage error={choice?.error} />
       {state.nextAfterId ? <Button type="button" variant="ghost" size="sm" className="h-8 self-start text-xs text-muted-foreground" disabled={state.busy} onClick={state.loadMore}>{state.busy ? 'Consultando…' : 'Ver más versiones'}</Button> : null}
@@ -306,8 +313,8 @@ function useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged }) {
     instance, busy: state.busy, message: state.message, error: state.error,
     declared: Boolean(data.declaration),
     canChange: Boolean(canEvaluate && data.actions?.select && !data.declaration),
-    onSelect: (version) => change(() => selectLegalFormVr(fun0Id, baseRow.documentKey, command({ rowId: version.id })), 'VR elegido para legal y debida forma.'),
-    onClear: () => change(() => clearLegalFormVr(fun0Id, baseRow.documentKey, command({})), 'Elección del VR quitada.'),
+    onSelect: (version) => change(() => selectLegalFormVr(fun0Id, baseRow.documentKey, command({ rowId: version.id })), 'Entrega en uso elegida para legal y debida forma.'),
+    onClear: () => change(() => clearLegalFormVr(fun0Id, baseRow.documentKey, command({})), 'Se usa de nuevo la última entrega.'),
   };
 }
 
@@ -351,7 +358,7 @@ function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSa
  * view row. Rows with Central controls open the single-save controls form; the others open the reviewer
  * verdict. Below, the evaluations of every version, each with an "Evaluar" link to switch the sheet to it.
  * `onSaved(message)` fires after a save; `onPartialSave` when it is closed after some controls went through.
- * The list of versions also lets a manager choose which approved delivery legal y debida forma uses (`legalForm`:
+ * The list of versions also lets a manager optionally choose which approved delivery legal y debida forma uses (by default the latest) (`legalForm`:
  * optional `{ data, reload }` of the host; `onSelectionChanged` fires after choosing or clearing it).
  */
 export function EvaluationSheet({ target, origin, canEvaluate = false, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged }) {

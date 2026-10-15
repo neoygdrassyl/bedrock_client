@@ -27,7 +27,7 @@ function invalid() {
 }
 
 function validControls(value) {
-  return object(value) && ['total', 'complies', 'doesNotComply', 'unreviewed'].every((key) => value[key] === undefined || count(value[key]));
+  return object(value) && ['total', 'complies', 'doesNotComply', 'unreviewed', 'noDecision'].every((key) => value[key] === undefined || count(value[key]));
 }
 
 // One delivery (VR version) of an instance, newest first, with its own evaluation.
@@ -114,6 +114,12 @@ export async function saveLegalFormChecklist(fun0Id, command) {
 
 export async function declareLegalForm(fun0Id, command) {
   const { data } = await http.post(`${legalFormUrl(fun0Id)}/declaration`, command, { headers: JSON_HEADERS });
+  return data;
+}
+
+/** Re-declares with the current deliveries; state and legal clock stay as they are. Body: idempotencyKey, reason. */
+export async function updateLegalFormDeclaration(fun0Id, command) {
+  const { data } = await http.put(`${legalFormUrl(fun0Id)}/declaration`, command, { headers: JSON_HEADERS });
   return data;
 }
 

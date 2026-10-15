@@ -21,12 +21,7 @@ export async function getDocumentaryOrigin({ fun0Id, submitId }, signal) {
   if (data.mode === 'canonical' && (!data.publication?.checksum || !Array.isArray(data.catalogue?.documents) || !Array.isArray(data.catalogue?.classifications))) fail();
   return data;
 }
-// `scope` ('input' | 'issued') and `documentClass` filter on the server; both are optional (default: input, every class).
-export async function getCanonicalDocuments(origin, afterId = 0, signal, { scope, documentClass } = {}) {
-  const params = { afterId, limit: 25 };
-  if (scope) params.scope = scope;
-  if (documentClass) params.documentClass = documentClass;
-  const { data } = await http.get(`${projectUrl(origin.project.fun0Id)}/view`, { signal, params });
+function checkedView(data, origin) {
   validateDocumentaryView(data);
   if (data?.schemaVersion !== 'dovela-backoffice/documentary-view/v1' || data.mode !== 'canonical'
     || data.project?.fun0Id !== origin.project.fun0Id || data.configuration?.id !== origin.publication.configurationId
@@ -34,6 +29,20 @@ export async function getCanonicalDocuments(origin, afterId = 0, signal, { scope
     || !Array.isArray(data.submits) || !data.capabilities || !data.pagination
     || data.rows.some((row) => !row.receipt || !Array.isArray(row.controls) || !row.catalogueDisplay)) fail();
   return data;
+}
+// `scope` ('input' | 'issued') and `documentClass` filter on the server; both are optional (default: input, every class).
+export async function getCanonicalDocuments(origin, afterId = 0, signal, { scope, documentClass } = {}) {
+  const params = { afterId, limit: 25 };
+  if (scope) params.scope = scope;
+  if (documentClass) params.documentClass = documentClass;
+  const { data } = await http.get(`${projectUrl(origin.project.fun0Id)}/view`, { signal, params });
+  return checkedView(data, origin);
+}
+/** Current view row of one document by its documentKey (any page of the list), or null when it has none. */
+export async function getCanonicalDocumentRow(origin, documentKey, signal) {
+  if (typeof documentKey !== 'string' || !documentKey.trim()) fail();
+  const { data } = await http.get(`${projectUrl(origin.project.fun0Id)}/view`, { signal, params: { documentKey } });
+  return checkedView(data, origin).rows.find((row) => row.documentKey === documentKey) || null;
 }
 const MISSING_STATES = ['current', 'stale', 'missing_cache', 'incomplete', 'not_applicable'];
 export async function getMissingRequirements(fun0Id, signal) {

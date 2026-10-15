@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import DataService from '@/app/services/data.service';
 import { documentaryError } from '@/app/services/documentary.service';
-import { getCanonicalDocuments, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
+import { getCanonicalDocumentRow, getCanonicalDocuments, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
@@ -32,11 +32,25 @@ const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Eviden
 export const WORKSPACE_VARIANTS = {
   input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, scanFilter: true, classFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos recibidos', emptyHint: 'Los documentos que se reciban en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
-  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true,
+  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true, loadAll: true,
     emptyText: 'Aún no hay requisitos recibidos', emptyHint: 'Los requisitos que se reciban en este expediente aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
   issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos expedidos para este expediente.', emptyHint: 'Los documentos que se expidan en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
 };
+// Pages loaded at most when a variant lists every row (the requirement list is bounded; this only stops a runaway cursor).
+const MAX_PAGES = 40;
+/** Every page of the view concatenated into one view (counts and capabilities come from the first page). */
+async function loadAllPages(origin, signal, options) {
+  const first = await getCanonicalDocuments(origin, 0, signal, options);
+  const rows = [...first.rows];
+  let next = first.pagination.nextAfterId;
+  for (let page = 1; next && page < MAX_PAGES; page += 1) {
+    const view = await getCanonicalDocuments(origin, next, signal, options);
+    rows.push(...view.rows);
+    next = view.pagination.nextAfterId && view.pagination.nextAfterId !== next ? view.pagination.nextAfterId : null;
+  }
+  return { ...first, rows, pagination: { ...first.pagination, nextAfterId: null } };
+}
 const FILTER_SELECT_CLASS = 'h-9 min-w-[10rem] flex-1 text-sm sm:w-auto sm:flex-none';
 
 function AuditHistory({ origin }) {
@@ -129,7 +143,8 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const requestKey = `${variant}:${origin.project.fun0Id}:${origin.publication.configurationId}:${origin.publication.checksum}:${afterId}:${revision}:${reloadKey}`;
   useEffect(() => {
     const controller = new AbortController();
-    getCanonicalDocuments(origin, afterId, controller.signal, { scope: config.scope, documentClass: config.documentClass })
+    const options = { scope: config.scope, documentClass: config.documentClass };
+    (config.loadAll ? loadAllPages(origin, controller.signal, options) : getCanonicalDocuments(origin, afterId, controller.signal, options))
       .then((view) => { if (!controller.signal.aborted) setResult({ key: requestKey, view }); })
       .catch((failure) => { if (!controller.signal.aborted) setResult({ key: requestKey, error: documentaryError(failure) }); });
     return () => controller.abort();
@@ -154,7 +169,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const rows = view?.rows || [];
   const filteredRows = filterCanonicalRows(rows, filters);
   // Legal y debida forma: unresolved rows first (rejected, unevaluated, approved without a chosen VR), then the ready ones.
-  // The order and the chips only see the loaded page: the view has no server-side order for this.
+  // The legalForm variant loads every row, so the order and the chips apply to the whole list.
   const readinessView = config.readinessFilter ? filterByReadiness(filteredRows, readiness, instances) : null;
   const visibleRows = readinessView ? sortByReadiness(readinessView.rows, instances) : filteredRows;
   const groups = groupRowsByList(visibleRows);
@@ -189,9 +204,15 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   useEffect(() => {
     if (!openRequest || !view || handledRequest.current === openRequest.nonce) return;
     handledRequest.current = openRequest.nonce;
-    const target = rows.find((row) => row.documentKey === openRequest.documentKey);
-    if (target) { setNotice(''); setEvaluating({ row: target, nonce: Date.now() }); } else setNotice('No se encontró ese documento en la página actual de la tabla. Búsquelo en las páginas siguientes.');
-  }, [openRequest, view, rows]);
+    const documentKey = openRequest.documentKey;
+    const open = (row) => { setNotice(''); setEvaluating({ row, nonce: Date.now() }); };
+    const target = rows.find((row) => row.documentKey === documentKey);
+    if (target) { open(target); return; }
+    // Not on the loaded page: ask the server for the current row of that document.
+    getCanonicalDocumentRow(origin, documentKey)
+      .then((row) => { if (row) open(row); else setNotice('El documento ya no tiene una entrega vigente. Actualice la vista.'); })
+      .catch((failure) => setNotice(documentaryError(failure)));
+  }, [openRequest, view, rows, origin]);
 
   return (
     <section
@@ -268,7 +289,6 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                   value={readiness}
                   onChange={setReadiness}
                 />
-                {cursors.length > 1 || view?.pagination.nextAfterId ? <span className="px-[1rem] text-[11px] text-muted-foreground">El orden y el filtro aplican a esta página.</span> : null}
               </div>
             ) : null}
           </div>
