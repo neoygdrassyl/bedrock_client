@@ -69,6 +69,13 @@ export function inventorySatisfyingVr(inventory) {
     const at = requirement.satisfiedBy.registeredAt;
     byCode.set(code(requirement.documentCode), { vr: requirement.satisfiedBy.vrLabel || '', date: at ? dayjs(at).format('YYYY-MM-DD') : '' });
   });
+  // Delivered codes that are not evaluated requirements (annexes, codes outside the evaluated
+  // typology) still take the VR of their current delivery, matching the backend port.
+  (inventory.items || []).forEach((item) => {
+    if (!item.isCurrent || !code(item.documentCode) || byCode.has(code(item.documentCode))) return;
+    const at = item.registeredAt;
+    byCode.set(code(item.documentCode), { vr: item.vrLabel || '', date: at ? dayjs(at).format('YYYY-MM-DD') : '' });
+  });
   return byCode;
 }
 
