@@ -1,14 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import fileDownload from 'js-file-download';
 import * as api from '@/app/services/documentaryLegalForm.service';
+import { saveCanonicalControl } from '@/app/services/documentaryOperations.service';
+import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/components/checklistPdf';
 import { LegalFormPanel } from './LegalFormPanel';
 
 vi.mock('@/app/services/documentaryLegalForm.service', async (importOriginal) => ({
   ...(await importOriginal()),
-  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(), findCanonicalRow: vi.fn(),
+  getLegalForm: vi.fn(), saveLegalFormReview: vi.fn(), saveLegalFormChecklist: vi.fn(), declareLegalForm: vi.fn(), revokeLegalForm: vi.fn(), findCanonicalRow: vi.fn(),
 }));
 vi.mock('@/app/services/documentaryOperations.service', () => ({ saveCanonicalControl: vi.fn(), getCanonicalDocuments: vi.fn(), createCanonicalSubmit: vi.fn(),
   documentaryReceiptRuleError: vi.fn(), getCanonicalVersionSubmitIds: vi.fn(), receiveCanonicalDocument: vi.fn(), updateCanonicalEvidence: vi.fn() }));
+vi.mock('../../../fun_forms/components/checklistPdf', async (importOriginal) => ({ ...(await importOriginal()), buildChecklistPdf: vi.fn() }));
+vi.mock('js-file-download', () => ({ default: vi.fn() }));
 vi.mock('@/app/services/documentary.service', () => ({ documentaryError: (error) => error.message || 'Error' }));
 
 const origin = { mode: 'canonical', project: { fun0Id: 1, idPublic: 'FUN-1' }, publication: { configurationId: 2, checksum: 'c' }, catalogue: { documents: [], classifications: [] } };
@@ -127,18 +132,157 @@ describe('LegalFormPanel', () => {
     await waitFor(() => expect(api.saveLegalFormReview).toHaveBeenCalledWith(1, '511', expect.objectContaining({ documentKey: 'a', verdict: 'complies', expectedReviewRevision: 2 })));
   });
 
-  it('opens the Central controls of a delivery with the ficha ControlDecision form', async () => {
-    api.getLegalForm.mockResolvedValue(legalForm({ requirements: [requirement({ controls: controls(2, 1), instances: [instance({ source: 'controls', controls: controls(2, 1) })] })] }));
-    const row = { receivedDocumentRowId: 10, receipt: { evidenceRevision: 1 }, actions: { review: true }, controls: [
-      { controlId: 'c-1', title: 'Firma del titular', values: [{ sourceValueId: 'v1', label: 'Cumple', effect: 'complies' }], review: null },
-    ] };
-    api.findCanonicalRow.mockResolvedValue({ view: { readOnly: false, capabilities: { review: true } }, row });
+  const controlRow = (controls) => ({ receivedDocumentRowId: 10, receipt: { evidenceRevision: 1 }, actions: { review: true }, controls });
+  const control = (id, title, review = null) => ({ controlId: id, title, review, values: [
+    { sourceValueId: `${id}-ok`, label: 'Cumple', effect: 'complies' }, { sourceValueId: `${id}-no`, label: 'No cumple', effect: 'does_not_comply' }] });
+  const openControls = async (controls) => {
+    api.getLegalForm.mockResolvedValue(legalForm({ requirements: [requirement({ controls: controlsOf(controls.length), instances: [instance({ source: 'controls', controls: controlsOf(controls.length) })] })] }));
+    api.findCanonicalRow.mockResolvedValue({ view: { readOnly: false, capabilities: { review: true } }, row: controlRow(controls) });
     render(<LegalFormPanel origin={origin} canManage />);
-    expect(await screen.findByText('1/2')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Revisar controles 511' }));
-    const sheet = await screen.findByRole('dialog');
+    fireEvent.click(await screen.findByRole('button', { name: 'Revisar controles 511' }));
+    return screen.findByRole('dialog');
+  };
+  const controlsOf = (total) => controls(total, 0);
+
+  it('opens the Central controls of a delivery in one form with a single Guardar', async () => {
+    const sheet = await openControls([control('c-1', 'Firma del titular')]);
     expect(await within(sheet).findByText('Firma del titular')).toBeInTheDocument();
     expect(api.findCanonicalRow).toHaveBeenCalledWith(origin, 10, expect.any(AbortSignal));
-    expect(within(sheet).getByRole('button', { name: 'Guardar revisión' })).toBeEnabled();
+    expect(within(sheet).getAllByRole('button', { name: /^Guardar/ })).toHaveLength(1);
+    expect(within(sheet).getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 'c-1-ok' } });
+    expect(within(sheet).getByRole('button', { name: 'Guardar' })).toBeEnabled();
+  });
+
+  it('saves every changed control sequentially from the single form and shows who reviewed', async () => {
+    const sheet = await openControls([
+      control('c-1', 'Firma del titular'),
+      control('c-2', 'Folios', { selectedSourceValueId: 'c-2-ok', observation: null, resultRevision: 3, effect: 'complies', current: true, actorName: 'Ana Pérez', decidedAt: '2026-10-14T15:00:00.000Z' }),
+      control('c-3', 'Sello'),
+    ]);
+    await within(sheet).findByText('Firma del titular');
+    expect(within(sheet).getByText(/Revisado por Ana Pérez · /)).toBeInTheDocument();
+    expect(within(sheet).getAllByRole('button', { name: /^Guardar/ })).toHaveLength(1);
+    const order = [];
+    saveCanonicalControl.mockImplementation(async (fun0Id, rowId, controlId) => { order.push(controlId); });
+    const selects = within(sheet).getAllByLabelText('Resultado');
+    fireEvent.change(selects[0], { target: { value: 'c-1-ok' } });
+    fireEvent.change(selects[1], { target: { value: 'c-2-no' } });
+    fireEvent.change(within(sheet).getAllByLabelText('Observación')[1], { target: { value: 'Faltan folios' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(saveCanonicalControl).toHaveBeenCalledTimes(2));
+    expect(order).toEqual(['c-1', 'c-2']);
+    expect(saveCanonicalControl).toHaveBeenNthCalledWith(1, 1, 10, 'c-1', expect.objectContaining({ selectedSourceValueId: 'c-1-ok', observation: null, expectedEvidenceRevision: 1, expectedResultRevision: 0, reason: expect.any(String) }));
+    expect(saveCanonicalControl).toHaveBeenNthCalledWith(2, 1, 10, 'c-2', expect.objectContaining({ selectedSourceValueId: 'c-2-no', observation: 'Faltan folios', expectedResultRevision: 3 }));
+    expect(await screen.findByText('Revisión guardada.')).toBeInTheDocument();
+  });
+
+  it('requires an observation for a non-complying control before sending anything, and stops at the first failure', async () => {
+    const sheet = await openControls([control('c-1', 'Firma del titular'), control('c-2', 'Folios')]);
+    await within(sheet).findByText('Firma del titular');
+    const selects = within(sheet).getAllByLabelText('Resultado');
+    fireEvent.change(selects[0], { target: { value: 'c-1-ok' } });
+    fireEvent.change(selects[1], { target: { value: 'c-2-no' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    expect(await within(sheet).findByText(/Escriba la observación de «Folios»/)).toBeInTheDocument();
+    expect(saveCanonicalControl).not.toHaveBeenCalled();
+    fireEvent.change(within(sheet).getAllByLabelText('Observación')[1], { target: { value: 'Falta' } });
+    saveCanonicalControl.mockRejectedValueOnce({ message: 'Fallo de red' });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    expect(await within(sheet).findByText('Fallo de red')).toBeInTheDocument();
+    expect(saveCanonicalControl).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the incomplete-evaluation warning with human labels and keeps declaring enabled', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({
+      state: 'ready', actions: { review: true, declare: true, revoke: false, sheet: true, checklist: true },
+      warnings: [{ code: 'REQUIREMENTS_INCOMPLETE', message: 'm', sourceKeys: ['usosAny', 'desconocidaAny'] }], evaluation: { cacheState: 'current', status: 'incomplete', missingFacts: ['usosAny', 'areaAny'] },
+    }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    const warning = await screen.findByTestId('legal-form-warning');
+    expect(within(warning).getByText('Evaluación incompleta')).toBeInTheDocument();
+    expect(warning).toHaveTextContent('Faltan datos del FUN');
+    ['Usos', 'Área', 'desconocidaAny'].forEach((label) => expect(within(warning).getByText(label)).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Declarar legal y debida forma' })).toBeEnabled();
+  });
+
+  it('names who declared and who reviewed when the server provides it', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez' }, actions: { review: true, declare: false, revoke: true, sheet: true },
+      requirements: [requirement({ instances: [instance({ verdict: 'complies', review: { verdict: 'complies', stale: false, reviewedBy: 4, reviewedByName: 'Marta Ruiz', reviewedAt: '2026-10-14T15:00:00.000Z' } })] })] }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    expect(await screen.findByTestId('legal-form-declaration')).toHaveTextContent('por Luis Gómez');
+    fireEvent.click(screen.getByRole('button', { name: 'Revisar 511' }));
+    expect(await screen.findByText(/Revisado por Marta Ruiz · /)).toBeInTheDocument();
+  });
+
+  describe('checklist', () => {
+    const item = { id: 1, id_public: 'FUN-1', model: 2022 };
+    const checklistForm = (extra = {}) => legalForm({ actions: { review: true, declare: false, revoke: false, sheet: true, checklist: true }, checklistDefaults: { 511: '1', 512: '0' }, checklist: null,
+      requirements: [requirement({ title: 'Formulario único nacional' })], ...extra });
+    const renderPanel = () => render(<LegalFormPanel origin={origin} canManage currentItem={item} currentVersion={1} swaMsg={{}} />);
+
+    it('hides the action when the panel is mounted without the expediente version', async () => {
+      api.getLegalForm.mockResolvedValue(checklistForm());
+      render(<LegalFormPanel origin={origin} canManage />);
+      await screen.findByTestId('legal-form-state');
+      expect(screen.queryByRole('button', { name: 'Lista de chequeo' })).not.toBeInTheDocument();
+    });
+
+    it('opens with server defaults, saves the marks and then builds and downloads the PDF', async () => {
+      const pdf = new Uint8Array([1, 2, 3]);
+      api.getLegalForm.mockResolvedValue(checklistForm({ checklist: { marks: { 512: '2' }, checklistRevision: 4, updatedBy: 3, updatedByName: 'Eva Mora', updatedAt: '2026-10-14T15:00:00.000Z' } }));
+      api.saveLegalFormChecklist.mockResolvedValue({ checklistRevision: 5 });
+      buildChecklistPdf.mockResolvedValue(pdf);
+      renderPanel();
+      expect(await screen.findByTestId('legal-form-checklist-line')).toHaveTextContent('Lista de chequeo guardada por Eva Mora');
+      fireEvent.click(screen.getByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      expect(within(dialog).getByRole('heading', { name: 'Lista de chequeo' })).toBeInTheDocument();
+      expect(within(dialog).getByTestId('checklist-row-511')).toHaveTextContent('Formulario único nacional');
+      expect(within(dialog).getByRole('radio', { name: '511: SI' })).toBeChecked();
+      expect(within(dialog).getByRole('radio', { name: '512: N/A' })).toBeChecked(); // saved mark wins over the default
+      expect(within(dialog).getByRole('radio', { name: '513: N/A' })).toBeChecked(); // no mark nor default
+      fireEvent.click(within(dialog).getByRole('radio', { name: '513: NO' }));
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar y descargar' }));
+      await waitFor(() => expect(fileDownload).toHaveBeenCalledWith(pdf, 'FORMULARIO DE REVISION GENERALFUN-1.pdf'));
+      const command = api.saveLegalFormChecklist.mock.calls[0][1];
+      expect(api.saveLegalFormChecklist.mock.calls[0][0]).toBe(1);
+      expect(command).toMatchObject({ expectedChecklistRevision: 4, reason: 'Lista de chequeo de legal y debida forma', idempotencyKey: expect.any(String) });
+      expect(Object.keys(command.marks).sort()).toEqual([...CHECKLIST_CODES].sort());
+      expect(command.marks).toMatchObject({ 511: '1', 512: '2', 513: '0' });
+      const build = buildChecklistPdf.mock.calls[0][0];
+      expect(build).toMatchObject({ currentItem: item, currentVersion: 1 });
+      expect(build.review.code).toBe(CHECKLIST_CODES.join(','));
+      expect(build.review.checked.split(',')).toHaveLength(CHECKLIST_CODES.length);
+      expect(api.saveLegalFormChecklist.mock.invocationCallOrder[0]).toBeLessThan(buildChecklistPdf.mock.invocationCallOrder[0]);
+      expect(await screen.findByText('Lista de chequeo guardada.')).toBeInTheDocument();
+    });
+
+    it('resets the marks to the defaults and reports a revision conflict', async () => {
+      api.getLegalForm.mockResolvedValue(checklistForm());
+      api.saveLegalFormChecklist.mockRejectedValue({ response: { status: 409, data: { error: { code: 'CHECKLIST_REVISION_CONFLICT' } } } });
+      renderPanel();
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      fireEvent.click(within(dialog).getByRole('radio', { name: '511: NO' }));
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Restablecer' }));
+      expect(within(dialog).getByRole('radio', { name: '511: SI' })).toBeChecked();
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Guardar y descargar' }));
+      expect(await screen.findByText(/Los datos cambiaron/)).toBeInTheDocument();
+      expect(buildChecklistPdf).not.toHaveBeenCalled();
+    });
+
+    it('is read-only without the checklist action: downloads with the stored marks and does not save', async () => {
+      api.getLegalForm.mockResolvedValue(checklistForm({ actions: { review: true, declare: false, revoke: false, sheet: true, checklist: false } }));
+      buildChecklistPdf.mockResolvedValue(new Uint8Array([9]));
+      renderPanel();
+      fireEvent.click(await screen.findByRole('button', { name: 'Lista de chequeo' }));
+      const dialog = await screen.findByRole('dialog');
+      expect(within(dialog).getByRole('radio', { name: '511: SI' })).toBeDisabled();
+      expect(within(dialog).queryByRole('button', { name: 'Restablecer' })).not.toBeInTheDocument();
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Descargar' }));
+      await waitFor(() => expect(fileDownload).toHaveBeenCalledTimes(1));
+      expect(api.saveLegalFormChecklist).not.toHaveBeenCalled();
+    });
   });
 });

@@ -207,6 +207,9 @@ export const domains = <>
 export const domains_number = <>
     <option value={ACTIVE_INFO.nomens}>{ACTIVE_INFO.name}</option>
 </>
+// Plain values behind the single `cities` / `domains_number` options (checklist dialog selects).
+export const activeCity = ACTIVE_INFO.city
+export const activeAuthority = { value: ACTIVE_INFO.nomens, label: ACTIVE_INFO.name }
 export const axisTable = ACTIVE_INFO.axisTable
 export const axisVar = ACTIVE_INFO.axisVar
 

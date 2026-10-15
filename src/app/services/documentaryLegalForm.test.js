@@ -53,6 +53,24 @@ describe('documentaryLegalForm.service', () => {
     expect(http.delete).toHaveBeenCalledWith('/fun/documentary/v1/projects/1/legal-form/declaration', { data: { idempotencyKey: 'k', reason: 'r' }, headers: { 'Content-Type': 'application/json' } });
   });
 
+  it('sends the checklist marks as a JSON command and recognizes its revision conflict', async () => {
+    http.put.mockResolvedValue({ data: { checklistRevision: 1 } });
+    const command = { marks: { 511: '1' }, expectedChecklistRevision: 0, idempotencyKey: 'k', reason: 'r' };
+    await api.saveLegalFormChecklist(1, command);
+    expect(http.put).toHaveBeenCalledWith('/fun/documentary/v1/projects/1/legal-form/checklist', command, { headers: { 'Content-Type': 'application/json' } });
+    await expect(api.saveLegalFormChecklist(1, {})).rejects.toThrow(/no corresponde/);
+    expect(api.isRevisionConflict('CHECKLIST_REVISION_CONFLICT')).toBe(true);
+    expect(api.legalFormErrorMessage({ response: { data: { error: { code: 'CHECKLIST_REVISION_CONFLICT' } } } })).toMatch(/lista de chequeo/);
+  });
+
+  it('accepts the checklist and warning fields of newer payloads and still passes older ones', () => {
+    const extra = { warnings: [{ code: 'REQUIREMENTS_INCOMPLETE', message: 'm', sourceKeys: ['usosAny'] }], checklist: { marks: { 511: '1' }, checklistRevision: 2 }, checklistDefaults: { 511: '1' } };
+    expect(api.validateLegalForm(legalFormFixture(extra), 1).warnings).toHaveLength(1);
+    expect(api.validateLegalForm(legalFormFixture({ checklist: null }), 1).checklist).toBeNull();
+    expect(() => api.validateLegalForm(legalFormFixture({ warnings: 'x' }), 1)).toThrow();
+    expect(() => api.validateLegalForm(legalFormFixture({ checklist: { marks: [] } }), 1)).toThrow();
+  });
+
   it('maps rule errors to actionable messages', () => {
     const failure = (code) => ({ response: { status: 409, data: { error: { code } } } });
     expect(api.legalFormErrorMessage(failure('OBSERVATION_REQUIRED'))).toMatch(/observación/);

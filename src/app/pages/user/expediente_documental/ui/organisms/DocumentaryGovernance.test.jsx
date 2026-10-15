@@ -23,7 +23,7 @@ it('offers legacy and every enabled configuration, marking the vigente and the o
   render(<DocumentaryGovernance origin={canonicalOrigin} canManage/>);
   const control=await select();
   const labels=within(control).getAllByRole('option').map(option=>option.textContent);
-  expect(labels).toEqual(['Legacy (documentación tradicional)','Publicación 4 · rel-4 · Vigente','Publicación 3 · rel-3 · En uso']);
+  expect(labels).toEqual(['Legacy (documentación tradicional)','Publicación 4 · Vigente','Publicación 3 · En uso']);
   expect(control).toHaveValue('3');
   expect(control).toBeEnabled();
 });

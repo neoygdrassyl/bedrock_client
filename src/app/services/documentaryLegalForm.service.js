@@ -45,6 +45,8 @@ function validRequirement(value) {
 
 const validBlocker = (value) => object(value) && string(value.code) && nullableString(value.documentCode) && nullableString(value.documentKey);
 
+const validWarning = (value) => object(value) && string(value.code) && (value.sourceKeys === undefined || (Array.isArray(value.sourceKeys) && value.sourceKeys.every(string)));
+
 export function validateLegalForm(data, fun0Id) {
   if (!object(data) || data.schemaVersion !== LEGAL_FORM_SCHEMA || !['canonical', 'traditional'].includes(data.mode)
     || !object(data.project) || data.project.fun0Id !== Number(fun0Id) || !LEGAL_FORM_STATES.includes(data.state)
@@ -53,6 +55,9 @@ export function validateLegalForm(data, fun0Id) {
     || !Array.isArray(data.blockers) || !data.blockers.every(validBlocker)
     || !(data.declaration === null || (object(data.declaration) && string(data.declaration.at)))
     || !(data.sheet == null || (object(data.sheet) && object(data.sheet.sheet) && count(data.sheet.sheetRevision)))
+    || !(data.warnings === undefined || (Array.isArray(data.warnings) && data.warnings.every(validWarning)))
+    || !(data.checklist == null || (object(data.checklist) && object(data.checklist.marks)))
+    || !(data.checklistDefaults == null || object(data.checklistDefaults))
     || !object(data.actions)) invalid();
   return data;
 }
@@ -74,6 +79,13 @@ export async function saveLegalFormReview(fun0Id, documentCode, command) {
 export async function saveLegalFormSheet(fun0Id, command) {
   if (!object(command?.sheet)) invalid();
   const { data } = await http.put(`${legalFormUrl(fun0Id)}/sheet`, command, { headers: JSON_HEADERS });
+  return data;
+}
+
+/** Legal-form checklist marks ('0' NO, '1' SI, '2' N/A by document code) behind the "lista de chequeo" PDF. */
+export async function saveLegalFormChecklist(fun0Id, command) {
+  if (!object(command?.marks)) invalid();
+  const { data } = await http.put(`${legalFormUrl(fun0Id)}/checklist`, command, { headers: JSON_HEADERS });
   return data;
 }
 
@@ -111,6 +123,7 @@ const LEGAL_FORM_ERRORS = {
   DOCUMENT_NOT_DELIVERED: 'El documento no tiene una entrega vigente para revisar.',
   INSTANCE_REQUIRED: 'El documento tiene varias instancias: revise cada una por separado.',
   REVIEW_REVISION_CONFLICT: 'La revisión cambió mientras la editaba. Se recargaron los datos; confirme nuevamente.',
+  CHECKLIST_REVISION_CONFLICT: 'La lista de chequeo cambió mientras la editaba. Se recargaron los datos; confirme nuevamente.',
   SHEET_REVISION_CONFLICT: 'La hoja cambió mientras la editaba. Recargue y confirme nuevamente.',
   LEGAL_FORM_DECLARED: 'El expediente ya fue declarado en legal y debida forma. Anule la declaración para cambiar revisiones.',
   LEGAL_FORM_NOT_READY: 'El expediente aún no está listo para declararse. Revise los pendientes.',
@@ -119,7 +132,7 @@ const LEGAL_FORM_ERRORS = {
   LEGAL_FORM_STATE_PROGRESSED: 'El expediente avanzó de estado después de la declaración; ya no puede anularse.',
   LEGAL_FORM_CLOCK_CHANGED: 'El término de legal y debida forma cambió después de la declaración; ya no puede anularse.',
 };
-export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT';
+export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT' || code === 'CHECKLIST_REVISION_CONFLICT';
 
 export function legalFormErrorCode(error) {
   const code = error?.response?.data?.error?.code;

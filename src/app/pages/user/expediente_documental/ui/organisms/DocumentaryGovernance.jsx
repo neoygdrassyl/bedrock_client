@@ -52,7 +52,7 @@ export function optionValue(option) {
 export function optionLabel(option) {
   if (option.kind === 'legacy') return `Legacy (documentación tradicional)${option.selected ? ' · En uso' : ''}`;
   const marks = [option.isCurrent ? 'Vigente' : null, option.selected ? 'En uso' : null].filter(Boolean);
-  return [`Publicación ${option.releaseVersion} · ${option.sourceReleaseId || option.configurationId}`, ...marks].join(' · ');
+  return [`Publicación ${option.releaseVersion}`, ...marks].join(' · ');
 }
 
 // Operation that moves the expediente from its current configuration to the target.
