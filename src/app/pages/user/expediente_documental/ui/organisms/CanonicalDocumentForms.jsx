@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { CircleAlert, ListChecks, Plus, TriangleAlert } from 'lucide-react';
+import { CircleAlert, ListChecks, Plus, TriangleAlert, UserCheck } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,9 @@ import { documentaryError } from '@/app/services/documentary.service';
 import { createCanonicalSubmit, documentaryReceiptRuleError, getCanonicalVersionSubmitIds, receiveCanonicalDocument, updateCanonicalEvidence } from '@/app/services/documentaryOperations.service';
 import { CatalogueDocumentPicker } from '../molecules/CatalogueDocumentPicker';
 import { CheckboxField, fieldClass, fileFieldClass, FormField, FormFieldset, FormSection, hintClass } from '../molecules/FormField';
-import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf } from '../../canonicalDocumentaryModel';
-import { reviewedByLine } from '../../legalFormModel';
+import { Tag } from '../atoms/Tag';
+import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf, formatDocumentaryDate } from '../../canonicalDocumentaryModel';
+import { reviewedByLine, VERDICT_META } from '../../legalFormModel';
 
 export { fieldClass };
 
@@ -18,6 +19,50 @@ const FILE_TYPES = 'application/pdf,image/jpeg,image/png';
 const FILE_HINT = 'PDF, JPG o PNG; máximo 50 MB.';
 const effectLabels = { complies: 'Cumple', does_not_comply: 'No cumple', not_applicable: 'No aplica', no_decision: 'Sin decisión', pending: 'Pendiente', stale: 'Requiere nueva revisión', review_unavailable: 'Revisión no disponible', no_configured_controls: 'Sin controles configurados', unreviewed: 'Pendiente de revisión' };
 export const effectLabel = (value) => effectLabels[value] || 'Pendiente de revisión';
+/** Tone of an effect tag (shares the verdict palette of Legal y debida forma). */
+export const effectTone = (value) => VERDICT_META[value]?.tone || (value === 'no_decision' ? 'slate' : 'neutral');
+
+/**
+ * Read-only answer of the applicant for one control (portal self-assessment, informative only: it never
+ * alters the curaduría verdict). Rendered under the decision fields of that control.
+ */
+export function ApplicantAssessmentNote({ item, className }) {
+  if (!item) return null;
+  const when = item.assessedAt ? formatDocumentaryDate(item.assessedAt) : null;
+  return (
+    <div className={cn('flex flex-col gap-1 rounded-md border-[1px] border-dashed bg-muted/30 px-[0.75rem] py-2', className)} role="note" aria-label={`Autoevaluación del solicitante: ${item.title || ''}`.trim()}>
+      <p className="mb-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <UserCheck className="h-3.5 w-3.5" aria-hidden="true" />Autoevaluación del solicitante
+      </p>
+      <p className="mb-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-4 text-foreground">
+        <Tag tone={effectTone(item.effect)}>{effectLabel(item.effect)}</Tag>
+        {item.valueLabel ? <span>{item.valueLabel}</span> : null}
+        {when ? <span className="text-[11px] text-muted-foreground">{when}</span> : null}
+      </p>
+      {item.observation ? <p className="mb-0 whitespace-pre-line text-xs leading-4 text-muted-foreground">{item.observation}</p> : null}
+    </div>
+  );
+}
+
+/** Applicant answers whose control is not among the ones the curaduría decides on this delivery. */
+export function ApplicantOtherAnswers({ items, className }) {
+  if (!items?.length) return null;
+  return (
+    <section className={cn('flex flex-col gap-2 border-t pt-[0.75rem]', className)} aria-label="Otras respuestas del solicitante">
+      <h3 className="mb-0 text-xs font-semibold leading-4 text-foreground">Otras respuestas del solicitante</h3>
+      <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+        {items.map((item, index) => (
+          <li key={`${item.controlId || 'item'}-${index}`} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-4 text-muted-foreground">
+            <span className="text-foreground">{item.title || item.controlId || 'Control no identificado'}</span>
+            <Tag tone={effectTone(item.effect)}>{effectLabel(item.effect)}</Tag>
+            {item.valueLabel ? <span>{item.valueLabel}</span> : null}
+            {item.observation ? <span className="w-full whitespace-pre-line">{item.observation}</span> : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 export const NO_VR_LEFT_MESSAGE = 'Este documento ya tiene una versión en todas las VR del expediente. Cree una VR nueva para registrar otra entrega.';
 
 /** Inline error of a documentary command or query. */

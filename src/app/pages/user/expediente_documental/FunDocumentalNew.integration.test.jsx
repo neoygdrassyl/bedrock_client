@@ -194,6 +194,23 @@ describe('documentary tabs', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
+  it('opens Evaluación técnica only for canonical expedientes and tells traditional ones it is unavailable', async () => {
+    const user = userEvent.setup();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
+    const { unmount } = render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    await user.click(screen.getByRole('tab', { name: /Evaluación técnica/ }));
+    expect(await screen.findByRole('group', { name: 'Filtrar controles técnicos por etiqueta' })).toBeInTheDocument();
+    await waitFor(() => expect(mocks.workspaceVariant).toHaveBeenCalledWith('technical'));
+    expect(screen.queryByText('No disponible para expedientes tradicionales.')).not.toBeInTheDocument();
+    unmount();
+    mocks.origin.mockReturnValue({ origin: TRADITIONAL, refresh: vi.fn() });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    await user.click(screen.getByRole('tab', { name: /Evaluación técnica/ }));
+    expect(await screen.findByText('No disponible para expedientes tradicionales.')).toBeInTheDocument();
+  });
+
   it('shows Legal y debida forma for every expediente and reloads the module after a declaration', async () => {
     const user = userEvent.setup();
     const refresh = vi.fn();
@@ -201,7 +218,10 @@ describe('documentary tabs', () => {
     const { unmount } = render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
     await settleIssuedCount();
     const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent);
-    expect(tabs.findIndex((text) => text.includes('Legal y debida forma'))).toBe(tabs.findIndex((text) => text.includes('Generar documentos')) - 1);
+    // Evaluación técnica follows Legal y debida forma, right before Generar documentos.
+    const technicalIndex = tabs.findIndex((text) => text.includes('Evaluación técnica'));
+    expect(tabs.findIndex((text) => text.includes('Legal y debida forma'))).toBe(technicalIndex - 1);
+    expect(technicalIndex).toBe(tabs.findIndex((text) => text.includes('Generar documentos')) - 1);
     await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
     await user.click(await screen.findByRole('button', { name: 'Panel de legal y debida forma' }));
     expect(refresh).toHaveBeenCalledTimes(1);

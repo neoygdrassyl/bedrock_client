@@ -439,3 +439,70 @@ describe('presentación alineada con Actualizar', () => {
     expect(within(dialog).getByRole('button', { name: 'Recibir nueva versión' })).toBeInTheDocument();
   });
 });
+
+describe('variante technical (Evaluación técnica)', () => {
+  const technicalControl = (controlId, tags, review = null) => ({ controlId, sourceControlId: controlId, layer: 'technical', revision: 1, title: `Control ${controlId}`, tags, origins: [], review,
+    values: [{ sourceValueId: `${controlId}-ok`, label: 'Cumple', effect: 'complies', sortOrder: 1 }, { sourceValueId: `${controlId}-no`, label: 'No cumple', effect: 'does_not_comply', sortOrder: 2 }] });
+  const technicalView = () => ({ ...view(), capabilities: { createDocument: true, receivePhysical: true, receiveDigital: true, review: true, reviewTechnical: true }, counts: { canonicalDocuments: 3 }, rows: [
+    docRow({ actions: { replace: true, reviewTechnical: true }, technicalControls: [technicalControl('t-jur', ['juridico'], { selectedSourceValueId: 't-jur-ok', effect: 'complies', current: true, resultRevision: 2 })] }),
+    docRow({ rowKey: 'canonical:b', documentKey: 'b', receivedDocumentRowId: 22, receipt: receipt(22), catalogueDisplay: { code: 'DOC-B', name: 'Plano de localización' }, actions: { replace: true, reviewTechnical: true }, technicalControls: [technicalControl('t-arq', ['arquitectonico']), technicalControl('t-est', ['estructural'])] }),
+    docRow({ rowKey: 'canonical:c', documentKey: 'c', receivedDocumentRowId: 23, receipt: receipt(23), catalogueDisplay: { code: 'DOC-C', name: 'Sin técnica' }, technicalControls: [] }),
+  ] });
+
+  it('lists only rows with technical controls, narrowed by the tag filter, with the cumple/total summary', async () => {
+    api.getCanonicalDocuments.mockResolvedValue(technicalView());
+    const { rerender } = render(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="technical" tagFilter={[]} embedded />);
+    const table = await screen.findByRole('grid', { name: 'Documentos de evaluación técnica' });
+    await within(table).findByText('DOC-A');
+    expect(api.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
+    const headers = within(table).getAllByRole('columnheader').map((header) => header.textContent);
+    expect(headers).toEqual(expect.arrayContaining(['Documento', 'Última entrega', 'Técnica', 'Versiones']));
+    expect(headers).not.toContain('Evaluación');
+    expect(within(table).getByText('DOC-B')).toBeInTheDocument();
+    expect(within(table).queryByText('DOC-C')).not.toBeInTheDocument();
+    expect(within(table).getByText('1/1')).toBeInTheDocument();
+    expect(within(table).getByText('0/2')).toBeInTheDocument();
+    expect(within(table).getAllByRole('button', { name: /^Evaluar / })).toHaveLength(2);
+    rerender(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="technical" tagFilter={['estructural']} embedded />);
+    await waitFor(() => expect(within(table).queryByText('DOC-A')).not.toBeInTheDocument());
+    expect(within(table).getByText('DOC-B')).toBeInTheDocument();
+  });
+
+  it('opens the technical controls of a delivery (filtered by tag) and saves them with the control command', async () => {
+    api.getCanonicalDocuments.mockResolvedValue(technicalView());
+    api.saveCanonicalControl.mockResolvedValue({});
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="technical" tagFilter={['estructural']} embedded />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Evaluar DOC-B' }));
+    const sheet = await screen.findByRole('dialog');
+    expect(within(sheet).getByText('Evaluación técnica')).toBeInTheDocument();
+    expect(await within(sheet).findByText('Control t-est')).toBeInTheDocument();
+    expect(within(sheet).queryByText('Control t-arq')).not.toBeInTheDocument();
+    expect(within(sheet).queryByLabelText('Veredicto')).not.toBeInTheDocument();
+    expect(within(sheet).queryByText(/legal y debida forma/i)).not.toBeInTheDocument();
+    fireEvent.change(within(sheet).getByLabelText('Resultado'), { target: { value: 't-est-ok' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(api.saveCanonicalControl).toHaveBeenCalledWith(1, 22, 't-est', expect.objectContaining({ selectedSourceValueId: 't-est-ok', expectedEvidenceRevision: 1, expectedResultRevision: 0, reason: 'Evaluación técnica' })));
+    expect(await screen.findByText('Evaluación guardada.')).toBeInTheDocument();
+  });
+
+  it('shows the applicant self-assessment under the checking controls and the unmatched answers apart', async () => {
+    const checking = { controlId: 'c-1', sourceControlId: 'c-1', layer: 'checking', title: 'Firma del titular', tags: ['interno'], values: [{ sourceValueId: 'c-1-ok', label: 'Sí', effect: 'complies' }], review: null };
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [docRow({ actions: { replace: true, review: true }, controls: [checking], applicantAssessment: {
+      items: [
+        { controlId: 'c-1', title: 'Firma del titular', selectedValueId: 'v1', valueLabel: 'Sí, firmado', effect: 'complies', observation: 'Firmado en notaría', assessedAt: '2026-10-01T10:00:00.000Z', controlKnown: true },
+        { controlId: 'c-old', title: 'Control retirado', selectedValueId: 'v0', valueLabel: 'No', effect: 'does_not_comply', observation: null, assessedAt: null, controlKnown: false },
+      ], summary: { total: 2, complies: 1, doesNotComply: 1, noDecision: 0 }, importedAt: '2026-10-01T10:00:00.000Z' } })] });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="legalForm" embedded />);
+    const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    expect(within(table).getAllByRole('columnheader').map((header) => header.textContent)).toContain('Solicitante');
+    expect(within(table).getByText('1 ✓ / 1 ✗')).toBeInTheDocument();
+    fireEvent.click(within(table).getByRole('button', { name: 'Evaluar DOC-A' }));
+    const sheet = await screen.findByRole('dialog');
+    const note = await within(sheet).findByRole('note', { name: 'Autoevaluación del solicitante: Firma del titular' });
+    expect(note).toHaveTextContent('Sí, firmado');
+    expect(note).toHaveTextContent('Firmado en notaría');
+    const others = within(sheet).getByRole('region', { name: 'Otras respuestas del solicitante' });
+    expect(others).toHaveTextContent('Control retirado');
+    expect(others).toHaveTextContent('No cumple');
+  });
+});
