@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { CircleAlert, CircleCheck, FileOutput, FilePlus2, Inbox, Scale, Settings2, TriangleAlert } from 'lucide-react';
+import { CircleAlert, CircleCheck, ClipboardCheck, FileOutput, FilePlus2, Inbox, Scale, Settings2, TriangleAlert } from 'lucide-react';
 import DataService from '@/app/services/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
 import { cn } from '@/lib/utils';
@@ -24,6 +24,7 @@ import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
 // The generators pull PDF tooling; load them only when the tab is opened.
 const DocumentGeneratorsPanel = lazy(() => import('./ui/organisms/DocumentGeneratorsPanel'));
 const LegalFormPanel = lazy(() => import('./ui/organisms/LegalFormPanel'));
+const TechnicalEvaluationPanel = lazy(() => import('./ui/organisms/TechnicalEvaluationPanel'));
 
 function LegacyDocumentalWorkspace({
   currentId,
@@ -86,6 +87,7 @@ function LegacyDocumentalWorkspace({
 const TAB_INPUT = 'radicacion';
 const TAB_ISSUED = 'expedidos';
 const TAB_LEGAL_FORM = 'legal';
+const TAB_TECHNICAL = 'tecnica';
 const TAB_GENERATORS = 'generar';
 const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
@@ -179,6 +181,10 @@ function ProjectDocumentaryWorkspace(props) {
             <Scale aria-hidden="true" />
             Legal y debida forma
           </TabsTrigger>
+          <TabsTrigger value={TAB_TECHNICAL} className={TRIGGER_CLASS}>
+            <ClipboardCheck aria-hidden="true" />
+            Evaluación técnica
+          </TabsTrigger>
           <TabsTrigger value={TAB_GENERATORS} className={TRIGGER_CLASS}>
             <FilePlus2 aria-hidden="true" />
             Generar documentos
@@ -219,6 +225,20 @@ function ProjectDocumentaryWorkspace(props) {
             <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
           </Suspense>
         ) : <WorkspaceSkeleton />}
+      </TabsContent>
+
+      {/* Technical controls only exist in the Central catalogue: traditional expedientes get a visible note instead of an empty table. */}
+      <TabsContent value={TAB_TECHNICAL} className="mt-0 min-w-0">
+        {!origin && !source.error ? <WorkspaceSkeleton /> : isCanonicalMode(mode) && origin ? (
+          <Suspense fallback={<WorkspaceSkeleton />}>
+            <TechnicalEvaluationPanel key={`technical:${origin.publication.configurationId}:${revision}`} origin={origin} canManage={Boolean(props.canManage)} reloadKey={syncRevision} />
+          </Suspense>
+        ) : (
+          <Alert role="note" variant="neutral" className="py-2.5">
+            <CircleAlert aria-hidden="true" />
+            <AlertDescription className="min-w-0 flex-1">No disponible para expedientes tradicionales.</AlertDescription>
+          </Alert>
+        )}
       </TabsContent>
 
       {/* Mounted only while active: it loads the expediente (state) and its generators on demand. */}

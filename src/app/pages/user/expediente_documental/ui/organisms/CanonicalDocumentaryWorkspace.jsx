@@ -14,13 +14,14 @@ import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
-import { CanonicalDocumentsTable, INPUT_COLUMNS, ISSUED_COLUMNS, LEGAL_FORM_COLUMNS } from './CanonicalDocumentsTable';
+import { CanonicalDocumentsTable, canEvaluateTechnicalRow, INPUT_COLUMNS, ISSUED_COLUMNS, LEGAL_FORM_COLUMNS, TECHNICAL_COLUMNS } from './CanonicalDocumentsTable';
 import { EvaluationSheet } from './EvaluationSheet';
 import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
 import { CanonicalRequirementBanner } from './CanonicalRequirementBanner';
 import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForms';
 import { filterByReadiness, READINESS_FILTER, sortByReadiness } from '../../legalFormModel';
 import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, scanCounts, SCAN_FILTER } from '../../canonicalDocumentaryModel';
+import { filterRowsByTechnicalTags } from '../../technicalEvaluationModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
@@ -28,12 +29,15 @@ const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILT
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
 
 // What each use of the workspace loads and shows. `input` is Radicación; `legalForm` embeds the same table in
-// Legal y debida forma (requirements only, row action "Evaluar"); `issued` lists the expedidos of the expediente.
+// Legal y debida forma (requirements only, row action "Evaluar"); `technical` embeds it in Evaluación técnica (requirements with
+// Central technical controls, decided per tag layer); `issued` lists the expedidos of the expediente.
 export const WORKSPACE_VARIANTS = {
   input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, scanFilter: true, classFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos recibidos', emptyHint: 'Los documentos que se reciban en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
   legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true, loadAll: true,
     emptyText: 'Aún no hay requisitos recibidos', emptyHint: 'Los requisitos que se reciban en este expediente aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
+  technical: { scope: 'input', documentClass: 'requirement', columns: TECHNICAL_COLUMNS, label: 'Documentos de evaluación técnica', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: true, loadAll: true, layer: 'technical',
+    emptyText: 'Aún no hay requisitos con controles técnicos', emptyHint: 'Los requisitos recibidos que tengan controles técnicos en Central aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
   issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos expedidos para este expediente.', emptyHint: 'Los documentos que se expidan en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
 };
@@ -124,10 +128,13 @@ function InfoNotice({ children }) {
  * Catalogue-based Radicación workspace (container). Props are kept backward compatible:
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
+ * `tagFilter` (technical variant) keeps only the rows with a technical control tagged with one of the given tags.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest, tagFilter }) {
   const ids = useId();
   const config = WORKSPACE_VARIANTS[variant] || WORKSPACE_VARIANTS.input;
+  const layer = config.layer || 'checking';
+  const technical = layer === 'technical';
   const [evaluating, setEvaluating] = useState(null); // { row, nonce }
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
@@ -165,8 +172,9 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
 
   const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
   const canReceive = Boolean(config.receive && canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
-  const canReview = Boolean(canManage && view && !view.readOnly && view.capabilities.review);
-  const rows = view?.rows || [];
+  const canReview = Boolean(canManage && view && !view.readOnly && (technical ? view.capabilities.reviewTechnical : view.capabilities.review));
+  // The technical layer only lists rows with technical controls (of the chosen tags when a filter is active).
+  const rows = technical ? filterRowsByTechnicalTags(view?.rows, tagFilter) : (view?.rows || []);
   const filteredRows = filterCanonicalRows(rows, filters);
   // Legal y debida forma: unresolved rows first (rejected, unevaluated, approved without a chosen VR), then the ready ones.
   // The legalForm variant loads every row, so the order and the chips apply to the whole list.
@@ -308,6 +316,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 emptyText={config.emptyText}
                 emptyHint={config.emptyHint}
                 onEvaluate={config.rowEvaluate && canReview ? openEvaluation : undefined}
+                rowEvaluable={technical ? canEvaluateTechnicalRow : undefined}
                 instances={instances}
               />
             </div>
@@ -359,6 +368,8 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
         target={evaluating}
         origin={origin}
         canEvaluate={canReview}
+        layer={layer}
+        tagFilter={tagFilter}
         legalForm={legalForm}
         onSelectionChanged={selectionChanged}
         onClose={() => setEvaluating(null)}

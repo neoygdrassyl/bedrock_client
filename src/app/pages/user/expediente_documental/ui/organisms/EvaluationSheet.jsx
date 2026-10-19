@@ -12,12 +12,22 @@ import { useLegalForm } from '../../hooks/useLegalForm';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { fieldClass, FormField } from '../molecules/FormField';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
-import { ControlDecisionFields, ErrorMessage } from './CanonicalDocumentForms';
+import { ApplicantAssessmentNote, ApplicantOtherAnswers, ControlDecisionFields, ErrorMessage } from './CanonicalDocumentForms';
 import { evaluationOf, formatDocumentaryDate, rowCode, rowName } from '../../canonicalDocumentaryModel';
 import { effectiveOf, effectiveVrLine, instancesByKey, reviewedByLine, selectedByLine } from '../../legalFormModel';
+import { filterTechnicalControls, splitApplicantItems, technicalControlsOf, technicalSummary, technicalSummaryLabel, technicalSummaryTone } from '../../technicalEvaluationModel';
 
 export const REVIEW_REASON = 'Revisión de legal y debida forma';
 const CONTROL_REASON = 'Revisión de Legal y debida forma';
+const TECHNICAL_REASON = 'Evaluación técnica';
+/** Layers of Central controls the sheet decides: `checking` (Legal y debida forma) or `technical` (Evaluación técnica). */
+export const CONTROL_LAYERS = { checking: 'checking', technical: 'technical' };
+const SHEET_TITLES = { checking: 'Evaluar documento', technical: 'Evaluación técnica' };
+const NO_TECHNICAL_CONTROLS = 'Sin controles técnicos para este documento';
+/** Controls of a row for a layer; the technical ones narrowed to `tagFilter` when it is active. */
+function controlsForLayer(row, layer, tagFilter) {
+  return layer === CONTROL_LAYERS.technical ? filterTechnicalControls(technicalControlsOf(row), tagFilter) : (row.controls || []);
+}
 const VR_REASON = 'Elección del VR para legal y debida forma';
 const FOLIO_RANGE_MAX = 120;
 const OBSERVATION_MAX = 4000;
@@ -100,30 +110,36 @@ export function ReviewForm({ fun0Id, row, canReview = true, onSaved, onConflict,
  * control whose result or observation changed (sequentially, stopping at the first failure).
  * A control whose previous decision is stale starts with an empty result and is only sent once the
  * user picks one. `onControlSaved` fires after each command that went through (partial progress).
+ * `layer` picks the controls (`row.controls` for checking, `row.technicalControls` narrowed by `tagFilter` for technical);
+ * both layers save through the same control command, the backend resolves the layer from the control id.
+ * In the checking layer the applicant self-assessment of each control (read-only) is shown under its fields.
  */
-export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel, after }) {
+export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel, after, layer = CONTROL_LAYERS.checking, tagFilter }) {
   const ids = useId();
+  const controls = controlsForLayer(row, layer, tagFilter);
+  const applicant = layer === CONTROL_LAYERS.checking ? splitApplicantItems(row, controls) : null;
   const initial = (control) => ({ value: control.review?.current === false ? '' : control.review?.selectedSourceValueId || '', observation: control.review?.observation || '' });
-  const [drafts, setDrafts] = useState(() => Object.fromEntries(row.controls.map((control) => [control.controlId, initial(control)])));
+  const [drafts, setDrafts] = useState(() => Object.fromEntries(controls.map((control) => [control.controlId, initial(control)])));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [invalidId, setInvalidId] = useState(null);
   // Last saved state per control: a retry after a partial failure must not resend (nor 409 on) what already went through.
-  const baseline = useRef(Object.fromEntries(row.controls.map((control) => [control.controlId, { ...initial(control), revision: control.review?.resultRevision || 0 }])));
+  const baseline = useRef(Object.fromEntries(controls.map((control) => [control.controlId, { ...initial(control), revision: control.review?.resultRevision || 0 }])));
   const commands = useRef(new Map()); // idempotent command per controlId
   const changed = (control) => {
     const draft = drafts[control.controlId]; const base = baseline.current[control.controlId];
-    if (!draft.value) return false;
+    if (!draft || !base || !draft.value) return false;
     return draft.value !== base.value || textOf(draft.observation) !== textOf(base.observation);
   };
-  const pending = row.controls.filter(changed);
+  const pending = controls.filter(changed);
   function update(controlId, patch) {
     commands.current.delete(controlId); setInvalidId(null);
     setDrafts((current) => ({ ...current, [controlId]: { ...current[controlId], ...patch } }));
   }
   function validate() {
-    for (const control of row.controls) {
+    for (const control of controls) {
       const draft = drafts[control.controlId];
+      if (!draft) continue;
       if (!draft.value && textOf(draft.observation) && textOf(draft.observation) !== textOf(baseline.current[control.controlId].observation)) return { id: control.controlId, message: `Seleccione el resultado de «${control.title}».` };
       const effect = control.values.find((item) => item.sourceValueId === draft.value)?.effect;
       if (changed(control) && effect === 'does_not_comply' && !textOf(draft.observation)) return { id: control.controlId, message: `Escriba la observación de «${control.title}»: es obligatoria cuando no cumple.` };
@@ -142,7 +158,7 @@ export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, 
         const draft = drafts[control.controlId]; const base = baseline.current[control.controlId];
         if (!commands.current.has(control.controlId)) {
           commands.current.set(control.controlId, { selectedSourceValueId: draft.value, observation: textOf(draft.observation) || null,
-            expectedEvidenceRevision: row.receipt.evidenceRevision, expectedResultRevision: base.revision, idempotencyKey: crypto.randomUUID(), reason: CONTROL_REASON });
+            expectedEvidenceRevision: row.receipt.evidenceRevision, expectedResultRevision: base.revision, idempotencyKey: crypto.randomUUID(), reason: layer === CONTROL_LAYERS.technical ? TECHNICAL_REASON : CONTROL_REASON });
         }
         try {
           await saveCanonicalControl(origin.project.fun0Id, row.receivedDocumentRowId, control.controlId, commands.current.get(control.controlId));
@@ -162,17 +178,20 @@ export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, 
     } finally { setBusy(false); }
   }
   return (
-    <form onSubmit={save} className="flex min-h-0 flex-1 flex-col" aria-label="Evaluación de controles" noValidate>
+    <form onSubmit={save} className="flex min-h-0 flex-1 flex-col" aria-label={layer === CONTROL_LAYERS.technical ? 'Evaluación de controles técnicos' : 'Evaluación de controles'} noValidate>
       <fieldset disabled={busy} className="m-0 flex min-h-0 min-w-0 flex-1 flex-col p-0 !border-0">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
           <div className="flex flex-col divide-y [&>*:first-child]:pt-0 [&>*:last-child]:pb-0 [&>*]:py-[0.75rem]">
-            {row.controls.map((control) => (
+            {controls.map((control) => (
               <div key={control.controlId} className="flex flex-col gap-[0.75rem]">
-                <ControlDecisionFields idPrefix={`${ids}-${control.controlId}`} control={control} value={drafts[control.controlId].value} observation={drafts[control.controlId].observation}
-                  onValueChange={(value) => update(control.controlId, { value })} onObservationChange={(observation) => update(control.controlId, { observation })} disabled={busy || !canReview} invalid={invalidId === control.controlId} />
+                <ControlDecisionFields idPrefix={`${ids}-${control.controlId}`} control={control} value={drafts[control.controlId]?.value || ''} observation={drafts[control.controlId]?.observation || ''}
+                  onValueChange={(value) => update(control.controlId, { value })} onObservationChange={(observation) => update(control.controlId, { observation })} disabled={busy || !canReview} invalid={invalidId === control.controlId}>
+                  {applicant?.byControl.get(control.controlId) ? <ApplicantAssessmentNote item={applicant.byControl.get(control.controlId)} /> : null}
+                </ControlDecisionFields>
               </div>
             ))}
           </div>
+          {applicant?.other.length ? <ApplicantOtherAnswers items={applicant.other} className="mt-[0.75rem]" /> : null}
           <ErrorMessage error={error} className="mt-[0.75rem]" />
           {after}
         </div>
@@ -186,6 +205,14 @@ export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, 
 }
 
 const byVersionDesc = (left, right) => (right.versionSequence ?? 0) - (left.versionSequence ?? 0);
+
+/** "cumple/total" of the technical controls of a version row (older backends omit them: a dash). */
+function TechnicalVersionSummary({ version }) {
+  const summary = technicalSummary(technicalControlsOf(version));
+  const label = technicalSummaryLabel(summary);
+  if (!label) return <span className="text-xs text-muted-foreground" aria-label="Sin controles técnicos">—</span>;
+  return <Tag tone={technicalSummaryTone(summary)} mono title={`${summary.complies} cumple de ${summary.total} controles técnicos`}>{label}</Tag>;
+}
 
 /** Versions of the document (newest first once sorted), paged on demand. The state lives above the forms so switching versions does not reload it. */
 function useDocumentVersions(origin, row) {
@@ -210,7 +237,8 @@ function useDocumentVersions(origin, row) {
  * With `choice` (the legal-form instance of the document) it names the delivery legal y debida forma uses (the latest
  * one unless a manager chose another); each approved version can optionally be chosen, and the choice can be cleared.
  */
-function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choice }) {
+function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choice, layer = CONTROL_LAYERS.checking }) {
+  const technical = layer === CONTROL_LAYERS.technical;
   const versions = [...state.rows].sort(byVersionDesc);
   const instance = choice?.instance || null;
   const effective = effectiveOf(instance);
@@ -241,9 +269,9 @@ function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choi
               <li key={version.id} className="flex flex-wrap items-center gap-x-[0.75rem] gap-y-1 px-[0.75rem] py-2" data-testid={`evaluation-version-${version.id}`}>
                 <span className="min-w-0 flex-1 text-xs text-foreground">{version.vrLabel || 'Sin VR'} · Versión {version.versionSequence}</span>
                 {inUse ? <Tag tone="success" title="Entrega que usa legal y debida forma">En uso</Tag> : null}
-                <EvaluationStatus evaluation={evaluation} showReviewer={false} />
-                {isApproved || evaluation.status === 'rejected' ? <span className="text-[11px] text-muted-foreground">{[reviewer && `por ${reviewer}`, when].filter(Boolean).join(' · ')}</span> : null}
-                {active ? <span className="text-[11px] font-medium text-muted-foreground">En evaluación</span> : canEvaluate && evaluation.status !== 'not_applicable' ? (
+                {technical ? <TechnicalVersionSummary version={version} /> : <EvaluationStatus evaluation={evaluation} showReviewer={false} />}
+                {!technical && (isApproved || evaluation.status === 'rejected') ? <span className="text-[11px] text-muted-foreground">{[reviewer && `por ${reviewer}`, when].filter(Boolean).join(' · ')}</span> : null}
+                {active ? <span className="text-[11px] font-medium text-muted-foreground">En evaluación</span> : canEvaluate && (technical || evaluation.status !== 'not_applicable') ? (
                   <Button type="button" variant="link" size="sm" className="h-6 px-1 text-xs" aria-label={`Evaluar ${version.vrLabel || 'versión'} versión ${version.versionSequence}`} onClick={() => onEvaluate(version)}>Evaluar</Button>
                 ) : null}
                 {chosen && instance && instance.selection ? (
@@ -279,7 +307,8 @@ function PreviousEvaluations({ state, activeRowId, canEvaluate, onEvaluate, choi
 function rowForVersion(baseRow, version) {
   if (!version || version.id === baseRow.receivedDocumentRowId) return baseRow;
   const controls = Array.isArray(version.controls) ? version.controls : baseRow.controls.map((control) => ({ ...control, review: null }));
-  return { ...baseRow, receivedDocumentRowId: version.id, receipt: version, versionSequence: version.versionSequence, evaluation: version.evaluation, controls };
+  const technicalControls = Array.isArray(version.technicalControls) ? version.technicalControls : technicalControlsOf(baseRow).map((control) => ({ ...control, review: null }));
+  return { ...baseRow, receivedDocumentRowId: version.id, receipt: version, versionSequence: version.versionSequence, evaluation: version.evaluation, controls, technicalControls };
 }
 
 /**
@@ -287,10 +316,11 @@ function rowForVersion(baseRow, version) {
  * from the host when it already loaded it; otherwise the sheet loads its own copy. Without the legal form (older
  * backend, traditional expediente) there is no choice to make.
  */
-function useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged }) {
+function useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged, enabled = true }) {
   const fun0Id = origin.project.fun0Id;
-  const own = useLegalForm(legalForm ? null : fun0Id);
-  const source = legalForm || own;
+  // Disabled (technical layer): no legal form is loaded and there is no choice to offer.
+  const own = useLegalForm(legalForm || !enabled ? null : fun0Id);
+  const source = enabled ? legalForm || own : null;
   const data = source?.data && source.data.mode !== 'traditional' ? source.data : null;
   const instance = data ? instancesByKey(data).get(baseRow.documentKey)?.instance || null : null;
   const [state, setState] = useState({ busy: false, message: '', error: '' });
@@ -318,11 +348,13 @@ function useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged }) {
   };
 }
 
-function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged }) {
+function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter }) {
   const [version, setVersion] = useState(null);
   const savedAny = useRef(false);
+  const technical = layer === CONTROL_LAYERS.technical;
   const row = rowForVersion(baseRow, version);
-  const hasControls = row.controls.length > 0;
+  const controls = controlsForLayer(row, layer, tagFilter);
+  const hasControls = controls.length > 0;
   const label = [rowCode(row), rowName(row)].filter(Boolean).join(' · ');
   // Closing after some (but not all) controls were saved: the parent must reload what already went through.
   function close() {
@@ -333,23 +365,42 @@ function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSa
   }
   function saved(message) { savedAny.current = false; onSaved(message); }
   const versions = useDocumentVersions(origin, baseRow);
-  const choice = useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged: onSelectionChanged });
-  const history = <PreviousEvaluations state={versions} activeRowId={row.receivedDocumentRowId} canEvaluate={canEvaluate} onEvaluate={(next) => setVersion(next)} choice={choice} />;
+  // The VR choice of Legal y debida forma only belongs to the checking layer.
+  const choice = useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged: onSelectionChanged, enabled: !technical });
+  const history = <PreviousEvaluations state={versions} activeRowId={row.receivedDocumentRowId} canEvaluate={canEvaluate} onEvaluate={(next) => setVersion(next)} choice={choice} layer={layer} />;
+  const formKey = `${layer}:${row.receivedDocumentRowId}:${row.receipt.evidenceRevision}:${controls.map((control) => control.review?.resultRevision || 0).join(',')}`;
   return (
     <>
       <SheetHeader className="shrink-0 space-y-1 border-b px-6 py-[1rem] pr-12 text-left">
-        <SheetTitle className="mb-0 text-base leading-6">Evaluar documento</SheetTitle>
+        <SheetTitle className="mb-0 text-base leading-6">{SHEET_TITLES[layer] || SHEET_TITLES.checking}</SheetTitle>
         <SheetDescription className="mb-0 text-xs leading-4">{label} · {row.receipt?.vrLabel || 'Sin VR'} · Versión {row.versionSequence}</SheetDescription>
       </SheetHeader>
       {hasControls ? (
-        <ControlsForm key={`${row.receivedDocumentRowId}:${row.receipt.evidenceRevision}:${row.controls.map((control) => control.review?.resultRevision || 0).join(',')}`}
+        <ControlsForm key={formKey} layer={layer} tagFilter={tagFilter}
           origin={origin} row={row} canReview={canEvaluate} onSaved={saved} onControlSaved={() => { savedAny.current = true; }}
           onConflict={() => { savedAny.current = false; onConflict(); }} onCancel={close} after={history} />
+      ) : technical ? (
+        <NoTechnicalControls onClose={close} after={history} />
       ) : (
         <ReviewForm key={`${row.receivedDocumentRowId}:${evaluationOf(row).reviewRevision || 0}`} fun0Id={origin.project.fun0Id} row={row} canReview={canEvaluate}
           onSaved={saved} onConflict={onConflict} onCancel={close} after={history} />
       )}
     </>
+  );
+}
+
+/** Technical layer without controls for this version (or none of the filtered tags): a visible note, the versions and a close action. */
+function NoTechnicalControls({ onClose, after }) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
+        <p role="status" className="mb-0 text-sm leading-5 text-muted-foreground">{NO_TECHNICAL_CONTROLS}</p>
+        {after}
+      </div>
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t bg-muted/30 px-6 py-[0.75rem]">
+        <Button type="button" variant="outline" size="sm" onClick={onClose}>Cerrar</Button>
+      </div>
+    </div>
   );
 }
 
@@ -360,13 +411,15 @@ function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSa
  * `onSaved(message)` fires after a save; `onPartialSave` when it is closed after some controls went through.
  * The list of versions also lets a manager optionally choose which approved delivery legal y debida forma uses (by default the latest) (`legalForm`:
  * optional `{ data, reload }` of the host; `onSelectionChanged` fires after choosing or clearing it).
+ * `layer` ('checking' by default, 'technical' for Evaluación técnica) picks the controls shown; the technical layer has no reviewer
+ * verdict nor VR choice, and `tagFilter` narrows its controls to the chosen tags.
  */
-export function EvaluationSheet({ target, origin, canEvaluate = false, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged }) {
+export function EvaluationSheet({ target, origin, canEvaluate = false, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter }) {
   const row = target?.row;
   return (
     <Sheet open={Boolean(target)} onOpenChange={(next) => { if (!next) onClose(); }}>
       <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>
-        {row ? <EvaluationBody key={target.nonce ?? row.rowKey} baseRow={row} origin={origin} canEvaluate={canEvaluate} legalForm={legalForm}
+        {row ? <EvaluationBody key={target.nonce ?? row.rowKey} baseRow={row} origin={origin} canEvaluate={canEvaluate} legalForm={legalForm} layer={layer} tagFilter={tagFilter}
           onClose={onClose} onSaved={onSaved} onPartialSave={onPartialSave} onConflict={onConflict} onSelectionChanged={onSelectionChanged} /> : null}
       </SheetContent>
     </Sheet>

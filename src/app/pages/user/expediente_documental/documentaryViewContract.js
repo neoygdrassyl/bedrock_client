@@ -53,6 +53,13 @@ export function validateRowEvaluation(value) {
   if (!isRowEvaluation(value)) invalidContract();
   return value;
 }
+// Central control of a row (checking or technical layer): same shape, the layer only differs in tags.
+const control = (value) => object(value) && controlId(value.controlId) && value.sourceControlId === value.controlId && Array.isArray(value.values);
+// Technical layer and applicant self-assessment (v6): optional so older payloads keep passing.
+const optionalTechnicalControls = (value) => value === undefined || value === null || arrayOf(value, control);
+const applicantItem = (value) => object(value) && ['title', 'valueLabel', 'effect', 'observation', 'assessedAt'].every((key) => optionalString(value[key]));
+const optionalApplicantAssessment = (value) => value === undefined || value === null
+  || (object(value) && arrayOf(value.items, applicantItem) && (value.summary === undefined || value.summary === null || object(value.summary)) && optionalString(value.importedAt));
 // New v5 fields are validated leniently so v3/v4 responses keep passing.
 const inputDocumentFields = (value) => ['documentCode', 'title', 'instanceLabel', 'listKey', 'listTitle'].every((key) => optionalString(value[key]))
   && optionalCount(value.versionCount) && optionalId(value.inputDocumentId) && optionalId(value.currentVersionId);
@@ -96,7 +103,7 @@ function validateCanonicalView(value) {
       || row.rowKey!==`canonical:${row.documentKey}` || seen.has(row.rowKey) || row.receivedDocumentRowId!==row.currentVersionId
       || row.receipt?.id!==row.receivedDocumentRowId || row.receipt?.documentKey!==row.documentKey || row.receipt?.documentId!==row.documentId
       || row.receipt?.configurationId!==value.configuration.id || !object(row.catalogueDisplay)
-      || !arrayOf(row.controls,control=>object(control)&&controlId(control.controlId)&&control.sourceControlId===control.controlId&&Array.isArray(control.values))
+      || !arrayOf(row.controls,control) || !optionalTechnicalControls(row.technicalControls) || !optionalApplicantAssessment(row.applicantAssessment)
       || !Array.isArray(row.sources) || row.sources.length || !Array.isArray(row.versions) || !isRowEvaluation(row.evaluation)) invalidContract();
     validateDocumentaryReceipt(row.receipt,value.project.fun0Id); seen.add(row.rowKey);
   }
