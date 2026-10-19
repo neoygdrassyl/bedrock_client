@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bug, Check, Database, FileText, LayoutDashboard, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Bug, Check, Database, FileText, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../services/data.service.js';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
-import { isDeveloperUser, isErrorReportManagerUser } from '../../utils/developerAccess.js';
+import IntegrationsPanel from './IntegrationsPanel.jsx';
+import { isDeveloperUser, isErrorReportManagerUser, isIntegrationManagerUser } from '../../utils/developerAccess.js';
 import {
   DASHBOARD_DENSITY_OPTIONS,
   DASHBOARD_LAYOUT_OPTIONS,
@@ -60,16 +61,17 @@ export default function SettingsPage() {
   const user = DataService.getUserData();
   const canSeeTechnicalReports = isDeveloperUser(user);
   const canManageErrorReports = isErrorReportManagerUser(user) || canSeeTechnicalReports;
-  const navItems = canManageErrorReports
-    ? [
-        ...NAV_ITEMS,
-        {
-          key: 'errorReports',
-          label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
-          icon: Bug,
-        },
-      ]
-    : NAV_ITEMS;
+  // Same roles the backend accepts for /api/integration-settings (ADM, CUR, developers).
+  const canManageIntegrations = isIntegrationManagerUser(user);
+  const navItems = [
+    ...NAV_ITEMS,
+    ...(canManageIntegrations ? [{ key: 'integraciones', label: 'Integraciones', icon: PlugZap }] : []),
+    ...(canManageErrorReports ? [{
+      key: 'errorReports',
+      label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
+      icon: Bug,
+    }] : []),
+  ];
   const requestedTab = searchParams.get('tab') || 'configuracion-documental';
   const activeKey = navItems.some((item) => item.key === requestedTab)
     ? requestedTab : 'configuracion-documental';
@@ -127,6 +129,7 @@ export default function SettingsPage() {
         <div className="settings-panel">
           {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
+          {activeKey === 'integraciones' && canManageIntegrations && <IntegrationsPanel />}
           {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
           {activeKey === 'errorReports' && canManageErrorReports && (
             <ErrorReportsPanel mode={canSeeTechnicalReports ? 'technical' : 'management'} />

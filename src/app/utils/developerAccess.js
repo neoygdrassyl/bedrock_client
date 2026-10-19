@@ -48,3 +48,13 @@ export function isDeveloperUser(user) {
 export function isErrorReportManagerUser(user) {
   return hasRole(user, ERROR_REPORT_MANAGER_ROLE_CODES);
 }
+
+// Mirrors the backend gate for Central configuration (documentary-access.js): the
+// backend strips trailing dots and maps ADMIN/ADMINISTRADOR and CURADOR to ADM/CUR,
+// so "Admin." (role_short) must be accepted here too.
+const INTEGRATION_MANAGER_ROLE_CODES = new Set(['ADM', 'ADMIN', 'ADMINISTRADOR', 'CUR', 'CURADOR']);
+
+export function isIntegrationManagerUser(user) {
+  if (isDeveloperUser(user)) return true;
+  return getRoleCandidates(user).some((role) => INTEGRATION_MANAGER_ROLE_CODES.has(role.replace(/\.+$/, '')));
+}
