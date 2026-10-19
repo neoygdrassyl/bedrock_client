@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import ListsCodes from '../../../components/jsons/fun6DocsList.json'
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { VentanillaTabs } from './VentanillaTabs';
 
 // Maps a sortable table column to the column the API accepts in `?sort=`.
 // "Documento" is intentionally absent: it is a boolean derived from a join, not
@@ -21,7 +22,8 @@ const SORT_FIELD_BY_COLUMN_NAME = {
     'Fecha Radicación': 'date',
 };
 
-function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
+// "Radicados VR" tab: the original Ventanilla page (actions, VR list and its modals).
+function SubmitVrPanel({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [currentId, setCurrentId] = useState(null);
@@ -340,11 +342,6 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
         }
         return (
             <div className="space-y-6">
-                <div>
-                    <h1 className="text-xl font-bold text-foreground">Ventanilla Única</h1>
-                    <p className="text-sm text-muted-foreground mt-1">Gestión de entradas y radicados</p>
-                </div>
-
                 <div className="space-y-3">
                     <h2 className="text-sm font-semibold text-center tracking-wide uppercase">ACCIONES</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -550,6 +547,18 @@ function SUBMIT({ translation, swaMsg, globals, breadCrums }) {
 
             </div >
         );
+}
+
+function SUBMIT(props) {
+    return (
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-xl font-bold text-foreground">Ventanilla Única</h1>
+                <p className="text-sm text-muted-foreground mt-1">Gestión de entradas y radicados</p>
+            </div>
+            <VentanillaTabs vrPanel={<SubmitVrPanel {...props} />} />
+        </div>
+    );
 }
 
 export default SUBMIT;
