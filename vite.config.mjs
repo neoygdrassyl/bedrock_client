@@ -122,6 +122,12 @@ export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const runtime = resolveRuntime(env, command);
   const shouldAnalyze = env.VITE_BUILD_ANALYZE === 'true';
+  // Extra hosts allowed by the dev/preview server (e.g. temporary Cloudflare tunnels).
+  // Comma-separated, e.g. VITE_ALLOWED_HOSTS="a.trycloudflare.com,b.trycloudflare.com"
+  const allowedHosts = (env.VITE_ALLOWED_HOSTS || '')
+    .split(',')
+    .map((host) => host.trim())
+    .filter(Boolean);
 
   return {
     plugins: [
@@ -153,8 +159,9 @@ export default defineConfig(({ mode, command }) => {
       strictPort: true,
       open: true,
       proxy: runtime.proxy,
+      allowedHosts,
     },
-    preview: { port: runtime.port, strictPort: true, proxy: runtime.proxy },
+    preview: { port: runtime.port, strictPort: true, proxy: runtime.proxy, allowedHosts },
 
   // Build
     build: {
