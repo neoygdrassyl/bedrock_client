@@ -45,6 +45,7 @@ import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { shouldUseStructuralReport } from './fun_forms/utils/expedienteDomainRules';
 import { nomens } from '../../components/jsons/vars';
+import { nextLicenseIdPublic } from '../../utils/consecutives';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
 
@@ -1137,19 +1138,8 @@ function FUN({ translation, swaMsg, globals, breadCrums, urlParams }) {
             let new_id = "";
             FUNService.getLastIdPublic()
                 .then(response => {
-                    if (response.data.length) {
-                        new_id = response.data[0].id;
-                        if (new_id) {
-                            let _id = new_id.split('-')
-                            let concecutive = _id[3];
-                            concecutive = Number(concecutive) + 1
-                            if (concecutive < 1000) concecutive = "0" + concecutive
-                            if (concecutive < 100) concecutive = "0" + concecutive
-                            if (concecutive < 10) concecutive = "0" + concecutive
-                            new_id = `${_id[0]}-${_id[1]}-${_id[2]}-${concecutive}`
-                            document.getElementById('f_02').value = new_id;
-                        } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
-                    } else document.getElementById('f_02').value = nomens + dayjs().format('YY') + "-0001";
+                    if (response.data.length) new_id = response.data[0].id;
+                    document.getElementById('f_02').value = nextLicenseIdPublic(new_id);
                 })
                 .catch(e => {
                     console.log(e);
