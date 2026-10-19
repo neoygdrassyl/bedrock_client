@@ -10,6 +10,7 @@ import { formsParser1 } from '../../../components/customClasses/typeParse';
 import { Icon } from '@/components/icon';
 import ObservationPanel from '../../../components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { nextVrId } from '@/app/utils/consecutives';
 import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
 import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../expediente_documental/expedienteMode';
 import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
@@ -121,19 +122,10 @@ function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: p
             let htmlId = _htmlId ?? 'submit_1';
             SubmitService.getlastid()
                 .then(response => {
-                    if (response.data.length) {
-                        new_id = response.data[0].vr;
-                        if (new_id) {
-                            let concecutive = new_id.split('-')[1];
-                            concecutive = Number(concecutive) + 1
-                            if (concecutive < 1000) concecutive = "0" + concecutive
-                            if (concecutive < 100) concecutive = "0" + concecutive
-                            if (concecutive < 10) concecutive = "0" + concecutive
-                            new_id = new_id.split('-')[0] + "-" + concecutive
-                            document.getElementById(htmlId).value = new_id;
-                            _VERIFY_VR_DUPLICATE(htmlId);
-                        } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
-                    } else document.getElementById(htmlId).value = "VR" + dayjs().format('YY') + "-0001";
+                    if (response.data.length) new_id = response.data[0].vr;
+                    document.getElementById(htmlId).value = nextVrId(new_id);
+                    // Only a VR derived from an existing one is checked for duplicates.
+                    if (new_id) _VERIFY_VR_DUPLICATE(htmlId);
                 })
                 .catch(e => {
                     console.log(e);
