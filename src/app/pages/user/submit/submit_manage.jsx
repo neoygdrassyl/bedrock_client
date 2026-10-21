@@ -15,8 +15,9 @@ import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocument
 import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../expediente_documental/expedienteMode';
 import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
 import { CanonicalDocumentaryWorkspace } from '../expediente_documental/ui/organisms/CanonicalDocumentaryWorkspace';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 function SUBMIT_MANAGE({ translation, swaMsg, globals, currentId, refreshList: propRefreshList, closeModal, edit, requestOptions = [] }) {
     const [currentItem, setCurrentItem] = useState(false);

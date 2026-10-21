@@ -22,8 +22,9 @@ import ObservationPanel from '../../../../components/ObservationPanel';
 import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate, requestRefresh, closeModal }) {
     const [vrsRelated, setVrsRelated] = useState([]);

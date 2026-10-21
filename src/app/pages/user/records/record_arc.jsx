@@ -33,8 +33,9 @@ import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
 import './arc/record_arc_typography.css';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, hideInlineBinnacles = false }) {
     const [currentRecord, setCurrentRecord] = useState(null);

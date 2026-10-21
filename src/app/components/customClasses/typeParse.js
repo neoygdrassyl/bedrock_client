@@ -10,7 +10,8 @@ dayjs.extend(localizedFormat)
 const _businessDays = new DiasHabilesColombia();
 import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
 import COD_SERIES from '../jsons/funCodes.json';
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
+const _GLOBAL_ID = GLOBAL_ID;
 
 export const SERIES_DOCS = {
     // i count = 86

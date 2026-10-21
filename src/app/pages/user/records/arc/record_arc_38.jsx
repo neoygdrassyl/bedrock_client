@@ -21,8 +21,9 @@ import ObservationPanel from '../../../../components/ObservationPanel';
 import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 const splitDelimited = (value, separator) => {
     if (Array.isArray(value)) return value;

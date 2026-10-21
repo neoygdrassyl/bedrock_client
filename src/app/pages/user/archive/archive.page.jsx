@@ -21,8 +21,9 @@ import { getJSON, getJSONFull, regexChecker_isPh } from '../../../components/cus
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import { nomens } from '../../../components/jsons/vars';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 const customStylesForModal = {};
 const customStylesForModal2 = {};
 const pptsLink = "https://curaduria1bucaramanga.com/public_docs/OTHERS/ARCHIVISTICA.pptx"

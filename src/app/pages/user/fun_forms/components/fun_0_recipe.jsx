@@ -6,8 +6,9 @@ import FUNService from '../../../../services/fun.service'
 import VIZUALIZER from '../../../../components/vizualizer.component';
 import TagInput from '../../../../components/TagInput';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 function FUN_0_RECIPE(props) {
     const [tags, setTags] = useState(null);

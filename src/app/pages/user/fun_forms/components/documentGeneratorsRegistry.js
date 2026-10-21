@@ -12,6 +12,7 @@ import FUN_D_ABDICATE from './fun_doc_abdicate.component';
 import FUN_REPORT_DATA_EDIT from './fun_report_data_edit';
 import FUN_CERTIFICATION from './fun_doc_certification.component';
 import { isCanonicalSaveBlocked } from './generatorSavePolicy';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 export const GENERATOR_SECTION_AUTOMATIC = 'automatic';
 export const GENERATOR_SECTION_SPECIAL = 'special';
@@ -62,7 +63,7 @@ function currentFun1(currentItem, currentVersion) {
   return { item_0: row.id, tramite: row.tramite, description: row.description ? row.description : '' };
 }
 
-export function buildGeneratorContext({ currentItem, currentVersion, requestUpdate, globalId = import.meta.env.VITE_GLOBAL_ID }) {
+export function buildGeneratorContext({ currentItem, currentVersion, requestUpdate, globalId = GLOBAL_ID }) {
   return {
     currentItem,
     currentVersion,

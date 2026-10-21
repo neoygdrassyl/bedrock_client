@@ -7,8 +7,9 @@ import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import writtenNumber from 'written-number';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 export default function FUN_D_ABDICATE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, id_related, related } = props;
