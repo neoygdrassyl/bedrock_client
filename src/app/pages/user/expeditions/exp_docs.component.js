@@ -18,9 +18,9 @@ import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
 import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
+import writtenNumber from 'written-number';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-var writtenNumber = require('written-number');
 const IVA = 0.19;
 const normalizeExpeditionField = (value) => String(value ?? '');
 const stripExpeditionSeparators = (value, replacement = '') => normalizeExpeditionField(value).replaceAll('-', replacement);

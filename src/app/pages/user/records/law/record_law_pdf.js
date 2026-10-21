@@ -10,6 +10,7 @@ import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDo
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
+import fileDownload from 'js-file-download';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_LAW_PDF(props) {
@@ -159,7 +160,6 @@ function RECORD_LAW_PDF(props) {
         pdfDoc.setTitle('INFORME JURIDICO - ' + id_public)
 
         var pdfBytes = await pdfDoc.save();
-        var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'INFORME JURIDICO ' + id_public + '.pdf');
         swalClose();
 

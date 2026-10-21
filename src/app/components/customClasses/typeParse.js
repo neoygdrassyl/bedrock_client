@@ -9,6 +9,7 @@ dayjs.extend(localizedFormat)
 // Singleton instance for Colombian business day calculations
 const _businessDays = new DiasHabilesColombia();
 import SERIES_CB1 from "../jsons/funcCodes.cb1.json"
+import COD_SERIES from '../jsons/funCodes.json';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export const SERIES_DOCS = {
@@ -923,7 +924,6 @@ export function _GET_SERIE_COD(_CHILD) {
 }
 export function _GET_SERIE_STR(_CHILD) {
     let _SERIES = _GET_SERIE_COD(_CHILD);
-    let COD_SERIES = require('../jsons/funCodes.json');
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
         if (infoCud.codeDictionary) {
@@ -952,7 +952,6 @@ export function _GET_SUBSERIE_COD(_CHILD) {
 }
 export function _GET_SUBSERIE_STR(_CHILD) {
     let _SERIES = _GET_SUBSERIE_COD(_CHILD);
-    var COD_SERIES = require('../jsons/funCodes.json');
     let _SERIES_STR = [];
     for (var i = 0; i < _SERIES.length; i++) {
         if (infoCud.codeDictionary) {

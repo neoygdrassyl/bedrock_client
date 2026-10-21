@@ -27,6 +27,7 @@ import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDo
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { useDocumentaryInventory } from '../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../expediente_documental/documentaryInventoryModel';
+import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -312,7 +313,6 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         mergedPdf.setTitle('FORMATO DE REVISIÓN E INFORMACIÓN DEPROYECTOS - ' + id_public)
 
         var pdfBytes = await mergedPdf.save();
-        var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMATO DE REVISIÓN E INFORMACIÓN DEPROYECTOS ' + id_public + '.pdf');
         swalClose();
     }

@@ -6,6 +6,7 @@ import { dateParser, getJSONFull } from '../../../../components/customClasses/ty
 import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import writtenNumber from 'written-number';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -151,7 +152,6 @@ export default function FUN_D_ABDICATE(props) {
         let RES_DATA = currentItem.expedition || {};
         let RES_DATA_MAIN = currentItem.expedition || {};
         RES_DATA = RES_DATA.reso ? getJSONFull(RES_DATA.reso) : {};
-        var writtenNumber = require('written-number');
         writtenNumber.defaults.lang = 'es';
         let date_1 = dateParser(dayjs().format('YYYY-MM-DD'));
         date_1 = date_1.split(' ').map(s => {

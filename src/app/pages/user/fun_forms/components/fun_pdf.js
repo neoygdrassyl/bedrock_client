@@ -9,6 +9,7 @@ import { cities, domains, states } from '../../../../components/jsons/vars';
 import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import fileDownload from 'js-file-download';
 
 const getAdditionalPageCount = (total, capacity) => Math.max(0, Math.ceil(total / capacity) - 1);
 
@@ -2085,7 +2086,6 @@ function FUN_PDF({ currentItem: liveItem, currentVersion: liveVersion, swaMsg, h
         pdfDoc.setTitle('FORMULARIO UNICO NACIONAL - ' + currentItem.id_public)
 
         var pdfBytes = await pdfDoc.save();
-        var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'FORMULARIO UNICO NACIONAL ' + currentItem.id_public + '.pdf');
         swalClose();
 
