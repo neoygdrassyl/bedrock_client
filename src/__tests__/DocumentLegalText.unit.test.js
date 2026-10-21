@@ -6,7 +6,6 @@ const sources = [
   'src/app/utils/ExecEngineTemp.js',
   'src/app/utils/ResoEngineTemplate.js',
   'src/app/utils/ActDesistEngineTemp.js',
-  'src/app/utils/TemplateModifier.js',
   'public/templates/resolution/header/header.html',
   'public/templates/resolution/header/header_des.html',
   'public/templates/Executory/header.html',

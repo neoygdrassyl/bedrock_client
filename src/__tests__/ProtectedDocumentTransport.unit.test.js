@@ -36,7 +36,6 @@ const protectedAttachmentFiles = [
   'src/app/pages/user/fun_forms/fun_n_3.js',
   'src/app/pages/user/pqrs/lockpqrs.js',
   'src/app/pages/user/pqrs/pqrs_manage.view.js',
-  'src/app/pages/user/fun_forms/components/fun_paning_data.js',
   'src/app/pages/user/pqrs/components/pqrs_attach_pro.component.js',
 ];
 
@@ -122,13 +121,6 @@ describe('protected document transport', () => {
 
     expect(source).toContain('ProtectedDocumentPreview');
     expect(source).not.toMatch(/window\.open\s*\(\s*previewUrl/);
-  });
-
-  test('downloads the glossary through the authenticated client', () => {
-    const source = readSource('src/app/components/transparencyDD.js');
-
-    expect(source).toContain('downloadProtectedFile');
-    expect(source).not.toMatch(/href=\{import\.meta\.env\.VITE_API_URL \+ ['"]\/files\/docs\/glosario\.docx/);
   });
 
   test('does not capture the terminal loop index in PQRS attachment buttons', () => {

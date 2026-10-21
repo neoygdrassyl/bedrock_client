@@ -47,12 +47,6 @@ vi.mock('../app/pages/user/fun_forms/components/FunExpedienteDetail', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunExpedienteWorkspace', () => ({
-  FunExpedienteWorkspace: ({ expediente }) => (
-    <div data-testid="workspace-state">{expediente?.radicado}:workspace</div>
-  ),
-}));
-
 vi.mock('@/components/ui/select', () => ({
   Select: ({ children }) => <div>{children}</div>,
   SelectTrigger: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
