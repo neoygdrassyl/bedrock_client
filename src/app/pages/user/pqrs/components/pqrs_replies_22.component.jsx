@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { dateParser, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
+import 'jodit-pro/es2021/jodit.fat.min.css';
 import Collapsible from '../../../../components/Collapsible';
 
 export const PQRS_COMPONENT_REPLIES_TOSOLICITOR2 = (props) => {

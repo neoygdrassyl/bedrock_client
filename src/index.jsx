@@ -4,10 +4,13 @@ import { MantineProvider } from '@mantine/core';
 
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'jodit-pro/es2021/jodit.fat.min.css';
+// Mantine's global styles and the Inter @font-face rules stay global: they affect
+// every page. Editor-only CSS loads with its lazy chunk instead (jodit-pro in the
+// modules that render JoditEditor, @blocknote/mantine in rich-text-editor.jsx);
+// it is scoped to editor classes, so loading it after index.css does not change
+// the cascade of our own rules.
 import '@mantine/core/styles.css';
 import '@blocknote/core/fonts/inter.css';
-import '@blocknote/mantine/style.css';
 // MDB CSS removed — mdb-react-ui-kit eliminated, using Bootstrap 5 classes directly
 
 import './index.css'; // MUST load after Bootstrap so our tokens/fonts/resets win
