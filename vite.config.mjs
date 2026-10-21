@@ -183,19 +183,14 @@ export default defineConfig(({ mode, command }) => {
           // este chunk cargue primero y esté listo para cualquier otro chunk que lo necesite.
             if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'vendor-react-core';
 
-          // React UI ecosystem — rsuite y react-router dependen de vendor-react-core.
-          // rsuite puede acceder a internals de react, pero eso es OK porque vendor-react-core
-          // ya es independiente y siempre estará inicializado antes.
-            if (/react-router|rsuite|rsuite-table|styled-components|@emotion/.test(id)) return 'vendor-react';
+          // React UI ecosystem — react-router depende de vendor-react-core.
+            if (/react-router/.test(id)) return 'vendor-react';
 
           // PDF generation & viewing (heavy, only needed in doc views)
             if (/react-pdf|pdfjs-dist|pdf-lib|jspdf|html2canvas/.test(id)) return 'vendor-pdf';
 
           // Icon libraries
             if (/react-icons|lucide-react/.test(id)) return 'vendor-icons';
-
-          // Date/time handling
-            if (/moment|moment-business-days/.test(id)) return 'vendor-datetime';
 
           // Rich text editor
             if (/jodit/.test(id)) return 'vendor-editor';
@@ -208,9 +203,6 @@ export default defineConfig(({ mode, command }) => {
 
           // Alert dialogs
             if (/sweetalert2/.test(id)) return 'vendor-swal';
-
-          // Gantt chart (frappe)
-            if (/frappe-gantt/.test(id)) return 'vendor-gantt';
 
           // Spreadsheet
             if (/react-spreadsheet/.test(id)) return 'vendor-spreadsheet';
@@ -234,7 +226,6 @@ export default defineConfig(({ mode, command }) => {
   // Pre-bundle optimization — handle JSX in .js for node_modules too
     optimizeDeps: {
       include: [
-        'rsuite',
         '@tanstack/react-table',
         'react-pdf',
         'pdf-lib',
@@ -255,34 +246,6 @@ export default defineConfig(({ mode, command }) => {
       ],
       esbuildOptions: {
         loader: { '.js': 'jsx' },
-        plugins: [
-          {
-            // moment-business-days does `var moment = require('moment'); moment.fn.isHoliday = …`
-            // esbuild's CJS interop wraps moment exports as { __esModule, default: fn },
-            // so `moment.fn` is undefined.  We patch the source BEFORE esbuild
-            // bundles it: remove the CJS require block and inject an ESM
-            // `import moment from 'moment'` so esbuild resolves the default
-            // export correctly.
-            name: 'fix-moment-business-days',
-            setup(build) {
-              build.onLoad(
-                { filter: /moment-business-days/ },
-                async (args) => {
-                  const { readFile } = await import('node:fs/promises');
-                  let code = await readFile(args.path, 'utf8');
-                  // Strip the CJS conditional require block
-                  code = code.replace(
-                    /if\s*\(\s*typeof\s+require\s*===\s*['"]function['"]\s*\)\s*\{[^}]*\}/,
-                    '',
-                  );
-                  // Prepend an ESM import for moment
-                  code = 'import moment from "moment";\n' + code;
-                  return { contents: code, loader: 'js' };
-                },
-              );
-            },
-          },
-        ],
       },
     },
   };

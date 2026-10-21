@@ -60,7 +60,7 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: ['rsuite', '@babel/runtime', 'react-data-table-component'],
+          include: ['@babel/runtime'],
         },
       },
     },
