@@ -23,7 +23,7 @@ Para generar el reporte visual de chunks:
 npm run build:analyze
 ```
 
-El reporte se escribe en `build/stats.html` y se activa con `VITE_BUILD_ANALYZE=true`.
+El reporte se escribe en `build/stats.html`. Se activa al correr `npm run build:analyze` o, en cualquier build, con `VITE_BUILD_ANALYZE=true`.
 
 ## Servidor final
 
@@ -38,7 +38,7 @@ npm run build
 
 Vite y `@vitejs/plugin-react` viven correctamente en `devDependencies`: son necesarios para compilar, pero no para servir el resultado estatico.
 
-Los scripts de build pasan por `build-tools/run-vite-build.mjs` para funcionar igual en Linux, macOS y Windows. Ese runner fija `NODE_OPTIONS=--max-old-space-size=4096` en el proceso de Vite porque el empaquetado de Rollup de esta SPA puede superar el limite default de heap de Node durante `rendering chunks`.
+Los scripts de build invocan Vite directamente (`node --max-old-space-size=4096 node_modules/vite/bin/vite.js build --mode <modo>`) y funcionan igual en Linux, macOS y Windows. El flag de heap es obligatorio: sin el, Rollup se queda sin memoria durante `rendering chunks`.
 
 ## Variables por modo
 

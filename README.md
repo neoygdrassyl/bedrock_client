@@ -46,7 +46,7 @@ Los builds usan modos explicitos de Vite para cargar variables diferentes segun 
 | `npm run build:dev` | `development` | Build con variables de desarrollo para validar integraciones locales. |
 | `npm run build:analyze` | `production` | Build productivo con reporte visual de chunks. |
 
-Los scripts de build usan `build-tools/run-vite-build.mjs`, un runner Node compatible con Linux, macOS y Windows. El runner agrega `NODE_OPTIONS=--max-old-space-size=4096` al proceso de Vite porque el empaquetado de Rollup de esta SPA puede superar el heap default de Node durante `rendering chunks`.
+Los scripts de build invocan Vite directamente con `node --max-old-space-size=4096 node_modules/vite/bin/vite.js build --mode <modo>`, sin runners intermedios, y funcionan igual en Linux, macOS y Windows. El flag de heap es necesario: sin el, el empaquetado de Rollup de esta SPA supera el heap default de Node durante `rendering chunks` (medido: OOM sin flag, ~2,8 GB de RSS con el).
 
 ### `npm run build`
 
@@ -74,7 +74,7 @@ npm run build:dev
 
 ### `npm run build:analyze`
 
-Compila en modo produccion y activa `VITE_BUILD_ANALYZE=true` desde el runner para generar `build/stats.html`.
+Compila en modo produccion (carga `.env.production`) y genera `build/stats.html`. `vite.config.mjs` activa el visualizador cuando el script de npm es `build:analyze` o cuando `VITE_BUILD_ANALYZE=true`.
 
 ```bash
 npm run build:analyze

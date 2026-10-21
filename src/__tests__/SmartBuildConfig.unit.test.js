@@ -2,18 +2,17 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
-const buildRunner = 'node build-tools/run-vite-build.mjs';
-const buildRunnerPath = 'build-tools/run-vite-build.mjs';
+const viteBuild = 'node --max-old-space-size=4096 node_modules/vite/bin/vite.js build';
 
 describe('smart build configuration', () => {
   it('uses explicit Vite modes for development and production scripts', () => {
     expect(packageJson.scripts.dev).toBe('vite --mode development');
     expect(packageJson.scripts.start).toBe('vite --mode development');
-    expect(packageJson.scripts.build).toBe(`${buildRunner} production`);
-    expect(packageJson.scripts['build:prod']).toBe(`${buildRunner} production`);
-    expect(packageJson.scripts['build:production']).toBe(`${buildRunner} production`);
-    expect(packageJson.scripts['build:dev']).toBe(`${buildRunner} development`);
-    expect(packageJson.scripts['build:analyze']).toBe(`${buildRunner} production --analyze`);
+    expect(packageJson.scripts.build).toBe(`${viteBuild} --mode production`);
+    expect(packageJson.scripts['build:prod']).toBe(`${viteBuild} --mode production`);
+    expect(packageJson.scripts['build:production']).toBe(`${viteBuild} --mode production`);
+    expect(packageJson.scripts['build:dev']).toBe(`${viteBuild} --mode development`);
+    expect(packageJson.scripts['build:analyze']).toBe(`${viteBuild} --mode production`);
 
     for (const scriptName of [
       'build',
@@ -26,22 +25,9 @@ describe('smart build configuration', () => {
     }
   });
 
-  it('uses a cross-platform Node build runner for heap and analyzer flags', () => {
-    const runnerExists = existsSync(buildRunnerPath);
-
-    expect(runnerExists).toBe(true);
-
-    if (!runnerExists) return;
-
-    const source = readFileSync(buildRunnerPath, 'utf8');
-
-    expect(source).toContain('spawnSync');
-    expect(source).toContain('process.execPath');
-    expect(source).toContain('--max-old-space-size=4096');
-    expect(source).toContain('VITE_BUILD_ANALYZE');
-    expect(source).toContain("'vite/package.json'");
-    expect(source).toContain("'bin/vite.js'");
-    expect(source).not.toContain("require.resolve('vite/bin/vite.js')");
+  it('builds without a wrapper script so the commands stay cross-platform', () => {
+    expect(existsSync('build-tools')).toBe(false);
+    expect(packageJson.scripts['build:analyze']).not.toContain('--analyze');
   });
 
   it('keeps build, test, and e2e tooling in devDependencies only', () => {
@@ -63,10 +49,11 @@ describe('smart build configuration', () => {
   it('loads analyzer settings from Vite mode env instead of process.env', () => {
     const source = readFileSync('vite.config.mjs', 'utf8');
 
-    expect(source).toContain("import { defineConfig, loadEnv, transformWithEsbuild } from 'vite';");
-    expect(source).toContain('defineConfig(({ mode }) => {');
+    expect(source).toContain('loadEnv');
+    expect(source).toContain('defineConfig(({ mode, command }) => {');
     expect(source).toContain("loadEnv(mode, process.cwd(), '')");
     expect(source).toContain("env.VITE_BUILD_ANALYZE === 'true'");
+    expect(source).toContain("process.env.npm_lifecycle_event === 'build:analyze'");
     expect(source).not.toContain('process.env.ANALYZE');
   });
 
