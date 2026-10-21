@@ -8,7 +8,7 @@ import EXP_AREAS_RECORD from '../exp_areas_record.component';
 import RECORD_ARC_DESC from './record_arc_desc';
 import { getJSONFull } from '../../../../components/customClasses/typeParse';
 import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
-import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component.js';
+import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component.jsx';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import RichTextEditor from '@/components/rich-text-editor';

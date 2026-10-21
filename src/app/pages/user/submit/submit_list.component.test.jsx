@@ -42,7 +42,7 @@ vi.mock('@/app/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import SUBMIT_LIST from './submit_list.component.js';
+import SUBMIT_LIST from './submit_list.component.jsx';
 
 const currentItem = {
   id: 90,

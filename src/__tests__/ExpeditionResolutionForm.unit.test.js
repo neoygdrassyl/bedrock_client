@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 
 const projectRoot = path.resolve(__dirname, '..', '..');
 const source = fs.readFileSync(
-  path.join(projectRoot, 'src/app/pages/user/expeditions/exp._res.component.js'),
+  path.join(projectRoot, 'src/app/pages/user/expeditions/exp._res.component.jsx'),
   'utf8',
 );
 

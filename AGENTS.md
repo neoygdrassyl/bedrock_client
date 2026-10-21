@@ -69,7 +69,7 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 ## 4. Donde vive la verdad operativa
 
-- Router, layout, auth y login: `src/app/App.js`
+- Router, layout, auth y login: `src/app/App.jsx`
 - Cliente HTTP y sesion: `src/http-common.js`, `src/app/services/data.service.js`, `src/app/services/custom.service.js`
 - Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
 - Service mas critico: `src/app/services/fun.service.js`
@@ -111,7 +111,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 5. No metas llamadas HTTP directas en componentes; usa `src/app/services/`.
 6. No ocultes ausencia de datos legalmente relevantes con `return null`; usa fallback visible.
 7. No introduzcas una libreria UI nueva sin consenso.
-8. No expongas datos sensibles de `src/app/components/jsons/vars.js` en logs.
+8. No expongas datos sensibles de `src/app/components/jsons/vars.jsx` en logs.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin evidencia directa y proporcional a su alcance. Durante construcción activa, no crear, actualizar ni ejecutar pruebas automatizadas sin instrucción explícita del usuario; reservarlas para un cierre de módulo solicitado expresamente.
 11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura.

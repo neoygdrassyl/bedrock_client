@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getFun1ForVersion } from './fun_n_1.js';
+import { getFun1ForVersion } from './fun_n_1.jsx';
 
 describe('getFun1ForVersion', () => {
   it('selects the requested version regardless of array order and preserves the backend tie-breaker', () => {

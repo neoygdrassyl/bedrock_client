@@ -1,22 +1,6 @@
 import { defineConfig } from 'vitest/config';
-import { transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-
-// Custom plugin: treat .js files in src/ as JSX (CRA migration compat)
-function jsxInJs() {
-  return {
-    name: 'jsx-in-js',
-    enforce: 'pre',
-    async transform(code, id) {
-      if (!/src\/.*\.js$/.test(id)) return null;
-      return transformWithEsbuild(code, id, {
-        loader: 'jsx',
-        jsx: 'automatic',
-      });
-    },
-  };
-}
 
 // Custom plugin: mock all CSS/SCSS/LESS imports to empty modules in tests
 function cssNoop() {
@@ -33,7 +17,7 @@ function cssNoop() {
 }
 
 export default defineConfig({
-  plugins: [cssNoop(), jsxInJs(), react()],
+  plugins: [cssNoop(), react()],
 
   assetsInclude: ['**/*.md'],
 
@@ -47,7 +31,7 @@ export default defineConfig({
     forbidOnly: true,
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/__tests__/setup.js'],
+    setupFiles: ['./src/__tests__/setup.jsx'],
 
     css: false,
 

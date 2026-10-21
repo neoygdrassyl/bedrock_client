@@ -30,7 +30,7 @@ vi.mock('@/app/utils/swalAdapter', () => ({
   swalError: swalErrorMock,
 }));
 
-import FUN_NEWVERSION from './fun_newversion.js';
+import FUN_NEWVERSION from './fun_newversion.jsx';
 
 const swaMsg = {
   title_wait: 'Espere',

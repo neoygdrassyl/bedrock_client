@@ -1,6 +1,6 @@
 /**
  * dayjs global configuration for Dovela frontend.
- * Import this file ONCE in the app entry point (src/index.js).
+ * Import this file ONCE in the app entry point (src/index.jsx).
  * After that, any `import dayjs from 'dayjs'` gets the fully configured instance.
  *
  * Plugins loaded:

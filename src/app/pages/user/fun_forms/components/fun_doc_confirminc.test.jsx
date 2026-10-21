@@ -58,7 +58,7 @@ vi.mock('@/app/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import FUN_DOC_CONFIRM_INCOMPLETE from './fun_doc_confirminc.js';
+import FUN_DOC_CONFIRM_INCOMPLETE from './fun_doc_confirminc.jsx';
 
 function buildCurrentItem(overrides = {}) {
   return {

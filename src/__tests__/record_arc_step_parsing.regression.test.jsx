@@ -53,7 +53,7 @@ vi.mock('../app/pages/user/records/arc/record_arc_areas.component', () => ({
   default: () => <div data-testid="record-arc-areas" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas_2.component.js', () => ({
+vi.mock('../app/pages/user/records/arc/record_arc_areas_2.component.jsx', () => ({
   __esModule: true,
   default: () => <div data-testid="record-arc-areas-2" />,
 }));

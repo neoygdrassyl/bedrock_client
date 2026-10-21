@@ -6,7 +6,7 @@ import { test, expect } from '../fixtures/auth.fixture';
  *
  * Before this spec, no e2e flow exercised a real multipart file upload —
  * every existing spec only asserts on JSON round-trips. This covers
- * SUBMIT_ANEX's "digital" panel (src/app/pages/user/submit/submit_anex.component.js),
+ * SUBMIT_ANEX's "digital" panel (src/app/pages/user/submit/submit_anex.component.jsx),
  * reached from an existing Ventanilla (/ventanilla) entry's edit modal,
  * "Digitales" tab.
  *

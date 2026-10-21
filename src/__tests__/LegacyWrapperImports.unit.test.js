@@ -2,14 +2,14 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const filesWithLegacyItemImport = [
-  'src/app/pages/user/profesionals/profesionals.page.js',
-  'src/app/pages/user/profesionals/email.page.js',
-  'src/app/pages/user/profesionals/public.page.js',
-  'src/app/pages/user/guide_user/guide_user.page.js',
-  'src/app/pages/user/dev_guide/dev_guide.page.js',
-  'src/app/pages/user/norms/norms.page.js',
-  'src/app/pages/user/certifications/certification.page.js',
-  'src/app/pages/user/zone_use/zone_use.page.js',
+  'src/app/pages/user/profesionals/profesionals.page.jsx',
+  'src/app/pages/user/profesionals/email.page.jsx',
+  'src/app/pages/user/profesionals/public.page.jsx',
+  'src/app/pages/user/guide_user/guide_user.page.jsx',
+  'src/app/pages/user/dev_guide/dev_guide.page.jsx',
+  'src/app/pages/user/norms/norms.page.jsx',
+  'src/app/pages/user/certifications/certification.page.jsx',
+  'src/app/pages/user/zone_use/zone_use.page.jsx',
 ];
 
 describe('legacy wrapper imports', () => {
