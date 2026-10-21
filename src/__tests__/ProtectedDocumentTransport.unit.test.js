@@ -1,62 +1,62 @@
 import { readFileSync } from 'node:fs';
 
 const generatedDocumentFiles = [
-  'src/app/pages/user/seal.js',
-  'src/app/pages/user/certifications/certification.page.js',
-  'src/app/pages/user/norms/norm_resume.component.js',
-  'src/app/pages/user/submit/submit_anex.component.js',
-  'src/app/pages/user/zone_use/zone_use.component.js',
-  'src/app/pages/user/records/record_letter_2.component.js',
-  'src/app/pages/user/records/record_letter.component.js',
-  'src/app/pages/user/records/record_review.js',
-  'src/app/pages/user/pqrs/asignpqrs.js',
-  'src/app/pages/user/pqrs/pqrs_manage.view.js',
-  'src/app/pages/user/nomenclature/nomenclature_anex.componen.js',
-  'src/app/pages/user/fun_forms/components/fun_doc_confirmlegal.js',
-  'src/app/pages/user/fun_forms/components/fun_doc_certification.component.js',
-  'src/app/pages/user/fun_forms/components/fun_d_control.component_2.js',
-  'src/app/pages/user/fun_forms/components/fun_report_data_pdf.component.js',
-  'src/app/pages/user/fun_forms/components/fun_doc_confirminc.js',
-  'src/app/pages/user/fun_forms/components/fun_alertNeighbour.js',
-  'src/app/pages/user/fun_forms/components/fun_doc_abdicate.component.js',
-  'src/app/pages/user/fun_forms/components/fun_d_control.component.js',
-  'src/app/pages/user/fun_forms/components/fun_sign_pdf.component.js',
-  'src/app/pages/user/fun_forms/components/fun_archive.component.js',
-  'src/app/pages/user/fun_forms/components/fun_seals.js',
-  'src/app/pages/user/records/eng/record_eng_review.component.js',
-  'src/app/pages/user/records/law/record_law_pdf.js',
-  'src/app/pages/user/records/ph/record_ph_review.component.js',
-  'src/app/pages/user/records/arc/record_arc_38.js',
-  'src/app/pages/user/pqrs/components/pqrs_genPDF_reply.component.js',
-  'src/app/pages/user/pqrs/components/pqrs_genPDF_confirm.component.js',
+  'src/app/pages/user/seal.jsx',
+  'src/app/pages/user/certifications/certification.page.jsx',
+  'src/app/pages/user/norms/norm_resume.component.jsx',
+  'src/app/pages/user/submit/submit_anex.component.jsx',
+  'src/app/pages/user/zone_use/zone_use.component.jsx',
+  'src/app/pages/user/records/record_letter_2.component.jsx',
+  'src/app/pages/user/records/record_letter.component.jsx',
+  'src/app/pages/user/records/record_review.jsx',
+  'src/app/pages/user/pqrs/asignpqrs.jsx',
+  'src/app/pages/user/pqrs/pqrs_manage.view.jsx',
+  'src/app/pages/user/nomenclature/nomenclature_anex.componen.jsx',
+  'src/app/pages/user/fun_forms/components/fun_doc_confirmlegal.jsx',
+  'src/app/pages/user/fun_forms/components/fun_doc_certification.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_d_control.component_2.jsx',
+  'src/app/pages/user/fun_forms/components/fun_report_data_pdf.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_doc_confirminc.jsx',
+  'src/app/pages/user/fun_forms/components/fun_alertNeighbour.jsx',
+  'src/app/pages/user/fun_forms/components/fun_doc_abdicate.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_d_control.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_sign_pdf.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_archive.component.jsx',
+  'src/app/pages/user/fun_forms/components/fun_seals.jsx',
+  'src/app/pages/user/records/eng/record_eng_review.component.jsx',
+  'src/app/pages/user/records/law/record_law_pdf.jsx',
+  'src/app/pages/user/records/ph/record_ph_review.component.jsx',
+  'src/app/pages/user/records/arc/record_arc_38.jsx',
+  'src/app/pages/user/pqrs/components/pqrs_genPDF_reply.component.jsx',
+  'src/app/pages/user/pqrs/components/pqrs_genPDF_confirm.component.jsx',
 ];
 
 const protectedAttachmentFiles = [
-  'src/app/pages/user/publish.js',
-  'src/app/pages/user/fun_forms/fun_n_3.js',
-  'src/app/pages/user/pqrs/lockpqrs.js',
-  'src/app/pages/user/pqrs/pqrs_manage.view.js',
-  'src/app/pages/user/pqrs/components/pqrs_attach_pro.component.js',
+  'src/app/pages/user/publish.jsx',
+  'src/app/pages/user/fun_forms/fun_n_3.jsx',
+  'src/app/pages/user/pqrs/lockpqrs.jsx',
+  'src/app/pages/user/pqrs/pqrs_manage.view.jsx',
+  'src/app/pages/user/pqrs/components/pqrs_attach_pro.component.jsx',
 ];
 
 const protectedPreviewFiles = [
-  'src/app/components/vizualizer.component.js',
+  'src/app/components/vizualizer.component.jsx',
   'src/app/pages/user/shared/UnifiedDocumentEntryModal.jsx',
   'src/app/pages/user/fun_forms/components/FunDocumentManagementModal.jsx',
-  'src/app/pages/user/submit/submit_list.component.js',
+  'src/app/pages/user/submit/submit_list.component.jsx',
   'src/app/pages/user/fun_forms/components/FunCorrelatedDocumentControl.jsx',
   'src/app/pages/user/fun_forms/components/RequirementManagementModal.jsx',
-  'src/app/components/viewer.component.js',
+  'src/app/components/viewer.component.jsx',
 ];
 
 const protectedPdfTemplateFiles = [
-  'src/app/pages/user/fun_forms/components/fun_pdf.js',
+  'src/app/pages/user/fun_forms/components/fun_pdf.jsx',
   'src/app/pages/user/fun_forms/components/checklistPdf.js',
-  'src/app/pages/user/records/arc/record_arc_38.js',
-  'src/app/pages/user/records/ph/record_ph_review.component.js',
-  'src/app/pages/user/records/record_review.js',
-  'src/app/pages/user/records/law/record_law_pdf.js',
-  'src/app/pages/user/records/eng/record_eng_review.component.js',
+  'src/app/pages/user/records/arc/record_arc_38.jsx',
+  'src/app/pages/user/records/ph/record_ph_review.component.jsx',
+  'src/app/pages/user/records/record_review.jsx',
+  'src/app/pages/user/records/law/record_law_pdf.jsx',
+  'src/app/pages/user/records/eng/record_eng_review.component.jsx',
 ];
 
 const readSource = (file) => readFileSync(file, 'utf8');
@@ -85,7 +85,7 @@ describe('protected document transport', () => {
   });
 
   test('resolves neighbour support document ids before downloading their files', () => {
-    const source = readSource('src/app/pages/user/fun_forms/fun_n_3.js');
+    const source = readSource('src/app/pages/user/fun_forms/fun_n_3.jsx');
 
     expect(source).not.toMatch(/split\(['"]&['"]\)\[2\]\.(?:path|filename)/);
     expect(source).toContain('_FIND_6(documentId)');
@@ -117,14 +117,14 @@ describe('protected document transport', () => {
   });
 
   test('previews intelligent checklist evidence through an authenticated blob URL', () => {
-    const source = readSource('src/app/pages/user/fun_forms/components/fun_checklist_n.js');
+    const source = readSource('src/app/pages/user/fun_forms/components/fun_checklist_n.jsx');
 
     expect(source).toContain('ProtectedDocumentPreview');
     expect(source).not.toMatch(/window\.open\s*\(\s*previewUrl/);
   });
 
   test('does not capture the terminal loop index in PQRS attachment buttons', () => {
-    const source = readSource('src/app/pages/user/pqrs/components/pqrs_attach_pro.component.js');
+    const source = readSource('src/app/pages/user/pqrs/components/pqrs_attach_pro.component.jsx');
 
     expect(source).toContain('for (let i = 0;');
     expect(source).toContain('buildProtectedFilePath');

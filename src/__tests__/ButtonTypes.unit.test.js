@@ -5,11 +5,11 @@ import { describe, expect, test } from 'vitest';
 const projectRoot = path.resolve(__dirname, '..', '..');
 
 const filesToCheck = [
-  'src/app/pages/user/expeditions/exp_1.component.js',
-  'src/app/pages/user/expeditions/exp_areas.component.js',
-  'src/app/pages/user/records/ph/record_ph_review.component.js',
-  'src/app/pages/user/records/record_review.js',
-  'src/app/pages/user/fun_forms/components/fun_0_recipe.js',
+  'src/app/pages/user/expeditions/exp_1.component.jsx',
+  'src/app/pages/user/expeditions/exp_areas.component.jsx',
+  'src/app/pages/user/records/ph/record_ph_review.component.jsx',
+  'src/app/pages/user/records/record_review.jsx',
+  'src/app/pages/user/fun_forms/components/fun_0_recipe.jsx',
 ];
 
 function getButtonOpenTags(source) {

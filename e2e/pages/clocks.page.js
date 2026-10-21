@@ -7,7 +7,7 @@
  * by clicking "Tiempos" in a license row's action popover menu. This opens a
  * modal with the clock/timeline view.
  *
- * Key components (from src/app/pages/user/fun_forms/fun_clock.js):
+ * Key components (from src/app/pages/user/fun_forms/fun_clock.jsx):
  * - centralClocks.component.js: Main clock container
  * - GanttChart: Visual timeline
  * - SidebarInfo: Clock details (days remaining, status, phases)

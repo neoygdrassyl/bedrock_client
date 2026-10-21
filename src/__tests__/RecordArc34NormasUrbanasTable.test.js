@@ -3,7 +3,7 @@ import path from 'node:path';
 import { expect, test } from 'vitest';
 
 const source = fs.readFileSync(
-  path.resolve(import.meta.dirname, '../app/pages/user/records/arc/record_arc_34.js'),
+  path.resolve(import.meta.dirname, '../app/pages/user/records/arc/record_arc_34.jsx'),
   'utf8',
 );
 const typography = fs.readFileSync(

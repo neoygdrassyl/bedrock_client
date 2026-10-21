@@ -17,7 +17,7 @@ import {
 
 function readRecordReviewSource() {
     return fs.readFileSync(
-        path.resolve(__dirname, '../app/pages/user/records/record_review.js'),
+        path.resolve(__dirname, '../app/pages/user/records/record_review.jsx'),
         'utf8',
     );
 }

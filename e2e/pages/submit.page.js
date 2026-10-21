@@ -4,7 +4,7 @@ import { expect } from '@playwright/test';
 /**
  * Page Object: Ventanilla Unica / Submit (/submit)
  *
- * Key DOM elements (from src/app/pages/user/submit/submit.js):
+ * Key DOM elements (from src/app/pages/user/submit/submit.jsx):
  * - Heading: "VENTANILLA UNICA"
  * - "NUEVA ENTRADA" button opens a modal with submit_manage form
  * - Search: #submit_search_0 (select), #submit_search_1 (text), "CONSULTAR" button

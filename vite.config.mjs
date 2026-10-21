@@ -1,22 +1,7 @@
-import { defineConfig, loadEnv, transformWithEsbuild } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-
-// Custom plugin: treat .js files in src/ as JSX (CRA migration compat)
-function jsxInJs() {
-  return {
-    name: 'jsx-in-js',
-    enforce: 'pre',
-    async transform(code, id) {
-      if (!/src\/.*\.js$/.test(id)) return null;
-      return transformWithEsbuild(code, id, {
-        loader: 'jsx',
-        jsx: 'automatic',
-      });
-    },
-  };
-}
 
 export function resolveRuntime(env, command = 'serve') {
   const urls = {};
@@ -77,7 +62,6 @@ export default defineConfig(({ mode, command }) => {
           }
         },
       },
-      jsxInJs(),
       react(),
       shouldAnalyze && visualizer({
         filename: 'build/stats.html',

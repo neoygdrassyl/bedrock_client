@@ -2,7 +2,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 
 /**
- * E2E smoke: every React.lazy() route declared in src/app/App.js mounts
+ * E2E smoke: every React.lazy() route declared in src/app/App.jsx mounts
  * without throwing and without emitting console errors.
  *
  * Scope (Fase 3, plan 15-auditoria-post-migracion-react19.md item "Smoke de

@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 
 const sources = [
-  'src/app/components/jsons/vars.js',
-  'src/app/pages/user/expeditions/exp._res.component.js',
+  'src/app/components/jsons/vars.jsx',
+  'src/app/pages/user/expeditions/exp._res.component.jsx',
   'src/app/utils/ExecEngineTemp.js',
   'src/app/utils/ResoEngineTemplate.js',
   'src/app/utils/ActDesistEngineTemp.js',
@@ -21,7 +21,7 @@ describe('document legal text', () => {
   });
 
   test('uses the current curator header and signature fallback', () => {
-    const vars = readFileSync('src/app/components/jsons/vars.js', 'utf8');
+    const vars = readFileSync('src/app/components/jsons/vars.jsx', 'utf8');
     const desist = readFileSync('public/templates/ActDesist/main.html', 'utf8');
 
     expect(vars).toContain("job: 'CURADOR URBANO UNO DE BUCARAMANGA (P)'");

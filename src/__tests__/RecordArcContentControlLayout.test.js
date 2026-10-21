@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const recordArcSource = readFileSync('src/app/pages/user/records/record_arc.js', 'utf8');
+const recordArcSource = readFileSync('src/app/pages/user/records/record_arc.jsx', 'utf8');
 const typographySource = readFileSync('src/app/pages/user/records/arc/record_arc_typography.css', 'utf8');
 
 describe('Control de contenido de arquitectura', () => {
