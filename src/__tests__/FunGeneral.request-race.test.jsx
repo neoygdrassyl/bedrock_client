@@ -144,7 +144,7 @@ vi.mock('../app/pages/user/fun_forms/components/fun_archive.component', () => ({
   default: () => <div data-testid="fun-archive" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_g_reportMaster.compoentn', () => ({
+vi.mock('../app/pages/user/fun_forms/components/fun_g_reportMaster.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-g-report-master" />,
 }));

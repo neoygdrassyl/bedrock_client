@@ -8,7 +8,7 @@ import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/u
 import Collapsible from '../../../components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import dayjs from 'dayjs';
-import EXP_RES from './exp._res.component';
+import EXP_RES from './exp_res.component';
 import EXP_ACT_DESIST from './exp_act_desist.component';
 import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';

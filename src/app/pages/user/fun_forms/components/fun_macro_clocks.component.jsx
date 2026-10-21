@@ -11,7 +11,7 @@ import RECORD_ARC_SERVICE from '../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 
-import FUN_ICON_PROGRESS from './icon_progress.compoennt';
+import FUN_ICON_PROGRESS from './icon_progress.component';
 import { Icon } from '@/components/icon';
 import { swalError } from '@/app/utils/swalAdapter';
 

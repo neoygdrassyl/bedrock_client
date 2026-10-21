@@ -33,7 +33,7 @@ vi.mock('../app/components/ChartErrorBoundary', () => ({
   default: ({ children }) => React.createElement(React.Fragment, null, children),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/charts_components.js/chart_macroGant.component', () => ({
+vi.mock('../app/pages/user/fun_forms/components/charts_components/chart_macroGant.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'macro-gantt-chart-stub' }),
 }));

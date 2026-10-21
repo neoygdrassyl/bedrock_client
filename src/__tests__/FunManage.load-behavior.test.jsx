@@ -112,7 +112,7 @@ vi.mock('../app/pages/user/fun_forms/fun_reports/fun_gen.report', () => ({
   default: () => React.createElement('div', { 'data-testid': 'fun-report-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_macrotable.', () => ({
+vi.mock('../app/pages/user/fun_forms/fun_macrotable', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-macrotable-modal' }),
 }));

@@ -13,7 +13,7 @@
  *     ├── fun_docs.js (Documentos asociados)
  *     ├── fun_clock.js (Relojes de la licencia)
  *     ├── fun_alertn.js (Alertas de colindantes)
- *     ├── fun_macrotable..js (Tabla macro de licencias)
+ *     ├── fun_macrotable.jsx (Tabla macro de licencias)
  *     └── components/ (Sub-componentes: reportes, asignación, etc.)
  */
 
@@ -43,8 +43,8 @@ describe('Módulo Licencias (FUN) — Importación principal', () => {
     await expect(import('../app/pages/user/fun_forms/fun_alertn')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
-  test('fun_macrotable..js (tabla macro) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_macrotable.')).resolves.toBeTruthy();
+  test('fun_macrotable.jsx (tabla macro) se importa sin error', async () => {
+    await expect(import('../app/pages/user/fun_forms/fun_macrotable')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });
 
@@ -133,8 +133,8 @@ describe('Módulo Licencias — Componentes internos (components/)', () => {
     await expect(import('../app/pages/user/fun_forms/components/fun_clocks_negative.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
-  test('fun_macro_clocks.compnent.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_macro_clocks.compnent')).resolves.toBeTruthy();
+  test('fun_macro_clocks.component.jsx se importa sin error', async () => {
+    await expect(import('../app/pages/user/fun_forms/components/fun_macro_clocks.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_g_checklist.js se importa sin error', async () => {
@@ -179,7 +179,7 @@ describe('Módulo Licencias — Reportes', () => {
     await expect(import('../app/pages/user/fun_forms/components/fun_g_reports.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
-  test('fun_g_reportMaster.compoentn.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_g_reportMaster.compoentn')).resolves.toBeTruthy();
+  test('fun_g_reportMaster.component.jsx se importa sin error', async () => {
+    await expect(import('../app/pages/user/fun_forms/components/fun_g_reportMaster.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

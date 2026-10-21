@@ -11,7 +11,7 @@ const generatedDocumentFiles = [
   'src/app/pages/user/records/record_review.jsx',
   'src/app/pages/user/pqrs/asignpqrs.jsx',
   'src/app/pages/user/pqrs/pqrs_manage.view.jsx',
-  'src/app/pages/user/nomenclature/nomenclature_anex.componen.jsx',
+  'src/app/pages/user/nomenclature/nomenclature_anex.component.jsx',
   'src/app/pages/user/fun_forms/components/fun_doc_confirmlegal.jsx',
   'src/app/pages/user/fun_forms/components/fun_doc_certification.component.jsx',
   'src/app/pages/user/fun_forms/components/fun_d_control.component_2.jsx',

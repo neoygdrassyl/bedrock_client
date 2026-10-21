@@ -19,7 +19,7 @@ import RECORD_ENG_SISMIC from './eng/record_eng_sismic.component'
 import RECORD_ENG_REVIEW from './eng/record_eng_review.component';
 import RECORD_ENG_STEP_433 from './eng/record_eng_433.component';
 import RECORD_ENG_STEP_44 from './eng/record_eng_44.component';
-import RECORD_ENG_STEP_433P from './eng/record_eng_4333p.componen';
+import RECORD_ENG_STEP_433P from './eng/record_eng_4333p.component';
 import RECORD_ENG_DOCS_CHECK from './eng/record_eng_docs_check.component';
 import RECORD_ENG_43 from './eng/record_eng_43.component';
 import FUN_G_REPORTS from '../fun_forms/components/fun_g_reports.component';

@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
-import FUN_CHART_MACRO_GRANTT from './charts_components.js/chart_macroGant.component';
+import FUN_CHART_MACRO_GRANTT from './charts_components/chart_macroGant.component';
 import { nomens } from '../../../../components/jsons/vars';
 import ChartErrorBoundary from '../../../../components/ChartErrorBoundary';
 import { Icon } from '@/components/icon';

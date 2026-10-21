@@ -6,7 +6,7 @@ import FUN_SERVICE from '../../../../services/fun.service'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
 import { infoCud } from '../../../../components/jsons/vars';
-import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.compoent';
+import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.component';
 import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
