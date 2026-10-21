@@ -1,6 +1,24 @@
 import { pathToFileURL } from 'node:url';
+import { loadEnv } from 'vite';
 
-const DEFAULT_URL = 'http://127.0.0.1:3001/health/ready';
+const DEFAULT_GATE_URL = 'http://127.0.0.1:3001';
+const READY_PATH = '/health/ready';
+const DEFAULT_URL = new URL(READY_PATH, DEFAULT_GATE_URL).href;
+
+// Derive the readiness URL from BACKOFFICE_GATE_URL, the same backend origin
+// the Vite dev proxy targets. Env files are read with Vite's own loadEnv so
+// the precedence matches `vite --mode development`; shell variables win.
+export function resolveReadyUrl(env = {}) {
+  try {
+    const gate = new URL(env.BACKOFFICE_GATE_URL);
+    if (gate.protocol === 'http:' || gate.protocol === 'https:') {
+      return new URL(READY_PATH, gate.origin).href;
+    }
+  } catch {
+    // Missing or invalid value: fall back to the local backend default.
+  }
+  return DEFAULT_URL;
+}
 
 export async function waitForBackend({
   url = DEFAULT_URL,
@@ -35,7 +53,8 @@ export async function waitForBackend({
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const url = process.env.DOVELA_BACKEND_READY_URL || DEFAULT_URL;
+  const env = loadEnv('development', process.cwd(), '');
+  const url = process.env.DOVELA_BACKEND_READY_URL || resolveReadyUrl(env);
   const timeoutMs = Number(process.env.DOVELA_BACKEND_READY_TIMEOUT_MS || 120000);
   process.stdout.write(`Waiting for backend readiness at ${url}...\n`);
   await waitForBackend({ url, timeoutMs });
