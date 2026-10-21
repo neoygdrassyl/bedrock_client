@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
-import { PLAYWRIGHT_TMP } from './src/__playwright/config.js';
+import { PLAYWRIGHT_TMP } from './e2e/config.js';
 
 /**
  * Playwright E2E configuration for Dovela Frontend.
@@ -12,7 +12,7 @@ import { PLAYWRIGHT_TMP } from './src/__playwright/config.js';
  * - Auth is handled by token injection (bypasses ReCAPTCHA)
  * - Backend must be running at the URL defined in .env (VITE_API_URL)
  * - Screenshots captured on failure, traces on first retry
- * - All artifacts stored in centralized temp directory (see src/__playwright/config.js)
+ * - All artifacts stored in centralized temp directory (see e2e/config.js)
  */
 export default defineConfig({
   testDir: './e2e/flows',
