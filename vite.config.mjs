@@ -121,7 +121,10 @@ export function resolveRuntime(env, command = 'serve') {
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const runtime = resolveRuntime(env, command);
-  const shouldAnalyze = env.VITE_BUILD_ANALYZE === 'true';
+  // `npm run build:analyze` keeps `--mode production` (so `.env.production` is
+  // still loaded) and is detected through npm's cross-platform lifecycle name.
+  // `VITE_BUILD_ANALYZE=true` in an env file or the shell still works too.
+  const shouldAnalyze = env.VITE_BUILD_ANALYZE === 'true' || process.env.npm_lifecycle_event === 'build:analyze';
   // Extra hosts allowed by the dev/preview server (e.g. temporary Cloudflare tunnels).
   // Comma-separated, e.g. VITE_ALLOWED_HOSTS="a.trycloudflare.com,b.trycloudflare.com"
   const allowedHosts = (env.VITE_ALLOWED_HOSTS || '')
