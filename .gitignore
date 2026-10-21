@@ -69,9 +69,9 @@ test-output-full.log
 # AI config files
 .github/
 ai/
-/scripts/*
-!/scripts/wait-for-backend.mjs
-!/scripts/wait-for-backend.test.mjs
+# Local-only helper scripts (the rest of scripts/ is tracked)
+/scripts/generate-informe.js
+/scripts/playwright-tmp-manager.js
 
 # Local agent and visual-inspection artifacts
 .atl/
