@@ -84,3 +84,6 @@ ai/
 /.sisyphus
 # design-sync generated CSS
 .ds-css/
+
+# Local-only agent tooling (not part of the repo)
+/.copilotignore
