@@ -38,7 +38,7 @@ Los valores de ejemplo ya sirven para local:
 |----------|-------------|----------|
 | `VITE_APP_URL` | `http://localhost:3000` | Puerto del servidor de Vite |
 | `VITE_API_URL` | `"/api"` | Ruta relativa: Vite hace proxy al backend |
-| `BACKOFFICE_GATE_URL` | `http://127.0.0.1:3001` | Destino del proxy (el backend) |
+| `BACKOFFICE_GATE_URL` | `http://127.0.0.1:3001` | Destino del proxy (el backend) y de la espera previa de `npm run dev` |
 | `VITE_GOOGLE_CAPTCHA_HTML` | clave de prueba de Google | reCAPTCHA siempre válido en local |
 | `VITE_DOVELA_CENTRAL_URL` | vacío | Opcional; no se necesita en local |
 | `VITE_ALLOWED_HOSTS` | vacío | Solo para túneles temporales |
@@ -51,6 +51,8 @@ Los valores de ejemplo ya sirven para local:
 ```bash
 npm run dev
 ```
+
+Antes de arrancar Vite, `predev` (`scripts/wait-for-backend.mjs`) espera hasta 120 s a que responda `<BACKOFFICE_GATE_URL>/health/ready`; si `BACKOFFICE_GATE_URL` falta o es inválida usa `http://127.0.0.1:3001`. `DOVELA_BACKEND_READY_URL` sobreescribe la URL completa.
 
 Abre `http://localhost:3000`. El puerto es fijo (`strictPort`): si el 3000 está ocupado, Vite falla en vez de cambiar de puerto. En ese caso, detener el proceso que lo usa en vez de levantar otra instancia.
 
@@ -72,6 +74,10 @@ npm run dev
 
 # Build de producción (sale en build/)
 npm run build
+
+# Build con variables de desarrollo / reporte de chunks en build/stats.html
+npm run build:dev
+npm run build:analyze
 
 # Previsualizar el build
 npm run preview

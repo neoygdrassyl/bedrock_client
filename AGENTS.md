@@ -36,8 +36,9 @@ Regla cardinal:
 | Tests | Vitest 4 + Testing Library + Playwright |
 | Routing | react-router-dom v6 |
 | HTTP | axios via `src/http-common.js` |
-| UI | Bootstrap 5 + wrappers locales + RSuite 5 + styled-components 6 |
-| Fechas | moment + moment-business-days |
+| UI | Bootstrap 5 + wrappers locales + shadcn/ui (Radix + Tailwind) |
+| Editores | BlockNote (`src/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
+| Fechas | dayjs (`src/app/utils/dayjs.config.js`) |
 | Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/app/utils/` |
 | Node | 22+ obligatorio |
 
@@ -76,6 +77,18 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 - Motor documental: `src/app/utils/TemplateEngine.js`
 
 No tomes `README.md` ni prompts historicos como fuente de verdad actual.
+
+## 4.1 Estructura objetivo (codigo nuevo)
+
+El arbol actual (`src/app/pages`, `src/app/components`, `src/app/services`) es legacy y migra de forma incremental. Todo codigo nuevo va a la estructura objetivo; no muevas legacy masivamente sin un plan acordado.
+
+1. **Feature-first:** cada dominio vive en `src/features/<feature>/` con sus componentes, hooks, api y tests juntos.
+2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios.
+3. **Las features se importan entre si solo via su `index.js`** (API publica). Nada de rutas profundas a otra feature.
+4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/http-common.js` y devuelve datos.
+5. **Nombres:** componentes en `PascalCase.jsx`; modulos sin JSX (hooks, utils, api) en `camelCase.js`. Todo archivo con JSX usa extension `.jsx` (Vite ya no transforma JSX dentro de `.js`).
+6. **Tests colocalizados:** `Componente.test.jsx` / `modulo.test.js` junto al archivo que prueban.
+7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion.
 
 ## 5. Modulos de alto riesgo
 
@@ -127,7 +140,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
 ## 8. Observaciones operativas
 
-- `README.md` sigue describiendo CRA y esta obsoleto.
+- `README.md`, `SETUP.md` y `BUILD_DEPLOYMENT.md` documentan scripts y despliegue; no son fuente de verdad de arquitectura.
 - El comportamiento de auth depende tambien de la configuracion activa del backend.
 - La version visible en UI no coincide claramente con `package.json`.
 - Hay warnings de consola preexistentes en runtime; no los atribuyas automaticamente a tu cambio.
