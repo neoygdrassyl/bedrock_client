@@ -69,7 +69,7 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 ## 4. Donde vive la verdad operativa
 
-- Router, layout, auth y login: `src/app/App.jsx`
+- Providers y Router: `src/app/App.jsx`; tabla de rutas, guard privado, auth context y login: `src/app/router/` (`routes.jsx`, `PrivateRoute.jsx`, `auth.jsx`)
 - Cliente HTTP y sesion: `src/http-common.js`, `src/app/services/data.service.js`, `src/app/services/custom.service.js`
 - Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
 - Service mas critico: `src/app/services/fun.service.js`
