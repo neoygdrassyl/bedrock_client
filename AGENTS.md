@@ -22,11 +22,10 @@ Regla cardinal:
 ## 2. Como empezar en 5 minutos
 
 1. Lee este archivo completo.
-2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `ai/system-map.md`.
-3. Si tu cambio toca login, sesion, guards o interceptores, lee `ai/auth/session-contract.md`.
-4. Si tu cambio afecta pruebas, crashes o validacion final, lee `ai/testing-runbook.md`.
-5. Si trabajas con librerias externas, aplica `.github/instructions/context7.instructions.md`.
-6. Si trabajas dentro de Clocks, lee primero `.github/instructions/clocks.instructions.md` y los hooks principales.
+2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `../backend/AGENTS.md`.
+3. Si tu cambio toca login, sesion, guards o interceptores, revisa `src/http-common.js` y `src/app/services/data.service.js`.
+4. Si tu cambio afecta pruebas, revisa los scripts `test` y `test:e2e` de `package.json`.
+5. Si trabajas dentro de Clocks, lee primero los hooks de `src/app/pages/user/clocks/hooks/`.
 
 ## 3. Stack esencial
 
@@ -72,14 +71,9 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 - Router, layout, auth y login: `src/app/App.js`
 - Cliente HTTP y sesion: `src/http-common.js`, `src/app/services/data.service.js`, `src/app/services/custom.service.js`
-- Mapa de sistema y contrato con backend: `ai/system-map.md`
-- Contrato de sesion y auth actual: `ai/auth/session-contract.md`
-- Runbook de validacion: `ai/testing-runbook.md`
-- Runbook de release readiness: `ai/release-runbook.md`
 - Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
 - Service mas critico: `src/app/services/fun.service.js`
 - Motor documental: `src/app/utils/TemplateEngine.js`
-- Historial de migracion: `REFACTOR_TRACKING_REACT19.md`
 
 No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
@@ -120,7 +114,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 8. No expongas datos sensibles de `src/app/components/jsons/vars.js` en logs.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin evidencia directa y proporcional a su alcance. Durante construcción activa, no crear, actualizar ni ejecutar pruebas automatizadas sin instrucción explícita del usuario; reservarlas para un cierre de módulo solicitado expresamente.
-11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura. Lee `.github/instructions/playwright-standards.md`.
+11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura.
 12. **NUNCA hagas `git merge` ni `git push` a `main` (o `master`) de forma autónoma.** Antes de cualquier integración de ramas, usa `ask_user` en la sesión activa para solicitar confirmación explícita. Esta regla aplica sin excepción, incluso si la tarea parece completamente exitosa.
 13. **Las preguntas al usuario SIEMPRE se hacen con `ask_user` dentro de la sesión en curso.** Nunca termines una respuesta ni la sesión para "esperar al usuario" — eso fuerza una request extra. Usa siempre `ask_user` con opciones claras antes de tomar decisiones que afecten ramas, merges o arquitectura.
 
@@ -129,7 +123,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 - Este frontend vive en `/home/diego/dovela/backoffice/frontend/` y consume la API de `/home/diego/dovela/backoffice/backend/`. Son proyectos separados, con configuración, dependencias y despliegues propios. No confundir esta SPA con el portal ciudadano `/home/diego/dovela/frontoffice/`.
 - Runtime local habitual: SPA `http://localhost:3000` y API `http://localhost:3001`; verificar y reutilizar las instancias existentes.
 - El backend es Express 4 + Sequelize 6 + MySQL.
-- No todos los services frontend apuntan a ese backend; revisa `ai/system-map.md` antes de tocar integraciones.
+- No todos los services frontend apuntan a ese backend; revisa `../backend/AGENTS.md` antes de tocar integraciones.
 
 ## 8. Observaciones operativas
 
@@ -162,28 +156,5 @@ npm run build
 
 AGENTS.md solo debe darte lo necesario para arrancar. Si el cambio escala, lee la referencia adecuada en vez de inflar este archivo:
 
-- Sistema y contratos -> `ai/system-map.md`
-- Auth y sesion -> `ai/auth/session-contract.md`
-- Validacion -> `ai/testing-runbook.md`
-- Release -> `ai/release-runbook.md`
-- Context7 -> `.github/instructions/context7.instructions.md`
-- Clocks -> `.github/instructions/clocks.instructions.md`
-- Tests -> `.github/instructions/testing.instructions.md`
+- Sistema y contratos -> `../backend/AGENTS.md`
 
-## 11. Rediseno UI en curso (LEER SI VAS A TOCAR ESTILOS O LAYOUT)
-
-**Branch activo:** `feat/ui-redesign-phases-0-2`
-
-Hay un rediseno progresivo en marcha. Antes de cualquier cambio visual, de layout o de componentes UI, lee en este orden:
-
-1. `implementacion-rediseno/README.md` — indice maestro del rediseno y estado actual
-2. `implementacion-rediseno/01-estado-actual.md` — fase actual, alcance y pendientes reales
-3. `implementacion-rediseno/02-principios-inquebrantables.md` — reglas que NO se negocian
-4. `implementacion-rediseno/04-antipatrones.md` — errores que ya se han identificado
-5. `implementacion-rediseno/06-brecha-visual.md` — analisis de la brecha actual vs objetivo
-
-**Agente especializado para el rediseno:** `.github/agents/dovela-ui-redesign.agent.md`
-
-**Inspeccion visual con browser:** Usa primero el skill `visual-inspector` y el agente `.github/agents/visual-inspector.agent.md` para abrir la app, tomar screenshots, verificar transiciones y generar un reporte de critica de diseno alineado con las fases del rediseno. Cuando la revision termine, vuelve a `ui-ux-pro-max` para refinar e implementar.
-
-**Regla critica:** Cualquier commit que toque componentes UI, estilos o layout debe ser comparado visualmente contra las apps de referencia (Linear, Notion, Figma) segun `implementacion-rediseno/03-apps-referencia.md`.
