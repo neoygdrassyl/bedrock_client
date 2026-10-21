@@ -4,8 +4,9 @@ import { dateParser } from '../../../../components/customClasses/typeParse';
 import { swalError } from '@/app/utils/swalAdapter';
 import { toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 /**
  * Document codes the legacy "lista de chequeo" template prints, in print order. The template draws an

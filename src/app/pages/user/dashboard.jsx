@@ -15,8 +15,9 @@ import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../services/bookmark.service';
 import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
 import DashboardCriticalAlerts from './components/DashboardCriticalAlerts';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 const ICON_COLORS = {
   '/licencias': 'bg-primary/8 text-primary',

@@ -18,8 +18,9 @@ import DataTable from '@/components/data-table-bridge';
 import VIZUALIZER from '../../components/vizualizer.component';
 import { infoCud } from '../../components/jsons/vars';
 import { Icon } from '@/components/icon';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 function asDictionaryList(list) {
     return Array.isArray(list) ? list : [];

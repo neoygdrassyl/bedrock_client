@@ -28,8 +28,9 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/a
 import { useDocumentaryInventory } from '../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../expediente_documental/documentaryInventoryModel';
 import fileDownload from 'js-file-download';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 export function resolveStructuralReviewDate({ reviewDate = '', clocks = [] } = {}) {
     if (reviewDate) return reviewDate;
@@ -636,7 +637,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {tn == 2 || tn == 3 ?

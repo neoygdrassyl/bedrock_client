@@ -19,8 +19,9 @@ import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swal
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
 import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
 import writtenNumber from 'written-number';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 const IVA = 0.19;
 const normalizeExpeditionField = (value) => String(value ?? '');
 const stripExpeditionSeparators = (value, replacement = '') => normalizeExpeditionField(value).replaceAll('-', replacement);
@@ -306,7 +307,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {tn == 4 ?

@@ -12,8 +12,9 @@ import dayjs from 'dayjs'
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
     const [vrsRelated, setVrsRelated] = useState([]);
     const [vrSelected1, setVrSelected1] = useState(null);

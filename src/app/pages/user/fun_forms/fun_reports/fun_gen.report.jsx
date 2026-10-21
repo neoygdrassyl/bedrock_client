@@ -8,8 +8,9 @@ import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PAR
 import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
 import { infoCud } from '../../../../components/jsons/vars';
 import { Icon } from '@/components/icon';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 export default function FUN_REPORT_GEN(props) {
     const { translation, swaMsg, globals, data, date_i, date_f } = props;
@@ -2010,7 +2011,7 @@ export default function FUN_REPORT_GEN(props) {
                 <Spreadsheet data={dataCMDB} columnLabels={header_7} />
             </div> : ''}
 
-            {import.meta.env.VITE_GLOBAL_ID == 'cb1'
+            {GLOBAL_ID == 'cb1'
                 ? <>
                     <div className='row my-2'>
                         <div className='col'>

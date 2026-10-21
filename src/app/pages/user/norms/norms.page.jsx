@@ -11,8 +11,9 @@ import NORM_PERFIL from './norm_perfil.component';
 import NORM_RESUME from './norm_resume.component';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',

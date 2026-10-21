@@ -16,8 +16,9 @@ import EXP_RES_2 from './exp_res_2.component';
 import { Icon } from '@/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -465,7 +466,7 @@ export default function EXP_EJEC(props) {
                     <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
                 </div>
                 <div className="col">
-                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
+                    {GLOBAL_ID === 'cb1' && (
                         <Button size="sm" className="my-3" onClick={() => pd_eje(true)}>
                             <Icon name="edit" size={16} className="me-2" />
                             Editar PDF
@@ -728,7 +729,7 @@ export default function EXP_EJEC(props) {
                     {_COMPONENT_EJE()}
     
                     <div>
-                        {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
+                        {GLOBAL_ID === 'cb1' && resDocData && (
                             <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_exec || 'eje_open'}/>
                         )}
                     </div>  

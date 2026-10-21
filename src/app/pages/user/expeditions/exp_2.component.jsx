@@ -9,8 +9,9 @@ import EXP_CALC from './exp_calc.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { isEmptyEntity } from '../../../utils/isEmptyEntity';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {
     const [pym, setPym] = useState(undefined);
 

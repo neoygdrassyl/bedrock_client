@@ -6,8 +6,9 @@ import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import EXP_CALC from '../expeditions/exp_calc.component';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 
 export default function EXP_AREAS_RECORD(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion } = props;

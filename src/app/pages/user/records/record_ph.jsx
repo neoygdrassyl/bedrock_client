@@ -19,10 +19,11 @@ import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORD_PH_GEN_REVIEW from './ph/record_ph_gen_arc_review.component';
 import RECORD_PH_CHECK_LIST from './ph/record_ph_check_list.component';
 import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 // RECORDS
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, requestUpdate: propRequestUpdate, closeModal: propCloseModal, requesRefresh, NAVIGATION }) {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [currentVersionR, setCurrentVersionR] = useState(null);

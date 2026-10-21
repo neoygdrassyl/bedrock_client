@@ -7,9 +7,10 @@ import Zone_Use_Service from "../../../services/zone_use.service"
 import ZONE_USE_COMPONENT from './zone_use.component';
 import { Icon } from '@/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 
-const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+const _GLOBAL_ID = GLOBAL_ID;
 const customStylesForModal = {
     overlay: {
         position: 'fixed',
