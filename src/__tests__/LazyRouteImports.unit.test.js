@@ -48,13 +48,13 @@ describe('lazy route module imports', () => {
   });
 
   it('keeps legal flow guide out of the eager app entry bundle', () => {
-    const appSource = readFileSync('src/app/App.jsx', 'utf8');
+    const appSource = readFileSync('src/app/router/routes.jsx', 'utf8');
 
     expect(appSource).toContain(
-      "const LEGAL_FLOW_GUIDE = lazy(() => import('./pages/user/legal_flow_guide/LegalFlowGuide.page'))",
+      "const LEGAL_FLOW_GUIDE = lazy(() => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'))",
     );
     expect(appSource).not.toContain(
-      "import LEGAL_FLOW_GUIDE from './pages/user/legal_flow_guide/LegalFlowGuide.page'",
+      "import LEGAL_FLOW_GUIDE from '../pages/user/legal_flow_guide/LegalFlowGuide.page'",
     );
   });
 });
