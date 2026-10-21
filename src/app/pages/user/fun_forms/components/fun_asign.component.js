@@ -41,6 +41,7 @@ import { LegacyModal as Modal } from '@/components/legacy-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
 import { swalError } from '@/app/utils/swalAdapter';
+import holyDays from '../../../../components/jsons/holydaysmoment.json';
 
 const customStylesForModal = {};
 
@@ -766,7 +767,6 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             const dateFormat = dayjs(date).format('YYYY-MM-DD');
             const dayOff = dayjs(date).day();
             const dayOffTag = <Tag color="blue">FESTIVO</Tag>;
-            const holyDays = require('../../../../components/jsons/holydaysmoment.json');
             const isDayOff = dayOff === 0 || dayOff === 6 || holyDays.holidays.includes(dateFormat);
             const displayList = list.filter((item, index) => index < 2);
             const shortID = (id) => id.includes(infoCud.nomen) ? id.slice(-7) : id;

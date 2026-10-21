@@ -16,6 +16,7 @@ import ObservationPanel from '../../../../components/ObservationPanel';
 import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -183,7 +184,6 @@ function RECORD_ENG_REVIEW(props) {
         pdfDoc.setTitle('INFORME ESTRUCTURAL - ' + id_public)
 
         var pdfBytes = await pdfDoc.save();
-        var fileDownload = require('js-file-download');
         fileDownload(pdfBytes, 'INFORME ESTRUCTURAL ' + id_public + '.pdf');
         swalClose();
 
