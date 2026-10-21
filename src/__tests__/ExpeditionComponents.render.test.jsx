@@ -236,9 +236,10 @@ vi.mock('../../app/components/jsons/vars', () => ({
   rules_opt: [<option key="r0" value="0">Regla 1</option>],
 }));
 
+// exp_docs sets writtenNumber.defaults.lang at module scope, so the mock needs `defaults`.
 vi.mock('written-number', () => ({
   __esModule: true,
-  default: vi.fn((n) => String(n)),
+  default: Object.assign(vi.fn((n) => String(n)), { defaults: {} }),
 }));
 
 // ─── Shared minimal props ────────────────────────────────────────────────────
