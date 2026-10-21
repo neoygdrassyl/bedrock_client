@@ -8,9 +8,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {
 
         // DATA CONVERTERS

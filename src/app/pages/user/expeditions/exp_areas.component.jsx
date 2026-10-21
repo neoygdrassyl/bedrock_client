@@ -9,9 +9,8 @@ import record_arcService from '../../../services/record_arc.service';
 import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.component';
 import EXP_CALC from './exp_calc.component';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
     const [isNew, setIsNew] = useState(false);

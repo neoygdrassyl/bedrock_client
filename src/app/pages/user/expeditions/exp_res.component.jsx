@@ -16,10 +16,9 @@ import { Icon } from '@/components/icon';
 import '../../../../styles/docs-expediente.css';
 import { richTextToPlainText } from '../../../utils/richTextBlockNote';
 import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -3359,7 +3358,7 @@ export default function EXP_RES(props) {
                         <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
                             <Icon name="file-pdf" size={16} /> GENERAR PDF
                         </Button>
-                        {GLOBAL_ID == 'cb1' && (
+                        {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
                             <Button type="button" variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                                 <Icon name="edit" size={16} /> EDITAR PDF
                             </Button>
@@ -4076,7 +4075,7 @@ export default function EXP_RES(props) {
                 </form>
             </div>
             <div>
-                {GLOBAL_ID === 'cb1' && resDocData && (
+                {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                     <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model || 'open'} />
                 )}
             </div>

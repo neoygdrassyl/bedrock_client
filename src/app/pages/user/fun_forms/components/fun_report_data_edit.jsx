@@ -11,9 +11,8 @@ import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [vrsRelated, setVrsRelated] = useState([]);

@@ -9,7 +9,6 @@ import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
 import dayjs from 'dayjs';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
         // DATA GETERS
@@ -595,7 +594,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
             <div className="fun_report_pdf container py-3 border border-danger p-2">
                 <form id="form_report_data_edit" onSubmit={save_reportData}>
 
-                    {GLOBAL_ID == 'cb1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cb1' ?
                         <>
                             {_PAGE_1_COMPONENT()}
                             <label className="fw-bold py-3">INVENTARIO</label>
@@ -607,7 +606,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                         </>
                         : ''}
 
-                    {GLOBAL_ID == 'cp1' ?
+                    {import.meta.env.VITE_GLOBAL_ID == 'cp1' ?
                         <>
                             {_PAGE_CUP1_COMPONENT()}
                         </>

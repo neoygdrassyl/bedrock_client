@@ -11,8 +11,7 @@ import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import fileDownload from 'js-file-download';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_LAW_PDF(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, noReport } = props;

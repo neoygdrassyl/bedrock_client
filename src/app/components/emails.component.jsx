@@ -6,9 +6,8 @@ import DataTable from '@/components/data-table-bridge';
 import dayjs from 'dayjs';
 import VIEWER from './viewer.component';
 import { Icon } from '@/components/icon';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const EMAIL_TPES = [
     { value: 'rad', label: 'REGISTRO de radicación' },
     { value: 'ldf', label: 'CERTIFICACIÓN de legal y debida forma' },
