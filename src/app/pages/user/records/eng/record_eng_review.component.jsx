@@ -17,9 +17,8 @@ import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '
 import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import fileDownload from 'js-file-download';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 function RECORD_ENG_REVIEW(props) {
     const [VRDocs, setVRDocs] = useState([]);

@@ -18,9 +18,8 @@ import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from 
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
@@ -1231,7 +1230,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
         </div>
         <div className="col">
-            {GLOBAL_ID === 'cb1' && (
+            {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
                 <Button size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
                     <Icon name="edit" size={16} className="me-2" />
                     Editar PDF
@@ -1924,7 +1923,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                
 
                 <div>
-                    {GLOBAL_ID === 'cb1' && resDocData && (
+                    {import.meta.env.VITE_GLOBAL_ID === 'cb1' && resDocData && (
                         <EXP_RES_2 data={resDocData} swaMsg={swaMsg} currentItem={currentItem} currentModel={currentRecord.model_des || 'delete'}/>
                     )}
                 </div>  

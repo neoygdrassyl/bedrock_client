@@ -10,11 +10,10 @@ const Divider = ({ children }) => <div className="dvl-divider text-center my-2">
 import profesionalsService from '../../../services/profesionals.service';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 import dayjs from 'dayjs';
 import { Icon } from '@/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);

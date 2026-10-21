@@ -13,7 +13,6 @@ import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryLastVr } from '../../expediente_documental/documentaryInventoryModel';
 import { buildCuratedVrList, legacyLastVr } from './confirmLegalVr';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 export function extractConfirmLegalProcessData(items) {
     const match = Array.isArray(items)
@@ -485,7 +484,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                             <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
                             <option value="3">NOTIFICACIÓN ELECTRÓNICA - CON RECURSO</option>
-                            {GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
+                            {import.meta.env.VITE_GLOBAL_ID == 'cp1' ? <option value="4">COMUNICACIÓN</option> : null}
                         </select>
                     </div>
                     {tn == 4 ?

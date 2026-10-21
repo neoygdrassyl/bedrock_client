@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import { Icon } from '@/components/icon';
-import { GLOBAL_ID } from '@/app/components/jsons/global-id';
 
 
-const _GLOBAL_ID = GLOBAL_ID;
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 export default function ARCHIVE_FUN_VIEW(props) {
     const { translation, swaMsg, globals, currentItem } = props;
