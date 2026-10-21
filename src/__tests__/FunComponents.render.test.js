@@ -55,23 +55,6 @@ vi.mock('@/components/legacy-modal', () => ({
   },
 }));
 
-vi.mock('rsuite', () => {
-  const Nav = ({ children, ...props }) => React.createElement('nav', props, children);
-  Nav.Menu = ({ children, title }) => React.createElement('div', null, title, children);
-  Nav.Item = ({ children, ...props }) => React.createElement('div', props, children);
-  const Navbar = ({ children }) => React.createElement('div', null, children);
-  Navbar.Brand = ({ children }) => React.createElement('span', null, children);
-  const Tag = ({ children, color }) =>
-    React.createElement('span', { 'data-testid': 'rsuite-tag', 'data-color': color }, children);
-  const TagGroup = ({ children }) => React.createElement('span', null, children);
-  const Divider = () => React.createElement('hr', { 'data-testid': 'rsuite-divider' });
-  const Badge = ({ children }) => React.createElement('span', null, children);
-  const Calendar = () => React.createElement('div', { 'data-testid': 'rsuite-calendar' });
-  const Popover = ({ children }) => React.createElement('div', null, children);
-  const Whisper = ({ children }) => React.createElement('div', null, children);
-  return { Nav, Navbar, Tag, TagGroup, Divider, Badge, Calendar, Popover, Whisper };
-});
-
 vi.mock('dayjs', () => {
   const dayjsFn = (val) => ({
     format: () => '2024-01-01',

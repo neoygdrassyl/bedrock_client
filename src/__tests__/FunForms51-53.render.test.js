@@ -43,20 +43,6 @@ vi.mock('../app/components/jsons/vars', () => ({
   nomens: 'CUB1',
 }));
 
-// rsuite — fun_n_52 imports Divider from rsuite
-vi.mock('rsuite', () => {
-  const Nav = ({ children, ...props }) => React.createElement('nav', props, children);
-  Nav.Menu = ({ children, title }) => React.createElement('div', null, title, children);
-  Nav.Item = ({ children, ...props }) => React.createElement('div', props, children);
-  const Navbar = ({ children }) => React.createElement('div', null, children);
-  Navbar.Brand = ({ children }) => React.createElement('span', null, children);
-  const Tag = ({ children, color }) =>
-    React.createElement('span', { 'data-testid': 'rsuite-tag', 'data-color': color }, children);
-  const TagGroup = ({ children }) => React.createElement('span', null, children);
-  const Divider = ({ children }) => React.createElement('hr', { 'data-testid': 'rsuite-divider' });
-  return { Nav, Navbar, Tag, TagGroup, Divider };
-});
-
 // moment — used by fun_n_52 via require('moment')
 vi.mock('moment', () => {
   const momentFn = (val) => ({
