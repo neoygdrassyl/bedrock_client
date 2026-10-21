@@ -18,7 +18,7 @@ npm ci
 
 ### `npm run dev`
 
-Levanta Vite en modo `development` usando `.env.development`.
+Levanta Vite en modo `development` usando `.env.development`. Antes, `predev` espera a que el backend responda en `<BACKOFFICE_GATE_URL>/health/ready` (por defecto `http://127.0.0.1:3001`).
 
 ```bash
 npm run dev
