@@ -5,7 +5,7 @@
  * All Playwright tests (E2E + MCP) use this single point of configuration.
  *
  * Usage:
- *   import { PLAYWRIGHT_TMP, initPlaywrightTmp, cleanupPlaywrightTmp } from 'src/__playwright/config.js';
+ *   import { PLAYWRIGHT_TMP, initPlaywrightTmp, cleanupPlaywrightTmp } from './config.js';
  *
  *   // In test setup:
  *   await initPlaywrightTmp();
