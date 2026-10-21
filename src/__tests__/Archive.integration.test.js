@@ -101,18 +101,6 @@ vi.mock('@/components/legacy-modal', () => ({
   },
 }));
 
-vi.mock('rsuite', () => {
-  const React = require('react');
-  const Tag = ({ children, color }) => <span data-testid="rsuite-tag" data-color={color}>{children}</span>;
-  const TagGroup = ({ children }) => <span>{children}</span>;
-  const Nav = ({ children, ...props }) => <nav {...props}>{children}</nav>;
-  Nav.Menu = ({ children, title }) => <div>{title}{children}</div>;
-  Nav.Item = ({ children, ...props }) => <div {...props}>{children}</div>;
-  const Navbar = ({ children }) => <div>{children}</div>;
-  Navbar.Brand = ({ children }) => <span>{children}</span>;
-  return { Tag, TagGroup, Nav, Navbar };
-});
-
 vi.mock('../app/components/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
