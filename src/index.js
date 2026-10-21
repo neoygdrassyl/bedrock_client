@@ -16,8 +16,6 @@ import './app/utils/dayjs.config'; // dayjs plugins + locale (must load before a
 import './app/components/jsons/global-id';
 import App from './app/App';
 
-//import reportWebVitals from './reportWebVitals';
-
 const root = createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
@@ -26,5 +24,3 @@ root.render(
     </MantineProvider>
   </StrictMode>
 );
-
-//reportWebVitals();
