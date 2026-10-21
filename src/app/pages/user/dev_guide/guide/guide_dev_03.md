@@ -390,7 +390,7 @@ function MyComponent() {
 
 ### Cambio de Idioma
 
-El componente `languageSwitcher.js` permite cambiar entre idiomas:
+Para cambiar de idioma se usa `i18n.changeLanguage`:
 
 ```javascript
 import i18n from 'i18next';
