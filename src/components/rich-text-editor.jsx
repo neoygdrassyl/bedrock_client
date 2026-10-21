@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/mantine/style.css';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import {

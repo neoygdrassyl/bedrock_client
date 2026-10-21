@@ -11,6 +11,7 @@ import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.comp
 import Collapsible from '../../../components/Collapsible';
 import { PQRS_SET_REPLY1 } from './components/pqrs_setReply2.component';
 import JoditEditor from "jodit-pro-react";
+import 'jodit-pro/es2021/jodit.fat.min.css';
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';

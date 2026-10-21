@@ -5,6 +5,7 @@ import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
+import 'jodit-pro/es2021/jodit.fat.min.css';
 import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/app/utils/swalAdapter';
 import { Icon } from '@/components/icon';
 import { downloadProtectedPdf } from '../../../utils/pdfDownload';

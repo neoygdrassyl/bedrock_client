@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../components/jsons/vars';
 import JoditEditor from "jodit-pro-react";
+import 'jodit-pro/es2021/jodit.fat.min.css';
 import { dateParser } from '../../../../components/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import { Icon } from '@/components/icon';

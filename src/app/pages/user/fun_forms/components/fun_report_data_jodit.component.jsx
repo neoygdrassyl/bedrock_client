@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
+import 'jodit-pro/es2021/jodit.fat.min.css';
 
 import { infoCud } from '../../../../components/jsons/vars';
 import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
