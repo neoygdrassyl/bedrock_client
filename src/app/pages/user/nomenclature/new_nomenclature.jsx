@@ -1,7 +1,7 @@
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import { Button } from '@/components/ui/button';
-import NOMENCLATURE_ANEX from './nomenclature_anex.componen';
+import NOMENCLATURE_ANEX from './nomenclature_anex.component';
 import { Icon } from '@/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
 import ObservationPanel from '../../../components/ObservationPanel';

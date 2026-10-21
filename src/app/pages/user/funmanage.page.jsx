@@ -21,7 +21,7 @@ import { regexChecker_isPh, regexChecker_isOA } from '../../components/customCla
 // RECORDS
 import RECORD_ARC from './records/record_arc';
 import RECORD_LAW from './records/record_law';
-import FUN_MACROTABLE from './fun_forms/fun_macrotable.';
+import FUN_MACROTABLE from './fun_forms/fun_macrotable';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import RECORD_ENG from './records/record_eng';
 import FUN_WORKER_ASIGN from './fun_forms/components/fun_worker_asign.component';

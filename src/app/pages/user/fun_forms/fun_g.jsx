@@ -18,7 +18,7 @@ import VIZUALIZER from '../../../components/vizualizer.component';
 import FUN_G_MIX from './components/fun_g_mix.component';
 import FUN_G_REPORTS from './components/fun_g_reports.component';
 import FUN_ARCHIVE from './components/fun_archive.component';
-import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.compoentn';
+import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.component';
 import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';

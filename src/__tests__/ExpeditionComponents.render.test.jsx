@@ -140,7 +140,7 @@ vi.mock('../app/pages/user/expeditions/exp_calc.component', () => ({
   default: () => <button data-testid="exp-calc-stub">CALCULADORA</button>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp._res.component', () => ({
+vi.mock('../app/pages/user/expeditions/exp_res.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-res-stub" />,
 }));
@@ -564,7 +564,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_res muestra texto plano de BlockNote en Artículo 4 de resolución', async () => {
     const { default: EXP_RES } = await vi.importActual(
-      '../app/pages/user/expeditions/exp._res.component'
+      '../app/pages/user/expeditions/exp_res.component'
     );
     const blockNoteAntecedentes = serializeRichTextBlocks([
       { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente claro para resolución', styles: {} }] },
@@ -611,7 +611,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_res no imprime undefined cuando s33 no tiene descripción', async () => {
     const { default: EXP_RES } = await vi.importActual(
-      '../app/pages/user/expeditions/exp._res.component'
+      '../app/pages/user/expeditions/exp_res.component'
     );
     const blockNoteAntecedentes = serializeRichTextBlocks([
       { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente sin descripción', styles: {} }] },

@@ -25,23 +25,23 @@ import RECORD_ENG_SERVICE from '../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../services/record_ph.service';
 
-import FUN_CHART_STATE from './components/charts_components.js/chart_state.component';
-import FUN_CHART_CATEGORY from './components/charts_components.js/chart_category.component';
+import FUN_CHART_STATE from './components/charts_components/chart_state.component';
+import FUN_CHART_CATEGORY from './components/charts_components/chart_category.component';
 
-import FUN_CHART_LAW_R from './components/charts_components.js/chart_lawR.component';
+import FUN_CHART_LAW_R from './components/charts_components/chart_lawR.component';
 
-import FUN_CHART_MACRO_GRANTT from './components/charts_components.js/chart_macroGant.component';
-import FUN_CHART_TYPE from './components/charts_components.js/chart_type.compoennt';
-import FUN_ICON_PROGRESS from './components/icon_progress.compoennt';
-import FUN_CHART_WORKER from './components/charts_components.js/chart_worker.component';
-import FUN_CHART_PAYMENT_1 from './components/charts_components.js/chart_payment.component';
-import FUN_CHART_RECORD_1 from './components/charts_components.js/chart_record1.component';
+import FUN_CHART_MACRO_GRANTT from './components/charts_components/chart_macroGant.component';
+import FUN_CHART_TYPE from './components/charts_components/chart_type.component';
+import FUN_ICON_PROGRESS from './components/icon_progress.component';
+import FUN_CHART_WORKER from './components/charts_components/chart_worker.component';
+import FUN_CHART_PAYMENT_1 from './components/charts_components/chart_payment.component';
+import FUN_CHART_RECORD_1 from './components/charts_components/chart_record1.component';
 
-import FUN_CHART_TYPE2 from './components/charts_components.js/chart_type2.compoennt';
+import FUN_CHART_TYPE2 from './components/charts_components/chart_type2.component';
 import TABLE_COMPONENT_EXPANDED from './components/table_components/table.component_expanded';
 import FUN_MACROTABLE_FILTERLIST from './components/fun_macro_filterList.component';
-import FUN_CHART_NEGATIVE from './components/charts_components.js/chart_negative.component';
-import FUN_CHART_TIME from './components/charts_components.js/chart_time.component';
+import FUN_CHART_NEGATIVE from './components/charts_components/chart_negative.component';
+import FUN_CHART_TIME from './components/charts_components/chart_time.component';
 import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
 
 const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15, '0': 45 };

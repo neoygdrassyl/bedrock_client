@@ -137,7 +137,7 @@ vi.mock('../app/pages/user/records/eng/record_eng_sismic.component', () => ({ __
 vi.mock('../app/pages/user/records/eng/record_eng_review.component', () => ({ __esModule: true, default: () => <div data-testid='eng-review' /> }));
 vi.mock('../app/pages/user/records/eng/record_eng_433.component', () => ({ __esModule: true, default: () => <div data-testid='eng-433' /> }));
 vi.mock('../app/pages/user/records/eng/record_eng_44.component', () => ({ __esModule: true, default: () => <div data-testid='eng-44' /> }));
-vi.mock('../app/pages/user/records/eng/record_eng_4333p.componen', () => ({ __esModule: true, default: () => <div data-testid='eng-433p' /> }));
+vi.mock('../app/pages/user/records/eng/record_eng_4333p.component', () => ({ __esModule: true, default: () => <div data-testid='eng-433p' /> }));
 vi.mock('../app/pages/user/records/eng/record_eng_docs_check.component', () => ({ __esModule: true, default: () => <div data-testid='eng-docs-check' /> }));
 vi.mock('../app/pages/user/records/eng/record_eng_43.component', () => ({ __esModule: true, default: () => <div data-testid='eng-43' /> }));
 vi.mock('../app/pages/user/fun_forms/components/fun_g_reports.component', () => ({ __esModule: true, default: () => <div data-testid='fun-g-reports' /> }));

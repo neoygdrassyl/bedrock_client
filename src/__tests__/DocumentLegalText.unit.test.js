@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 const sources = [
   'src/app/components/jsons/vars.jsx',
-  'src/app/pages/user/expeditions/exp._res.component.jsx',
+  'src/app/pages/user/expeditions/exp_res.component.jsx',
   'src/app/utils/ExecEngineTemp.js',
   'src/app/utils/ResoEngineTemplate.js',
   'src/app/utils/ActDesistEngineTemp.js',

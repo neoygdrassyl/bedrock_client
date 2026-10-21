@@ -71,7 +71,7 @@ vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({
   default: (props) => <div data-testid="funclock-stub">FUNCLOCK</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_macrotable.', () => ({
+vi.mock('../app/pages/user/fun_forms/fun_macrotable', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-macrotable-stub">FUN_MACROTABLE</div>,
 }));

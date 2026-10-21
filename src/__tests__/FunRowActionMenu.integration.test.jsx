@@ -22,7 +22,7 @@ vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_
   default: () => null,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/icon_progress.compoennt', () => ({
+vi.mock('@/app/pages/user/fun_forms/components/icon_progress.component', () => ({
   default: () => <div data-testid="progress-icons">icons</div>,
 }));
 
