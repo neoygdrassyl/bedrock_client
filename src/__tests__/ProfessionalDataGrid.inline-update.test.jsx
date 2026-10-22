@@ -2,10 +2,10 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import FUNService from '@/app/services/fun.service';
-import ProfessionalDataGrid from '../app/pages/user/records/law/ProfessionalDataGrid';
+import FUNService from '@/features/expediente/api/fun.service';
+import ProfessionalDataGrid from '../features/expediente/records/law/ProfessionalDataGrid';
 
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: { update_52: vi.fn() },
 }));
 

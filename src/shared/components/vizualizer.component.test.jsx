@@ -19,7 +19,7 @@ vi.mock('@/shared/components/ProtectedDocument', () => ({
     ProtectedDocumentPreview: ({ source }) => React.createElement('div', { 'data-testid': 'pdf-viewer', 'data-source': source }),
 }));
 
-vi.mock('../../app/services/fun.service', () => ({
+vi.mock('../../features/expediente/api/fun.service', () => ({
     __esModule: true,
     default: { getFun6: (...args) => hoisted.getFun6(...args) },
 }));

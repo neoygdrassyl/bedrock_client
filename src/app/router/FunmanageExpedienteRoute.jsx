@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState, lazy } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import FUNService from '../services/fun.service';
+import FUNService from '../../features/expediente/api/fun.service';
 import { ErrorReportInlineTrigger } from '../../shared/components/DovelaSupportLayer';
-import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
+import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 import LoadingFallback from './LoadingFallback';
 
-const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('../pages/user/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
+const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('../../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 
 export default function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();

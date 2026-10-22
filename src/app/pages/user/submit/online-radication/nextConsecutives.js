@@ -1,4 +1,4 @@
-import FUNService from '@/app/services/fun.service';
+import FUNService from '@/features/expediente/api/fun.service';
 import SubmitService from '@/app/services/submit.service';
 import { nextLicenseIdPublic, nextVrId } from '@/shared/utils/consecutives';
 

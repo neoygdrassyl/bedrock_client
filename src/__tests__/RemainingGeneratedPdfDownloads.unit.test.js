@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs';
 
 describe('remaining generated PDF downloads', () => {
   test('consume the generation response artifact instead of fixed public files', () => {
-    const firstLetter = readFileSync('src/app/pages/user/records/record_letter.component.jsx', 'utf8');
-    const extensionLetter = readFileSync('src/app/pages/user/records/record_letter_2.component.jsx', 'utf8');
-    const phReview = readFileSync('src/app/pages/user/records/ph/record_ph_review.component.jsx', 'utf8');
+    const firstLetter = readFileSync('src/features/expediente/records/record_letter.component.jsx', 'utf8');
+    const extensionLetter = readFileSync('src/features/expediente/records/record_letter_2.component.jsx', 'utf8');
+    const phReview = readFileSync('src/features/expediente/records/ph/record_ph_review.component.jsx', 'utf8');
 
     expect(firstLetter).toContain('downloadGeneratedPdf(response, null, filename)');
     expect(extensionLetter).toContain('downloadGeneratedPdf(response, null, filename)');

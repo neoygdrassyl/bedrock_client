@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/shared/ui/button';
 // SERVICES
 import Submit_Service from '../../../services/submit.service'
-import funService from '../../../services/fun.service';
+import funService from '../../../../features/expediente/api/fun.service';
 import dayjs from 'dayjs';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
-import DOCS_LIST from '../fun_forms/components/docs_list.component';
-import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
+import DOCS_LIST from '../../../../features/expediente/fun/fun_forms/components/docs_list.component';
+import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../../../../features/expediente/documental/shared/expediente-documental.constants';
 
 import DataTable from '@/shared/components/data-table-bridge';
 import { Icon } from '@/shared/components/icon';

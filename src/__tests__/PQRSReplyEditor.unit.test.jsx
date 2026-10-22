@@ -46,7 +46,7 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   default: pqrsServiceMock,
 }));
 
-vi.mock('../app/services/cubXvr.service', () => ({
+vi.mock('../features/expediente/api/cubXvr.service', () => ({
   default: {
     createCubXVr: vi.fn(() => Promise.resolve({ data: 'OK' })),
     updateCubVr: vi.fn(() => Promise.resolve({ data: 'OK' })),

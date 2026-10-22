@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSchedulePayload } from '../app/pages/user/clocks/utils/scheduleUtils';
+import { buildSchedulePayload } from '../features/expediente/clocks/utils/scheduleUtils';
 
 describe('buildSchedulePayload', () => {
   it('produce el contrato {expedienteId, updatedAt, times} que espera el backend (PUT /fun/schedule/:id)', () => {

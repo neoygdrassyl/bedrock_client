@@ -25,7 +25,7 @@ vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 
-vi.mock('../app/services/fun.service', () => ({ __esModule: true, default: funServiceMock }));
+vi.mock('../features/expediente/api/fun.service', () => ({ __esModule: true, default: funServiceMock }));
 vi.mock('../app/services/pqrs_main.service', () => ({ __esModule: true, default: pqrsMainServiceMock }));
 vi.mock('../app/services/submit.service', () => ({ __esModule: true, default: submitServiceMock }));
 vi.mock('../app/services/mailbox.service', () => ({ __esModule: true, default: mailboxServiceMock }));

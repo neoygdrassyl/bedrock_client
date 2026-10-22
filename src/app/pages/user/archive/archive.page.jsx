@@ -18,7 +18,7 @@ import ARCHIVE_MANAGE from './archive_manage.component';
 
 import ARCHIVE_X_FUN from './archive_x_fun.component';
 import { getJSON, getJSONFull, regexChecker_isPh } from '../../../../shared/config/customClasses/typeParse';
-import FUN_6_VIEW from '../fun_forms/fun_6.view';
+import FUN_6_VIEW from '../../../../features/expediente/fun/fun_forms/fun_6.view';
 import { nomens } from '../../../../shared/config/jsons/vars';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 

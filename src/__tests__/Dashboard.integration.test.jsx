@@ -31,7 +31,7 @@ const {
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: funServiceMock,
 }));

@@ -61,7 +61,7 @@ vi.mock('moment', () => {
 
 // ─── Service mocks ───────────────────────────────────────────────────────────
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: {} })),
@@ -134,9 +134,9 @@ vi.mock('../shared/components/HTMLDatalist', () => ({
 
 // ─── Imports under test ──────────────────────────────────────────────────────
 
-import FUNN51 from '../app/pages/user/fun_forms/fun_n_51';
-import FUNN52 from '../app/pages/user/fun_forms/fun_n_52';
-import FUNN53 from '../app/pages/user/fun_forms/fun_n_53';
+import FUNN51 from '../features/expediente/fun/fun_forms/fun_n_51';
+import FUNN52 from '../features/expediente/fun/fun_forms/fun_n_52';
+import FUNN53 from '../features/expediente/fun/fun_forms/fun_n_53';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 

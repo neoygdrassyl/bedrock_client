@@ -3,7 +3,7 @@ import { Button } from '@/shared/ui/button';
 import { useState, useEffect, useRef } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
-import FunService from '../../../services/fun.service';
+import FunService from '../../../../features/expediente/api/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
 import { formsParser1 } from '../../../../shared/config/customClasses/typeParse';
@@ -11,10 +11,10 @@ import { Icon } from '@/shared/components/icon';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { nextVrId } from '@/shared/utils/consecutives';
-import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
-import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../expediente_documental/expedienteMode';
-import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';
-import { CanonicalDocumentaryWorkspace } from '../expediente_documental/ui/organisms/CanonicalDocumentaryWorkspace';
+import { useDocumentaryOrigin } from '../../../../features/expediente/documental/hooks/useDocumentaryOrigin';
+import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../../../../features/expediente/documental/expedienteMode';
+import { DocumentaryOriginStatus } from '../../../../features/expediente/documental/ui/organisms/DocumentaryOriginStatus';
+import { CanonicalDocumentaryWorkspace } from '../../../../features/expediente/documental/ui/organisms/CanonicalDocumentaryWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

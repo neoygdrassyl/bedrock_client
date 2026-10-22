@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import RECORD_ENG_DESC from '../app/pages/user/records/eng/record_eng_desc.component';
+import RECORD_ENG_DESC from '../features/expediente/records/eng/record_eng_desc.component';
 import { serializeRichTextBlocks } from '../shared/utils/richTextBlockNote';
 
 vi.mock('@/shared/components/rich-text-editor', () => ({
@@ -19,7 +19,7 @@ vi.mock('@/shared/components/rich-text-editor', () => ({
   ),
 }));
 
-vi.mock('../app/services/record_eng.service', () => ({
+vi.mock('../features/expediente/api/record_eng.service', () => ({
   __esModule: true,
   default: {
     create_review: vi.fn(() => Promise.resolve({ data: 'OK' })),

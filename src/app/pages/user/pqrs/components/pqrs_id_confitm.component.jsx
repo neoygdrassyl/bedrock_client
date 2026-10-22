@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { infoCud } from '../../../../../shared/config/jsons/vars';
-import CubXVrDataService from '../../../../services/cubXvr.service'
+import CubXVrDataService from '../../../../../features/expediente/api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';

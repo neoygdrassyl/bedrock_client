@@ -16,7 +16,7 @@ import {
     normalizeVentanillaDocs,
     summarizeLegalFormRequirements,
     summarizeUnifiedDocumentRows,
-} from '../app/pages/user/shared/expediente-documental.utils';
+} from '../features/expediente/documental/shared/expediente-documental.utils';
 
 describe('expediente-documental utils', () => {
     it('mergea digitalizados y ventanilla por codigo sin perder pendientes de digitalizacion', () => {
@@ -465,7 +465,7 @@ describe('documentary command transport', () => {
         const post = vi.fn().mockResolvedValue({ data: {} });
         const put = vi.fn().mockResolvedValue({ data: {} });
         vi.doMock('../shared/api/http-common', () => ({ default: { get: vi.fn(), post, put, patch: vi.fn() } }));
-        const api = await import('../app/services/documentaryOperations.service');
+        const api = await import('../features/expediente/api/documentaryOperations.service');
         const command = { expectedInputRevision: 0, idempotencyKey: 'key', reason: 'Reason' };
         await api.activateDocumentaryProject(1, command);
         await api.changeDocumentaryConfiguration(1, command);

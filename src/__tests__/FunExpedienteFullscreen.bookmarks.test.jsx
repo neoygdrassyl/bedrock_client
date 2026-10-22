@@ -11,7 +11,7 @@ const { setScopeMock, getFunByPublicMock, getFunMock, getSummaryByIdPublicMock }
 }));
 const documentaryMode = vi.hoisted(() => ({ canonical: false }));
 
-vi.mock('../app/pages/user/fun_forms/hooks/useBookmarks', () => ({
+vi.mock('../features/expediente/fun/fun_forms/hooks/useBookmarks', () => ({
   useBookmarks: () => ({
     bookmarks: [{ fun0Id: 123, scope: 'personal' }],
     error: null,
@@ -19,11 +19,11 @@ vi.mock('../app/pages/user/fun_forms/hooks/useBookmarks', () => ({
   }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/hooks/useAlarms', () => ({
+vi.mock('../features/expediente/fun/fun_forms/hooks/useAlarms', () => ({
   useAlarms: () => ({ alarms: [] }),
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get_fun_IdPublic: getFunByPublicMock,
@@ -66,23 +66,23 @@ vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_g', () => ({ __esModule: true, default: () => <div data-testid="module-detalles" /> }));
-vi.mock('../app/pages/user/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
-vi.mock('../app/pages/user/fun_forms/fun_n', () => ({ __esModule: true, default: () => <div data-testid="module-actualizar" /> }));
-vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
-vi.mock('../app/pages/user/expediente_documental/FunDocumentalNew.jsx', () => ({ __esModule: true, default: () => documentaryMode.canonical ? <div data-testid="canonical-entry" /> : <div data-testid="module-documentos-new" /> }));
-vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({ __esModule: true, default: () => <div data-testid="module-publicidad" /> }));
-vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
-vi.mock('../app/pages/user/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
-vi.mock('../app/pages/user/records/record_law', () => ({ __esModule: true, default: () => <div data-testid="module-law" /> }));
-vi.mock('../app/pages/user/records/record_eng', () => ({ __esModule: true, default: () => <div data-testid="module-eng" /> }));
-vi.mock('../app/pages/user/records/record_review', () => ({ __esModule: true, default: () => <div data-testid="module-review" /> }));
-vi.mock('../app/pages/user/records/record_ph', () => ({ __esModule: true, default: () => <div data-testid="module-ph" /> }));
-vi.mock('../app/pages/user/expeditions/expedition.page', () => ({ __esModule: true, default: () => <div data-testid="module-expedition" /> }));
-vi.mock('../app/pages/user/records/RecordsBinnacleStack', () => ({ __esModule: true, default: () => <div data-testid="records-binnacle-stack" /> }));
+vi.mock('../features/expediente/fun/fun_forms/fun_g', () => ({ __esModule: true, default: () => <div data-testid="module-detalles" /> }));
+vi.mock('../features/expediente/fun/fun_forms/fun_c', () => ({ __esModule: true, default: () => <div data-testid="module-chequeo" /> }));
+vi.mock('../features/expediente/fun/fun_forms/fun_n', () => ({ __esModule: true, default: () => <div data-testid="module-actualizar" /> }));
+vi.mock('../features/expediente/fun/fun_forms/components/fun_docs', () => ({ __esModule: true, default: () => <div data-testid="module-documentos" /> }));
+vi.mock('../features/expediente/documental/FunDocumentalNew.jsx', () => ({ __esModule: true, default: () => documentaryMode.canonical ? <div data-testid="canonical-entry" /> : <div data-testid="module-documentos-new" /> }));
+vi.mock('../features/expediente/fun/fun_forms/fun_alertn', () => ({ __esModule: true, default: () => <div data-testid="module-publicidad" /> }));
+vi.mock('../features/expediente/fun/fun_forms/fun_clock', () => ({ __esModule: true, default: () => <div data-testid="module-tiempos" /> }));
+vi.mock('../features/expediente/records/record_arc', () => ({ __esModule: true, default: () => <div data-testid="module-arc" /> }));
+vi.mock('../features/expediente/records/record_law', () => ({ __esModule: true, default: () => <div data-testid="module-law" /> }));
+vi.mock('../features/expediente/records/record_eng', () => ({ __esModule: true, default: () => <div data-testid="module-eng" /> }));
+vi.mock('../features/expediente/records/record_review', () => ({ __esModule: true, default: () => <div data-testid="module-review" /> }));
+vi.mock('../features/expediente/records/record_ph', () => ({ __esModule: true, default: () => <div data-testid="module-ph" /> }));
+vi.mock('../features/expediente/expeditions/expedition.page', () => ({ __esModule: true, default: () => <div data-testid="module-expedition" /> }));
+vi.mock('../features/expediente/records/RecordsBinnacleStack', () => ({ __esModule: true, default: () => <div data-testid="records-binnacle-stack" /> }));
 
-import { FunExpedienteFullscreen } from '../app/pages/user/fun_forms/components/FunExpedienteFullscreen';
-import { buildExpedienteWorkspaceUrl, parseExpedienteWorkspaceSearch } from '../app/pages/user/fun_forms/utils/expedienteWorkspaceRoute';
+import { FunExpedienteFullscreen } from '../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen';
+import { buildExpedienteWorkspaceUrl, parseExpedienteWorkspaceSearch } from '../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 
 const expediente = {
   id: 123,

@@ -2,10 +2,10 @@ import { readFileSync } from 'node:fs';
 
 const sources = [
   'src/shared/config/jsons/vars.jsx',
-  'src/app/pages/user/expeditions/exp_res.component.jsx',
-  'src/app/utils/ExecEngineTemp.js',
-  'src/app/utils/ResoEngineTemplate.js',
-  'src/app/utils/ActDesistEngineTemp.js',
+  'src/features/expediente/expeditions/exp_res.component.jsx',
+  'src/features/expediente/expeditions/engines/ExecEngineTemp.js',
+  'src/features/expediente/expeditions/engines/ResoEngineTemplate.js',
+  'src/features/expediente/expeditions/engines/ActDesistEngineTemp.js',
   'public/templates/resolution/header/header.html',
   'public/templates/resolution/header/header_des.html',
   'public/templates/Executory/header.html',

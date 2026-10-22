@@ -15,8 +15,8 @@ import { Input } from '@/shared/ui/input';
 import { Icon } from '@/shared/components/icon';
 import { formsParser1 } from '@/shared/config/customClasses/typeParse';
 import { toDisplayCase } from '@/shared/utils/displayCase';
-import FUNService from '../services/fun.service';
-import { buildExpedienteWorkspaceUrl } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
+import FUNService from '../../features/expediente/api/fun.service';
+import { buildExpedienteWorkspaceUrl } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 
 const MIN_QUERY_LENGTH = 3;
 const RESULT_LIMIT = 8;

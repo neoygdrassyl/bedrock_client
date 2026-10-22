@@ -26,7 +26,7 @@ import {
 } from '@/shared/ui/tooltip';
 
 const LazyAlarmBell = lazy(() =>
-  import('../pages/user/fun_forms/components/AlarmBell').then((module) => ({
+  import('../../features/expediente/fun/fun_forms/components/AlarmBell').then((module) => ({
     default: module.AlarmBell,
   })),
 );

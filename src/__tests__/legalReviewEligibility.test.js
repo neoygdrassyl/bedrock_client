@@ -3,7 +3,7 @@ import {
   evaluateLegalReviewEligibility,
   getVisibleLegalReviewEntries,
   resolveLegalReviewCondition,
-} from '../app/pages/user/fun_forms/utils/legalReviewEligibility';
+} from '../features/expediente/fun/fun_forms/utils/legalReviewEligibility';
 
 const COMMON_CODES = ['511', '512', '513', '516', '517', '518', '519'];
 const RECOGNITION_CODES = ['651', '652', '653'];

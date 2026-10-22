@@ -13,11 +13,11 @@ import {
     shouldSaveReviewClock,
     validateObservationReview,
     resolveStructuralReviewDate,
-} from '../app/pages/user/records/record_review';
+} from '../features/expediente/records/record_review';
 
 function readRecordReviewSource() {
     return fs.readFileSync(
-        path.resolve(__dirname, '../app/pages/user/records/record_review.jsx'),
+        path.resolve(__dirname, '../features/expediente/records/record_review.jsx'),
         'utf8',
     );
 }

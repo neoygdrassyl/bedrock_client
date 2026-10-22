@@ -11,13 +11,13 @@
 describe('Módulo Relojes (Clocks) — Pre-migration baseline', () => {
 
   test('1. centralClocks.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/clocks/centralClocks.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/clocks/centralClocks.component')).resolves.toBeTruthy();
   }, 30000);
 
   test('2. Directorio hooks existe (tiene useClocksManager)', async () => {
     let hookExists = false;
     try {
-      await import('../app/pages/user/clocks/hooks/useClocksManager');
+      await import('../features/expediente/clocks/hooks/useClocksManager');
       hookExists = true;
     } catch (e) {
       hookExists = false;
@@ -36,23 +36,23 @@ describe('Módulo Relojes (Clocks) — Pre-migration baseline', () => {
 describe('Módulo Expedientes (Records) — Pre-migration baseline', () => {
 
   test('1. record_eng.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/records/record_eng')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/records/record_eng')).resolves.toBeTruthy();
   }, 30000);
 
   test('2. record_law.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/records/record_law')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/records/record_law')).resolves.toBeTruthy();
   }, 30000);
 
   test('3. record_arc.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/records/record_arc')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/records/record_arc')).resolves.toBeTruthy();
   }, 30000);
 
   test('4. record_ph.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/records/record_ph')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/records/record_ph')).resolves.toBeTruthy();
   }, 30000);
 
   test('5. record_review.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/records/record_review')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/records/record_review')).resolves.toBeTruthy();
   }, 30000);
 });
 
@@ -61,7 +61,7 @@ describe('Módulo Expedientes (Records) — Pre-migration baseline', () => {
 describe('Services críticos — Pre-migration baseline', () => {
 
   test('1. fun.service.js exporta clase válida', async () => {
-    const service = await import('../app/services/fun.service');
+    const service = await import('../features/expediente/api/fun.service');
     expect(service).toBeTruthy();
   });
 

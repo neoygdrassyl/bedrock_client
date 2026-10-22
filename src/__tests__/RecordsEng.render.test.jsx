@@ -33,12 +33,12 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/record_eng.service', () => ({
+vi.mock('../features/expediente/api/record_eng.service', () => ({
   __esModule: true,
   default: hoisted.engService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
@@ -50,7 +50,7 @@ vi.mock('../app/services/submit.service', () => ({
 
 // ─── sub-component stubs ──────────────────────────────────────────────────────
 
-vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
+vi.mock('../features/expediente/records/record_docVersion.component', () => ({
   __esModule: true,
   default: () => <div data-testid="doc-version-stub" />,
 }));
@@ -62,7 +62,7 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
 
 // record_eng_review uses `domains_number` JSX from vars.js which is not in
 // the mockExternals vars mock — stub the whole component to avoid the error.
-vi.mock('../app/pages/user/records/eng/record_eng_review.component', () => ({
+vi.mock('../features/expediente/records/eng/record_eng_review.component', () => ({
   __esModule: true,
   default: () => <div data-testid="eng-review-stub" />,
 }));
@@ -78,13 +78,13 @@ vi.mock('pdf-lib', () => ({
 
 // ─── imports ──────────────────────────────────────────────────────────────────
 
-import RECORD_ENG_43 from '../app/pages/user/records/eng/record_eng_43.component';
-import RECORD_ENG_430 from '../app/pages/user/records/eng/record_eng_430.component';
-import RECORD_ENG_433 from '../app/pages/user/records/eng/record_eng_433.component';
-import RECORD_ENG_44 from '../app/pages/user/records/eng/record_eng_44.component';
-import RECORD_ENG_SISMIC from '../app/pages/user/records/eng/record_eng_sismic.component';
-import { ENG_FUEGO } from '../app/pages/user/records/eng/record_eng_fuego.component';
-import RECORD_ENG_REVIEW from '../app/pages/user/records/eng/record_eng_review.component';
+import RECORD_ENG_43 from '../features/expediente/records/eng/record_eng_43.component';
+import RECORD_ENG_430 from '../features/expediente/records/eng/record_eng_430.component';
+import RECORD_ENG_433 from '../features/expediente/records/eng/record_eng_433.component';
+import RECORD_ENG_44 from '../features/expediente/records/eng/record_eng_44.component';
+import RECORD_ENG_SISMIC from '../features/expediente/records/eng/record_eng_sismic.component';
+import { ENG_FUEGO } from '../features/expediente/records/eng/record_eng_fuego.component';
+import RECORD_ENG_REVIEW from '../features/expediente/records/eng/record_eng_review.component';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
 

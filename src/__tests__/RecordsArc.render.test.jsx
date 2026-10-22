@@ -46,19 +46,19 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   __esModule: true,
   default: hoisted.arcService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
 
 // arc_39 is entirely commented-out (no export) — stub it so the import doesn't
 // return undefined and cause a React "Element type is invalid" error.
-vi.mock('../app/pages/user/records/arc/record_arc_39', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_39', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-39-stub" />,
 }));
@@ -67,11 +67,11 @@ vi.mock('../app/pages/user/records/arc/record_arc_39', () => ({
 // vars.js. The mockExternals vars mock doesn't include these exports so Vitest
 // raises a "No export defined" error at render time.  Stub these two files
 // directly so they never execute the vars import path at all.
-vi.mock('../app/pages/user/records/arc/record_arc_34', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_34', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-34-stub" />,
 }));
-vi.mock('../app/pages/user/records/arc/record_arc_38', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_38', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-38-stub" />,
 }));
@@ -88,22 +88,22 @@ vi.mock('../shared/components/TagInput', () => ({
   default: () => <div data-testid="tag-input-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas.component', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas.component', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-areas-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas_2.component', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas_2.component', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-areas-2-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_desc', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_desc', () => ({
   __esModule: true,
   default: () => <div data-testid="arc-desc-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/exp_areas_record.component', () => ({
+vi.mock('../features/expediente/records/exp_areas_record.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-areas-stub" />,
 }));
@@ -115,19 +115,19 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
 
 // ─── imports ──────────────────────────────────────────────────────────────────
 
-import RECORD_ARC_31 from '../app/pages/user/records/arc/record_arc_31';
-import RECORD_ARC_32 from '../app/pages/user/records/arc/record_arc_32';
-import RECORD_ARC_33 from '../app/pages/user/records/arc/record_arc_33';
-import RECORD_ARC_34 from '../app/pages/user/records/arc/record_arc_34';
-import RECORD_ARC_35 from '../app/pages/user/records/arc/record_arc_35';
-import RECORD_ARC_36 from '../app/pages/user/records/arc/record_arc_36';
-import RECORD_ARC_37 from '../app/pages/user/records/arc/record_arc_37';
-import RECORD_ARC_38 from '../app/pages/user/records/arc/record_arc_38';
-import RECORD_ARC_39 from '../app/pages/user/records/arc/record_arc_39';
-import RECORD_ARC_AREAS from '../app/pages/user/records/arc/record_arc_areas.component';
-import RECORD_ARC_CONTROL from '../app/pages/user/records/arc/record_arc_control.component';
-import RECORD_ARC_GEN_REVIEW from '../app/pages/user/records/arc/record_arc_gen_review.component';
-import RECORD_ARC_GEN_2_REVIEW from '../app/pages/user/records/arc/record_arc_gem2_review.component';
+import RECORD_ARC_31 from '../features/expediente/records/arc/record_arc_31';
+import RECORD_ARC_32 from '../features/expediente/records/arc/record_arc_32';
+import RECORD_ARC_33 from '../features/expediente/records/arc/record_arc_33';
+import RECORD_ARC_34 from '../features/expediente/records/arc/record_arc_34';
+import RECORD_ARC_35 from '../features/expediente/records/arc/record_arc_35';
+import RECORD_ARC_36 from '../features/expediente/records/arc/record_arc_36';
+import RECORD_ARC_37 from '../features/expediente/records/arc/record_arc_37';
+import RECORD_ARC_38 from '../features/expediente/records/arc/record_arc_38';
+import RECORD_ARC_39 from '../features/expediente/records/arc/record_arc_39';
+import RECORD_ARC_AREAS from '../features/expediente/records/arc/record_arc_areas.component';
+import RECORD_ARC_CONTROL from '../features/expediente/records/arc/record_arc_control.component';
+import RECORD_ARC_GEN_REVIEW from '../features/expediente/records/arc/record_arc_gen_review.component';
+import RECORD_ARC_GEN_2_REVIEW from '../features/expediente/records/arc/record_arc_gem2_review.component';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
 

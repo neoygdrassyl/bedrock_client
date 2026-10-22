@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
-import { getVisibleLegalReviewEntries } from '../app/pages/user/fun_forms/utils/legalReviewEligibility';
+import { getVisibleLegalReviewEntries } from '../features/expediente/fun/fun_forms/utils/legalReviewEligibility';
 
 vi.mock('@/shared/components/data-table-bridge', () => ({
   default: () => <div data-testid="data-table" />,
@@ -12,14 +12,14 @@ vi.mock('../shared/components/vizualizer.component', () => ({
   default: () => <div data-testid="visualizer" />,
 }));
 
-vi.mock('../app/services/checklist.service', () => ({
+vi.mock('../features/expediente/api/checklist.service', () => ({
   default: { updateRequirementEvaluation: vi.fn() },
 }));
 
 const updateLegacyChecklist = vi.fn();
 const createLegacyChecklist = vi.fn();
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: { update_r: updateLegacyChecklist, create_funr: createLegacyChecklist },
 }));
 
@@ -31,7 +31,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
 
 describe('FUNG_CHECKLIST section 6.6', () => {
   test('mantiene paridad entre los radios visibles y la elegibilidad LYDF', async () => {
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
     const currentItem = {
       id: 1417,
       id_public: '68001-1-25-0130',
@@ -61,7 +61,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
   });
 
   test('no renderiza radios cuando falta la solicitud de la versión actual', async () => {
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
     const currentItem = {
       id: 1417,
       id_public: '68001-1-25-0130',
@@ -87,7 +87,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
   });
 
   test('usa el código canónico 660a para edificaciones de 2000m2 o más', async () => {
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
 
     const { container } = render(
       <FUNG_CHECKLIST
@@ -119,7 +119,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
     updateLegacyChecklist.mockClear();
     updateLegacyChecklist.mockResolvedValue({ data: 'OK' });
     const user = userEvent.setup();
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
     const historicalCodes = ['6607', '6608', '6609', '6610', '6611', '6612', '6613', '6614'];
     const historicalValues = ['1', '1', '1', '1', '0', '1', '1', '1'];
 
@@ -155,7 +155,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
     updateLegacyChecklist.mockClear();
     updateLegacyChecklist.mockResolvedValue({ data: 'OK' });
     const user = userEvent.setup();
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
 
     const { container } = render(
       <FUNG_CHECKLIST
@@ -187,7 +187,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
     updateLegacyChecklist.mockClear();
     updateLegacyChecklist.mockResolvedValue({ data: 'OK' });
     const user = userEvent.setup();
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
 
     const { container } = render(
       <FUNG_CHECKLIST
@@ -222,7 +222,7 @@ describe('FUNG_CHECKLIST section 6.6', () => {
     createLegacyChecklist.mockClear();
     createLegacyChecklist.mockResolvedValue({ data: 'OK' });
     const user = userEvent.setup();
-    const { default: FUNG_CHECKLIST } = await import('../app/pages/user/fun_forms/fun_g_checklist');
+    const { default: FUNG_CHECKLIST } = await import('../features/expediente/fun/fun_forms/fun_g_checklist');
 
     const { container } = render(
       <FUNG_CHECKLIST

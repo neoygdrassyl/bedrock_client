@@ -25,12 +25,12 @@ vi.mock('../app/services/submit.service', () => ({
   default: hoisted.submitService,
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   __esModule: true,
   default: hoisted.recordArcService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
@@ -57,7 +57,7 @@ vi.mock('@/shared/components/icon', () => {
   return { __esModule: true, Icon, default: Icon };
 });
 
-vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
+vi.mock('../features/expediente/records/record_docVersion.component', () => ({
   __esModule: true,
   default: () => <div data-testid="record-doc-version" />,
 }));
@@ -71,7 +71,7 @@ vi.mock('../shared/utils/richTextBlockNote', () => ({
   richTextToPlainText: (value) => (typeof value === 'string' ? value : ''),
 }));
 
-vi.mock('../app/pages/user/records/arc/recordArcRichTextUpload', () => ({
+vi.mock('../features/expediente/records/arc/recordArcRichTextUpload', () => ({
   uploadRecordArcRichTextImage: vi.fn(),
 }));
 
@@ -101,7 +101,7 @@ vi.mock('pdf-lib', () => ({
   StandardFonts: { Helvetica: 'Helvetica' },
 }));
 
-import RECORD_ARC_38 from '../app/pages/user/records/arc/record_arc_38';
+import RECORD_ARC_38 from '../features/expediente/records/arc/record_arc_38';
 
 const baseCurrentItem = {
   id: 1,

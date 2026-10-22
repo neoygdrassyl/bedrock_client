@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TemplateEngine } from '../app/utils/TemplateEngine';
+import { TemplateEngine } from '../features/expediente/expeditions/engines/TemplateEngine';
 
 const createFetchMock = (overrides = {}) => {
   const responses = {

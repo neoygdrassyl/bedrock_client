@@ -16,7 +16,7 @@ const { funServiceMock, submitServiceMock, getMissingRequirementsMock } = vi.hoi
   getMissingRequirementsMock: vi.fn(),
 }));
 
-vi.mock('../../../services/fun.service', () => ({
+vi.mock('../../../../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: funServiceMock,
 }));
@@ -26,7 +26,7 @@ vi.mock('../../../services/submit.service', () => ({
   default: submitServiceMock,
 }));
 
-vi.mock('@/app/services/documentaryOperations.service', () => ({
+vi.mock('@/features/expediente/api/documentaryOperations.service', () => ({
   getMissingRequirements: getMissingRequirementsMock,
   refreshDocumentaryRequirements: vi.fn(),
 }));

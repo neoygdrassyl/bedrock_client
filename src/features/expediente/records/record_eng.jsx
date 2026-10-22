@@ -1,0 +1,843 @@
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+
+import FUN_SERVICE from '../api/fun.service';
+
+import RECORD_ARCSERVICE from '../api/record_arc.service';
+import RECORD_LAW_SERVICE from '../api/record_law.service';
+import RECORD_ENG_SERVICE from '../api/record_eng.service';
+
+import FUN_VERSION_NAV from '../fun/fun_forms/components/fun_versionNav';
+import FUN_MODULE_NAV from '../fun/fun_forms/components/fun_moduleNav';
+import RECORD_ENG_PROFESIONALS from './eng/record_eng_profesionals.component';
+import RECORD_ENG_DESC from './eng/record_eng_desc.component';
+import RECORD_ENG_STEP_431 from './eng/record_eng_s_431.component';
+import RECORD_ENG_STEP_432 from './eng/record_eng_s_432.component';
+import RECORD_ENG_STEP_4323 from './eng/record_eng_4323.component';
+import RECORD_ENG_SISMIC from './eng/record_eng_sismic.component'
+import RECORD_ENG_REVIEW from './eng/record_eng_review.component';
+import RECORD_ENG_STEP_433 from './eng/record_eng_433.component';
+import RECORD_ENG_STEP_44 from './eng/record_eng_44.component';
+import RECORD_ENG_STEP_433P from './eng/record_eng_4333p.component';
+import RECORD_ENG_DOCS_CHECK from './eng/record_eng_docs_check.component';
+import RECORD_ENG_43 from './eng/record_eng_43.component';
+import FUN_G_REPORTS from '../fun/fun_forms/components/fun_g_reports.component';
+import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
+import RECORD_ENG_DOCS_DESC from './eng/record_eng_docsDetail.component';
+import RECORD_ENG_STEP_430 from './eng/record_eng_430.component';
+import FUN_6_VIEW from '../fun/fun_forms/fun_6.view';
+import RECORDS_BINNACLE from './records_binnacles.component';
+import funService from '../api/fun.service';
+import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
+import { ENG_FUEGO } from './eng/record_eng_fuego.component';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
+import RecordReviewWorkspace from './components/RecordReviewWorkspace';
+
+// RECORDS
+
+function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, hideInlineBinnacles = false }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [arcSteps, setArcSteps] = useState([]);
+    const [currentItem, setCurrentItem] = useState(null);
+
+    const retrievePQRSxFUN = useCallback((id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
+            .then(response => {
+                setPqrsxfun(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const retrieveItem = useCallback((id) => {
+        FUN_SERVICE.get(id)
+            .then(response => {
+                setCurrentItem(response.data);
+                retrievePQRSxFUN(response.data.id_public);
+            })
+            .catch(e => {
+                console.log(e);
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+            });
+    }, [swaMsg, retrievePQRSxFUN]);
+
+    const loadArcSteps = useCallback((id) => {
+        RECORD_ARCSERVICE.getSteps(id)
+            .then(response => {
+                if (response.data.length < 1) {
+                    setArcSteps([]);
+                } else {
+                    setArcSteps(response.data.record_arc_steps);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const setItem_RecordArc = useCallback(() => {
+        RECORD_ENG_SERVICE.findIdRelated(currentId)
+            .then(response => {
+                const records = Array.isArray(response.data) ? response.data : [];
+                const recordForCurrentVersion = records.find((record) => Number(record.version) === Number(currentVersion));
+
+                if (!recordForCurrentVersion) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                } else {
+                    setCurrentRecord(recordForCurrentVersion);
+                    setCurrentVersionR(recordForCurrentVersion.version);
+                    setLoaded(true);
+                }
+            })
+            .catch(e => {
+                console.log(e);
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+            });
+    }, [currentId, currentVersion, swaMsg]);
+
+    const requestUpdateRecord = (id) => {
+        RECORD_ENG_SERVICE.findIdRelated(id)
+            .then(response => {
+                const records = Array.isArray(response.data) ? response.data : [];
+                const recordForCurrentVersion = records.find((record) => Number(record.version) === Number(currentVersion));
+                setCurrentRecord(recordForCurrentVersion || null);
+                setCurrentVersionR(recordForCurrentVersion?.version || null);
+                setLoaded(true);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const requestUpdate = (id) => {
+        retrieveItem(id);
+    };
+
+    const navigation_version = (STEP) => {
+        switch (STEP) {
+            case "minus":
+                setCurrentVersionR(prev => prev - 1);
+                break;
+            case "plus":
+                setCurrentVersionR(prev => prev + 1);
+                break;
+        }
+    };
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+        loadArcSteps(currentId);
+    }, [currentId, setItem_RecordArc, retrieveItem, loadArcSteps]);
+        const title = { 0: '', 1: 'ESTUDIO', 2: 'CERTIFICACIÓN' }
+        var formData = new FormData();
+        const STEP_PROVIDER = () => {
+            let steps = [
+                { 'Estudio Geotécnico / Suelos': 1 },
+                { 'Peritaje Estructural': 1 },
+                { 'Paso 1: Pre dimensionamiento y coordinación con otros profesionales': 1 },
+                { 'Paso 2: Evaluación de las solicitudes definitivas': 1 },
+                { 'Paso 3: Obtención del nivel de amenaza sísmica y valores de Aa y Av': 1 },
+                { 'Paso 4: Movimiento sísmicos de diseño': 1 },
+                { 'Paso 5: Características de la estructuración y del material estructural empleado': 1 },
+                { 'Paso 6: Grado de irregularidad de la estructura y procedimiento de análisis': 1 },
+                { 'Paso 7: Determinación de las fuerzas sísmicas': 1 },
+                { 'Paso 8: Análisis sísmico de la estructura. Aplicación de los movimientos sísmicos de diseño (Cap. A.3)': 1 },
+                { 'Paso 9: Desplazamientos horizontales. Se evalúan los desplazamientos horizontales': 1 },
+                { 'Paso 10: Verificación de las derivas. Comprobar que las derivas no excedan los límites del (Cap. A.6)': 1 },
+                { 'Paso 11: Combinación de las diferentes solicitudes': 1 },
+                { 'Paso 12: Diseño de los elementos estructurales': 1 },
+            ];
+            if (currentRecord.category === 3) steps.push({ 'Paso 13: Revisión de los elementos de concreto contra la resistencia al fuego': 1 });
+            steps.push({ 'Planos Estructurales': 1 });
+            if (currentRecord.category === 3) {
+                steps.push({ 'Edificaciones de Mamposterías Titulo E': 1 });
+                steps.push({ 'Procedimiento de diseño de resistencia al fuego de los elementos estructurales': 1 });
+            }
+
+            return steps
+        }
+
+        let _GET_CHILD_1 = () => {
+            var _CHILD = currentItem.fun_1s;
+            var _CURRENT_VERSION = currentVersion - 1;
+            var _CHILD_VARS = {
+                item_0: "",
+                item_1: "",
+                item_2: "",
+                item_3: "",
+                item_4: "",
+                item_5: "",
+                item_6: "",
+                item_7: "",
+                item_8: "",
+                item_9: "",
+                item_101: "",
+                item_102: "",
+            }
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
+                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
+                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+                    _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
+                    _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
+                    _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
+                    _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
+                    _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
+                    _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
+                }
+            }
+            return _CHILD_VARS;
+        }
+        let _GET_CHILD_52 = () => {
+            var _CHILD = currentItem.fun_52s;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CHILD_6 = () => {
+            var _CHILD = currentItem.fun_6s;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CHILD_REVIEW = () => {
+            var _CHILD = currentItem.fun_rs;
+            var _CURRENT_VERSION = currentVersion - 1;
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD = _CHILD[_CURRENT_VERSION]
+                } else {
+                    _CHILD = false
+                }
+            }
+            return _CHILD;
+        }
+        let new_record_eng = () => {
+            formData = new FormData();
+            formData.set('fun0Id', currentItem.id);
+            formData.set('version', 1);
+            RECORD_ENG_SERVICE.create(formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                });
+        }
+        let selectCategory = () => {
+            formData = new FormData();
+            let formData0 = new FormData();
+            let value = document.getElementById('r_e_select_category').value
+
+            let currentRules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];;
+            if (value == 'rule') {
+                currentRules[1] = 1;
+                value = 0;
+            }
+            else currentRules[1] = 0;
+            formData0.set('rules', currentRules.join(';'));
+
+            funService.update(currentItem.id, formData0).then(response => {
+                if (response.data === 'OK') retrieveItem(currentItem.id)
+            });
+
+            formData.set('category', value);
+            RECORD_ENG_SERVICE.update(currentRecord.id, formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                });
+
+        }
+        let selectSubCategory = (useSwal) => {
+            formData = new FormData();
+            var checks = [];
+            var checks_2 = document.getElementsByName('subcategory_check');
+            for (var i = 0; i < checks_2.length; i++) {
+                checks.push(checks_2[i].checked ? 1 : 0)
+            }
+            formData.set('subcategory', checks.join(';'));
+            RECORD_ENG_SERVICE.update(currentRecord.id, formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                    } else {
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                });
+        }
+        let PARENT_STEP_PROVIDER = () => {
+            const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
+            return <div className="p-2">
+                {STEP_PROVIDER().map((value, index) => {
+                    let cbdv = SUBCATEGORIES[index] == '1' ?? true;
+                    return <div className="row border">
+                        <div className="col-1">
+                            <div className="custom-control custom-switch">
+                                <div className="form-check form-switch text-end">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={cbdv}
+                                        name={'subcategory_check'} onChange={() => selectSubCategory(false)} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div className="input-group">
+                                <label className="fw-bold">{Object.keys(value)}</label>
+                            </div>
+                        </div>
+
+                    </div>
+                })}
+            </div>
+        }
+
+        return (
+            <div className="record_eng container">
+                {currentItem != null ? <>
+                    {loaded ? <>
+                        {currentRecord
+                            ? <>
+
+                                <legend className="my-2 px-3 Collapsible text-start" id="record_eng_41">
+                                    <label className="app-p lead fw-normal">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
+                                </legend>
+
+                                <RecordReviewWorkspace
+                                    inventoryLabel="4.1.1 Inventario de Información Aportada"
+                                    documentsLabel="4.1.2 Expediente documental"
+                                    inventoryId="record_eng_410"
+                                    documentsId="record_eng_411"
+                                    inventoryContent={<RECORD_LAW_DOCSCHECK
+                                        _FUN_1={_GET_CHILD_1()}
+                                        _FUN_6={_GET_CHILD_6()}
+                                        _FUN_R={_GET_CHILD_REVIEW()}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        requestUpdate={requestUpdate}
+                                        readOnly={false}
+                                        docsScope={'eng'}
+                                        hideNotApplicableDefault
+                                        showFilters
+                                    />}
+                                    documentsContent={<FUN_6_VIEW
+                                            translation={translation}
+                                            swaMsg={swaMsg}
+                                            globals={globals}
+                                            currentItem={currentItem}
+                                            currentId={currentId}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={requestUpdate}
+                                            readOnly
+                                            mergeVentanilla
+                                        />}
+                                    professionalsLabel="Profesionales del proyecto"
+                                    professionalsContent={<RECORD_ENG_PROFESIONALS
+                                        _FUN_52={_GET_CHILD_52()}
+                                        _FUN_6={_GET_CHILD_6()}
+                                        currentItem={currentItem}
+                                        currentRecord={currentRecord}
+                                        requestUpdateRecord={requestUpdateRecord}
+                                        useCB
+                                        profs={[
+                                            ['INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'],
+                                            ['DISEÑADOR DE ELEMENTOS NO ESTRUCTURALES'],
+                                            ['INGENIERO CIVIL GEOTECNISTA'],
+                                            ['INGENIERO TOPOGRAFO Y/O TOPÓGRAFO'],
+                                            ['REVISOR INDEPENDIENTE DE LOS DISEÑOS ESTRUCTURALES'],
+                                        ]}
+                                    />}
+                                />
+
+                                <FUN_G_REPORTS
+                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                    currentItem={currentItem}
+                                    currentVersion={currentVersion} noLaw noArc
+                                />
+
+                                <legend className="my-2 px-3 bg-light" id="record_eng_430">
+                                    <label className="app-p lead fw-normal">4.1.4 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</label>
+                                </legend>
+
+                                <RECORD_ENG_STEP_430
+                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                    currentItem={currentItem}
+                                    currentVersion={currentVersion}
+                                    currentRecord={currentRecord}
+                                    currentVersionR={currentVersionR}
+                                    requestUpdate={requestUpdate}
+                                    requestUpdateRecord={requestUpdateRecord}
+                                />
+
+                                <div className="row border my-2 py-4 border border-warning" id="re_cc" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
+                                    <div className="col-5 p-1 mt-1 text-end">
+                                        <h3 className="fw-bold">CATEGORIA DEL INFORME </h3>
+                                    </div>
+                                    <div className="col-4">
+                                        <select className="form-select" defaultValue={currentRecord.category ?? 0} id="r_e_select_category"
+                                            onChange={() => selectCategory()}>
+                                            <option disabled value="0">SELECCIONE UNA CATEGORIA...</option>
+                                            <option value="rule">NO REQUIERE ESTUDIO</option>
+                                            <option value="2">CERTIFICACIÓN</option>
+                                            <option value="1">ESTUDIO</option>
+                                            <option value="3">ESTUDIO 2.0</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <legend className="my-2 px-3 Collapsible text-center">
+                                    <label className="app-p lead fw-normal">{title[currentRecord.category] ?? 'DEBE SELECCIONAR UNA CATEGORIA'}</label>
+                                </legend>
+
+                                {currentRecord.category != null
+                                    ?
+                                    <>
+
+                                        <legend className="my-2 px-3 Collapsible" id="record_eng_42">
+                                            <label className="app-p lead fw-normal">4.2 DESCRIPCIÓN DEL PROYECTO</label>
+                                        </legend>
+                                        <RECORD_ENG_DESC
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            category={currentRecord.category}
+                                            arcSteps={arcSteps}
+                                        />
+                                        {!hideInlineBinnacles ? <>
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_LAW_SERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Jurídico"}
+                                                readOnly
+                                            />
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_ARCSERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Arquitectura"}
+                                                PATH={"record_arc"}
+                                                readOnly
+                                            />
+                                            <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                SERVICE={RECORD_ENG_SERVICE}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                AIM={"Estructural"}
+                                            />
+                                        </> : null}
+                                        {currentRecord.category == 0
+                                            ?
+                                            <>
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 Revisión general</label>
+                                                </legend>
+
+                                                <RECORD_ENG_43
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+                                            </>
+                                            : ""}
+
+                                        {currentRecord.category == 1
+                                            ?
+                                            <>
+
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
+                                                </legend>
+                                                {PARENT_STEP_PROVIDER()}
+
+                                                <RECORD_ENG_STEP_431
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+
+                                                <RECORD_ENG_STEP_433P
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+
+                                                <RECORD_ENG_STEP_432
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+                                                <RECORD_ENG_STEP_4323
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+
+                                                <RECORD_ENG_SISMIC
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+                                                <RECORD_ENG_STEP_433
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_44">
+                                                    <label className="app-p lead fw-normal">4.4 REVISIÓN DEL PROYECTO</label>
+                                                </legend>
+                                                <RECORD_ENG_STEP_44
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+                                            </>
+                                            : ""}
+
+                                        {currentRecord.category == 3
+                                            ?
+                                            <>
+
+                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
+                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
+                                                </legend>
+                                                {PARENT_STEP_PROVIDER()}
+
+                                                <RECORD_ENG_STEP_431
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // 4.3.2 Peritaje Estructural
+                                                }
+                                                <RECORD_ENG_STEP_433P
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                />
+
+                                                {
+                                                    // Paso 1
+                                                    // Paso 2
+                                                }
+                                                <RECORD_ENG_STEP_432
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // Paso 3
+                                                    // Paso 4
+                                                    // Paso 5
+                                                    // Paso 6
+                                                    // Paso 7
+                                                }
+                                                <RECORD_ENG_STEP_4323
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // Paso 8
+                                                }
+                                                <RECORD_ENG_SISMIC
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                {
+                                                    // 4.3.3 Planos Estructurales
+                                                }
+                                                <RECORD_ENG_STEP_433
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                <ENG_MANPOSTERIA
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                                <ENG_FUEGO
+                                                    translation={translation} swaMsg={swaMsg} globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    currentRecord={currentRecord}
+                                                    currentVersionR={currentVersionR}
+                                                    requestUpdate={requestUpdate}
+                                                    requestUpdateRecord={requestUpdateRecord}
+                                                    version={2}
+                                                />
+
+                                            </>
+                                            : ""}
+
+                                        <legend className="my-2 px-3 Collapsible" id="record_eng_45">
+                                            <label className="app-p lead fw-normal">4.5 APROBACIÓN</label>
+                                        </legend>
+
+                                        <RECORD_ENG_REVIEW
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                        />
+                                    </>
+
+                                    : ""}
+
+                                {/* {NAV_FUNA(currentRecord)} */}
+                            </> : <>
+
+                                <fieldset className="p-3">
+                                    <div className="text-center">
+                                        <p className="mb-3 text-sm text-muted-foreground">No existe informe estructural para la versión {currentVersion}.</p>
+                                        {Number(currentVersion) === 1 ? <Button size="sm" onClick={() => new_record_eng()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button> : null}
+                                    </div>
+                                </fieldset>
+
+                            </>}
+                    </> : <div className="text-center">
+                        <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3>
+                    </div>}
+                    <FUN_VERSION_NAV
+                        translation={translation}
+                        currentItem={currentRecord}
+                        currentVersion={currentVersionR}
+                        NAVIGATION_VERSION={navigation_version}
+                        _RECORD
+                    />
+                    <FUN_MODULE_NAV
+                        translation={translation}
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        FROM={"record_eng"}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
+                    />
+                </> : <fieldset className="p-3" id="fung_0">
+                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
+                </fieldset>}
+            </div >
+        );
+}
+
+const NAV_FUNA = (currentRecord) => {
+    return (
+        <div className="btn-navpqrs">
+            <div className="fung_nav">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
+                        <legend className="px-3 pt-2 bg-light text-center">
+                            <h6>Menu de Navegación</h6>
+                        </legend>
+                        <br />
+                        <a href="#record_eng_41">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>4.1 Revisión Documentos</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#re_cc">
+                            <legend className="px-3 rounded text-sm font-medium bg-warning text-warning-foreground">
+                                <h6>CATEGORIA DEL INFORME</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_eng_42">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>4.2 DESCRIPCIÓN DEL PROYECTO</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        {currentRecord.category != null
+                            ?
+                            <>
+                                {currentRecord.category == 1
+                                    ?
+                                    <>
+                                        <a href="#record_eng_43">
+                                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                                <h6>4.3 REVISIÓN DEL PROYECTO</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_430">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
+                                                <h6>4.3.0 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_431">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
+                                                <h6>4.3.1 ESTUDIO GEOTÉCNICO</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_432">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
+                                                <h6>4.3.2 MEMORIAS DE CALCULO</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_432P">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
+                                                <h6>4.3.2 Peritaje Estructural</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_433">
+                                            <legend className="px-3 rounded text-sm font-medium bg-muted text-muted-foreground">
+                                                <h6>4.3.3 Planos Estructurales</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                        <a href="#record_eng_44">
+                                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                                <h6>4.4 Revisión Proyecto</h6>
+                                            </legend>
+                                        </a>
+                                        <br />
+                                    </>
+                                    : ""}
+                            </>
+                            : ""}
+
+                        <a href="#record_eng_45">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>4.5 APROBACIÓN</h6>
+                            </legend>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default RECORD_ENG;

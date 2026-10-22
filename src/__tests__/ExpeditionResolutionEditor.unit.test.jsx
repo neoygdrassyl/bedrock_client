@@ -29,13 +29,13 @@ vi.mock('jodit-pro-react', () => ({
   },
 }));
 
-vi.mock('../app/utils/TemplateEngine', () => ({
+vi.mock('../features/expediente/expeditions/engines/TemplateEngine', () => ({
   TemplateEngine: {
     buildTemplate: vi.fn(() => Promise.resolve('<p>Base</p>')),
   },
 }));
 
-vi.mock('../app/utils/ResoEngineTemplate', () => ({
+vi.mock('../features/expediente/expeditions/engines/ResoEngineTemplate', () => ({
   ResoEngineTemplate: class {
     modifyTemplateContent() {
       return '<p>Resolución editable</p>';
@@ -43,7 +43,7 @@ vi.mock('../app/utils/ResoEngineTemplate', () => ({
   },
 }));
 
-vi.mock('../app/utils/ActDesistEngineTemp', () => ({
+vi.mock('../features/expediente/expeditions/engines/ActDesistEngineTemp', () => ({
   ActDesistEngineTemp: class {
     modifyTemplateContent() {
       return '<p>Acta editable</p>';
@@ -51,7 +51,7 @@ vi.mock('../app/utils/ActDesistEngineTemp', () => ({
   },
 }));
 
-vi.mock('../app/utils/ExecEngineTemp', () => ({
+vi.mock('../features/expediente/expeditions/engines/ExecEngineTemp', () => ({
   ExecEngineTemp: class {
     modifyTemplateContent() {
       return '<p>Ejecutoria editable</p>';
@@ -71,7 +71,7 @@ vi.mock('../shared/utils/pdfDownload', () => ({
   downloadProtectedPdf: vi.fn(() => Promise.resolve()),
 }));
 
-import EXP_RES_2 from '../app/pages/user/expeditions/exp_res_2.component';
+import EXP_RES_2 from '../features/expediente/expeditions/exp_res_2.component';
 import { downloadProtectedPdf } from '../shared/utils/pdfDownload';
 
 describe('EXP_RES_2', () => {

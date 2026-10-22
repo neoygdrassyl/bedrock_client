@@ -25,7 +25,7 @@ Regla cardinal:
 2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `../backend/AGENTS.md`.
 3. Si tu cambio toca login, sesion, guards o interceptores, revisa `src/shared/api/http-common.js` y `src/shared/api/data.service.js`.
 4. Si tu cambio afecta pruebas, revisa los scripts `test` y `test:e2e` de `package.json`.
-5. Si trabajas dentro de Clocks, lee primero los hooks de `src/app/pages/user/clocks/hooks/`.
+5. Si trabajas dentro de Clocks, lee primero los hooks de `src/features/expediente/clocks/hooks/`.
 
 ## 3. Stack esencial
 
@@ -72,9 +72,9 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 - Providers y Router: `src/app/App.jsx`; tabla de rutas, guard privado, auth context y login: `src/app/router/` (`routes.jsx`, `PrivateRoute.jsx`, `auth.jsx`)
 - Cliente HTTP y sesion: `src/shared/api/http-common.js`, `src/shared/api/data.service.js`, `src/shared/api/custom.service.js`
-- Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
-- Service mas critico: `src/app/services/fun.service.js`
-- Motor documental: `src/app/utils/TemplateEngine.js`
+- Dominio de Clocks: `src/features/expediente/clocks/hooks/useClocksManager.js`, `src/features/expediente/clocks/hooks/useProcessPhases.js`, `src/features/expediente/clocks/hooks/useAlarms.js`
+- Service mas critico: `src/features/expediente/api/fun.service.js`
+- Motor documental: `src/features/expediente/expeditions/engines/TemplateEngine.js`
 
 No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 

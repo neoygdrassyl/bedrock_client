@@ -9,7 +9,7 @@ const SOURCE_ROOT = path.resolve(import.meta.dirname, '..');
 const migrations = [
   {
     key: 'record-arc-32-series',
-    file: 'app/pages/user/records/arc/record_arc_32.jsx',
+    file: 'features/expediente/records/arc/record_arc_32.jsx',
     functionName: '_COMPONENT_SERIES',
     rowsName: 'rows',
     expectedCellCount: 6,
@@ -26,7 +26,7 @@ const migrations = [
   },
   {
     key: 'record-arc-34-height-limits',
-    file: 'app/pages/user/records/arc/record_arc_34.jsx',
+    file: 'features/expediente/records/arc/record_arc_34.jsx',
     functionName: '_COMPONENT_INDEX_CALC',
     rowsName: 'rows',
     expectedCellCount: 27,
@@ -52,7 +52,7 @@ const migrations = [
   },
   {
     key: 'record-arc-34-floor-summary',
-    file: 'app/pages/user/records/arc/record_arc_34.jsx',
+    file: 'features/expediente/records/arc/record_arc_34.jsx',
     functionName: '_COMPONENT_INDEX_CALC_2',
     rowsName: 'rows',
     expectedCellCount: 10,
@@ -71,7 +71,7 @@ const migrations = [
   },
   {
     key: 'record-arc-35-parking-totals',
-    file: 'app/pages/user/records/arc/record_arc_35.jsx',
+    file: 'features/expediente/records/arc/record_arc_35.jsx',
     functionName: '_COMPONENT_2_TOTALS',
     rowsName: 'rows',
     expectedCellCount: 16,
@@ -94,7 +94,7 @@ const migrations = [
   },
   {
     key: 'record-arc-36-duty-liquidation',
-    file: 'app/pages/user/records/arc/record_arc_36.jsx',
+    file: 'features/expediente/records/arc/record_arc_36.jsx',
     functionName: '_COMPONENT_DUTIES',
     rowsName: 'liquidationRows',
     expectedCellCount: 32,
@@ -117,7 +117,7 @@ const migrations = [
   },
   {
     key: 'fun-report-data-spm',
-    file: 'app/pages/user/fun_forms/components/fun_report_data.jsx',
+    file: 'features/expediente/fun/fun_forms/components/fun_report_data.jsx',
     functionName: '_COMPONENT',
     rowsName: 'rows',
     expectedCellCount: 14,

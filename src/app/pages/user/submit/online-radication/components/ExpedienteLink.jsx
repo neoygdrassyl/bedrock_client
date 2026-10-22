@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { buildExpedienteWorkspaceUrl } from '../../../fun_forms/utils/expedienteWorkspaceRoute';
+import { buildExpedienteWorkspaceUrl } from '../../../../../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 
 /** Route of the FUN 0 workspace, the same one search results and dashboards open. */
 export function expedienteHref(funIdPublic) {

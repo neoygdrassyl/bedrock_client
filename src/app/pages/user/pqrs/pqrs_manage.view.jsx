@@ -25,7 +25,7 @@ import { SEEN_COMPONENT_FORM } from './components/pqrs.senn.component';
 import { PQRS_SEND_DATE } from './components/pqrs_send_date.component';
 import { HISTORY_PQRS_INFO } from './components/pqrs_histoy.component';
 import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
-import cubXvrService from '../../../services/cubXvr.service';
+import cubXvrService from '../../../../features/expediente/api/cubXvr.service';
 
 import dayjs from 'dayjs';
 import { Icon } from '@/shared/components/icon';

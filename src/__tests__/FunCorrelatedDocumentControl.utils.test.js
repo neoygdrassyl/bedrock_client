@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
     buildCorrelatedRequirementRows,
     getRequirementVisualState,
-} from '../app/pages/user/fun_forms/utils/correlatedDocumentControl.utils';
+} from '../features/expediente/fun/fun_forms/utils/correlatedDocumentControl.utils';
 
 describe('correlatedDocumentControl.utils', () => {
     // Built the same way the util builds it. Hardcoding the URL coupled this

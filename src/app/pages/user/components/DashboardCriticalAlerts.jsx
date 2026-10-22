@@ -5,10 +5,10 @@ import { Badge } from '@/shared/ui/badge';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Icon } from '@/shared/components/icon';
 import { cn } from '@/shared/lib/utils';
-import FUNService from '../../../services/fun.service';
+import FUNService from '../../../../features/expediente/api/fun.service';
 import { PROCESS_DEFINITION } from '../legal_flow_guide/utils/legalProcessDefinition';
-import { useAlarmsBell } from '../fun_forms/hooks/useAlarmsV2';
-import { buildExpedienteWorkspaceUrl } from '../fun_forms/utils/expedienteWorkspaceRoute';
+import { useAlarmsBell } from '../../../../features/expediente/fun/fun_forms/hooks/useAlarmsV2';
+import { buildExpedienteWorkspaceUrl } from '../../../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 
 const MAX_VISIBLE_ALERTS = 10;
 const ALERT_SKELETON_ROWS = ['dashboard-alert-1', 'dashboard-alert-2'];

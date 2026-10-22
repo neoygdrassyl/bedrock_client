@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MDBTooltip } from './legacy-ui';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
-import FUNService from '../../app/services/fun.service'
+import FUNService from '../../features/expediente/api/fun.service'
 import { Icon } from '@/shared/components/icon';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 import { downloadProtectedFile, toProtectedApiPath } from '@/shared/utils/pdfDownload';

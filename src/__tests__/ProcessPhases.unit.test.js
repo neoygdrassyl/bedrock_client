@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useProcessPhases } from '../app/pages/user/clocks/hooks/useProcessPhases';
+import { useProcessPhases } from '../features/expediente/clocks/hooks/useProcessPhases';
 
 const baseItem = {
   id: 1,

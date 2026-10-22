@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertTriangle, Save } from 'lucide-react';
 import { describe, expect, it, vi } from 'vitest';
-import { operationalStateFromFunStatus } from '@/app/pages/user/fun_forms/utils/severity';
+import { operationalStateFromFunStatus } from '@/features/expediente/fun/fun_forms/utils/severity';
 import {
   DOCUMENT_TYPE_META,
   OPERATIONAL_STATE_META,

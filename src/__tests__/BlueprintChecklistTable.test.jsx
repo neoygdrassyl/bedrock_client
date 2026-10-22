@@ -22,7 +22,7 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   ),
 }));
 
-import BlueprintChecklistTable from '../app/pages/user/records/arc/components/BlueprintChecklistTable';
+import BlueprintChecklistTable from '../features/expediente/records/arc/components/BlueprintChecklistTable';
 
 describe('BlueprintChecklistTable', () => {
   test('renders editable plan quantity and evaluation controls with the shared table design', () => {

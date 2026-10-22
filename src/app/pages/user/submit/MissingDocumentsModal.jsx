@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { LegacyModal } from '@/shared/components/legacy-modal';
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
-import { getMissingRequirements } from '@/app/services/documentaryOperations.service';
-import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
-import { documentaryError } from '@/app/services/documentary.service';
+import { getMissingRequirements } from '@/features/expediente/api/documentaryOperations.service';
+import { refreshRequirementsFor } from '@/features/expediente/api/documentaryRequirements.service';
+import { documentaryError } from '@/features/expediente/api/documentary.service';
 
 const STATE_NOTICES = {
   stale: 'La evaluación de requisitos está desactualizada respecto a los datos del expediente. El listado es orientativo y no confirma que el expediente esté completo.',

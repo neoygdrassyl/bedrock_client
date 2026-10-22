@@ -13,7 +13,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: swalMocks.success,
 }));
 
-import usePHSave from '../app/pages/user/records/ph/hooks/usePHSave';
+import usePHSave from '../features/expediente/records/ph/hooks/usePHSave';
 
 describe('usePHSave', () => {
   beforeEach(() => {
