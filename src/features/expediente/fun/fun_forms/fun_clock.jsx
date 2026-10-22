@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_SERVICE from '../../api/fun.service';
 import CLOCKS_CONTROL from './components/clocks_control.component';
-import EMAILS_COMPONENT from '../../../../app/components/emails.component';
+import EMAILS_COMPONENT from '../../../messaging/components/emails.component';
 import { swalError } from '@/shared/utils/swalAdapter';
 
 

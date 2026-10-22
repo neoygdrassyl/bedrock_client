@@ -18,7 +18,7 @@ vi.mock('@/shared/components/theme-provider', () => ({
   useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
 }));
 
-import Dashboard from '@/app/pages/user/dashboard';
+import Dashboard from '@/features/dashboard/dashboard';
 
 function renderDashboard(props = {}) {
   const defaultProps = {

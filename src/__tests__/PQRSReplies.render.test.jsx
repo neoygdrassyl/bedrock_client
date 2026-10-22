@@ -42,7 +42,7 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsMainService,
 }));
@@ -171,7 +171,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_1 renders without crashing', async () => {
     const { default: PQRS_COMPONENT_REPLIES_PROFESIONAL } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_1.component'
+      '../features/pqrs/components/pqrs_replies_1.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -189,7 +189,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_1 renders with empty workers list', async () => {
     const { default: PQRS_COMPONENT_REPLIES_PROFESIONAL } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_1.component'
+      '../features/pqrs/components/pqrs_replies_1.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -208,7 +208,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_2 renders without crashing', async () => {
     const { default: PQRS_COMPONENT_REPLIES_TOSOLICITOR } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_2.component'
+      '../features/pqrs/components/pqrs_replies_2.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -226,7 +226,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_2 renders with no reply_formal date', async () => {
     const { default: PQRS_COMPONENT_REPLIES_TOSOLICITOR } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_2.component'
+      '../features/pqrs/components/pqrs_replies_2.component'
     );
     const itemNoReply = {
       ...minimalCurrentItem,
@@ -249,7 +249,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_3 renders without crashing', async () => {
     const { default: PQRS_COMPONENT_REPLIES_PROFESIONAL_2 } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_3.component'
+      '../features/pqrs/components/pqrs_replies_3.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -267,7 +267,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_replies_3 renders with worker missing reply', async () => {
     const { default: PQRS_COMPONENT_REPLIES_PROFESIONAL_2 } = await import(
-      '../app/pages/user/pqrs/components/pqrs_replies_3.component'
+      '../features/pqrs/components/pqrs_replies_3.component'
     );
     const itemNoWorkerReply = {
       ...minimalCurrentItem,
@@ -300,7 +300,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_rteReply renders without crashing', async () => {
     const { default: RTE_PQRS } = await import(
-      '../app/pages/user/pqrs/components/pqrs_rteReply.component'
+      '../features/pqrs/components/pqrs_rteReply.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -313,7 +313,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_rteReply renders with empty contacts and solicitors', async () => {
     const { default: RTE_PQRS } = await import(
-      '../app/pages/user/pqrs/components/pqrs_rteReply.component'
+      '../features/pqrs/components/pqrs_rteReply.component'
     );
     const sparseItem = {
       ...minimalCurrentItem,
@@ -332,7 +332,7 @@ describe('PQRS Reply Components — Render', () => {
 
   test('pqrs_setReply renders without crashing', async () => {
     const { default: PQRS_SET_REPLY } = await import(
-      '../app/pages/user/pqrs/components/pqrs_setReply.component'
+      '../features/pqrs/components/pqrs_setReply.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -357,7 +357,7 @@ describe('PQRS Reply Components — Render', () => {
     // Service returns a never-resolving promise to simulate loading state
     hoisted.pqrsMainService.get.mockReturnValueOnce(new Promise(() => {}));
     const { default: PQRS_SET_REPLY } = await import(
-      '../app/pages/user/pqrs/components/pqrs_setReply.component'
+      '../features/pqrs/components/pqrs_setReply.component'
     );
     const { container } = render(
       <MemoryRouter>

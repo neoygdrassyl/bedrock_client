@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { documentaryError } from '@/features/expediente/api/documentary.service';
 import { refreshRequirementsFor } from '@/features/expediente/api/documentaryRequirements.service';
-import MissingDocumentsModal from '@/app/pages/user/submit/MissingDocumentsModal.jsx';
+import MissingDocumentsModal from '@/features/ventanilla/MissingDocumentsModal.jsx';
 import { requirementStatus } from '../../canonicalDocumentaryModel';
 
 const TONES = {

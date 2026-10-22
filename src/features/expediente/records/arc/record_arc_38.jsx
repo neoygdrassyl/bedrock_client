@@ -9,7 +9,7 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { handleArchCheck } from '../../../../shared/config/customClasses/pdfCheckHandler';
 import { REVIEW_DOCS } from '../../../../shared/config/jsons/arcReviewDocs';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../shared/config/customClasses/typeParse';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import { useDocumentaryInventory } from '../../documental/hooks/useDocumentaryInventory';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/shared/components/icon';

@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Sellos — Smoke', () => {
   test('seal.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/seal')).resolves.toBeTruthy();
+    await expect(import('../features/seals/seal')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

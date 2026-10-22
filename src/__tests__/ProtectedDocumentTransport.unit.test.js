@@ -1,17 +1,17 @@
 import { readFileSync } from 'node:fs';
 
 const generatedDocumentFiles = [
-  'src/app/pages/user/seal.jsx',
-  'src/app/pages/user/certifications/certification.page.jsx',
-  'src/app/pages/user/norms/norm_resume.component.jsx',
-  'src/app/pages/user/submit/submit_anex.component.jsx',
-  'src/app/pages/user/zone_use/zone_use.component.jsx',
+  'src/features/seals/seal.jsx',
+  'src/features/certifications/certification.page.jsx',
+  'src/features/norms/norm_resume.component.jsx',
+  'src/features/ventanilla/submit_anex.component.jsx',
+  'src/features/norms/zone-use/zone_use.component.jsx',
   'src/features/expediente/records/record_letter_2.component.jsx',
   'src/features/expediente/records/record_letter.component.jsx',
   'src/features/expediente/records/record_review.jsx',
-  'src/app/pages/user/pqrs/asignpqrs.jsx',
-  'src/app/pages/user/pqrs/pqrs_manage.view.jsx',
-  'src/app/pages/user/nomenclature/nomenclature_anex.component.jsx',
+  'src/features/pqrs/asignpqrs.jsx',
+  'src/features/pqrs/pqrs_manage.view.jsx',
+  'src/features/nomenclature/nomenclature_anex.component.jsx',
   'src/features/expediente/fun/fun_forms/components/fun_doc_confirmlegal.jsx',
   'src/features/expediente/fun/fun_forms/components/fun_doc_certification.component.jsx',
   'src/features/expediente/fun/fun_forms/components/fun_d_control.component_2.jsx',
@@ -27,23 +27,23 @@ const generatedDocumentFiles = [
   'src/features/expediente/records/law/record_law_pdf.jsx',
   'src/features/expediente/records/ph/record_ph_review.component.jsx',
   'src/features/expediente/records/arc/record_arc_38.jsx',
-  'src/app/pages/user/pqrs/components/pqrs_genPDF_reply.component.jsx',
-  'src/app/pages/user/pqrs/components/pqrs_genPDF_confirm.component.jsx',
+  'src/features/pqrs/components/pqrs_genPDF_reply.component.jsx',
+  'src/features/pqrs/components/pqrs_genPDF_confirm.component.jsx',
 ];
 
 const protectedAttachmentFiles = [
-  'src/app/pages/user/publish.jsx',
+  'src/features/publications/publish.jsx',
   'src/features/expediente/fun/fun_forms/fun_n_3.jsx',
-  'src/app/pages/user/pqrs/lockpqrs.jsx',
-  'src/app/pages/user/pqrs/pqrs_manage.view.jsx',
-  'src/app/pages/user/pqrs/components/pqrs_attach_pro.component.jsx',
+  'src/features/pqrs/lockpqrs.jsx',
+  'src/features/pqrs/pqrs_manage.view.jsx',
+  'src/features/pqrs/components/pqrs_attach_pro.component.jsx',
 ];
 
 const protectedPreviewFiles = [
   'src/shared/components/vizualizer.component.jsx',
   'src/features/expediente/documental/shared/UnifiedDocumentEntryModal.jsx',
   'src/features/expediente/fun/fun_forms/components/FunDocumentManagementModal.jsx',
-  'src/app/pages/user/submit/submit_list.component.jsx',
+  'src/features/ventanilla/submit_list.component.jsx',
   'src/features/expediente/fun/fun_forms/components/FunCorrelatedDocumentControl.jsx',
   'src/features/expediente/fun/fun_forms/components/RequirementManagementModal.jsx',
   'src/shared/components/viewer.component.jsx',
@@ -124,7 +124,7 @@ describe('protected document transport', () => {
   });
 
   test('does not capture the terminal loop index in PQRS attachment buttons', () => {
-    const source = readSource('src/app/pages/user/pqrs/components/pqrs_attach_pro.component.jsx');
+    const source = readSource('src/features/pqrs/components/pqrs_attach_pro.component.jsx');
 
     expect(source).toContain('for (let i = 0;');
     expect(source).toContain('buildProtectedFilePath');

@@ -36,22 +36,22 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   default: funServiceMock,
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: pqrsMainServiceMock,
 }));
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: submitServiceMock,
 }));
 
-vi.mock('../app/services/mailbox.service', () => ({
+vi.mock('../features/messaging/api/mailbox.service', () => ({
   __esModule: true,
   default: mailboxServiceMock,
 }));
 
-vi.mock('../app/services/appointments.service', () => ({
+vi.mock('../features/appointments/api/appointments.service', () => ({
   __esModule: true,
   default: appointmentsServiceMock,
 }));
@@ -65,7 +65,7 @@ vi.mock('@/shared/components/icon', () => ({
 // Usamos '1' (valor habitual de test) para que las cards condicionales (cb1) NO aparezcan.
 import.meta.env.VITE_GLOBAL_ID = '1';
 
-const { default: Dashboard } = await import('../app/pages/user/dashboard');
+const { default: Dashboard } = await import('../features/dashboard/dashboard');
 
 describe('Dashboard — Integración del panel principal', () => {
   beforeEach(() => {

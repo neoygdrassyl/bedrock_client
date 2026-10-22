@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Correo (Mail) — Smoke', () => {
   test('mail.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/mail')).resolves.toBeTruthy();
+    await expect(import('../features/messaging/mail')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

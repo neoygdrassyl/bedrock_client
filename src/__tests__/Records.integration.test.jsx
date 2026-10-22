@@ -106,7 +106,7 @@ vi.mock('../features/expediente/records/records_binnacles.component', () => ({
   default: () => <div data-testid='records-binnacles' />,
 }));
 
-vi.mock('../app/pages/user/submit/submit_view.component', () => ({
+vi.mock('../features/ventanilla/submit_view.component', () => ({
   __esModule: true,
   default: () => <div data-testid='submit-single-view' />,
 }));

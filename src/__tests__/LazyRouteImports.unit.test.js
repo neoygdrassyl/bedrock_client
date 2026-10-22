@@ -4,31 +4,31 @@ import { readFileSync } from 'node:fs';
 const lazyRouteModules = [
   {
     name: 'profesionals page',
-    load: () => import('@/app/pages/user/profesionals/profesionals.page'),
+    load: () => import('@/features/professionals/profesionals.page'),
   },
   {
     name: 'guide user page',
-    load: () => import('@/app/pages/user/guide_user/guide_user.page'),
+    load: () => import('@/features/help/guide_user/guide_user.page'),
   },
   {
     name: 'dev guide page',
-    load: () => import('@/app/pages/user/dev_guide/dev_guide.page'),
+    load: () => import('@/features/help/dev_guide/dev_guide.page'),
   },
   {
     name: 'norms page',
-    load: () => import('@/app/pages/user/norms/norms.page'),
+    load: () => import('@/features/norms/norms.page'),
   },
   {
     name: 'certification page',
-    load: () => import('@/app/pages/user/certifications/certification.page'),
+    load: () => import('@/features/certifications/certification.page'),
   },
   {
     name: 'zone use page',
-    load: () => import('@/app/pages/user/zone_use/zone_use.page'),
+    load: () => import('@/features/norms/zone-use/zone_use.page'),
   },
   {
     name: 'legal flow guide page',
-    load: () => import('@/app/pages/user/legal_flow_guide/LegalFlowGuide.page'),
+    load: () => import('@/features/simulador/legal_flow_guide/LegalFlowGuide.page'),
   },
 ];
 
@@ -43,10 +43,10 @@ describe('lazy route module imports', () => {
     const appSource = readFileSync('src/app/router/routes.jsx', 'utf8');
 
     expect(appSource).toContain(
-      "const LEGAL_FLOW_GUIDE = lazy(() => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'))",
+      "const LEGAL_FLOW_GUIDE = lazy(() => import('../../features/simulador/legal_flow_guide/LegalFlowGuide.page'))",
     );
     expect(appSource).not.toContain(
-      "import LEGAL_FLOW_GUIDE from '../pages/user/legal_flow_guide/LegalFlowGuide.page'",
+      "import LEGAL_FLOW_GUIDE from '../../features/simulador/legal_flow_guide/LegalFlowGuide.page'",
     );
   });
 });

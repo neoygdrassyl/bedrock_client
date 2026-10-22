@@ -39,7 +39,7 @@ Regla cardinal:
 | UI | Bootstrap 5 + wrappers locales + shadcn/ui (Radix + Tailwind) |
 | Editores | BlockNote (`src/shared/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
 | Fechas | dayjs (`src/shared/utils/dayjs.config.js`) |
-| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/app/utils/` |
+| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/features/settings/` |
 | Node | 22+ obligatorio |
 
 ## 3.1 Priorizacion de skills UI/UX
@@ -80,7 +80,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
 ## 4.1 Estructura objetivo (codigo nuevo)
 
-El arbol actual (`src/app/pages`, `src/app/components`, `src/app/services`) es legacy y migra de forma incremental. Todo codigo nuevo va a la estructura objetivo; no muevas legacy masivamente sin un plan acordado.
+El arbol actual (`src/app/pages`, `src/features/messaging/components`, `src/app/services`) es legacy y migra de forma incremental. Todo codigo nuevo va a la estructura objetivo; no muevas legacy masivamente sin un plan acordado.
 
 1. **Feature-first:** cada dominio vive en `src/features/<feature>/` con sus componentes, hooks, api y tests juntos.
 2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios.
@@ -113,7 +113,7 @@ El arbol actual (`src/app/pages`, `src/app/components`, `src/app/services`) es l
 
 ### TemplateEngine y plantillas publicas
 
-- No editar `public/templates/` sin entender el motor en `src/app/utils/`.
+- No editar `public/templates/` sin entender el motor en `src/features/settings/`.
 
 ## 6. Restricciones no negociables
 

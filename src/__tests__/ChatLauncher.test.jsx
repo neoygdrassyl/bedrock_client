@@ -7,14 +7,14 @@ const { inboxMock } = vi.hoisted(() => ({
   inboxMock: vi.fn(),
 }));
 
-vi.mock('../app/services/chat.service', () => ({
+vi.mock('../features/messaging/api/chat.service', () => ({
   __esModule: true,
   default: {
     inbox: inboxMock,
   },
 }));
 
-vi.mock('../app/pages/user/chat/InternalChatPanel', () => ({
+vi.mock('../features/messaging/chat/InternalChatPanel', () => ({
   __esModule: true,
   default: () => <div data-testid="internal-chat-panel" />,
 }));
@@ -31,7 +31,7 @@ vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span aria-hidden="true" />,
 }));
 
-import ChatLauncher from '../app/pages/user/chat/ChatLauncher';
+import ChatLauncher from '../features/messaging/chat/ChatLauncher';
 
 describe('ChatLauncher', () => {
   it('no consulta el inbox hasta que el usuario abre el panel', async () => {

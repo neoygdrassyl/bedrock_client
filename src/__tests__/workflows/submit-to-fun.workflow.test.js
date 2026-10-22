@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import SubmitService from '../../app/services/submit.service';
+import SubmitService from '../../features/ventanilla/api/submit.service';
 import FunService from '../../features/expediente/api/fun.service';
 
 let server;

@@ -4,7 +4,7 @@ import FUN_SERVICE from '../../api/fun.service';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import DataTable from '@/shared/components/data-table-bridge';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../shared/config/customClasses/typeParse';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { Button } from '@/shared/ui/button';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';

@@ -26,10 +26,10 @@ vi.mock('@/shared/components/icon', () => ({
 }));
 
 vi.mock('../features/expediente/api/fun.service', () => ({ __esModule: true, default: funServiceMock }));
-vi.mock('../app/services/pqrs_main.service', () => ({ __esModule: true, default: pqrsMainServiceMock }));
-vi.mock('../app/services/submit.service', () => ({ __esModule: true, default: submitServiceMock }));
-vi.mock('../app/services/mailbox.service', () => ({ __esModule: true, default: mailboxServiceMock }));
-vi.mock('../app/services/appointments.service', () => ({ __esModule: true, default: appointmentsServiceMock }));
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({ __esModule: true, default: pqrsMainServiceMock }));
+vi.mock('../features/ventanilla/api/submit.service', () => ({ __esModule: true, default: submitServiceMock }));
+vi.mock('../features/messaging/api/mailbox.service', () => ({ __esModule: true, default: mailboxServiceMock }));
+vi.mock('../features/appointments/api/appointments.service', () => ({ __esModule: true, default: appointmentsServiceMock }));
 vi.mock('../shared/api/bookmark.service', () => ({ __esModule: true, default: bookmarkServiceMock }));
 
 describe('Dashboard count failure states', () => {
@@ -46,7 +46,7 @@ describe('Dashboard count failure states', () => {
   });
 
   it('shows a visible fallback instead of silent zeroes when count services fail', async () => {
-    const { default: Dashboard } = await import('../app/pages/user/dashboard');
+    const { default: Dashboard } = await import('../features/dashboard/dashboard');
 
     render(
       <MemoryRouter>
@@ -70,7 +70,7 @@ describe('Dashboard count failure states', () => {
     mailboxServiceMock.count.mockResolvedValue({ data: { count: 9 } });
     appointmentsServiceMock.count.mockResolvedValue({ data: { count: 1005 } });
 
-    const { default: Dashboard } = await import('../app/pages/user/dashboard');
+    const { default: Dashboard } = await import('../features/dashboard/dashboard');
 
     render(
       <MemoryRouter>

@@ -24,7 +24,7 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/nomeclature.service', () => ({
+vi.mock('../features/nomenclature/api/nomeclature.service', () => ({
   __esModule: true,
   default: hoisted.nomenclatureService,
 }));
@@ -51,7 +51,7 @@ vi.mock('@/shared/components/legacy-modal', () => ({
     isOpen ? <div data-testid='mock-modal'>{children}</div> : null,
 }));
 
-vi.mock('../app/pages/user/nomenclature/new_nomenclature', () => ({
+vi.mock('../features/nomenclature/new_nomenclature', () => ({
   __esModule: true,
   default: ({ refreshList }) => (
     <div data-testid='nomenclature-new-stub'>
@@ -75,7 +75,7 @@ vi.mock('moment', () => {
 });
 
 const { default: NOMENCLATURE } = await import(
-  '../app/pages/user/nomenclature/nomenclature'
+  '../features/nomenclature/nomenclature'
 );
 
 // ─── Fixtures ───────────────────────────────────────────────────────

@@ -22,7 +22,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ─── Mock services ─────────────────────────────────────────────────────────
 
-vi.mock('../app/services/archive.service', () => ({
+vi.mock('../features/archive/api/archive.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
@@ -48,12 +48,12 @@ vi.mock('../features/expediente/api/fun.service', () => ({
 
 // ─── Mock sub-components ───────────────────────────────────────────────────
 
-vi.mock('../app/pages/user/archive/archive_manage.component', () => ({
+vi.mock('../features/archive/archive_manage.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="archive-manage-stub">ARCHIVE_MANAGE</div>,
 }));
 
-vi.mock('../app/pages/user/archive/archive_x_fun.component', () => ({
+vi.mock('../features/archive/archive_x_fun.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="archive-x-fun-stub">ARCHIVE_X_FUN</div>,
 }));
@@ -118,7 +118,7 @@ vi.mock('../app/components/global', () => {
 
 // ─── Import component under test ──────────────────────────────────────────
 
-import ARCHIVE from '../app/pages/user/archive/archive.page';
+import ARCHIVE from '../features/archive/archive.page';
 
 // ─── Test helpers ──────────────────────────────────────────────────────────
 
@@ -240,7 +240,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('10. SERVICE_ARCHIVE.getAll() se llama al montar', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockClear();
 
     await act(async () => {
@@ -251,7 +251,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('11. Muestra "CARGANDO..." antes de que lleguen datos', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockReturnValueOnce(new Promise(() => {})); // Never resolves
 
     await act(async () => {
@@ -262,7 +262,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('12. DataTable muestra "LISTADO DE CAJAS" como título', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({ data: [] });
 
     await act(async () => {
@@ -275,7 +275,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('13. DataTable con datos mock muestra cajas correctamente', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({
       data: [
         {
@@ -315,7 +315,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('14. DataTable encabezados de columnas presentes con datos', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({
       data: [
         { id: 1, box: 99, row: 1, column: 1, process_x_archives: [] },
@@ -339,7 +339,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('14b. No emite warning de React por keys faltantes en el contenido de las cajas', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({
       data: [
@@ -393,7 +393,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('15. Click en "NUEVA CAJA" abre modal de nueva caja', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({ data: [] });
 
     await act(async () => {
@@ -412,7 +412,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('16. Muestra "NO HAY CAJAS" cuando no hay datos', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({ data: [] });
 
     await act(async () => {
@@ -425,7 +425,7 @@ describe('ARCHIVE — Integración: Módulo Archivo', () => {
   });
 
   test('17. Filtrar lista por búsqueda (sin valor muestra todos)', async () => {
-    const SERVICE_ARCHIVE = (await import('../app/services/archive.service')).default;
+    const SERVICE_ARCHIVE = (await import('../features/archive/api/archive.service')).default;
     SERVICE_ARCHIVE.getAll.mockResolvedValueOnce({
       data: [
         { id: 1, box: 10, row: 1, column: 1, process_x_archives: [] },

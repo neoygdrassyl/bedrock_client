@@ -31,7 +31,7 @@ vi.mock('../features/expediente/fun/fun_forms/components/fun_asign.component', (
   default: (props) => <div data-testid="fun-asigns-stub">FUN_ASIGNS_COMPONENT</div>,
 }));
 
-vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({
+vi.mock('../features/ventanilla/submit_x_fun.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="submit-x-fun-stub">SUBMIT_X_FUN</div>,
 }));

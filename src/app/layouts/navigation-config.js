@@ -117,23 +117,23 @@ const NAV_ITEMS = [
 ];
 
 const ROUTE_PRELOADERS = {
-  '/dashboard': () => import('../pages/user/dashboard'),
+  '/dashboard': () => import('../../features/dashboard/dashboard'),
   '/licencias': () => import('../../features/expediente/fun/fun'),
   '/licencias/gestion': () => import('../../features/expediente/fun/funmanage.page'),
   '/licencias/gestion-nueva': () => import('../../features/expediente/fun/funmanage_new.page'),
-  '/peticiones': () => import('../pages/user/pqrs/pqrsadmin'),
-  '/ventanilla': () => import('../pages/user/submit/submit'),
-  '/mensajes': () => import('../pages/user/mail'),
-  '/calendario': () => import('../pages/user/appointments'),
-  '/archivo': () => import('../pages/user/archive/archive.page'),
-  '/publicaciones': () => import('../pages/user/publish'),
-  '/nomenclatura': () => import('../pages/user/nomenclature/nomenclature'),
-  '/normas': () => import('../pages/user/norms/norms.page'),
-  '/uso-suelo': () => import('../pages/user/zone_use/zone_use.page'),
-  '/simulador': () => import('../pages/user/simulador'),
-  '/simulador/documentos': () => import('../pages/user/SettingsPage'),
-  '/simulador/legal': () => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'),
-  '/configuracion': () => import('../pages/user/SettingsPage'),
+  '/peticiones': () => import('../../features/pqrs/pqrsadmin'),
+  '/ventanilla': () => import('../../features/ventanilla/submit'),
+  '/mensajes': () => import('../../features/messaging/mail'),
+  '/calendario': () => import('../../features/appointments/appointments'),
+  '/archivo': () => import('../../features/archive/archive.page'),
+  '/publicaciones': () => import('../../features/publications/publish'),
+  '/nomenclatura': () => import('../../features/nomenclature/nomenclature'),
+  '/normas': () => import('../../features/norms/norms.page'),
+  '/uso-suelo': () => import('../../features/norms/zone-use/zone_use.page'),
+  '/simulador': () => import('../../features/simulador'),
+  '/simulador/documentos': () => import('../../features/settings/SettingsPage'),
+  '/simulador/legal': () => import('../../features/simulador/legal_flow_guide/LegalFlowGuide.page'),
+  '/configuracion': () => import('../../features/settings/SettingsPage'),
 };
 
 export function preloadNavigationRoute(route) {

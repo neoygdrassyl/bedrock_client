@@ -16,7 +16,7 @@ import Collapsible from '../../../../shared/components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import dayjs from 'dayjs';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import { Icon } from '@/shared/components/icon';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';

@@ -5,7 +5,7 @@ import DataTable from '@/shared/components/data-table-bridge';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../api/fun.service';
 import DOCS_LIST from './components/docs_list.component';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import { Icon } from '@/shared/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { Button } from '@/shared/ui/button';

@@ -182,7 +182,7 @@ vi.mock('../features/expediente/fun/fun_forms/components/fun_seals', () => ({
   default: () => React.createElement('div', { 'data-testid': 'fun-seals-stub' }),
 }));
 
-vi.mock('../app/pages/user/submit/submit_view.component', () => ({
+vi.mock('../features/ventanilla/submit_view.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'submit-single-view-stub' }),
 }));
@@ -270,7 +270,7 @@ vi.mock('../shared/components/Collapsible', () => ({
     React.createElement('div', { 'data-testid': 'collapsible-stub' }, title, children),
 }));
 
-vi.mock('../app/components/emails.component', () => ({
+vi.mock('../features/messaging/components/emails.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'emails-stub' }),
 }));

@@ -18,7 +18,7 @@ import FunService from '../../features/expediente/api/fun.service';
 import RecordArcService from '../../features/expediente/api/record_arc.service';
 import RecordEngService from '../../features/expediente/api/record_eng.service';
 import RecordLawService from '../../features/expediente/api/record_law.service';
-import SubmitService from '../../app/services/submit.service';
+import SubmitService from '../../features/ventanilla/api/submit.service';
 
 // ── Infraestructura MSW ──────────────────────────────────────────────────────
 let server;

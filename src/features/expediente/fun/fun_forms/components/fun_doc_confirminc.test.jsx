@@ -28,7 +28,7 @@ vi.mock('@/features/expediente/api/documentaryOperations.service', () => ({
   getMissingRequirements: getMissingRequirementsMock,
 }));
 
-vi.mock('../../../../../app/services/submit.service', () => ({
+vi.mock('../../../../ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: {
     getIdRelated: getIdRelatedMock,
@@ -44,7 +44,7 @@ vi.mock('../../../api/cubXvr.service', () => ({
   },
 }));
 
-vi.mock('../../../../../app/services/pqrs_main.service', () => ({
+vi.mock('../../../../pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: {
     getlascub: getLastCubMock,

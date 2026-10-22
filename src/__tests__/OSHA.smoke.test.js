@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo OSHA — Smoke', () => {
   test('osha.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/osha')).resolves.toBeTruthy();
+    await expect(import('../features/documentos/osha')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

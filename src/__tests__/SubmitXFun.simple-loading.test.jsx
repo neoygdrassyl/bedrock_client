@@ -22,7 +22,7 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   default: funServiceMock,
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: pqrsServiceMock,
 }));
@@ -68,7 +68,7 @@ vi.mock('../features/expediente/fun/fun_forms/components/table_components/table.
   default: () => React.createElement('div', { 'data-testid': 'table-expanded-stub' }),
 }));
 
-import SUBMIT_X_FUN from '../app/pages/user/submit/submit_x_fun.component';
+import SUBMIT_X_FUN from '../features/ventanilla/submit_x_fun.component';
 
 describe('SUBMIT_X_FUN simple mode loading', () => {
   beforeEach(() => {

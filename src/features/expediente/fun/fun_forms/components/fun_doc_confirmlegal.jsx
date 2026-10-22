@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/shared/ui/button';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse'
 import FUNService from '../../../api/fun.service'
-import SubmitService from '../../../../../app/services/submit.service'
+import SubmitService from '../../../../ventanilla/api/submit.service'
 import CubXVrDataService from '../../../api/cubXvr.service'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../../../shared/config/jsons/vars';
-import PQRS_Service from '../../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../../pqrs/api/pqrs_main.service';
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';

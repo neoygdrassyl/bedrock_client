@@ -3,7 +3,7 @@ import { Button } from '@/shared/ui/button';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 import EXPEDITION_SERVICE from '../api/expedition.service';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import FUN_SERVICE from '../api/fun.service';
 
 import { cities, domains_number, infoCud, zonesTable } from '../../../shared/config/jsons/vars';

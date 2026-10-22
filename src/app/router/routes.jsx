@@ -5,31 +5,31 @@ import { PrivateLayout, LoginPageWithAuth } from './PrivateRoute';
 import FunmanageExpedienteRoute from './FunmanageExpedienteRoute';
 
 // ── Lazy-loaded page components (code-split per route) ──────────────
-const PQRSADMIN = lazy(() => import('../pages/user/pqrs/pqrsadmin'));
-const Liquidator = lazy(() => import('../pages/liquidator/liquidator'));
-const Dashboard = lazy(() => import('../pages/user/dashboard'));
-const Publish = lazy(() => import('../pages/user/publish'));
-const Seals = lazy(() => import('../pages/user/seal'));
-const Appointments = lazy(() => import('../pages/user/appointments'));
-const Mail = lazy(() => import('../pages/user/mail'));
+const PQRSADMIN = lazy(() => import('../../features/pqrs/pqrsadmin'));
+const Liquidator = lazy(() => import('../../features/liquidator/liquidator'));
+const Dashboard = lazy(() => import('../../features/dashboard/dashboard'));
+const Publish = lazy(() => import('../../features/publications/publish'));
+const Seals = lazy(() => import('../../features/seals/seal'));
+const Appointments = lazy(() => import('../../features/appointments/appointments'));
+const Mail = lazy(() => import('../../features/messaging/mail'));
 const FUN = lazy(() => import('../../features/expediente/fun/fun'));
-const OSHA = lazy(() => import('../pages/user/osha'));
-const NOMENCLATURE = lazy(() => import('../pages/user/nomenclature/nomenclature'));
-const SUBMIT = lazy(() => import('../pages/user/submit/submit'));
-const ARCHIVE = lazy(() => import('../pages/user/archive/archive.page'));
-const DICTIONARY = lazy(() => import('../pages/user/dictionary.page'));
+const OSHA = lazy(() => import('../../features/documentos/osha'));
+const NOMENCLATURE = lazy(() => import('../../features/nomenclature/nomenclature'));
+const SUBMIT = lazy(() => import('../../features/ventanilla/submit'));
+const ARCHIVE = lazy(() => import('../../features/archive/archive.page'));
+const DICTIONARY = lazy(() => import('../../features/dictionary/dictionary.page'));
 const FUN_MANAGE = lazy(() => import('../../features/expediente/fun/funmanage.page'));
 const FUN_MANAGE_NEW = lazy(() => import('../../features/expediente/fun/funmanage_new.page'));
-const PROFESIONALS = lazy(() => import('../pages/user/profesionals/profesionals.page'));
-const GUIDE_USER = lazy(() => import('../pages/user/guide_user/guide_user.page'));
-const DEV_GUIDE = lazy(() => import('../pages/user/dev_guide/dev_guide.page'));
-const NORMS = lazy(() => import('../pages/user/norms/norms.page'));
-const CERTIFICATE_WORKER = lazy(() => import('../pages/user/certifications/certification.page'));
-const ZONE_USE = lazy(() => import('../pages/user/zone_use/zone_use.page'));
-const SETTINGS = lazy(() => import('../pages/user/SettingsPage'));
-const LEGAL_FLOW_GUIDE = lazy(() => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'));
-const SIMULADOR = lazy(() => import('../pages/user/simulador'));
-const BUSINESS_CALENDAR = lazy(() => import('../pages/user/business-calendar/BusinessCalendarPage'));
+const PROFESIONALS = lazy(() => import('../../features/professionals/profesionals.page'));
+const GUIDE_USER = lazy(() => import('../../features/help/guide_user/guide_user.page'));
+const DEV_GUIDE = lazy(() => import('../../features/help/dev_guide/dev_guide.page'));
+const NORMS = lazy(() => import('../../features/norms/norms.page'));
+const CERTIFICATE_WORKER = lazy(() => import('../../features/certifications/certification.page'));
+const ZONE_USE = lazy(() => import('../../features/norms/zone-use/zone_use.page'));
+const SETTINGS = lazy(() => import('../../features/settings/SettingsPage'));
+const LEGAL_FLOW_GUIDE = lazy(() => import('../../features/simulador/legal_flow_guide/LegalFlowGuide.page'));
+const SIMULADOR = lazy(() => import('../../features/simulador'));
+const BUSINESS_CALENDAR = lazy(() => import('../../features/business-calendar/BusinessCalendarPage'));
 
 // Route table. Translation bundles are resolved once in App and passed down
 // unchanged, so every page keeps receiving the same props as before.

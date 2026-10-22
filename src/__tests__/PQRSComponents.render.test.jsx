@@ -32,14 +32,14 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsMainService,
 }));
 
 // ─── Stub heavy sub-components ───────────────────────────────────────────────
 
-vi.mock('../app/pages/user/pqrs/components/pqrs_emails.component', () => ({
+vi.mock('../features/pqrs/components/pqrs_emails.component', () => ({
   __esModule: true,
   default: () => <div data-testid="pqrs-emails-stub" />,
 }));
@@ -135,7 +135,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_gen renders without crashing', async () => {
     const { default: PQRS_COMPONENT_INFO } = await import(
-      '../app/pages/user/pqrs/components/pqrs_gen.component'
+      '../features/pqrs/components/pqrs_gen.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -154,7 +154,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_gen renders with status 0 (ACTIVO)', async () => {
     const { default: PQRS_COMPONENT_INFO } = await import(
-      '../app/pages/user/pqrs/components/pqrs_gen.component'
+      '../features/pqrs/components/pqrs_gen.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -172,7 +172,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_gen renders with status 1 (CERRADO)', async () => {
     const { default: PQRS_COMPONENT_INFO } = await import(
-      '../app/pages/user/pqrs/components/pqrs_gen.component'
+      '../features/pqrs/components/pqrs_gen.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -192,7 +192,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_info renders without crashing', async () => {
     const { default: PQRS_EDIT_INFO } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_info.component'
+      '../features/pqrs/components/pqrs_manage_info.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -213,7 +213,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_info renders with extension=true', async () => {
     const { default: PQRS_EDIT_INFO } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_info.component'
+      '../features/pqrs/components/pqrs_manage_info.component'
     );
     const itemWithExtension = {
       ...minimalCurrentItem,
@@ -244,7 +244,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_contact renders without crashing', async () => {
     const { default: PQRS_EDIT_CONTACT } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_contact.component'
+      '../features/pqrs/components/pqrs_manage_contact.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -263,7 +263,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_contact renders with existing contacts', async () => {
     const { default: PQRS_EDIT_CONTACT } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_contact.component'
+      '../features/pqrs/components/pqrs_manage_contact.component'
     );
     const itemWithContacts = {
       ...minimalCurrentItem,
@@ -304,7 +304,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_fun renders without crashing (no pqrs_fun)', async () => {
     const { default: PQRS_EDIT_FUN } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_fun.component'
+      '../features/pqrs/components/pqrs_manage_fun.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -323,7 +323,7 @@ describe('PQRS Components — Render', () => {
 
   test('pqrs_manage_fun renders with pqrs_fun data', async () => {
     const { default: PQRS_EDIT_FUN } = await import(
-      '../app/pages/user/pqrs/components/pqrs_manage_fun.component'
+      '../features/pqrs/components/pqrs_manage_fun.component'
     );
     const itemWithFun = {
       ...minimalCurrentItem,

@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AppShell } from '../layouts/AppShell';
 import BusinessCalendarBootstrap from '../layouts/BusinessCalendarBootstrap';
-import LoginPage from '../pages/auth/LoginPage';
+import LoginPage from '../../features/auth/LoginPage';
 import { useAuth } from './auth';
 import LoadingFallback from './LoadingFallback';
 

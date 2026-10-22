@@ -1,0 +1,207 @@
+import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../shared/config/customClasses/typeParse'
+import DataTable, { Alignment } from '@/shared/components/data-table-bridge';
+
+function PQRS_COMPONENT_CLOCKS({ translation, swaMsg, globals, translation_form, currentItem }) {
+
+        // DATA GETTERS 
+        let get_PQRS_TIME = () => {
+            if (currentItem.pqrs_time) return currentItem.pqrs_time;
+            return {
+                creation: '',
+                creation: false,
+                time: 30,
+                legal: false,
+                reply_formal: false,
+            }
+        }
+        let _GET_NOTIFY_CONTEXT = (_value, _date) => {
+            if (_value == 0) return <label className="text-warning">PENDIENTE</label>
+            if (_value == 1) return <label className="text-success">SI CONSTANCIA FISICA DE RADICACION - {dateParser(_date)}</label>
+            if (_value == 2) return <label className="text-success">SI - CORREO ELECTRONICO DE RECIBIDO</label>
+            if (_value == 3) return <label className="text-danger">NO</label>
+            if (_value == 4) return <label className="text-success">SI CONSTANCIA FISICA DE OFICIO - {dateParser(_date)}</label>
+            if (_value == 5) return <label className="text-success">SI - CORREO ELECTRONICO</label>
+
+        }
+
+        let _GET_CONTACTS = () => {
+            return currentItem.pqrs_contacts;
+        }
+
+        const SHOW_NOTIFICATIONS = () => {
+            var _LIST = _GET_CONTACTS();
+            
+            const columns = [
+                {
+                    name: '<b>CONTACTO</b>',
+                    selector: row => row.name,
+                    minWidth: '100px',
+                    sortable: true,
+                    filterable: true,
+                    cell: row => <h6 className="pt-3 text-center">{row.email ? row.email : row.address}</h6>
+                },
+                {
+                    name: '<b>NOTIFICACIÓN - CONFIRMACIÓN</b>',
+                    selector: row => row.competence,
+                    minWidth: '100px',
+                    sortable: true,
+                    filterable: true,
+                    cell: row => <h6>{ row.notify_confirm ? _GET_NOTIFY_CONTEXT(row.notify_confirm, row.notify_confirm_date) : <label className="text-warning">PENDIENTE</label> }</h6>
+                },
+                {
+                    name: '<b>NOTIFICACIÓN - EXTENSION</b>',
+                    selector: row => row.asign,
+                    minWidth: '100px',
+                    sortable: true,
+                    filterable: true,
+                    cell: row => <h6>{ row.notify_reply ? _GET_NOTIFY_CONTEXT(row.notify_reply, row.notify_date): <label className="text-warning">PENDIENTE</label>}</h6>,
+                },
+                {
+                    name: '<b>NOTIFICACIÓN - OFICIO RESPUESTA</b>',
+                    selector: row => row.asign,
+                    minWidth: '100px',
+                    sortable: true,
+                    omit: currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 0 : 1 : 1,
+                    filterable: true,
+                    cell: row => <h6>{row.notify_extension  && row.notify_extension_date ? _GET_NOTIFY_CONTEXT(row.notify_extension, row.notify_extension_date) : <label className="text-warning">PENDIENTE</label> }</h6>
+                },
+            ]
+            var _COMPONENT = <DataTable
+                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+                noDataComponent="No hay mensajes"
+                striped="true"
+                columns={columns}
+                data={_LIST}
+                highlightOnHover
+                className="data-table-component"
+                noHeader
+            />
+            return _COMPONENT;
+        }
+
+       // var  validation = currentItem.pqrs_law ? currentItem.pqrs_law.extension == true : null;
+        var validation_extension = currentItem.pqrs_law ? currentItem.pqrs_law.extension == true : null;
+
+        // COMPONENTS JSX
+        let _TIME_CONTROL_COMPONENT = () => {
+            let pTime = get_PQRS_TIME();
+            let ext = currentItem.pqrs_law ? currentItem.pqrs_law.extension ? 2 : 1 : 1;
+            return <>            
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-3">
+
+                            <div className="col">
+                                <label>Fecha inicio de terminos</label>
+                            </div>
+                            <div className="col">
+                                <label>Fecha limite de respuesta</label>
+                            </div>
+                            <div className="col">
+                                <label>Termino legal de respuesta</label>
+                            </div>
+                            <div className="col">
+                                <label>(Con prorroga)</label>
+                            </div>
+                            {pTime.reply_formal ? <>
+                                <div className="col">
+
+                                    <label>Fecha envío respuesta</label>
+                                </div>
+                                <div className="col">
+                                    <label>Tiempo real de respuesta</label>
+                                </div>
+                            </> : <>
+                                <div className="col">
+                                    <label>Tiempo de Respuesta Restante</label>
+                                </div>
+                                <div className="col">
+                                    <label>Fecha Limite Respuesta</label>
+                                </div>
+                            </>}
+                          
+
+
+                        </div>
+                        <div className="col-3">
+                            <div className="col">
+                                <label className="fw-bold">{dateParser(pTime.legal)}</label>
+                            </div>
+                            <div className="col">
+                                <label className="fw-bold">{dateParser(dateParser_finalDate(pTime.legal, pTime.time))}</label>
+                            </div>
+                            <div className="col">
+                                <label className="fw-bold">{pTime.time * (ext)} Día(s) hábiles</label>
+                            </div>
+                            <div className="col">
+                                <label className="fw-bold">{validation_extension ? <label className='text-warning'>Si</label> : <label>No</label>} </label>
+                            </div>
+                            {pTime.reply_formal
+                                ? <>
+                                    <div className="col">
+                                        <label className="fw-bold">{dateParser(pTime.reply_formal)}</label>
+                                    </div>
+                                    <div className="col">
+                                        <label className="fw-bold">{dateParser_dateDiff(pTime.legal, pTime.reply_formal) + ' dia(s) calendario'}</label>
+                                    </div>
+                                </> :
+                                <>
+                                    <div className="col">
+                                        <label className="fw-bold">{dateParser_timeLeft(pTime.legal, pTime.time * (ext))} Día(s) habiles</label>
+                                    </div>
+                                    <div className="col">
+                                        <label className="fw-bold">{dateParser(dateParser_finalDate(pTime.legal, pTime.time * (ext)))}</label>
+                                    </div>
+                                </>}
+                          
+                        </div>
+                        <div className="col-6">
+                            {SHOW_NOTIFICATIONS()}
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+                 
+
+                
+
+            </>
+        }
+        let _ACTION_REVIEW_COMPONENT = () => {
+            return <>
+                <hr />
+                <div className="row">
+                    <label className="fw-bold">Acción de Mejora</label>
+                    <div className="col-12">
+                        <label>{currentItem.action_review}</label>
+                    </div>
+                </div>
+            </>
+        }
+
+        // DATA CONVERTERS
+
+
+    return (
+        <div>
+            {_TIME_CONTROL_COMPONENT()}
+            {currentItem.action_review
+                ? <>
+                    {_ACTION_REVIEW_COMPONENT()}
+                </>
+                : ""}
+        </div>
+    );
+}
+
+export default PQRS_COMPONENT_CLOCKS;

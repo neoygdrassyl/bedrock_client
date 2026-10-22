@@ -1,7 +1,7 @@
 import {
   filterCubDictionary,
   normalizeCubDictionaryPayload,
-} from '../app/pages/user/dictionary-cub.utils';
+} from '../features/dictionary/dictionary-cub.utils';
 
 describe('dictionary-cub utils', () => {
   const rows = normalizeCubDictionaryPayload([

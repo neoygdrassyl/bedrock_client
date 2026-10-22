@@ -60,12 +60,12 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   ),
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsService,
 }));
 
-vi.mock('../app/pages/user/pqrs/newpqrs', () => ({
+vi.mock('../features/pqrs/newpqrs', () => ({
   __esModule: true,
   default: ({ refreshRequested }) => (
     <div data-testid='pqrs-new-stub'>
@@ -74,7 +74,7 @@ vi.mock('../app/pages/user/pqrs/newpqrs', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/pqrs/pqrs_manage.view', () => ({
+vi.mock('../features/pqrs/pqrs_manage.view', () => ({
   __esModule: true,
   default: ({ NAVIGATION }) => (
     <div data-testid='pqrs-manage-stub'>
@@ -94,7 +94,7 @@ vi.mock('../app/pages/user/pqrs/pqrs_manage.view', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/pqrs/replypqrs', () => ({
+vi.mock('../features/pqrs/replypqrs', () => ({
   __esModule: true,
   default: ({ refreshList }) => (
     <div data-testid='pqrs-reply-stub'>
@@ -103,7 +103,7 @@ vi.mock('../app/pages/user/pqrs/replypqrs', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/pqrs/lockpqrs', () => ({
+vi.mock('../features/pqrs/lockpqrs', () => ({
   __esModule: true,
   default: ({ refreshList }) => (
     <div data-testid='pqrs-lock-stub'>
@@ -112,16 +112,16 @@ vi.mock('../app/pages/user/pqrs/lockpqrs', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/pqrs/infopqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-info-stub' /> }));
-vi.mock('../app/pages/user/pqrs/asignpqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-asign-stub' /> }));
-vi.mock('../app/pages/user/pqrs/infomalpqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-informal-stub' /> }));
-vi.mock('../app/pages/user/pqrs/pqrs_edit', () => ({ __esModule: true, default: () => <div data-testid='pqrs-edit-stub' /> }));
-vi.mock('../app/pages/user/pqrs/pqrs_macrotable', () => ({ __esModule: true, default: () => <div data-testid='pqrs-macro-stub' /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_reviewAction.component', () => ({ __esModule: true, PQRS_ACTION_REVIEW: () => <div data-testid='pqrs-review-stub' /> }));
-vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({ __esModule: true, default: () => <div data-testid='submit-x-fun-stub' /> }));
-vi.mock('../app/pages/user/pqrs/access_edit', () => ({ __esModule: true, ACESS_EDIT: () => <div data-testid='access-edit-stub' /> }));
+vi.mock('../features/pqrs/infopqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-info-stub' /> }));
+vi.mock('../features/pqrs/asignpqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-asign-stub' /> }));
+vi.mock('../features/pqrs/infomalpqrs', () => ({ __esModule: true, default: () => <div data-testid='pqrs-informal-stub' /> }));
+vi.mock('../features/pqrs/pqrs_edit', () => ({ __esModule: true, default: () => <div data-testid='pqrs-edit-stub' /> }));
+vi.mock('../features/pqrs/pqrs_macrotable', () => ({ __esModule: true, default: () => <div data-testid='pqrs-macro-stub' /> }));
+vi.mock('../features/pqrs/components/pqrs_reviewAction.component', () => ({ __esModule: true, PQRS_ACTION_REVIEW: () => <div data-testid='pqrs-review-stub' /> }));
+vi.mock('../features/ventanilla/submit_x_fun.component', () => ({ __esModule: true, default: () => <div data-testid='submit-x-fun-stub' /> }));
+vi.mock('../features/pqrs/access_edit', () => ({ __esModule: true, ACESS_EDIT: () => <div data-testid='access-edit-stub' /> }));
 
-import PQRSADMIN from '../app/pages/user/pqrs/pqrsadmin.functional';
+import PQRSADMIN from '../features/pqrs/pqrsadmin.functional';
 
 const baseProps = {
   translation: {},

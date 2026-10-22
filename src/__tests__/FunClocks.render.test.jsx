@@ -136,7 +136,7 @@ vi.mock('../features/expediente/fun/fun_forms/components/clocks_control.componen
   default: () => React.createElement('div', { 'data-testid': 'clocks-control-stub' }),
 }));
 
-vi.mock('../app/components/emails.component', () => ({
+vi.mock('../features/messaging/components/emails.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'emails-stub' }),
 }));

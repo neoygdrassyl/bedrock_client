@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import { Button } from '@/shared/ui/button';
-import SubmitService from '../../../app/services/submit.service';
+import SubmitService from '../../ventanilla/api/submit.service';
 import Collapsible from '../../../shared/components/Collapsible';
 
 import EXPEDITION_SERVICE from '../api/expedition.service';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import FUN_SERVICE from '../api/fun.service';
 import '../../../shared/styles/docs-expediente.css';
 

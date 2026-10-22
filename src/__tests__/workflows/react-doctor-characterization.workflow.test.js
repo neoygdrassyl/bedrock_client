@@ -3,7 +3,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import ExpeditionService from '../../features/expediente/api/expedition.service';
 import FunService from '../../features/expediente/api/fun.service';
 import RecordLawService from '../../features/expediente/api/record_law.service';
-import SubmitService from '../../app/services/submit.service';
+import SubmitService from '../../features/ventanilla/api/submit.service';
 
 let server;
 let resetWorkflowDb;

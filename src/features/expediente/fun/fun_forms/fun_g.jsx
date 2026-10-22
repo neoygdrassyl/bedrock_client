@@ -20,7 +20,7 @@ import FUN_G_REPORTS from './components/fun_g_reports.component';
 import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.component';
 import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
-import ARCHIVE_FUN_VIEW from '../../../../app/pages/user/archive/arcXfun_view.component';
+import ARCHIVE_FUN_VIEW from '../../../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';
 import { swalError } from '@/shared/utils/swalAdapter';
