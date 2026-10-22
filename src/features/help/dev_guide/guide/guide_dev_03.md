@@ -66,52 +66,34 @@ flowchart TB
 
 ## 3.2 Estructura de Directorios
 
+El código se organiza por dominio (feature-first):
+
 ```
 src/
-├── index.js              # Entry point
-├── index.css             # Estilos globales
-├── http-common.js        # Configuración Axios
-├── reportWebVitals.js    # Métricas
+├── index.jsx             # Entry point (index.html carga /src/index.jsx)
+├── index.css             # Estilos globales (Tailwind)
 │
-├── app/
-│   ├── App.js            # Router principal + Auth
-│   ├── App.css           # Estilos del App
-│   │
-│   ├── components/       # Componentes reutilizables
-│   │   ├── navbar.js
-│   │   ├── footer.js
-│   │   ├── button.component.jsx
-│   │   ├── forms/        # Formularios comunes
-│   │   ├── dashBoardCards/   # Tarjetas dashboard
-│   │   └── customClasses/    # Clases CSS custom
-│   │
-│   ├── pages/            # Páginas por módulo
-│   │   ├── home.js
-│   │   ├── dashboard/
-│   │   ├── fun/
-│   │   ├── pqrs/
-│   │   ├── submit/
-│   │   ├── nomenclature/
-│   │   ├── user/
-│   │   └── ...
-│   │
-│   ├── services/         # Servicios API
-│   │   ├── users.service.js
-│   │   ├── fun.service.js
-│   │   ├── pqrs.service.js
-│   │   └── ...
-│   │
-│   ├── translation/      # Archivos i18n
-│   │   ├── en/
-│   │   └── es/
-│   │
-│   ├── utils/            # Utilidades
-│   │   └── PrivateRoute.js
-│   │
-│   └── img/              # Imágenes estáticas
+├── app/                  # Arranque, rutas y shell
+│   ├── App.jsx           # Providers + traducciones
+│   ├── router/           # routes.jsx, PrivateRoute.jsx, auth.jsx
+│   └── layouts/          # AppShell, sidebar, header
 │
-└── styles/               # Estilos adicionales
-    └── docs-expediente.css
+├── features/             # Un dominio por carpeta
+│   ├── expediente/       # fun/, documental/, records/, expeditions/, clocks/, api/
+│   ├── ventanilla/       # Radicación (+ online-radication/), api/
+│   ├── pqrs/
+│   ├── dashboard/
+│   ├── settings/
+│   └── ...               # auth, archive, nomenclature, norms, help, messaging, ...
+│
+└── shared/               # Código sin dominio
+    ├── api/              # http-common.js y services compartidos
+    ├── ui/               # shadcn/ui
+    ├── dovela-ui/        # Componentes de diseño Dovela
+    ├── components/       # Componentes genéricos
+    ├── config/           # jsons/, customClasses/, vars
+    ├── i18n/             # Archivos i18n (en/, es/)
+    └── lib/ hooks/ utils/ styles/ assets/
 ```
 
 ### Diagrama Visual de Estructura
@@ -119,45 +101,33 @@ src/
 ```mermaid
 flowchart TB
     subgraph src["📁 src/"]
-        index[index.js]
-        http[http-common.js]
-        
+        index[index.jsx]
+
         subgraph app["📁 app/"]
-            App[App.js]
-            
-            subgraph components["📁 components/"]
-                navbar[navbar.js]
-                footer[footer.js]
-                forms[📁 forms/]
-                cards[📁 dashBoardCards/]
-            end
-            
-            subgraph pages["📁 pages/"]
-                home[home.js]
-                dashboard[📁 dashboard/]
-                fun[📁 fun/]
-                pqrs[📁 pqrs/]
-                user[📁 user/]
-            end
-            
-            subgraph services["📁 services/"]
-                userSvc[users.service.js]
-                funSvc[fun.service.js]
-                pqrsSvc[pqrs.service.js]
-            end
-            
-            subgraph translation["📁 translation/"]
-                en[📁 en/]
-                es[📁 es/]
-            end
+            App[App.jsx]
+            router[📁 router/]
+            layouts[📁 layouts/]
+        end
+
+        subgraph features["📁 features/"]
+            expediente[📁 expediente/]
+            ventanilla[📁 ventanilla/]
+            pqrs[📁 pqrs/]
+            others[📁 .../]
+        end
+
+        subgraph shared["📁 shared/"]
+            http[api/http-common.js]
+            ui[📁 ui/]
+            i18n[📁 i18n/]
         end
     end
-    
+
     index --> App
-    App --> pages
-    pages --> services
-    services --> http
-    App --> components
+    App --> router
+    router --> features
+    features --> shared
+    app --> shared
 ```
 
 ---
@@ -250,13 +220,13 @@ flowchart LR
 
 ## 3.4 Servicios (API Clients)
 
-Cada módulo tiene su servicio dedicado en `src/app/services/`:
+Cada módulo tiene su servicio dedicado en `src/features/<feature>/api/` (o en `src/shared/api/` si lo usan varias features):
 
 ### Patrón de Servicio
 
 ```javascript
 // Ejemplo: users.service.js
-import http from "../../http-common";
+import http from "@/shared/api/http-common";
 
 class UsersDataService {
     login(data) {

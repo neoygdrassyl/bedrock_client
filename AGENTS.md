@@ -39,7 +39,7 @@ Regla cardinal:
 | UI | Bootstrap 5 + wrappers locales + shadcn/ui (Radix + Tailwind) |
 | Editores | BlockNote (`src/shared/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
 | Fechas | dayjs (`src/shared/utils/dayjs.config.js`) |
-| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/features/settings/` |
+| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/features/expediente/expeditions/engines/` |
 | Node | 22+ obligatorio |
 
 ## 3.1 Priorizacion de skills UI/UX
@@ -78,17 +78,34 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
-## 4.1 Estructura objetivo (codigo nuevo)
+## 4.1 Estructura (feature-first)
 
-El arbol actual (`src/app/pages`, `src/features/messaging/components`, `src/app/services`) es legacy y migra de forma incremental. Todo codigo nuevo va a la estructura objetivo; no muevas legacy masivamente sin un plan acordado.
+```
+src/
+  index.jsx, index.css   # entrada de Vite (index.html carga /src/index.jsx) y estilos globales
+  app/                   # App.jsx, router/ y layouts/: arranque, rutas y shell
+  features/<feature>/    # un dominio: paginas, componentes, hooks, api/ y tests juntos
+  shared/                # codigo sin dominio
+    api/                 # http-common, http-client-factory, requestCache y services usados por varias features
+    ui/                  # shadcn/ui (alias de components.json)
+    dovela-ui/           # componentes de diseno Dovela
+    components/          # componentes genericos (legacy-modal, icon, data-table-bridge, legacy-ui, ...)
+    config/              # jsons/, customClasses/, vars.global.js, runtime-features.js
+    lib/ hooks/ utils/ i18n/ styles/ assets/
+  __tests__/ __mocks__/  # suites y mocks globales de Vitest
+```
+
+Features actuales: `auth`, `dashboard`, `expediente` (`fun/`, `documental/`, `records/`, `expeditions/`, `clocks/`, `api/`), `ventanilla`, `pqrs`, `archive`, `publications`, `nomenclature`, `appointments`, `business-calendar`, `certifications`, `liquidator`, `professionals`, `seals`, `dictionary`, `documentos`, `norms` (con `zone-use/`), `simulador` (con `legal_flow_guide/`), `settings`, `messaging`, `help`.
+
+`public/` no se mueve: `TemplateEngine` descarga `/templates/...` en runtime.
 
 1. **Feature-first:** cada dominio vive en `src/features/<feature>/` con sus componentes, hooks, api y tests juntos.
-2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios.
-3. **Las features se importan entre si solo via su `index.js`** (API publica). Nada de rutas profundas a otra feature.
+2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios. Excepcion legacy pendiente: `shared/components/vizualizer.component.jsx` usa `features/expediente/api/fun.service.js`.
+3. **Las features se importan entre si solo via su `index.js`** (API publica) en codigo nuevo. Las importaciones profundas entre features que ya existen (sobre todo `expediente` <-> `ventanilla` y `expediente` -> `pqrs`) son legacy; no agregues mas.
 4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/shared/api/http-common.js` y devuelve datos.
 5. **Nombres:** componentes en `PascalCase.jsx`; modulos sin JSX (hooks, utils, api) en `camelCase.js`. Todo archivo con JSX usa extension `.jsx` (Vite ya no transforma JSX dentro de `.js`).
 6. **Tests colocalizados:** `Componente.test.jsx` / `modulo.test.js` junto al archivo que prueban.
-7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion.
+7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion. Toda ruta del backoffice va dentro de `PrivateLayout`; la unica ruta publica es `/login`.
 
 ## 5. Modulos de alto riesgo
 
@@ -113,7 +130,7 @@ El arbol actual (`src/app/pages`, `src/features/messaging/components`, `src/app/
 
 ### TemplateEngine y plantillas publicas
 
-- No editar `public/templates/` sin entender el motor en `src/features/settings/`.
+- No editar `public/templates/` sin entender el motor en `src/features/expediente/expeditions/engines/`.
 
 ## 6. Restricciones no negociables
 
@@ -121,7 +138,7 @@ El arbol actual (`src/app/pages`, `src/features/messaging/components`, `src/app/
 2. No cambies contratos de datos a ciegas; verifica backend y services.
 3. No uses `process.env`; usa `import.meta.env.VITE_*`.
 4. No uses `React.forwardRef()` ni `defaultProps` en codigo nuevo.
-5. No metas llamadas HTTP directas en componentes; usa `src/app/services/`.
+5. No metas llamadas HTTP directas en componentes; usa el `api/` de la feature (`src/features/<feature>/api/`) o `src/shared/api/` si el service lo usan varias features.
 6. No ocultes ausencia de datos legalmente relevantes con `return null`; usa fallback visible.
 7. No introduzcas una libreria UI nueva sin consenso.
 8. No expongas datos sensibles de `src/shared/config/jsons/vars.jsx` en logs.
