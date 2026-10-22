@@ -29,17 +29,6 @@ test.use({ viewport: { width: 1920, height: 1080 } });
 const ERROR_BOUNDARY_TEXT = 'Error en este módulo';
 
 /**
- * Public routes: reachable without auth, but still wrapped in
- * ShellAwarePublicRoute + Suspense around a lazy component.
- */
-const PUBLIC_LAZY_ROUTES = [
-  { path: '/normas', label: 'NORMS' },
-  { path: '/certificados', label: 'CERTIFICATE_WORKER' },
-  { path: '/uso-suelo', label: 'ZONE_USE' },
-  { path: '/dev-guide', label: 'DEV_GUIDE' },
-];
-
-/**
  * Authenticated routes: rendered inside PrivateLayout (AppShell + Suspense).
  * Excludes /funmanage/expediente/:radicado (needs a real param, tested
  * separately below) and the legal_config-adjacent /configuracion tab content
@@ -68,6 +57,10 @@ const PRIVATE_LAZY_ROUTES = [
   { path: '/ayuda', label: 'GUIDE_USER' },
   { path: '/configuracion', label: 'SETTINGS (default tab, no legal_config)' },
   { path: '/sellos', label: 'Seals' },
+  { path: '/normas', label: 'NORMS' },
+  { path: '/certificados', label: 'CERTIFICATE_WORKER' },
+  { path: '/uso-suelo', label: 'ZONE_USE' },
+  { path: '/dev-guide', label: 'DEV_GUIDE' },
 ];
 
 /**
@@ -106,18 +99,6 @@ async function visitAndCollectDiagnostics(page, path) {
 
   return { consoleErrors, pageErrors };
 }
-
-test.describe('E2E: Lazy routes smoke (public)', () => {
-  for (const { path, label } of PUBLIC_LAZY_ROUTES) {
-    test(`${path} (${label}) mounts without console errors`, async ({ page }) => {
-      const { consoleErrors, pageErrors } = await visitAndCollectDiagnostics(page, path);
-
-      await expect(page.getByText(ERROR_BOUNDARY_TEXT)).toHaveCount(0);
-      expect(pageErrors, `pageerror events on ${path}`).toEqual([]);
-      expect(consoleErrors, `console.error messages on ${path}`).toEqual([]);
-    });
-  }
-});
 
 test.describe('E2E: Lazy routes smoke (authenticated)', () => {
   for (const { path, label } of PRIVATE_LAZY_ROUTES) {

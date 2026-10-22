@@ -39,23 +39,3 @@ export function LoginPageWithAuth() {
     ? <Navigate to="/dashboard" replace />
     : <LoginPage signin={auth.signin} />;
 }
-
-// ── Public route that renders inside the shell when a session exists ──
-
-export function ShellAwarePublicRoute({ children }) {
-  const auth = useAuth();
-  const navigate = useNavigate();
-
-  if (!auth.user) {
-    return children;
-  }
-
-  return (
-    <AppShell
-      user={auth.user}
-      onLogout={() => auth.signout(() => navigate('/login'))}
-    >
-      {children}
-    </AppShell>
-  );
-}

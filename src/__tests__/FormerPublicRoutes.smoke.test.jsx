@@ -29,6 +29,10 @@ vi.mock('../app/pages/user/certifications/certification.page', () => ({ __esModu
 vi.mock('../app/pages/user/zone_use/zone_use.page', () => ({ __esModule: true, default: MockPage('ZONE_USE') }));
 vi.mock('../app/pages/user/legal_flow_guide/LegalFlowGuide.page', () => ({ __esModule: true, default: MockPage('LEGAL_FLOW_GUIDE') }));
 
+vi.mock('../app/layouts/BusinessCalendarBootstrap', () => ({
+  default: ({ children }) => children,
+}));
+
 vi.mock('../app/layouts/AppShell', () => {
   const React = require('react');
   return {
@@ -83,7 +87,10 @@ function seedSession() {
   window.user = user;
 }
 
-describe('Public modules keep shell for authenticated users', () => {
+// /normas, /certificados, /uso-suelo and /dev-guide used to be public leftovers
+// of the citizen website. They keep their URLs but now live behind the same
+// session guard (PrivateLayout) as every other backoffice module.
+describe('Former public routes require a session', () => {
   beforeEach(() => {
     import.meta.env.VITE_API_URL = 'http://localhost/dovela-backend/public';
     import.meta.env.VITE_GLOBAL_ID = '1';
@@ -91,19 +98,27 @@ describe('Public modules keep shell for authenticated users', () => {
     window.user = null;
   });
 
-  it('renders /normas inside AppShell when session exists', async () => {
+  it.each([
+    ['/normas', 'NORMS'],
+    ['/certificados', 'CERTIFICATE_WORKER'],
+    ['/uso-suelo', 'ZONE_USE'],
+    ['/dev-guide', 'DEV_GUIDE'],
+  ])('renders %s inside AppShell when a session exists', async (path, label) => {
     seedSession();
-    window.history.pushState({}, '', '/normas');
+    window.history.pushState({}, '', path);
     render(<App />);
     expect(await screen.findByTestId('app-shell')).toBeInTheDocument();
-    expect(await screen.findByTestId('mock-NORMS')).toBeInTheDocument();
+    expect(await screen.findByTestId(`mock-${label}`)).toBeInTheDocument();
   });
 
-  it('renders /certificados inside AppShell when session exists', async () => {
-    seedSession();
-    window.history.pushState({}, '', '/certificados');
-    render(<App />);
-    expect(await screen.findByTestId('app-shell')).toBeInTheDocument();
-    expect(await screen.findByTestId('mock-CERTIFICATE_WORKER')).toBeInTheDocument();
-  });
+  it.each(['/normas', '/certificados', '/uso-suelo', '/dev-guide'])(
+    'redirects %s to /login without a session',
+    async (path) => {
+      window.history.pushState({}, '', path);
+      const { container } = render(<App />);
+      await waitFor(() => expect(window.location.pathname).toBe('/login'));
+      expect(container.querySelector('#email')).toBeTruthy();
+      expect(screen.queryByTestId('app-shell')).toBeNull();
+    },
+  );
 });
