@@ -95,14 +95,6 @@ Vite carga variables segun el modo:
 
 Toda variable expuesta al frontend debe empezar por `VITE_`. Estas variables quedan embebidas en el bundle del navegador, asi que no pongas secretos privados en archivos `VITE_*`.
 
-Para desarrollo, `.env.development` usa la llave publica de prueba oficial de Google reCAPTCHA v2:
-
-```bash
-VITE_GOOGLE_CAPTCHA_HTML="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-```
-
-En produccion reemplazala desde `.env.production.local` o desde el pipeline con la llave publica real del sitio. Si la variable queda vacia, la pantalla de login omite `ReCAPTCHA` y sigue con el flujo normal, evitando el error `Missing required parameters: sitekey`.
-
 Produccion queda configurada por defecto para CUB1:
 
 ```bash

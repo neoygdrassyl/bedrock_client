@@ -71,7 +71,3 @@ if (!import.meta.env.VITE_GLOBAL_ID) {
   // @ts-ignore
   import.meta.env.VITE_GLOBAL_ID = '1';
 }
-if (!import.meta.env.VITE_GOOGLE_CAPTCHA_HTML) {
-  // @ts-ignore
-  import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-}

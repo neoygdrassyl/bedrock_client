@@ -73,14 +73,13 @@ describe('smart build configuration', () => {
 
     // Vars that must ship with a real, non-empty default: an empty VITE_API_URL
     // or VITE_GLOBAL_ID leaves a fresh checkout pointing at nothing, and an
-    // empty VITE_GOOGLE_CAPTCHA_HTML/VITE_API_PROF_URL/VITE_API_EMAIL_URL/
-    // VITE_BUILD_ANALYZE silently breaks login captcha, professional lookup,
+    // empty VITE_API_PROF_URL/VITE_API_EMAIL_URL/VITE_BUILD_ANALYZE silently
+    // breaks professional lookup,
     // email notifications, or the analyzer toggle without anyone noticing until
     // the app is running.
     const requiredNonEmptyVars = [
       'VITE_API_URL',
       'VITE_GLOBAL_ID',
-      'VITE_GOOGLE_CAPTCHA_HTML',
       'VITE_API_PROF_URL',
       'VITE_API_EMAIL_URL',
       'VITE_BUILD_ANALYZE',
@@ -89,7 +88,7 @@ describe('smart build configuration', () => {
     // Documented optional overrides (README.md "Variables de entorno"):
     // intentionally shipped empty in the template and filled per environment
     // via *.local overrides, so they must be declared but may stay empty.
-    const optionalVars = ['VITE_GOOGLE_CAPTCHA_KEY'];
+    const optionalVars = [];
 
     for (const envName of [...requiredNonEmptyVars, ...optionalVars]) {
       expect(declaredValue(envName), `${envName} must be declared in .env.example as KEY="value"`).not.toBeNull();

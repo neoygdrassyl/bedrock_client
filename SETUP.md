@@ -39,7 +39,6 @@ Los valores de ejemplo ya sirven para local:
 | `VITE_APP_URL` | `http://localhost:3000` | Puerto del servidor de Vite |
 | `VITE_API_URL` | `"/api"` | Ruta relativa: Vite hace proxy al backend |
 | `BACKOFFICE_GATE_URL` | `http://127.0.0.1:3001` | Destino del proxy (el backend) y de la espera previa de `npm run dev` |
-| `VITE_GOOGLE_CAPTCHA_HTML` | clave de prueba de Google | reCAPTCHA siempre válido en local |
 | `VITE_DOVELA_CENTRAL_URL` | vacío | Opcional; no se necesita en local |
 | `VITE_ALLOWED_HOSTS` | vacío | Solo para túneles temporales |
 
