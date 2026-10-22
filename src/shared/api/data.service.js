@@ -1,3 +1,5 @@
+import { clearLogQueue } from "@/shared/observability/logger";
+
 class DataService {
     getFullName() {
         return window.user.name + " " + window.user.surname;
@@ -21,6 +23,8 @@ class DataService {
         localStorage.setItem("dovela_user", JSON.stringify(userData));
     }
     setUserNull(){
+        // Events recorded under this session must not be sent with the next one.
+        clearLogQueue();
         window.user = null;
         localStorage.removeItem("dovela_user");
         localStorage.removeItem("dovela_token");

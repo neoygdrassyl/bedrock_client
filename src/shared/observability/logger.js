@@ -9,8 +9,12 @@
  * - never throws: every public function swallows its own failures;
  * - never loops: the transport request opts out of HTTP error logging and a
  *   failed batch is dropped, not retried or logged;
- * - bounded: identical event+message pairs are deduplicated for 30 s and at
- *   most 50 events are queued per page load.
+ * - bounded: identical event+message+relatedRequestId triples are deduplicated
+ *   for 30 s and at most 50 events are accepted per rolling 10-minute window;
+ * - per session: each event remembers the session it was recorded in and is only
+ *   sent with that same session. Events recorded before login, or by a user who
+ *   has since logged out, are dropped, never sent under another user's token.
+ *   `clearLogQueue()` runs when the session is torn down.
  *
  * The transport is registered by the main HTTP client (`setLogTransport`) so this
  * module has no import cycle with the API layer.
@@ -20,8 +24,10 @@ const LEVELS = new Set(['error', 'warn', 'info']);
 const FLUSH_DELAY_MS = 5000;
 const FLUSH_AT_EVENTS = 10;
 const DEDUPE_WINDOW_MS = 30 * 1000;
-const MAX_EVENTS_PER_PAGE = 50;
-// Backend limits: <= 20 events and <= 32 KB per request, `data` <= 4 KB.
+const RATE_LIMIT_EVENTS = 50;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+// Backend limits: <= 20 events and <= 32 KB per request, `data` <= 4096 bytes
+// (UTF-8). Sizes below are measured in UTF-8 bytes with a safety margin.
 const MAX_EVENTS_PER_REQUEST = 20;
 const MAX_REQUEST_BYTES = 28 * 1024;
 const MAX_DATA_BYTES = 4000;
@@ -37,8 +43,9 @@ const SENSITIVE_KEY_PATTERN = /(password|passwd|contrase|token|authorization|coo
 const SENSITIVE_QUERY_PATTERN = /((?:password|passwd|token|authorization|secret|api[-_]?key|jwt|session|cookie)=)[^&\s]+/gi;
 
 const state = {
+  // Items are `{ entry, session }`: the event and the token it was recorded under.
   queue: [],
-  accepted: 0,
+  acceptedAt: [],
   recent: new Map(),
   timer: null,
   transport: null,
@@ -154,11 +161,26 @@ export function setLogTransport(transport) {
   state.transport = typeof transport === 'function' ? transport : null;
 }
 
-function hasSession() {
+function currentSession() {
   try {
-    return Boolean(globalThis.localStorage?.getItem(SESSION_TOKEN_KEY));
+    return globalThis.localStorage?.getItem(SESSION_TOKEN_KEY) || null;
   } catch {
-    return false;
+    return null;
+  }
+}
+
+let encoder = null;
+function utf8Bytes(text) {
+  try {
+    encoder = encoder || new TextEncoder();
+    return encoder.encode(text).length;
+  } catch {
+    let bytes = 0;
+    for (const char of text) {
+      const code = char.codePointAt(0);
+      bytes += code < 0x80 ? 1 : code < 0x800 ? 2 : code < 0x10000 ? 3 : 4;
+    }
+    return bytes;
   }
 }
 
@@ -186,13 +208,28 @@ function echo(level, entry) {
   } catch {}
 }
 
+// Longest prefix of `json` whose `{ truncated, preview }` wrapper fits in
+// MAX_DATA_BYTES once serialized (escaping and multi-byte characters included).
+function truncatedPreview(json) {
+  let low = 0;
+  let high = json.length;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    const size = utf8Bytes(JSON.stringify({ truncated: true, preview: json.slice(0, mid) }));
+    if (size <= MAX_DATA_BYTES) low = mid;
+    else high = mid - 1;
+  }
+  return { truncated: true, preview: json.slice(0, low) };
+}
+
 function boundedData(data) {
   if (data == null) return undefined;
   const redacted = redactObject(data);
   try {
     const json = JSON.stringify(redacted);
-    if (json.length <= MAX_DATA_BYTES) return redacted;
-    return { truncated: true, preview: json.slice(0, MAX_DATA_BYTES - 200) };
+    if (json === undefined) return undefined;
+    if (utf8Bytes(json) <= MAX_DATA_BYTES) return redacted;
+    return truncatedPreview(json);
   } catch {
     return undefined;
   }
@@ -214,10 +251,10 @@ function takeBatch() {
   const batch = [];
   let bytes = 16;
   while (state.queue.length && batch.length < MAX_EVENTS_PER_REQUEST) {
-    const next = state.queue[0];
-    const size = JSON.stringify(next).length + 1;
+    const next = state.queue[0].entry;
+    const size = utf8Bytes(JSON.stringify(next)) + 1;
     if (batch.length && bytes + size > MAX_REQUEST_BYTES) break;
-    batch.push(state.queue.shift());
+    batch.push(state.queue.shift().entry);
     bytes += size;
   }
   return batch;
@@ -228,7 +265,11 @@ function isEndpointMissing(error) {
   return status === 404 || status === 405 || status === 501;
 }
 
-/** Sends every queued event. Without a session or transport the queue waits. */
+/**
+ * Sends every event recorded under the current session. Without a session or
+ * transport the queue waits; events from another session (or from before login)
+ * are dropped.
+ */
 export function flushLogs() {
   try {
     if (state.timer) {
@@ -239,7 +280,10 @@ export function flushLogs() {
       state.queue = [];
       return;
     }
-    if (!state.transport || !state.queue.length || !hasSession()) return;
+    if (!state.transport || !state.queue.length) return;
+    const session = currentSession();
+    if (!session) return;
+    state.queue = state.queue.filter((item) => item.session === session);
 
     while (state.queue.length) {
       const batch = takeBatch();
@@ -261,8 +305,24 @@ export function flushLogs() {
 // ── Public API ───────────────────────────────────────────────────────
 
 /**
+ * Drops every queued event and the dedupe memory. Called when the session is
+ * torn down (401 or explicit logout) so nothing recorded under one user is sent
+ * with the next user's token.
+ */
+export function clearLogQueue() {
+  try {
+    if (state.timer) {
+      clearTimeout(state.timer);
+      state.timer = null;
+    }
+    state.queue = [];
+    state.recent = new Map();
+  } catch {}
+}
+
+/**
  * Records one event. Returns its `clientEventId` (the earlier one when it was
- * deduplicated), or null when it was dropped (over the per-page cap) or invalid.
+ * deduplicated), or null when it was dropped (over the rate limit) or invalid.
  *
  * @param {'error'|'warn'|'info'} level
  * @param {string} event short snake_case name, e.g. `http_error`
@@ -296,17 +356,19 @@ export function logEvent(level, event, fields = {}) {
     // A duplicate answers with the id of the event that was actually queued, so
     // a reference shown to the user always matches something in the logs.
     const now = Date.now();
-    const dedupeKey = `${entry.event}|${entry.message || ''}`;
+    const dedupeKey = `${entry.event}|${entry.message || ''}|${entry.relatedRequestId || ''}`;
     const seen = state.recent.get(dedupeKey);
     if (seen && now - seen.at < DEDUPE_WINDOW_MS) return seen.id;
     if (state.recent.size > 200) {
       state.recent.forEach((item, key) => { if (now - item.at >= DEDUPE_WINDOW_MS) state.recent.delete(key); });
     }
 
-    if (state.accepted >= MAX_EVENTS_PER_PAGE || state.transportDisabled) return null;
+    if (state.transportDisabled) return null;
+    state.acceptedAt = state.acceptedAt.filter((at) => now - at < RATE_LIMIT_WINDOW_MS);
+    if (state.acceptedAt.length >= RATE_LIMIT_EVENTS) return null;
     state.recent.set(dedupeKey, { at: now, id: entry.clientEventId });
-    state.accepted += 1;
-    state.queue.push(entry);
+    state.acceptedAt.push(now);
+    state.queue.push({ entry, session: currentSession() });
     scheduleFlush();
     return entry.clientEventId;
   } catch {
@@ -414,7 +476,7 @@ export function installGlobalErrorListeners(target = globalThis.window) {
 export function __resetLoggerForTests() {
   if (state.timer) clearTimeout(state.timer);
   state.queue = [];
-  state.accepted = 0;
+  state.acceptedAt = [];
   state.recent = new Map();
   state.timer = null;
   state.transport = null;
@@ -423,5 +485,5 @@ export function __resetLoggerForTests() {
 
 /** Test helper: events waiting to be sent. */
 export function __getQueuedEventsForTests() {
-  return state.queue.slice();
+  return state.queue.map((item) => item.entry);
 }
