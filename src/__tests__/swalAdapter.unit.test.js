@@ -8,6 +8,11 @@ vi.mock('sweetalert2', () => ({
     close: vi.fn(),
     showLoading: vi.fn(),
     isLoading: vi.fn(() => false),
+    isVisible: vi.fn(() => false),
+    getPopup: vi.fn(() => null),
+    getInput: vi.fn(() => null),
+    getCancelButton: vi.fn(() => null),
+    getDenyButton: vi.fn(() => null),
   },
 }));
 
@@ -28,7 +33,6 @@ import Swal from 'sweetalert2';
 import {
   __getQueuedEventsForTests,
   __resetLoggerForTests,
-  rememberHttpFailure,
 } from '@/shared/observability/logger';
 
 const swalThemeCss = readFileSync(path.resolve(__dirname, '../shared/styles/swal-theme.css'), 'utf8');
@@ -157,41 +161,28 @@ describe('swalError symptom classification', () => {
   it.each([
     [{ title: 'ERROR AL CARGAR', text: 'No ha sido posible cargar este item, intentelo nuevamente.' }],
     [{ title: 'Aviso', text: 'No se pudo cargar el listado de radicaciones.' }],
-    [{ title: 'Aviso', text: 'No fue posible cargar la lista de chequeo inteligente.' }],
-    [{ title: '<h2>Error</h2>', text: 'No se pudieron cargar los profesionales.' }],
-  ])('treats load failures as symptoms: %o', (opts) => {
-    expect(classifySwalError(opts).symptom).toBe(true);
-  });
-
-  it.each([
-    [{ title: 'ERROR AL GUARDAR', text: 'No fue posible guardar los cambios.' }],
-    [{ title: 'ERROR AL DESCARGAR', text: 'No fue posible descargar el documento.' }],
-    [{ title: 'ANEXOS INCOMPLETOS', text: 'Debe recargar el expediente.' }],
     [{ title: '<h2>SE HAN PRESENTADO ERRORES</h2>', text: 'Al parece hubo errores en el procesamiento de esta accion.' }],
-  ])('keeps action failures as modals: %o', (opts) => {
+    [{ title: 'ERROR AL GUARDAR', text: 'No fue posible guardar los cambios.' }],
+  ])('keeps every call without symptom: true as a modal: %o', (opts) => {
     expect(classifySwalError(opts).symptom).toBe(false);
   });
 
-  it('treats the generic message as a symptom only right after a failed GET', () => {
-    const generic = { title: '<h2>SE HAN PRESENTADO ERRORES</h2>', text: 'Al parece hubo errores en el procesamiento de esta accion.' };
-
-    rememberHttpFailure({ config: { method: 'post', dovelaRequestId: 'req_post_12345678' }, response: { status: 500 } });
-    expect(classifySwalError(generic)).toEqual({ symptom: false, relatedRequestId: 'req_post_12345678' });
-
-    rememberHttpFailure({ config: { method: 'get', dovelaRequestId: 'req_get_12345678' }, response: { status: 500 } });
-    expect(classifySwalError(generic)).toEqual({ symptom: true, relatedRequestId: 'req_get_12345678' });
-  });
-
-  it('honours the explicit symptom option and never toasts interactive dialogs', () => {
+  it('treats only an explicit symptom: true as a symptom, never for interactive dialogs', () => {
+    expect(classifySwalError({ title: 'Fallo', symptom: true }).symptom).toBe(true);
     expect(classifySwalError({ title: 'ERROR AL CARGAR', symptom: false }).symptom).toBe(false);
-    expect(classifySwalError({ title: 'Fallo al firmar', symptom: true }).symptom).toBe(true);
-    expect(classifySwalError({ title: 'ERROR AL CARGAR', showCancelButton: true }).symptom).toBe(false);
+    expect(classifySwalError({ title: 'ERROR AL CARGAR', symptom: true, showCancelButton: true }).symptom).toBe(false);
   });
 
-  it('logs and toasts a load failure instead of opening a modal', async () => {
+  it('reads the related request id from requestId or error', () => {
+    expect(classifySwalError({ requestId: 'req_explicit_1234' }).relatedRequestId).toBe('req_explicit_1234');
+    expect(classifySwalError({ error: { config: { dovelaRequestId: 'req_from_error_12' } } }).relatedRequestId).toBe('req_from_error_12');
+    expect(classifySwalError({}).relatedRequestId).toBeNull();
+  });
+
+  it('logs and toasts a symptom instead of opening a modal', async () => {
     const error = { config: { dovelaRequestId: 'req_load_12345678' }, response: { status: 503 } };
 
-    const result = await swalError({ title: 'ERROR AL CARGAR', text: 'No ha sido posible cargar este item.', error });
+    const result = await swalError({ title: 'ERROR AL CARGAR', text: 'No ha sido posible cargar este item.', error, symptom: true });
 
     expect(Swal.fire).not.toHaveBeenCalled();
     expect(result).toMatchObject({ isConfirmed: true, symptom: true });
@@ -209,12 +200,61 @@ describe('swalError symptom classification', () => {
     ]);
   });
 
-  it('closes a pending loading modal when a load failure becomes a toast', async () => {
+  it('keeps the load-looking title as a modal and logs it as an action failure', async () => {
+    await swalError({ title: 'ERROR AL CARGAR', text: 'No fue posible generar el PDF.', requestId: 'req_pdf_12345678' });
+
+    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'ERROR AL CARGAR', icon: 'error' }));
+    expect(toastWarning).not.toHaveBeenCalled();
+    expect(__getQueuedEventsForTests()).toEqual([
+      expect.objectContaining({
+        level: 'warn',
+        event: 'ui_action_failed',
+        message: 'No fue posible generar el PDF.',
+        relatedRequestId: 'req_pdf_12345678',
+        path: expect.any(String),
+        data: { title: 'ERROR AL CARGAR', text: 'No fue posible generar el PDF.' },
+      }),
+    ]);
+  });
+
+  it('closes an open spinner when a symptom becomes a toast', async () => {
+    Swal.isVisible.mockReturnValueOnce(true);
     Swal.isLoading.mockReturnValueOnce(true);
 
-    await swalError({ title: 'ERROR AL CARGAR', text: 'No ha sido posible cargar el consecutivo.' });
+    await swalError({ title: 'Aviso', text: 'No se pudo cargar el listado.', symptom: true });
 
     expect(Swal.close).toHaveBeenCalledTimes(1);
+  });
+
+  it('closes an open PDF progress popup when a symptom becomes a toast', async () => {
+    const popup = document.createElement('div');
+    popup.innerHTML = '<div id="swal-pdf-bar"></div>';
+    Swal.isVisible.mockReturnValueOnce(true);
+    Swal.getPopup.mockReturnValueOnce(popup);
+
+    await swalError({ title: 'Aviso', text: 'No se pudo cargar el listado.', symptom: true });
+
+    expect(Swal.close).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves unrelated modals open when a symptom becomes a toast', async () => {
+    const cancel = document.createElement('button');
+    Swal.isVisible.mockReturnValue(true);
+    Swal.getPopup.mockReturnValue(document.createElement('div'));
+
+    await swalError({ title: 'Aviso', text: 'No se pudo cargar el listado.', symptom: true });
+    expect(Swal.close).not.toHaveBeenCalled();
+
+    // A preConfirm loader of a dialog with a cancel button is not a spinner.
+    Swal.isLoading.mockReturnValue(true);
+    Swal.getCancelButton.mockReturnValue(cancel);
+    await swalError({ title: 'Aviso', text: 'No se pudo cargar otra lista.', symptom: true });
+    expect(Swal.close).not.toHaveBeenCalled();
+
+    Swal.isVisible.mockReturnValue(false);
+    Swal.getPopup.mockReturnValue(null);
+    Swal.isLoading.mockReturnValue(false);
+    Swal.getCancelButton.mockReturnValue(null);
   });
 
   it('does not pass the classification options to SweetAlert2', async () => {

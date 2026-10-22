@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import { toast } from 'sonner';
-import { getRecentHttpFailure, getRequestIdFromError, logEvent } from '@/shared/observability/logger';
+import { getRequestIdFromError, logEvent } from '@/shared/observability/logger';
 
 /**
  * Thin adapter over SweetAlert2.
@@ -63,25 +63,19 @@ export function swalSuccess(opts = {}) {
 
 // ── Error classification: symptom vs action failure ─────────────────
 //
-// Rule: a failed LOAD (data that a page or panel fetches to show) is a symptom.
-// The page is still usable, so instead of a blocking modal the failure is logged
-// (`ui_load_failed`) and a non-blocking toast shows the reference code. A failed
-// ACTION (save, delete, generate, validate…) keeps the modal: the user must know
-// the action did not happen.
+// Rule: a failed ACTION (save, delete, generate, download, validate, assign a
+// consecutive…) keeps the blocking modal: the user must know the action did not
+// happen. Every such call is also logged as `ui_action_failed` (warn) so it can
+// be traced, without changing what the user sees.
 //
-// A swalError call is a load failure when:
-//   1. it passes `symptom: true` (`symptom: false` forces the modal); or
-//   2. its title/text says so: "ERROR AL CARGAR", "no ha sido posible cargar",
-//      "no se pudo cargar", "no fue posible cargar", "no se pudieron cargar"; or
-//   3. it is the generic `swa_messages.generic_eror_title`/`generic_error_text`
-//      message (shared by loads and actions) AND the last failed request, within
-//      the previous 2 s, was a GET.
+// A failed background LOAD (data a page or panel fetches to show, where the page
+// stays usable without it) can opt in to being a symptom with `symptom: true`:
+// no modal, a `ui_load_failed` log and a non-blocking toast with the reference
+// code. There is no automatic detection by title, text or recent request: the
+// caller must have verified that the failure is a background load.
 // Calls that ask for a decision (cancel/deny buttons, inputs, preConfirm) always
-// keep the modal.
+// keep the modal, even with `symptom: true`.
 
-const LOAD_FAILURE_PATTERN = /\berror al cargar\b|\bno (?:ha sido|fue) posible cargar\b|\bno se pudo cargar\b|\bno se pudieron cargar\b/i;
-const GENERIC_ERROR_PATTERN = /se han presentado errores|hubo errores en el procesamiento de esta acci[oó]n|errors have (?:oc)?c?urred/i;
-const RECENT_FAILURE_WINDOW_MS = 2000;
 const INTERACTIVE_OPTIONS = ['showCancelButton', 'showDenyButton', 'input', 'preConfirm', 'preDeny'];
 const SYMPTOM_RESULT = Object.freeze({ isConfirmed: true, isDenied: false, isDismissed: false, value: true, symptom: true });
 
@@ -97,16 +91,26 @@ function plainText(value) {
  * @returns {{ symptom: boolean, relatedRequestId: string|null }}
  */
 export function classifySwalError(opts = {}) {
-  const recent = getRecentHttpFailure(RECENT_FAILURE_WINDOW_MS);
-  const relatedRequestId = opts.requestId || getRequestIdFromError(opts.error) || recent?.requestId || null;
+  const relatedRequestId = opts.requestId || getRequestIdFromError(opts.error) || null;
+  const interactive = INTERACTIVE_OPTIONS.some((key) => opts[key]);
+  return { symptom: opts.symptom === true && !interactive, relatedRequestId };
+}
 
-  if (typeof opts.symptom === 'boolean') return { symptom: opts.symptom, relatedRequestId };
-  if (INTERACTIVE_OPTIONS.some((key) => opts[key])) return { symptom: false, relatedRequestId };
+function isVisibleElement(element) {
+  return Boolean(element) && element.style?.display !== 'none' && !element.hidden;
+}
 
-  const text = `${plainText(opts.title)} ${plainText(opts.text)}`;
-  if (LOAD_FAILURE_PATTERN.test(text)) return { symptom: true, relatedRequestId };
-  if (GENERIC_ERROR_PATTERN.test(text) && recent?.method === 'GET') return { symptom: true, relatedRequestId };
-  return { symptom: false, relatedRequestId };
+// True only for a spinner (`swalLoading` or an equivalent `Swal.showLoading()`
+// popup without user controls) or a `swalProgressPDF` progress popup.
+function isBusyPopupOpen() {
+  if (!Swal.isVisible?.()) return false;
+  const popup = Swal.getPopup?.();
+  if (popup?.querySelector?.('#swal-pdf-bar')) return true;
+  if (!Swal.isLoading?.()) return false;
+  const hasUserControls = isVisibleElement(Swal.getInput?.())
+    || isVisibleElement(Swal.getCancelButton?.())
+    || isVisibleElement(Swal.getDenyButton?.());
+  return !hasUserControls;
 }
 
 function reportLoadSymptom(title, text, relatedRequestId) {
@@ -117,9 +121,9 @@ function reportLoadSymptom(title, text, relatedRequestId) {
   });
 
   // A load usually started with swalLoading(); without the error modal that
-  // would replace it, the spinner would stay open forever.
+  // would replace it, the spinner would stay open forever. Other modals stay.
   try {
-    if (Swal.isLoading?.()) Swal.close();
+    if (isBusyPopupOpen()) Swal.close();
   } catch {}
 
   try {
@@ -131,23 +135,35 @@ function reportLoadSymptom(title, text, relatedRequestId) {
   } catch {}
 }
 
+function reportActionFailure(title, text, relatedRequestId) {
+  logEvent('warn', 'ui_action_failed', {
+    message: text || title,
+    relatedRequestId: relatedRequestId || undefined,
+    data: { title, text },
+  });
+}
+
 /**
- * Error modal, or a toast for load failures (see the rule above).
+ * Error modal, or a toast for verified background loads (see the rule above).
  *
  * @param {object} opts SweetAlert2 options plus:
- * @param {boolean} [opts.symptom] force the toast (`true`) or the modal (`false`)
+ * @param {boolean} [opts.symptom] `true` only for a background load whose failure
+ *   leaves the page usable: toast instead of modal
  * @param {unknown} [opts.error] the failed request's error, to read its request id
  * @param {string} [opts.requestId] explicit request id for the reference
  */
 export function swalError(opts = {}) {
   const { symptom: _symptom, error: _error, requestId: _requestId, ...swalOpts } = opts;
   const classification = classifySwalError(opts);
+  const title = plainText(swalOpts.title);
+  const text = plainText(swalOpts.text || swalOpts.html);
 
   if (classification.symptom) {
-    reportLoadSymptom(plainText(swalOpts.title), plainText(swalOpts.text), classification.relatedRequestId);
+    reportLoadSymptom(title, text, classification.relatedRequestId);
     return Promise.resolve(SYMPTOM_RESULT);
   }
 
+  reportActionFailure(title, text, classification.relatedRequestId);
   return Swal.fire(mergeSwalOptions({
     ...BASE,
     icon: 'error',
