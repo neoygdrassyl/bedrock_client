@@ -84,7 +84,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:all": "vitest run && playwright test"
+    "test:all": "vitest run && playwright test",
+    "deps:map": "node scripts/dependency-map.cjs"
   },
   "devDependencies": {
     "@babel/parser": "^7.28.4",
