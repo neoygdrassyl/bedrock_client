@@ -1,8 +1,7 @@
-import { Suspense, lazy } from 'react';
+import { lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { getRouteRedirects } from '../layouts/navigation-config';
-import LoadingFallback from './LoadingFallback';
-import { PrivateLayout, ShellAwarePublicRoute, LoginPageWithAuth } from './PrivateRoute';
+import { PrivateLayout, LoginPageWithAuth } from './PrivateRoute';
 import FunmanageExpedienteRoute from './FunmanageExpedienteRoute';
 
 // ── Lazy-loaded page components (code-split per route) ──────────────
@@ -37,37 +36,8 @@ const BUSINESS_CALENDAR = lazy(() => import('../pages/user/business-calendar/Bus
 export default function AppRoutes({ titleT, loginT, globalsT, swaMsg, breadCrums, pqrsFormT, schedulingT, liquidatorT }) {
   return (
     <Routes>
-      {/* ── Public routes (no shell) ──────────────────── */}
+      {/* ── Public route (no shell) ───────────────────── */}
       <Route path="/login" element={<LoginPageWithAuth />} />
-
-      <Route path="/normas" element={
-        <ShellAwarePublicRoute>
-          <Suspense fallback={<LoadingFallback />}>
-            <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-          </Suspense>
-        </ShellAwarePublicRoute>
-      } />
-      <Route path="/certificados" element={
-        <ShellAwarePublicRoute>
-          <Suspense fallback={<LoadingFallback />}>
-            <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-          </Suspense>
-        </ShellAwarePublicRoute>
-      } />
-      <Route path="/uso-suelo" element={
-        <ShellAwarePublicRoute>
-          <Suspense fallback={<LoadingFallback />}>
-            <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
-          </Suspense>
-        </ShellAwarePublicRoute>
-      } />
-      <Route path="/dev-guide" element={
-        <ShellAwarePublicRoute>
-          <Suspense fallback={<LoadingFallback />}>
-            <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
-          </Suspense>
-        </ShellAwarePublicRoute>
-      } />
 
       {/* ── Legacy route redirects ────────────────────── */}
       {Object.entries(getRouteRedirects()).map(([from, to]) => (
@@ -140,6 +110,18 @@ export default function AppRoutes({ titleT, loginT, globalsT, swaMsg, breadCrums
         <Route path="/user/settings" element={<SETTINGS />} />
         <Route path="/sellos" element={
           <Seals translation={titleT} swaMsg={swaMsg} breadCrums={breadCrums} />
+        } />
+        <Route path="/normas" element={
+          <NORMS translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+        } />
+        <Route path="/certificados" element={
+          <CERTIFICATE_WORKER translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+        } />
+        <Route path="/uso-suelo" element={
+          <ZONE_USE translation={loginT} swaMsg={swaMsg} breadCrums={breadCrums} />
+        } />
+        <Route path="/dev-guide" element={
+          <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
         } />
 
         {/* Catch-all for authenticated area → dashboard */}

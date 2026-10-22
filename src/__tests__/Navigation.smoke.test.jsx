@@ -108,10 +108,6 @@ describe('Navegación — Post-redesign routes', () => {
   const publicRoutes = [
     { path: '/', name: 'raíz → /login' },
     { path: '/login', name: '/login' },
-    { path: '/normas', name: '/normas (public)' },
-    { path: '/certificados', name: '/certificados (public)' },
-    { path: '/uso-suelo', name: '/uso-suelo (public)' },
-    { path: '/dev-guide', name: '/dev-guide (public)' },
   ];
 
   publicRoutes.forEach(({ path, name }) => {
@@ -158,6 +154,8 @@ describe('Navegación — Post-redesign routes', () => {
     '/ventanilla', '/mensajes', '/calendario', '/archivo',
     '/publicaciones', '/nomenclatura', '/documentos', '/calculadora',
     '/consecutivos', '/profesionales', '/ayuda', '/sellos',
+    // Former public-site leftovers: same URLs, now behind the session guard.
+    '/normas', '/certificados', '/uso-suelo', '/dev-guide',
     // The removed /home copy of the citizen website falls through to login.
     '/home',
   ];
