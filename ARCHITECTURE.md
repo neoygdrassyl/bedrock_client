@@ -25,12 +25,12 @@ flowchart LR
   WEB["Sitio web público<br/>(otra app)"]
   QGIS["Plugin QGIS"]
 
-  SPA -- "HTTP /api + JWT" --> API
+  SPA -->|"HTTP /api + JWT"| API
   API --> DB
-  API -- "C1: release activo" --> CEN
-  FO -- "C3/C4/C7/C8/C9<br/>token de integración" --> API
-  WEB -- "endpoints públicos<br/>(checkstatus, consult, citas)" --> API
-  QGIS -- "C6: subdivision-qgis" --> API
+  API -->|"C1: release activo"| CEN
+  FO -->|"C3/C4/C7/C8/C9<br/>token de integración"| API
+  WEB -->|"endpoints públicos<br/>(checkstatus, consult, citas)"| API
+  QGIS -->|"C6: subdivision-qgis"| API
 ```
 
 El frontend sólo habla con su backend. Todo lo demás (Central, FrontOffice, sitio público, QGIS) se integra en el backend.
@@ -121,8 +121,8 @@ flowchart TD
   APPL["app/ (shell)"] --> FEAT["features/*"]
   APPL --> SH["shared/*"]
   FEAT --> SH
-  FEAT -. "sólo vía su api/ o<br/>módulos públicos" .-> FEAT2["otra feature"]
-  SH -. "NUNCA" .-x FEAT
+  FEAT -.->|"sólo vía su api/ o<br/>módulos públicos"| FEAT2["otra feature"]
+  SH -.-x|"NUNCA"| FEAT
 ```
 
 1. **`shared/` nunca importa de `features/`.** Si algo de una feature lo necesitan varias, se mueve a `shared/`.
@@ -160,7 +160,39 @@ flowchart TD
 
 ---
 
-## 6. Cómo agregar algo nuevo
+## 6. Mapa de dependencias
+
+Generado a partir de los `import` reales con `npm run deps:map`, que además falla si aparece un import roto o si `shared/` empieza a depender de una feature.
+
+Todas las features dependen de `shared/` (unos 1.500 imports), y `app/` las conecta a través del router. Estas son las dependencias **entre features**: cada flecha es "importa de", y el número es la cantidad de imports.
+
+```mermaid
+flowchart LR
+  dashboard["dashboard"]
+  expediente["expediente"]
+  ventanilla["ventanilla"]
+  pqrs["pqrs"]
+  archive["archive"]
+  shared["shared"]
+  expediente -->|22| ventanilla
+  ventanilla -->|18| expediente
+  expediente -->|15| pqrs
+  dashboard -->|5| expediente
+  pqrs -->|4| ventanilla
+  archive -->|3| expediente
+  pqrs -->|3| expediente
+  expediente -->|2| archive
+  dashboard -->|"1 c/u"| otros["simulador · messaging · appointments"]
+  expediente -->|"1 c/u"| otros2["simulador · seals · messaging · professionals"]
+  shared -.->|"1 legado: vizualizer → fun.service"| expediente
+```
+
+**Cómo leerlo:**
+- **`expediente` ↔ `ventanilla` ↔ `pqrs`** es el núcleo acoplado heredado: la radicación crea expedientes y las PQRS se vinculan a ellos. Una feature nueva no debería sumar flechas a ese triángulo; si necesita algo, lo pide a través del `api/` de la otra feature.
+- **`dashboard`** depende de varias features porque las resume. Es esperado.
+- **La flecha punteada** es la única excepción a "shared nunca importa features": `shared/components/vizualizer.component.jsx` llama a `fun.service`. Está permitida en el script, pero cualquier violación nueva hace fallar `npm run deps:map`.
+
+## 7. Cómo agregar algo nuevo
 
 **Una pantalla nueva dentro de un dominio existente:**
 1. Creá el componente en `src/features/<dominio>/`.
@@ -173,7 +205,7 @@ flowchart TD
 
 ---
 
-## 7. Comandos y verificación
+## 8. Comandos y verificación
 
 | Qué | Comando |
 |---|---|
@@ -182,5 +214,6 @@ flowchart TD
 | Tests unitarios y de integración | `npx vitest run` |
 | Tests end-to-end | `npm run test:e2e` |
 | Código sin uso | `npx -y knip@5` |
+| Mapa de dependencias | `npm run deps:map` |
 
 Puesta en marcha paso a paso: [`SETUP.md`](SETUP.md). Reglas para agentes y convenciones: [`AGENTS.md`](AGENTS.md).
