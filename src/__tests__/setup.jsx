@@ -30,7 +30,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// mdb-react-ui-kit eliminated — components replaced by src/app/components/ui/
+// mdb-react-ui-kit eliminated — components replaced by src/shared/components/legacy-ui/
 
 // jsdom doesn't implement ResizeObserver — required by Radix ScrollArea
 if (!window.ResizeObserver) {

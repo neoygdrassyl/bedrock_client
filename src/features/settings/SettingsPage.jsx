@@ -15,7 +15,7 @@ import {
   patchDashboardPreferences,
   readDashboardPreferences,
   resetDashboardPreferences,
-} from '../dashboard/dashboardPreferences.js';
+} from '../../shared/lib/dashboardPreferences.js';
 import './SettingsPage.css';
 
 const NAV_ITEMS = [

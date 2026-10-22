@@ -71,9 +71,3 @@ vi.mock('../../shared/config/jsons/vars', () => ({
   cities: [React.createElement('option', { key: 'bga', value: 'Bucaramanga' }, 'Bucaramanga')],
   domains_number: [React.createElement('option', { key: 'cur1', value: 'Curaduria 1' }, 'Curaduria 1')],
 }));
-
-// ─── GlobalStyles ───────────────────────────────────────────────────────────
-
-vi.mock('../../app/components/global', () => ({
-  GlobalStyles: () => React.createElement('style', { 'data-testid': 'global-styles' }),
-}));

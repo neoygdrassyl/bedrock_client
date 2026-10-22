@@ -3,7 +3,7 @@ import { getNavItems } from './navigation-config';
 import { AppSidebar } from './AppSidebar';
 import { HeaderBar } from './HeaderBar';
 import { AppFooter } from './AppFooter';
-import { LegacyPageWrapper } from './LegacyPageWrapper';
+import { LegacyPageWrapper } from '../../shared/components/LegacyPageWrapper';
 import { DovelaSupportLayer } from '../../shared/components/DovelaSupportLayer';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { SidebarInset, SidebarProvider } from '@/shared/ui/sidebar';
