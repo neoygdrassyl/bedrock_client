@@ -1,7 +1,5 @@
 // Curatorship
-import MISION_T from './curatorship/mision.translation'
 import PQRS_T from './transparency/pqrs.translation'
-import MAILOX_T from './transparency/mailbox.translation'
 import LIQUIDATOR_T from './liquidator/liquidator.translation'
 import SCHEDULING_T from './scheduling/scheduling.translation'
 import { PQRS_TYPE_ID_ARRAY_EN } from '../../components/vars.global'
@@ -65,12 +63,8 @@ export const TRANSLATIONS_EN = {
       str_btn4: "Verify Certificate",
       str_btn3: "Send",
     },
-    curatorship: {
-      mision: MISION_T,
-    },
     transparency: {
       pqrs_form: PQRS_T,
-      mailbox: MAILOX_T,
     },
     liquidator: {
       liquidator: LIQUIDATOR_T,

@@ -27,7 +27,6 @@ vi.mock('../app/pages/user/norms/norms.page', () => ({ __esModule: true, default
 vi.mock('../app/pages/user/certifications/certification.page', () => ({ __esModule: true, default: MockPage('CERTIFICATE_WORKER') }));
 vi.mock('../app/pages/user/zone_use/zone_use.page', () => ({ __esModule: true, default: MockPage('ZONE_USE') }));
 vi.mock('../app/pages/user/legal_flow_guide/LegalFlowGuide.page', () => ({ __esModule: true, default: MockPage('LEGAL_FLOW_GUIDE') }));
-vi.mock('../app/pages/home', () => ({ __esModule: true, default: MockPage('HOME') }));
 
 vi.mock('../app/layouts/AppShell', () => ({
   AppShell: ({ children }) => <div data-testid="app-shell">{children}</div>,
@@ -51,10 +50,6 @@ vi.mock('react-i18next', () => ({
   }),
   withTranslation: () => (Component) => (props) => <Component {...props} t={(k) => k} />,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
-vi.mock('react-google-recaptcha', () => ({
-  default: () => <div data-testid="recaptcha-mock" />,
 }));
 
 vi.mock('../http-common', () => ({

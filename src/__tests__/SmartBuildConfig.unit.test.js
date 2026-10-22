@@ -89,7 +89,7 @@ describe('smart build configuration', () => {
     // Documented optional overrides (README.md "Variables de entorno"):
     // intentionally shipped empty in the template and filled per environment
     // via *.local overrides, so they must be declared but may stay empty.
-    const optionalVars = ['VITE_GOOGLE_CAPTCHA_KEY', 'VITE_GOOGLE_MAPS_KEY'];
+    const optionalVars = ['VITE_GOOGLE_CAPTCHA_KEY'];
 
     for (const envName of [...requiredNonEmptyVars, ...optionalVars]) {
       expect(declaredValue(envName), `${envName} must be declared in .env.example as KEY="value"`).not.toBeNull();

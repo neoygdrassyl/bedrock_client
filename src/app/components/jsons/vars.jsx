@@ -3,11 +3,6 @@ import Logo2 from '../../img/logo2.png'
 import Logo3 from '../../img/logogov.png'
 import LogoFl from '../../img/logo3.png'
 import LogoLbj from '../../img/lbj.png'
-import IMG1 from '../../img/slider/img1.jpg'
-import IMG2 from '../../img/slider/img2.jpg'
-import IMG3 from '../../img/slider/img3.jpg'
-import AVISO from '../../img/aviso.webp'
-import COLOMBIA from '../../img/colombian.webp'
 import { GLOBAL_ID, DEFAULT_GLOBAL_ID } from './global-id'
 const info = {
     'cb1': {
@@ -29,15 +24,8 @@ const info = {
         email1: 'curaduriaurbana1@gmail.com',
         email2: '',
         nit: '91239522-1',
-        schedule: 'Lunes a Viernes: 07:00 - 12:30pm y 1:00pm - 4:00pm',
         icon: Logo1,
         icon2: Logo3,
-        imagen1: IMG1,
-        imagen2: IMG2,
-        imagen3: IMG3,
-        //imagen4: IMG4,
-        imagen5: COLOMBIA,
-        aviso: AVISO,
         m: 0.76,
         // CHECKS WHEN THE AREA IS LARGER TO THE SELECTED VAR DEFAULT 3000
         axisVar: ["Eje Cra. 33", "Eje Cra. 27", "Eje Cra./Dig. 15", "Eje la Rosita", "Boul Bolivar/Sder.", "Demas Zona", 'Autop Florida'],
@@ -82,7 +70,6 @@ const info = {
         email1: 'curaduria1piedecuesta@gmail.com',
         email2: '',
         nit: '',
-        schedule: 'Lunes a Viernes: 08:00 - 12:00pm y 2:00pm - 6:00pm',
         icon: Logo2,
         m: 0.713,
         axisVar: ["Zona Piedecuesta"],
@@ -121,7 +108,6 @@ const info = {
         email1: 'curaduria2f.informacion@gmail.com',
         email2: '',
         nit: '25289814-0',
-        schedule: 'Lunes a Viernes: 08:00 - 12:00pm y 2:00pm - 6:00pm',
         icon: LogoFl,
         m: 0.675,
         axisVar: ["Zona Floridablanca"],
@@ -160,7 +146,6 @@ const info = {
         email1: 'planeacion@lebrija-santander.gov.co',
         email2: '',
         nit: '8902012220',
-        schedule: 'Lunes a Jueves: 07:00 - 12:00pm y 2:00pm - 6:00pm y Viernes 07:00 - 12:00pm y 2:00pm - 5:00pm',
         icon: LogoLbj,
         m: 1,
         axisVar: ["Zona Lebrija"],

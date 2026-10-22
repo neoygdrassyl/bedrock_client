@@ -1,7 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { getRouteRedirects } from '../layouts/navigation-config';
-import Home from '../pages/home';
 import LoadingFallback from './LoadingFallback';
 import { PrivateLayout, ShellAwarePublicRoute, LoginPageWithAuth } from './PrivateRoute';
 import FunmanageExpedienteRoute from './FunmanageExpedienteRoute';
@@ -40,11 +39,6 @@ export default function AppRoutes({ titleT, loginT, globalsT, swaMsg, breadCrums
     <Routes>
       {/* ── Public routes (no shell) ──────────────────── */}
       <Route path="/login" element={<LoginPageWithAuth />} />
-      <Route path="/home" element={
-        <ShellAwarePublicRoute>
-          <Home translation={loginT} />
-        </ShellAwarePublicRoute>
-      } />
 
       <Route path="/normas" element={
         <ShellAwarePublicRoute>

@@ -556,7 +556,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-0 p-0 ms-0">
               <li className="breadcrumb-item">
-                <Link to={'/home'}><Icon name="home" size={16} /> <label className="">{breadCrums.bc_01}</label></Link>
+                <Link to={'/dashboard'}><Icon name="home" size={16} /> <label className="">{breadCrums.bc_01}</label></Link>
               </li>
               <li className="breadcrumb-item">
                 <Link to={'/dashboard'}><Icon name="bookmark" size={16} /> <label className="">{breadCrums.bc_u1}</label></Link>
