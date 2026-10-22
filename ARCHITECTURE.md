@@ -51,7 +51,7 @@ flowchart TD
 ```
 
 - **Sesión:** `src/app/router/auth.jsx` (`ProvideAuth`) lee el token y el usuario de `localStorage` (`dovela_token`, `dovela_user`) mediante `shared/api/data.service.js`.
-- **Guard:** cualquier ruta privada sin sesión redirige a `/login`. Una ruta desconocida con sesión redirige a `/dashboard`.
+- **Guard:** cualquier ruta privada sin sesión redirige a `/login`. Una ruta desconocida muestra la pantalla 404 a quien tiene sesión y manda a `/login` a quien no la tiene (ver sección 4).
 - **Carga diferida:** cada página es un chunk aparte (`React.lazy`). El menú lateral se define en `src/app/layouts/navigation-config.js`, que también precarga los chunks.
 
 ---
@@ -76,13 +76,74 @@ sequenceDiagram
   Note over H: Un 401 (salvo en /login) borra la sesión y manda a /login
 ```
 
+- **Correlación:** cada petición al backend propio lleva la cabecera `x-dovela-request-id` (`req_<tiempo>_<aleatorio>`), que el backend devuelve y escribe en sus logs. Los clientes de servicios externos no la envían, porque su CORS podría rechazarla.
+
 - **Cliente HTTP:** `shared/api/http-common.js`, creado con `createDovelaHttpClient` de `http-client-factory.js`. Para servicios externos hay clientes aparte: `features/messaging/api/http-emails.js` y `features/professionals/api/http-profs.js`. Esos no envían el token de Dovela.
 - **URL base:** `VITE_API_URL`. En local vale `/api`, y Vite reenvía las peticiones a `BACKOFFICE_GATE_URL` (por defecto `http://127.0.0.1:3001`).
 - **Contrato:** cada service usa rutas relativas a `/api`. Para comprobar que todas las llamadas del frontend existen en el backend: `node scripts/tools/check-service-route-contract.mjs`, desde el harness.
 
 ---
 
-## 4. Estructura de carpetas
+## 4. Errores y observabilidad
+
+El sistema de reporte de errores dentro de la aplicación (la opción de reportar del menú de usuario y las pestañas de reportes en Configuración) se retiró. En su lugar, los errores se registran como logs de trazabilidad en el backend y la interfaz distingue tres casos:
+
+| Caso | Qué ve el usuario | Qué se registra |
+|---|---|---|
+| **Fatal:** la pantalla no puede mostrarse | Pantalla completa de error, con el estilo del login (`shared/components/errors/ErrorScreen.jsx`) | `ui_crash`, `chunk_load_failed` o `http_error` |
+| **Síntoma:** falla una carga, un componente o un cálculo, pero la página sigue mostrando datos | Nada, o un aviso no bloqueante (toast) | `ui_load_failed`, `chart_render_failed`, `js_error`, `unhandled_rejection`, `http_error` |
+| **Acción fallida:** guardar, eliminar, generar, validar | El modal de error de siempre (`swalError`) | `http_error` de la petición que falló |
+
+### Pantallas de error
+
+| Tipo (`kind`) | Cuándo aparece | Dónde se dispara |
+|---|---|---|
+| `not-found` (404) | Ruta desconocida con sesión iniciada | `NotFoundRoute` en `app/router/PrivateRoute.jsx`, ruta `*` de `routes.jsx` |
+| `crash` (500) | Un componente lanza una excepción al renderizar | `app/router/RouteErrorBoundary.jsx` (envuelve todas las rutas) |
+| `chunk` | Falla la carga de un módulo diferido, casi siempre porque se publicó una versión nueva | `RouteErrorBoundary`: recarga una vez sola (con una marca en `sessionStorage` que evita bucles) y, si vuelve a fallar, muestra la pantalla |
+| `unavailable` | El backend no responde: error de red sin respuesta, o 502/503/504, en la primera petición de la sesión | `app/layouts/BusinessCalendarBootstrap.jsx`. El botón "Reintentar" repite esa petición. Un *timeout* u otro error conserva el aviso amarillo del calendario |
+| `forbidden` (403) | Disponible para páginas que detecten un 403 al cargar: `<ErrorScreen kind="forbidden" />` | Ninguna pantalla lo usa todavía |
+
+Además, el evento `vite:preloadError` (falla la carga de un chunk de Vite) registra `chunk_load_failed` y muestra un aviso "Hay una versión nueva de Dovela" con el botón "Actualizar". No recarga por su cuenta, porque la importación pudo venir de un botón y una recarga inmediata borraría el trabajo sin guardar.
+
+### Cargas fallidas: síntoma, no modal
+
+`swalError` (`shared/utils/swalAdapter.js`) decide en un solo lugar, sin tocar sus más de mil llamadas:
+
+- **Toast + log `ui_load_failed`** cuando el título o el texto indican una carga ("ERROR AL CARGAR", "no ha sido posible cargar", "no se pudo cargar", "no fue posible cargar", "no se pudieron cargar"), o cuando es el mensaje genérico `swa_messages.generic_eror_*` y la última petición fallida, en los 2 segundos previos, fue un `GET`. Si había un `swalLoading` abierto, se cierra.
+- **Modal** en cualquier otro caso, y siempre que la llamada pida una decisión (botones de cancelar o negar, `input`, `preConfirm`).
+- La opción `{ symptom: true }` o `{ symptom: false }` fuerza un caso u otro. Con `{ error }` o `{ requestId }` el aviso muestra el código de la petición.
+
+### Logger del cliente
+
+`shared/observability/logger.js` expone `logEvent(level, event, fields)`, `logError(event, error, fields)`, `logHttpError(error)`, `newRequestId()` y `getRequestIdFromError(error)`.
+
+- En desarrollo, cada evento también se imprime en la consola.
+- Los eventos se agrupan en memoria y se envían a **`POST /api/client-events`** (requiere JWT) cada 5 segundos, al juntar 10, o cuando la pestaña pasa a segundo plano. Sólo se envían si hay sesión.
+- Un mismo evento con el mismo mensaje se descarta durante 30 segundos, y cada carga de página envía como máximo 50 eventos. Los datos pasan por la misma redacción de secretos (`redactObject`, `safeText`).
+- El envío usa `skipErrorLog: true`: si falla, el lote se descarta y no se registra, para no crear bucles. Si el backend no tiene el endpoint (404/405/501), el logger deja de intentarlo hasta la próxima carga.
+- El interceptor de `http-client-factory.js` registra cada petición fallida como `http_error` (`warn` para 4xx y errores de red, `error` para 5xx) con método, ruta sin query, estado y `relatedRequestId`. No registra los 401 (los resuelve el cierre de sesión), las peticiones canceladas ni las que pasan `skipErrorLog: true` porque manejan el error por su cuenta.
+- `src/index.jsx` instala los listeners globales de `error` y `unhandledrejection` (sin interfaz) y borra las claves de `localStorage` del sistema de reportes retirado.
+
+### "Código de referencia" y cómo buscarlo en el backend
+
+Las pantallas de error y los avisos de carga muestran un código:
+
+- `req_…`: el `x-dovela-request-id` de la petición que falló. En los logs del backend aparece como `requestId` en la línea `http_error` de esa petición, y como `relatedRequestId` en el `client_event` que la reportó.
+- `evt_…`: el `clientEventId` de un evento del cliente, por ejemplo un `ui_crash`. Aparece en la línea `client_event` correspondiente.
+
+El backend escribe una línea JSON por evento, así que basta con buscar el código:
+
+```bash
+# Local (Docker)
+docker compose logs backend | rg 'req_lz3k9x_a8f2k1m0'
+# Producción: el log de Passenger del sitio
+rg 'evt_lz3k9x_a8f2k1m0' <ruta-del-log-de-passenger>
+```
+
+---
+
+## 5. Estructura de carpetas
 
 ```text
 src/
@@ -132,7 +193,7 @@ flowchart TD
 
 ---
 
-## 5. Mapa de features
+## 6. Mapa de features
 
 | Feature | URL | Qué hace | Backend (`/api/...`) |
 |---|---|---|---|
@@ -149,7 +210,7 @@ flowchart TD
 | `business-calendar` | `/calendario-laboral` | Días hábiles y festivos | `business-calendar` |
 | `certifications` | `/certificados` | Certificados laborales | `users` |
 | `messaging` | `/mensajes` | Buzón y chat interno | `mailbox`, `internal-chat` |
-| `settings` | `/configuracion` | Configuración documental, integraciones, reportes | `document-requirements`, `integration-settings`, `error-reports` |
+| `settings` | `/configuracion` | Configuración documental, integraciones, personalización | `document-requirements`, `integration-settings` |
 | `simulador` | `/simulador`, `/simulador/legal` | Simuladores y guía del flujo jurídico | — (cálculo local) |
 | `dictionary` | `/consecutivos` | Consecutivos y diccionarios (VR, CUB, FUN) | `consult` |
 | `seals` | `/sellos` | Sellos | `seals`, `generate/seal` |
@@ -160,7 +221,7 @@ flowchart TD
 
 ---
 
-## 6. Mapa de dependencias
+## 7. Mapa de dependencias
 
 Generado a partir de los `import` reales con `npm run deps:map`, que además falla si aparece un import roto o si `shared/` empieza a depender de una feature.
 
@@ -192,20 +253,20 @@ flowchart LR
 - **`dashboard`** depende de varias features porque las resume. Es esperado.
 - **La flecha punteada** es la única excepción a "shared nunca importa features": `shared/components/vizualizer.component.jsx` llama a `fun.service`. Está permitida en el script, pero cualquier violación nueva hace fallar `npm run deps:map`.
 
-## 7. Cómo agregar algo nuevo
+## 8. Cómo agregar algo nuevo
 
 **Una pantalla nueva dentro de un dominio existente:**
 1. Creá el componente en `src/features/<dominio>/`.
 2. Si llama al backend, agregá el método en `src/features/<dominio>/api/<dominio>.service.js`, usando `http` de `@/shared/api/http-common`.
 3. Si es una página, registrala en `src/app/router/routes.jsx` con `lazy()` y, si va en el menú, en `src/app/layouts/navigation-config.js`.
 
-**Un dominio nuevo:** creá `src/features/<nuevo>/` con su `api/`, y respetá las reglas de dependencia de la sección 4.
+**Un dominio nuevo:** creá `src/features/<nuevo>/` con su `api/`, y respetá las reglas de dependencia de la sección 5.
 
 **Un componente reutilizable:** si es primitivo de UI, va en `shared/ui` (shadcn) o `shared/dovela-ui`. Si es genérico pero propio de Dovela, en `shared/components`.
 
 ---
 
-## 8. Comandos y verificación
+## 9. Comandos y verificación
 
 | Qué | Comando |
 |---|---|
