@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import BusinessCalendarBootstrap from './BusinessCalendarBootstrap';
 
@@ -20,7 +21,10 @@ vi.mock('@/shared/utils/BusinessDaysCol', () => ({
 
 vi.mock('@/shared/observability/logger', () => ({
   logHttpError: (...args) => logHttpErrorMock(...args),
+  getRequestIdFromError: (error) => error?.response?.data?.requestId ?? null,
 }));
+
+vi.mock('@/shared/config/jsons/vars', () => ({ infoCud: { name: 'Curaduría Test' } }));
 
 beforeEach(() => {
   getBootstrapMock.mockReset();
@@ -51,8 +55,8 @@ it('hydrates every supported fallback year through the canonical API', async () 
 });
 
 it.each([
-  ['a timeout', { code: 'ECONNABORTED' }],
-  ['a server error', { response: { status: 503 } }],
+  ['a timeout', { isAxiosError: true, code: 'ECONNABORTED', request: {} }],
+  ['a server error', { isAxiosError: true, response: { status: 500 } }],
 ])('keeps private content available with visible degradation after %s', async (_label, error) => {
   getBootstrapMock.mockRejectedValue(error);
 
@@ -64,4 +68,24 @@ it.each([
   expect(logHttpErrorMock).toHaveBeenCalledWith(error);
   expect(replaceMock).not.toHaveBeenCalled();
   expect(replaceCustomMock).not.toHaveBeenCalled();
+});
+
+it.each([
+  ['a network failure', { isAxiosError: true, code: 'ERR_NETWORK', request: {} }, null],
+  ['a 503 from the proxy', { isAxiosError: true, response: { status: 503, data: { requestId: 'req_abc123_k3j4h5g6' } } }, 'req_abc123_k3j4h5g6'],
+])('shows the unavailable screen after %s and retries the bootstrap', async (_label, error, reference) => {
+  getBootstrapMock.mockRejectedValueOnce(error).mockResolvedValueOnce({ data: { years: [], customDays: [] } });
+
+  render(<BusinessCalendarBootstrap><div>Private content</div></BusinessCalendarBootstrap>);
+
+  expect(await screen.findByRole('heading', { level: 1, name: 'No pudimos conectar con el servidor' })).toBeInTheDocument();
+  expect(screen.queryByText('Private content')).not.toBeInTheDocument();
+  expect(logHttpErrorMock).toHaveBeenCalledWith(error);
+  if (reference) expect(screen.getByTestId('error-reference')).toHaveTextContent(reference);
+  else expect(screen.queryByTestId('error-reference')).not.toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+  expect(await screen.findByText('Private content')).toBeInTheDocument();
+  expect(getBootstrapMock).toHaveBeenCalledTimes(2);
 });

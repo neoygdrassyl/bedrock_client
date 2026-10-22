@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { CircleAlert, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import CustomsDataService from '@/shared/api/custom.service';
 import DataSerive from '@/shared/api/data.service';
-import { infoCud } from '@/shared/config/jsons/vars';
 import { swalError } from '@/shared/utils/swalAdapter';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { cn } from '@/shared/lib/utils';
+import { BrandCompactHeader, BrandPanel, PoweredByDovela } from '@/shared/components/brand/BrandPanel';
 
 // Fields set an explicit text color: Tailwind preflight is off, so a bare <input>
 // falls back to the browser default (black) and vanishes on the dark theme.
@@ -34,30 +34,6 @@ const SUBMIT_CLASS =
   'dark:bg-[color-mix(in_srgb,hsl(var(--primary))_78%,white)] dark:hover:bg-[color-mix(in_srgb,hsl(var(--primary))_66%,white)]';
 
 const ERROR_CLASS = 'flex items-center gap-1.5 text-sm font-medium text-[hsl(0_72%_40%)] dark:text-[hsl(0_91%_72%)]';
-
-function BrandMark({ className, tone = 'light' }) {
-  if (infoCud.icon) {
-    return (
-      <img
-        src={infoCud.icon}
-        alt="Logo institucional"
-        className={cn('object-contain rounded-2xl bg-white p-2.5 shadow-lg ring-1 ring-black/5', className)}
-      />
-    );
-  }
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        'flex items-center justify-center rounded-2xl font-bold shadow-lg',
-        tone === 'light' ? 'bg-white text-slate-900' : 'bg-primary text-primary-foreground',
-        className,
-      )}
-    >
-      D
-    </div>
-  );
-}
 
 /**
  * Login page — split-screen layout: institutional panel + credentials form.
@@ -199,50 +175,18 @@ export default function LoginPage({ signin }) {
     setErrors((current) => (current[field] ? { ...current, [field]: undefined } : current));
   };
 
-  const location = [infoCud.city, infoCud.state].filter(Boolean).join(', ');
-
   // ── UI ──────────────────────────────────────────────────────────────
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      {/* Institutional panel (desktop). Fixed dark base so white text keeps its
-          contrast whatever palette --primary is set to. */}
-      <aside className="relative hidden overflow-hidden bg-[hsl(222_47%_11%)] text-white lg:flex lg:flex-col lg:justify-between lg:p-14">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[radial-gradient(60rem_40rem_at_100%_0%,hsl(var(--primary)/0.55),transparent_60%),radial-gradient(40rem_30rem_at_0%_100%,hsl(var(--primary)/0.30),transparent_60%)]"
-        />
-        <div aria-hidden="true" className="absolute -right-24 top-1/3 h-96 w-96 rounded-full border border-white/10" />
-        <div aria-hidden="true" className="absolute -left-16 bottom-24 h-64 w-64 rounded-full border border-white/10" />
-
-        <div className="relative z-10 flex items-center gap-3 text-sm font-medium tracking-wide text-white/90">
-          <span className="h-px w-8 bg-white/60" aria-hidden="true" />
-          Sistema de gestión de trámites urbanísticos
-        </div>
-
-        <div className="relative z-10 max-w-md">
-          <BrandMark className="mb-8 h-24 w-24 text-4xl" />
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight">{infoCud.name}</h1>
-          {location && <p className="mt-3 text-base text-white/85">{location}</p>}
-        </div>
-
-        <div className="relative z-10 space-y-4">
-          {/* White government mark (tenant config `icon2`), meant for dark backgrounds. */}
-          {infoCud.icon2 && (
-            <img src={infoCud.icon2} alt="Gobierno de Colombia" className="h-10 w-auto" />
-          )}
-          <p className="text-sm text-white/75">{infoCud.dir || '\u00a0'}</p>
-        </div>
-      </aside>
+      {/* Institutional panel (desktop) */}
+      <BrandPanel />
 
       {/* Form panel */}
       <main className="flex items-center justify-center px-6 py-10 sm:px-10 lg:shadow-[inset_1px_0_0_hsl(var(--border))]">
         <div className="w-full max-w-[400px] animate-fade-in-up motion-reduce:animate-none">
           {/* Brand header (below lg) */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <BrandMark tone="primary" className="h-12 w-12 shrink-0 text-xl" />
-            <p className="text-base font-semibold leading-snug text-foreground">{infoCud.name}</p>
-          </div>
+          <BrandCompactHeader />
 
           <div className="mb-8">
             <h2 className="text-2xl font-semibold tracking-tight text-foreground">Iniciar sesión</h2>
@@ -346,11 +290,7 @@ export default function LoginPage({ signin }) {
             </Button>
           </form>
 
-          <p className="mt-10 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            Powered by
-            <img src="/logo192.png" alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-            <span className="font-semibold text-foreground">Dovela</span>
-          </p>
+          <PoweredByDovela />
         </div>
       </main>
     </div>
