@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 const service = vi.hoisted(() => ({
   list: vi.fn(), catalog: vi.fn(), get: vi.fn(), reviewSummary: vi.fn(), review: vi.fn(), consolidate: vi.fn(), create: vi.fn(), resolve: vi.fn(),
 }));
-const session = vi.hoisted(() => ({ user: { role_short: 'ADM' } }));
+const session = vi.hoisted(() => ({ user: { role_short: 'Admin.', role: 'Administrador' } }));
 vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
 vi.mock('@/shared/api/data.service', () => ({ default: { getUserData: () => session.user } }));
 
@@ -16,7 +16,7 @@ const rows = [{ id: 1, identityType: 'CC', cc: '13439751', name: 'ANA MARIA LOPE
 describe('ProfessionalRegistryPage', () => {
   beforeEach(() => {
     Object.values(service).forEach((fn) => fn.mockReset());
-    session.user = { role_short: 'ADM' };
+    session.user = { role_short: 'Admin.', role: 'Administrador' };
     service.list.mockResolvedValue({ data: { data: rows, total: 1, page: 1, limit: 25 } });
     service.catalog.mockResolvedValue({ data: { data: [] } });
     service.reviewSummary.mockResolvedValue({ data: { duplicados: 4, nombres: 0, identidad: 0, experiencia: 0, roles: 0 } });
@@ -35,7 +35,7 @@ describe('ProfessionalRegistryPage', () => {
 
   it('is consultation only for a lawyer: no create or reconcile buttons, not even in the review view', async () => {
     const user = userEvent.setup();
-    session.user = { role_short: 'ABG' };
+    session.user = { role_short: 'Abg.', role: 'Abogado' };
     render(<ProfessionalRegistryPage />);
 
     expect(await screen.findByText('ANA MARIA LOPEZ')).toBeInTheDocument();

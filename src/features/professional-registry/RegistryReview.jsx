@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -24,14 +24,19 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   const [busy, setBusy] = useState(false);
   const [picking, setPicking] = useState(null);
   const [target, setTarget] = useState(null);
+  const latestRequest = useRef(0);
 
   const load = useCallback(async () => {
+    const request = latestRequest.current + 1;
+    latestRequest.current = request;
     try {
       const [counts, items] = await Promise.all([ProfessionalRegistryService.reviewSummary(), ProfessionalRegistryService.review({ type, page, limit: 25 })]);
+      if (request !== latestRequest.current) return;
       setSummary(counts?.data || {});
       setQueue({ type, data: items?.data?.data || [], total: items?.data?.total || 0, limit: items?.data?.limit || 25 });
       setError('');
     } catch (e) {
+      if (request !== latestRequest.current) return;
       setError(errorText(e, 'No fue posible cargar la cola de revisión.'));
     }
   }, [type, page]);

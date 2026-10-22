@@ -1,8 +1,16 @@
-import { isDeveloperUser, isIntegrationManagerUser } from '@/features/settings/developerAccess.js';
+// Role codes as the login stores them (role_short: "Admin.", "Curador", "Prog."; role: "Administrador"...), reduced to the
+// codes the server authorizes with (ADM, CUR, AUX). The server decides who can write; this only hides controls it would refuse.
+const ROLE_ALIASES = { ADMIN: 'ADM', ADMINISTRADOR: 'ADM', CURADOR: 'CUR', PROG: 'AUX', PROGRAMADOR: 'AUX', AUXILIAR: 'AUX' };
+const WRITE_ROLES = new Set(['ADM', 'CUR', 'AUX']);
 
-// The server decides who can write (ADM, CUR and the programmer role); this only hides controls that would be refused.
+function roleCode(value) {
+  const code = String(value || '').trim().toUpperCase().replace(/\.+$/, '');
+  return ROLE_ALIASES[code] || code;
+}
+
 export function canWriteRegistry(user) {
-  return Boolean(user) && (isIntegrationManagerUser(user) || isDeveloperUser(user));
+  if (!user) return false;
+  return [user.role_short, user.role].some((value) => WRITE_ROLES.has(roleCode(value)));
 }
 
 export function formatMonths(months) {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 
 import { Badge } from '@/shared/ui/badge';
@@ -31,6 +31,7 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const latestRequest = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -38,20 +39,25 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
     return () => { active = false; };
   }, []);
 
+  // Only the most recent request may update the screen: a slow earlier answer must not overwrite a newer one.
   const load = useCallback(async () => {
+    const request = latestRequest.current + 1;
+    latestRequest.current = request;
     setLoading(true);
     setError('');
     try {
       const response = await ProfessionalRegistryService.list(toQuery(applied, page));
+      if (request !== latestRequest.current) return;
       setRows(response?.data?.data || []);
       setTotal(response?.data?.total || 0);
       setLimit(response?.data?.limit || 25);
     } catch (e) {
+      if (request !== latestRequest.current) return;
       setRows([]);
       setTotal(0);
       setError(errorText(e, 'No fue posible cargar los profesionales.'));
     } finally {
-      setLoading(false);
+      if (request === latestRequest.current) setLoading(false);
     }
   }, [applied, page]);
 

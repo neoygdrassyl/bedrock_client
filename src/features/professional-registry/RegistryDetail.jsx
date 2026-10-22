@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -41,13 +41,18 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
   const [mergeTarget, setMergeTarget] = useState(null);
   const [relinkFor, setRelinkFor] = useState(null);
   const [relinkTarget, setRelinkTarget] = useState(null);
+  const latestRequest = useRef(0);
 
   const load = useCallback(async () => {
+    const request = latestRequest.current + 1;
+    latestRequest.current = request;
     try {
       const response = await ProfessionalRegistryService.get(id);
+      if (request !== latestRequest.current) return;
       setDetail(response?.data || null);
       setError('');
     } catch (e) {
+      if (request !== latestRequest.current) return;
       setError(errorText(e, 'No fue posible cargar el profesional.'));
     }
   }, [id]);

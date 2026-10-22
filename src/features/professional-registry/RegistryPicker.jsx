@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 
 import { Button } from '@/shared/ui/button';
@@ -14,20 +14,25 @@ export default function RegistryPicker({ excludeId, selectedId, onSelect, label 
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const latestRequest = useRef(0);
 
   const search = async (event) => {
     event?.preventDefault();
     if (!term.trim()) return;
+    const request = latestRequest.current + 1;
+    latestRequest.current = request;
     setLoading(true);
     setError('');
     try {
       const response = await ProfessionalRegistryService.list({ q: term.trim(), limit: 8 });
+      if (request !== latestRequest.current) return;
       setResults((response?.data?.data || []).filter((item) => item.id !== excludeId));
     } catch (e) {
+      if (request !== latestRequest.current) return;
       setResults(null);
       setError(errorText(e));
     } finally {
-      setLoading(false);
+      if (request === latestRequest.current) setLoading(false);
     }
   };
 

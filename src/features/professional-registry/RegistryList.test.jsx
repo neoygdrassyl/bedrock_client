@@ -113,6 +113,29 @@ describe('RegistryList', () => {
     expect(screen.queryByText(/13439751/)).not.toBeInTheDocument();
   });
 
+  it('ignores a slow earlier answer that arrives after a newer search', async () => {
+    const user = userEvent.setup();
+    let resolveSlow;
+    service.list.mockResolvedValueOnce(page([row()]));
+    render(<RegistryList onOpen={() => {}} />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    service.list.mockImplementationOnce(() => new Promise((resolve) => { resolveSlow = resolve; }));
+    await user.type(screen.getByLabelText('Nombre, cédula o matrícula'), 'lento');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+    service.list.mockResolvedValueOnce(page([row({ id: 2, name: 'PEDRO RAPIDO', cc: '70111222' })]));
+    await user.clear(screen.getByLabelText('Nombre, cédula o matrícula'));
+    await user.type(screen.getByLabelText('Nombre, cédula o matrícula'), 'rapido');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+    expect(await screen.findByText('PEDRO RAPIDO')).toBeInTheDocument();
+
+    resolveSlow(page([row({ id: 3, name: 'RESPUESTA LENTA', cc: '80111222' })]));
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(screen.queryByText('RESPUESTA LENTA')).not.toBeInTheDocument();
+    expect(screen.getByText('PEDRO RAPIDO')).toBeInTheDocument();
+  });
+
   it('keeps working when the role catalog cannot be loaded', async () => {
     service.catalog.mockRejectedValue(new Error('offline'));
     render(<RegistryList onOpen={() => {}} />);

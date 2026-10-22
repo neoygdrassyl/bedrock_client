@@ -34,12 +34,16 @@ describe('professional registry utils', () => {
     expect(errorCode(null)).toBeNull();
   });
 
-  it('allows writing for ADM, CUR and the programmer role only', () => {
+  it('allows writing for the roles the login really stores: Admin., Curador and Prog.', () => {
+    expect(canWriteRegistry({ role_short: 'Admin.', role: 'Administrador' })).toBe(true);
+    expect(canWriteRegistry({ role_short: 'Curador', role: 'Curador' })).toBe(true);
+    expect(canWriteRegistry({ role_short: 'Prog.', role: 'Programador' })).toBe(true);
+    expect(canWriteRegistry({ role: 'Administrador' })).toBe(true);
     expect(canWriteRegistry({ role_short: 'ADM' })).toBe(true);
-    expect(canWriteRegistry({ role_short: 'CUR' })).toBe(true);
-    expect(canWriteRegistry({ role_short: 'PROG' })).toBe(true);
-    expect(canWriteRegistry({ role_short: 'ABG' })).toBe(false);
-    expect(canWriteRegistry({ role_short: 'SECRETARIO' })).toBe(false);
+    expect(canWriteRegistry({ role_short: 'Abg.', role: 'Abogado' })).toBe(false);
+    expect(canWriteRegistry({ role_short: 'Arq.', role: 'Arquitecto' })).toBe(false);
+    expect(canWriteRegistry({ role_short: 'Ing.', role: 'Ingeniero' })).toBe(false);
+    expect(canWriteRegistry({ role_short: 'Secretario', role: 'Secretario' })).toBe(false);
     expect(canWriteRegistry(null)).toBe(false);
     expect(canWriteRegistry({})).toBe(false);
   });
