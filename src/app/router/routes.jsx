@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { getRouteRedirects } from '../layouts/navigation-config';
-import { PrivateLayout, LoginPageWithAuth } from './PrivateRoute';
+import { PrivateLayout, LoginPageWithAuth, NotFoundRoute } from './PrivateRoute';
 import FunmanageExpedienteRoute from './FunmanageExpedienteRoute';
 
 // ── Lazy-loaded page components (code-split per route) ──────────────
@@ -123,13 +123,13 @@ export default function AppRoutes({ titleT, loginT, globalsT, swaMsg, breadCrums
         <Route path="/dev-guide" element={
           <DEV_GUIDE globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
         } />
-
-        {/* Catch-all for authenticated area → dashboard */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
 
       {/* ── Root & fallback ───────────────────────────── */}
       <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Unknown path: full-page 404 for a session, login otherwise. It lives
+          outside PrivateLayout so the screen is not wrapped in the app shell. */}
+      <Route path="*" element={<NotFoundRoute />} />
     </Routes>
   );
 }

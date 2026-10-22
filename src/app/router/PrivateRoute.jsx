@@ -3,6 +3,7 @@ import { Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AppShell } from '../layouts/AppShell';
 import BusinessCalendarBootstrap from '../layouts/BusinessCalendarBootstrap';
 import LoginPage from '../../features/auth/LoginPage';
+import { ErrorScreen } from '../../shared/components/errors/ErrorScreen';
 import { useAuth } from './auth';
 import LoadingFallback from './LoadingFallback';
 
@@ -38,4 +39,17 @@ export function LoginPageWithAuth() {
   return auth.user
     ? <Navigate to="/dashboard" replace />
     : <LoginPage signin={auth.signin} />;
+}
+
+// ── Unknown path: 404 screen with a session, login without one ──────
+
+export function NotFoundRoute() {
+  const auth = useAuth();
+  const location = useLocation();
+
+  if (!auth.user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <ErrorScreen kind="not-found" />;
 }

@@ -1,7 +1,16 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import { ErrorScreen } from '../../shared/components/errors/ErrorScreen';
+import { toast } from 'sonner';
+import { isChunkLoadError, NEW_VERSION_TOAST_ID, tryChunkAutoReload } from '../../shared/components/errors/errorKinds';
 import { logError } from '../../shared/observability/logger';
 
+/**
+ * Last line of defense for render failures anywhere in the route tree. A render
+ * crash shows the full-page `crash` screen with the logged event id as reference;
+ * a failed lazy chunk (usually a new deploy) reloads once and otherwise shows
+ * the `chunk` screen. Navigating to another path resets the boundary.
+ */
 class RouteErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -20,24 +29,26 @@ class RouteErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    const eventId = logError('ui_crash', error, { componentStack: info?.componentStack });
+    const chunk = isChunkLoadError(error);
+    const eventId = logError(chunk ? 'chunk_load_failed' : 'ui_crash', error, {
+      level: chunk ? 'warn' : 'error',
+      componentStack: info?.componentStack,
+    });
     this.setState({ eventId });
+    if (chunk) {
+      // The chunk screen replaces the "new version" toast raised by the preload handler.
+      toast.dismiss(NEW_VERSION_TOAST_ID);
+      (this.props.autoReload || tryChunkAutoReload)();
+    }
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="max-w-2xl mx-auto py-8 px-4">
-          <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
-            <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
-            <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
-              <a href="/dashboard" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/dashboard'); window.location.reload(); }} className="text-primary hover:underline">
-                Volver al panel
-              </a>
-            </div>
-          </div>
-        </div>
+        <ErrorScreen
+          kind={isChunkLoadError(this.state.error) ? 'chunk' : 'crash'}
+          referenceId={this.state.eventId || undefined}
+        />
       );
     }
 
@@ -45,7 +56,9 @@ class RouteErrorBoundary extends React.Component {
   }
 }
 
-export function RoutesWithBoundary({ children }) {
+export function RoutesWithBoundary({ children, autoReload }) {
   const location = useLocation();
-  return <RouteErrorBoundary pathname={location.pathname}>{children}</RouteErrorBoundary>;
+  return <RouteErrorBoundary pathname={location.pathname} autoReload={autoReload}>{children}</RouteErrorBoundary>;
 }
+
+export default RouteErrorBoundary;
