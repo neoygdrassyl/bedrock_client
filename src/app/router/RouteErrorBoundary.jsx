@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { ErrorReportInlineTrigger } from '../../shared/components/DovelaSupportLayer';
 import { captureDovelaError } from '../../shared/utils/errorReporting';
 
 class RouteErrorBoundary extends React.Component {
@@ -38,7 +37,6 @@ class RouteErrorBoundary extends React.Component {
             <h4 className="text-base font-semibold text-destructive">Error en este módulo</h4>
             <p className="text-sm text-muted-foreground">La vista actual presentó un error y se detuvo para evitar una pantalla en blanco.</p>
             <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
-              <ErrorReportInlineTrigger context={{ lastError: this.state.errorSnapshot }} />
               <a href="/dashboard" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/dashboard'); window.location.reload(); }} className="text-primary hover:underline">
                 Volver al panel
               </a>

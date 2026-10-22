@@ -42,7 +42,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 swalError({
                     title: "ERROR AL CARGAR",
                     text: message,
-                    reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
                 });
                 setLoad(false);
             });
@@ -75,21 +74,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
     const minusAttachEmail = () => {
         setAttachsForEmails(prev => prev - 1);
     };
-
-    const buildCloseReportContext = useCallback((message, source = 'pqrs-close') => ({
-        expediente: {
-            radicado: currentItem?.id_publico || currentItem?.id_global || String(currentItem?.id || currentId || ''),
-            identifiers: {
-                id: currentItem?.id ?? currentId ?? null,
-                idPublico: currentItem?.id_publico ?? null,
-                idGlobal: currentItem?.id_global ?? null,
-            },
-        },
-        lastError: {
-            source,
-            error: { message },
-        },
-    }), [currentId, currentItem]);
 
     const collectCloseAttachments = useCallback(() => {
         const fileInputs = Array.from(document.getElementsByName("files_close"));
@@ -227,7 +211,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         swalError({
                             title: "ERROR AL CARGAR",
                             text: message,
-                            reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
                         });
                         return;
                     }
@@ -237,8 +220,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                         swalError({
                             title: 'ANEXOS INCOMPLETOS',
                             text: attachmentError,
-                            allowReport: true,
-                            reportContext: buildCloseReportContext(attachmentError, 'pqrs-close-validation'),
                         });
                         return;
                     }
@@ -274,8 +255,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                             swalError({
                                 title: 'ERROR AL CERRAR',
                                 text: message,
-                                allowReport: true,
-                                reportContext: buildCloseReportContext(message, 'pqrs-close-request'),
                             });
                         });
                 }
@@ -288,7 +267,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 swalError({
                     title: "ERROR AL CARGAR",
                     text: message,
-                    reportContext: buildCloseReportContext(message, 'pqrs-close-load'),
                 });
                 return;
             }
@@ -298,8 +276,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                 swalError({
                     title: 'ANEXOS INCOMPLETOS',
                     text: attachmentError,
-                    allowReport: true,
-                    reportContext: buildCloseReportContext(attachmentError, 'pqrs-close-validation'),
                 });
                 return;
             }
@@ -325,8 +301,6 @@ function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, r
                     swalError({
                         title: 'ERROR AL ANEXAR',
                         text: message,
-                        allowReport: true,
-                        reportContext: buildCloseReportContext(message, 'pqrs-close-attachments'),
                     });
                 });
         }

@@ -18,6 +18,9 @@ import './shared/styles/scrollbar.css'; // Scroll unificado (capa nativa); debe 
 import './shared/utils/dayjs.config'; // dayjs plugins + locale (must load before any component)
 import './shared/config/jsons/global-id';
 import App from './app/App';
+import { purgeLegacyErrorReportStorage } from './app/legacy-storage-cleanup';
+
+purgeLegacyErrorReportStorage();
 
 const root = createRoot(document.getElementById('root'));
 root.render(
