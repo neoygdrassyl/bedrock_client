@@ -105,7 +105,8 @@ Features actuales: `auth`, `dashboard`, `expediente` (`fun/`, `documental/`, `re
 4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/shared/api/http-common.js` y devuelve datos.
 5. **Nombres:** componentes en `PascalCase.jsx`; modulos sin JSX (hooks, utils, api) en `camelCase.js`. Todo archivo con JSX usa extension `.jsx` (Vite ya no transforma JSX dentro de `.js`).
 6. **Tests colocalizados:** `Componente.test.jsx` / `modulo.test.js` junto al archivo que prueban.
-7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion. Toda ruta del backoffice va dentro de `PrivateLayout`; la unica ruta publica es `/login`.
+7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion. Toda ruta del backoffice va dentro de `PrivateLayout`; la unica ruta publica es `/login`. La ruta `*` (pantalla 404) queda fuera de `PrivateLayout` para mostrarse a pantalla completa, pero exige sesion por su cuenta (`NotFoundRoute`).
+8. **Errores y logs:** no hay reporte de errores dentro de la app (se retiraron la opcion de reportar del menu de usuario y los paneles de reportes; no los reintroduzcas). Usa `src/shared/observability/logger.js` (`logEvent`, `logError`) para trazabilidad; nunca `console.*` como unico registro de un error real. Un fallo que impide mostrar la pantalla usa `ErrorScreen` (`src/shared/components/errors/`); una carga fallida es un sintoma (toast + log, lo resuelve `swalError` solo); una accion fallida mantiene el modal de `swalError`. Detalle en `ARCHITECTURE.md`, seccion 4. Si un request maneja su propio error, pasa `skipErrorLog: true` en su config.
 
 ## 5. Modulos de alto riesgo
 
