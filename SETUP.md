@@ -8,6 +8,9 @@ Resultado esperado al terminar: frontend en `http://localhost:3000`.
 
 > El frontend **no** necesita Dovela Central ni el FrontOffice para arrancar ni para trabajar en local.
 
+
+> Para entender cómo está organizado el código y cómo se comunica con los demás sistemas, leé [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 ---
 
 ## 1. Requisitos previos
