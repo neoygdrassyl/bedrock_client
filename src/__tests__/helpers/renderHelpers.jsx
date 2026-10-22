@@ -84,5 +84,4 @@ export function renderWithRouter(Component, props = {}, options = {}) {
 export function setTestEnv() {
   import.meta.env.VITE_API_URL = 'http://localhost/dovela-backend/public';
   import.meta.env.VITE_GLOBAL_ID = '1';
-  import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 }

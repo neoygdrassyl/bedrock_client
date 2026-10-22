@@ -106,7 +106,6 @@ describe('Smoke Test Suite — App shell post-redesign', () => {
   beforeAll(() => {
     import.meta.env.VITE_API_URL = 'http://localhost/dovela-backend/public';
     import.meta.env.VITE_GLOBAL_ID = '1';
-    import.meta.env.VITE_GOOGLE_CAPTCHA_HTML = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
   });
 
   beforeEach(() => {
