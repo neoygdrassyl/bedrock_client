@@ -1,9 +1,9 @@
-import NEW_3_ING from '../../img/news_certificate.jpg'
-import NEW_2_ING from '../../img/news_inclusivity.jpg'
-import NEW_ING from '../../img/news1.jpg'
-import NEW_AVIS from '../../img/aviso.jpg'
-import NEW_AVIS2 from '../../img/aviso2.jpg'
-import REPARTO from '../../img/Reparto.png'
+import NEW_3_ING from '../../img/news_certificate.webp'
+import NEW_2_ING from '../../img/news_inclusivity.webp'
+import NEW_ING from '../../img/news1.webp'
+import NEW_AVIS from '../../img/aviso.webp'
+import NEW_AVIS2 from '../../img/aviso2.webp'
+import REPARTO from '../../img/Reparto.webp'
 
 import { Link } from 'react-router-dom'
 import { Button_navigation } from '../button.component'
@@ -78,7 +78,7 @@ export const _news = [
                                         </p>
                                     </div>
                                     <div className="col-lg-2">
-                                        <img src={REPARTO} className="d-block w-100 mt-1" alt="..." />
+                                        <img loading="lazy" decoding="async" src={REPARTO} className="d-block w-100 mt-1" alt="..." />
                                     </div>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@ export const _news = [
                             <div className='container'>
                                 <div className="row justify-content-start">
                                     <div className="col-3">
-                                        <img src={NEW_3_ING} className="d-block w-100 mt-1" alt="..." />
+                                        <img loading="lazy" decoding="async" src={NEW_3_ING} className="d-block w-100 mt-1" alt="..." />
                                     </div>
                                     <div className="col-8">
                                         <p className="text-justify fw-normal "> La Curaduria Urbana N°1 de Bucaramanga ofrece a los profesionales que figuran en las actuaciones urbanísticas, la certificación de participación y responsabilidad en la calidad profesional en la que haya actuado en los proyectos de licenciamiento. Para generar el certificado, asi como para verificar el expedidor dar <Link className='text-info' to={'/certificacion'}>Click aqui</Link>.</p>
@@ -226,7 +226,7 @@ export const _news = [
                                         <p className="text-justify fw-normal "> La Curaduria N° 1 de Bucaramanga usa la ayuda de las TIC para ofrecer un mejor servicio a quienes lo necesiten. Gracias al Ministerio de Tecnologías de la Información y las Comunicaciones- MINTIC en alianza con la Federación Nacional de Sordos de Colombia- FENASCOL, apoyándose en la tecnología ofrece servicios de forma gratuita mediante una aplicación de dispositivos móviles, de igual modo el ConVerTIC es el proyecto de inclusión del Ministerio TIC con el fin de promover la inclusión social, educativa, laboral y cultural a través de uso de las tecnologías para las personas ciegas o con baja visión. Conoce mas sobre estas alternativas dando <Link className='text-info' to={'/inclusivity'}>Click aqui</Link>.</p>
                                     </div>
                                     <div className="col-4">
-                                        <img src={NEW_2_ING} className="d-block w-100 mt-1" alt="..." />
+                                        <img loading="lazy" decoding="async" src={NEW_2_ING} className="d-block w-100 mt-1" alt="..." />
                                     </div>
                                 </div>
                             </div>
@@ -258,7 +258,7 @@ export const _news = [
                             <div className='container'>
                                 <div className="row justify-content-start">
                                     <div className="col-3">
-                                        <img src={NEW_ING} className="d-block w-100 mt-1" alt="..." />
+                                        <img loading="lazy" decoding="async" src={NEW_ING} className="d-block w-100 mt-1" alt="..." />
                                     </div>
                                     <div className="col-8">
                                         <p className="text-justify fw-normal "> Ya se encuentra en funcionamiento el nuevo punto de atención. se encuentra en la Calle 36 # 31-39 Centro Empresarial Chicamocha - Local 101, con parqueadero público en el Centro Empresarial Chicamocha. <br></br> Horario de atención permanece sin cambios, de Lunes a Viernes de 07:00 am a 12:30 pm y 1:00 pm a 5:00 pm.</p>

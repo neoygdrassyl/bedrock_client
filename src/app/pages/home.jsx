@@ -2,16 +2,16 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from "react-router-dom";
 // Carousel IMGS
-import NEW_ING from '../img/news1.jpg'
-import NEW_2_ING from '../img/news_inclusivity.jpg'
-import NEW_3_ING from '../img/news_certificate.jpg'
+import NEW_ING from '../img/news1.webp'
+import NEW_2_ING from '../img/news_inclusivity.webp'
+import NEW_3_ING from '../img/news_certificate.webp'
 import LGOG16 from '../img/contacts/Icon2.png'
 import LGOG15 from '../img/contacts/Icon.png'
 import LGOG13 from '../img/pse.jpg'
 import IMG1 from '../img/slider/img1.jpg'
 import IMG2 from '../img/slider/img2.jpg'
 import IMG3 from '../img/slider/img3.jpg'
-import COLOMBIA from '../img/img6.jpg'
+import COLOMBIA from '../img/img6.webp'
 
 
 
@@ -411,7 +411,7 @@ function Home({ translation, history }) {
                   {_news.filter((data, index) => index <= 3).map(function (value, index) {
                     return <div className="col-3 align-items-center" key={value.id || value.title || index}>
                         <div className="card align-items-center">
-                          <img src={value.image} className="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
+                          <img loading="lazy" decoding="async" src={value.image} className="card-img-top" alt="Noticias y avisos importantes de la curaduria." style={{ height: '160px' }} />
                           <div className="card-body">
                             <span className="text-start fw-normal" style={{ color: 'gray' }}>{value.icon_folder} {value.category}</span>
                             <h5 className="card-title fw-normal "><b>{value.title}</b></h5>
@@ -478,7 +478,7 @@ function Home({ translation, history }) {
                   <p className="display-6 lead fw-bold">Ya disponible, certificación para profesionales que actúan ante la Curaduría</p>
                   <div className="row">
                     <div className="col-md-4">
-                      <img src={NEW_3_ING} class="d-block w-100 mt-2" alt="..." />
+                      <img loading="lazy" decoding="async" src={NEW_3_ING} class="d-block w-100 mt-2" alt="..." />
                     </div>
                     <div className="col-md-8">
                       <p className="app-p lead text-justify">La Curaduria Urbana N°1 de Bucaramanga ofrece a los profesionales que figuran en las actuaciones
@@ -495,7 +495,7 @@ function Home({ translation, history }) {
                         <Link to={'/inclusivity'}> dando click aqui</Link>. </p>
                     </div>
                     <div className="col-md-4">
-                      <img src={NEW_2_ING} class="d-block w-100 mt-2" alt="..." />
+                      <img loading="lazy" decoding="async" src={NEW_2_ING} class="d-block w-100 mt-2" alt="..." />
                     </div>
                   </div>
                 </div>
@@ -504,7 +504,7 @@ function Home({ translation, history }) {
                   <p className="display-6 lead fw-bold">Nuestro Nuevo Punto de Atención</p>
                   <div className="row">
                     <div className="col-md-4">
-                      <img src={NEW_ING} class="d-block w-100 mt-2" alt="..." />
+                      <img loading="lazy" decoding="async" src={NEW_ING} class="d-block w-100 mt-2" alt="..." />
                     </div>
                     <div className="col-md-8">
                       <p className="app-p lead text-justify">Ya se encuentra en funcionamiento nuestro nuevo punto de atención. Nuestra nueva ubicación se encuentra en la Calle 36 # 31-39 Centro Empresarial Chicamocha - Local 101, con parqueadero público en el Centro Empresarial Chicamocha. Nuestro horario de atención permanece sin cambios, de Lunes a Viernes de 07:00 am a 12:30 pm y 1:00 pm  a 5:00 pm.</p>

@@ -6,8 +6,8 @@ import LogoLbj from '../../img/lbj.png'
 import IMG1 from '../../img/slider/img1.jpg'
 import IMG2 from '../../img/slider/img2.jpg'
 import IMG3 from '../../img/slider/img3.jpg'
-import AVISO from '../../img/aviso.jpg'
-import COLOMBIA from '../../img/colombian.jpg'
+import AVISO from '../../img/aviso.webp'
+import COLOMBIA from '../../img/colombian.webp'
 import { GLOBAL_ID, DEFAULT_GLOBAL_ID } from './global-id'
 const info = {
     'cb1': {
