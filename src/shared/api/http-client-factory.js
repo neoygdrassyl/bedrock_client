@@ -1,5 +1,5 @@
 import axios from "axios";
-import { logHttpError, newRequestId, REQUEST_ID_HEADER } from "@/shared/observability/logger";
+import { logHttpError, newRequestId, rememberHttpFailure, REQUEST_ID_HEADER } from "@/shared/observability/logger";
 
 // Binary requests (blob/arraybuffer) receive their error body undecoded; turn
 // a JSON payload back into an object so callers can read the server message.
@@ -70,8 +70,9 @@ export function createDovelaHttpClient({ baseURL, headers, attachAuth = true } =
     (response) => response,
     async (error) => {
       const isCanceledRequest = axios.isCancel?.(error) || error?.code === 'ERR_CANCELED';
-      if (!isCanceledRequest && !error?.config?.skipErrorLog) {
-        logHttpError(error);
+      if (!isCanceledRequest) {
+        rememberHttpFailure(error);
+        if (!error?.config?.skipErrorLog) logHttpError(error);
       }
       if (error?.response?.status === 401) {
         error.response.data = await parseBinaryJson(error.response.data);

@@ -375,6 +375,33 @@ export function logHttpError(error, fields = {}) {
   }
 }
 
+// ── Recent HTTP failure ──────────────────────────────────────────────
+
+let lastHttpFailure = null;
+
+/**
+ * Remembers the last failed request (method, request id, time), whether or not
+ * it was logged, so a generic error message shown right after it can be tied to
+ * it (see swalAdapter's load-failure classification).
+ */
+export function rememberHttpFailure(error) {
+  try {
+    if (!error || error.code === 'ERR_CANCELED' || error.__CANCEL__) return;
+    lastHttpFailure = {
+      method: String(error.config?.method || 'get').toUpperCase(),
+      status: error.response?.status ?? null,
+      requestId: getRequestIdFromError(error),
+      at: Date.now(),
+    };
+  } catch {}
+}
+
+/** The last failed request if it happened within `maxAgeMs`, else null. */
+export function getRecentHttpFailure(maxAgeMs = 2000) {
+  if (!lastHttpFailure || Date.now() - lastHttpFailure.at > maxAgeMs) return null;
+  return lastHttpFailure;
+}
+
 // ── Global listeners ─────────────────────────────────────────────────
 
 function isAxiosError(reason) {
@@ -419,6 +446,7 @@ export function __resetLoggerForTests() {
   state.timer = null;
   state.transport = null;
   state.transportDisabled = false;
+  lastHttpFailure = null;
 }
 
 /** Test helper: events waiting to be sent. */
