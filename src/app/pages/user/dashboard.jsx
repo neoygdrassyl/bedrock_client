@@ -7,13 +7,13 @@ import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 
-import FUNService from '../../services/fun.service';
+import FUNService from '../../../features/expediente/api/fun.service';
 import PqrsMainService from '../../services/pqrs_main.service';
 import SubmitService from '../../services/submit.service';
 import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
 import BookmarkService from '../../../shared/api/bookmark.service';
-import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
+import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from '../../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 import DashboardCriticalAlerts from './components/DashboardCriticalAlerts';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

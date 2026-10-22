@@ -8,7 +8,7 @@ vi.mock('@/shared/components/icon', () => ({
   default: ({ name }) => <span data-testid={`icon-${name}`} aria-hidden="true" />,
 }));
 
-import { HolidayCalendar } from '../app/pages/user/clocks/components/HolidayCalendar';
+import { HolidayCalendar } from '../features/expediente/clocks/components/HolidayCalendar';
 
 describe('HolidayCalendar', () => {
   it('renderiza el grid mensual sin quedarse en un bucle de fechas', () => {

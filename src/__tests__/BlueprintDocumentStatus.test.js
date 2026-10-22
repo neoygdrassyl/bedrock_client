@@ -4,7 +4,7 @@ import {
   BLUEPRINT_DOCUMENT_OPTIONS,
   getBlueprintDocumentLabel,
   normalizeBlueprintDocumentState,
-} from '../app/pages/user/records/arc/components/blueprintDocumentStatus';
+} from '../features/expediente/records/arc/components/blueprintDocumentStatus';
 
 describe('blueprint document status', () => {
   test('offers only the supported document states', () => {

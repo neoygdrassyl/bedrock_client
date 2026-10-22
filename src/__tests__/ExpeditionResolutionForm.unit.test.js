@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 
 const projectRoot = path.resolve(__dirname, '..', '..');
 const source = fs.readFileSync(
-  path.join(projectRoot, 'src/app/pages/user/expeditions/exp_res.component.jsx'),
+  path.join(projectRoot, 'src/features/expediente/expeditions/exp_res.component.jsx'),
   'utf8',
 );
 
@@ -14,7 +14,7 @@ describe('expedition resolution form request isolation', () => {
   });
 
   test('downloads the generated resolution through the authenticated PDF helper', () => {
-    expect(source).toContain("import { downloadGeneratedPdf } from '../../../../shared/utils/pdfDownload';");
+    expect(source).toContain("import { downloadGeneratedPdf } from '../../../shared/utils/pdfDownload';");
     expect(source).toMatch(/return downloadGeneratedPdf\(\s*response\s*,\s*`\/pdf\/expdocres\/\$\{encodeURIComponent\(filename\)\}`\s*,\s*filename\s*\)/);
     expect(source).not.toMatch(/window\.open\([^\n]*\/pdf\/expdocres\//);
   });

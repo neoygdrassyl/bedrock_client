@@ -103,7 +103,7 @@ vi.mock('react-i18next', () => ({
 
 // ─── Service mocks ────────────────────────────────────────────────────────────
 
-vi.mock('../app/services/expedition.service', () => ({
+vi.mock('../features/expediente/api/expedition.service', () => ({
   __esModule: true,
   default: hoisted.expeditionService,
 }));
@@ -118,49 +118,49 @@ vi.mock('../app/services/submit.service', () => ({
   default: hoisted.submitService,
 }));
 
-vi.mock('../app/services/cubXvr.service', () => ({
+vi.mock('../features/expediente/api/cubXvr.service', () => ({
   __esModule: true,
   default: hoisted.cubXVrService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   __esModule: true,
   default: hoisted.recordArcService,
 }));
 
 // ─── Stub heavy sub-components ───────────────────────────────────────────────
 
-vi.mock('../app/pages/user/expeditions/exp_calc.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_calc.component', () => ({
   __esModule: true,
   default: () => <button data-testid="exp-calc-stub">CALCULADORA</button>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_res.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_res.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-res-stub" />,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_res_2.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_res_2.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-res-2-stub" />,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_act_desist.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_act_desist.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-act-desist-stub" />,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_eje.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_eje.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-eje-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas_resumen.component', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas_resumen.component', () => ({
   __esModule: true,
   default: () => <div data-testid="record-arc-areas-resume-stub" />,
 }));
@@ -365,7 +365,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_1 renders without crashing', async () => {
     const { default: EXP_1 } = await import(
-      '../app/pages/user/expeditions/exp_1.component'
+      '../features/expediente/expeditions/exp_1.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -388,7 +388,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_1 renders with empty exp_areas', async () => {
     const { default: EXP_1 } = await import(
-      '../app/pages/user/expeditions/exp_1.component'
+      '../features/expediente/expeditions/exp_1.component'
     );
     const recordNoAreas = { ...minimalCurrentRecord, exp_areas: [] };
     const { container } = render(
@@ -411,7 +411,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_1 espera la respuesta OK antes de refrescar datos al guardar cambios', async () => {
     const { default: EXP_1 } = await import(
-      '../app/pages/user/expeditions/exp_1.component'
+      '../features/expediente/expeditions/exp_1.component'
     );
     const expeditionUpdate = createDeferred();
     const requestUpdate = vi.fn();
@@ -470,7 +470,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_2 renders without crashing', async () => {
     const { default: EXP_2 } = await import(
-      '../app/pages/user/expeditions/exp_2.component'
+      '../features/expediente/expeditions/exp_2.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -493,7 +493,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_2 renders without record_arc', async () => {
     const { default: EXP_2 } = await import(
-      '../app/pages/user/expeditions/exp_2.component'
+      '../features/expediente/expeditions/exp_2.component'
     );
     const itemNoArc = { ...minimalCurrentItem, record_arc: null, record_arc_steps: [] };
     const { container } = render(
@@ -518,7 +518,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_docs renders without crashing', async () => {
     const { default: EXP_DOCS } = await import(
-      '../app/pages/user/expeditions/exp_docs.component'
+      '../features/expediente/expeditions/exp_docs.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -542,7 +542,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_docs renders with recordArc provided', async () => {
     const { default: EXP_DOCS } = await import(
-      '../app/pages/user/expeditions/exp_docs.component'
+      '../features/expediente/expeditions/exp_docs.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -565,7 +565,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_res muestra texto plano de BlockNote en Artículo 4 de resolución', async () => {
     const { default: EXP_RES } = await vi.importActual(
-      '../app/pages/user/expeditions/exp_res.component'
+      '../features/expediente/expeditions/exp_res.component'
     );
     const blockNoteAntecedentes = serializeRichTextBlocks([
       { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente claro para resolución', styles: {} }] },
@@ -612,7 +612,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_res no imprime undefined cuando s33 no tiene descripción', async () => {
     const { default: EXP_RES } = await vi.importActual(
-      '../app/pages/user/expeditions/exp_res.component'
+      '../features/expediente/expeditions/exp_res.component'
     );
     const blockNoteAntecedentes = serializeRichTextBlocks([
       { type: 'paragraph', content: [{ type: 'text', text: 'Antecedente sin descripción', styles: {} }] },
@@ -655,7 +655,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_lic renders without crashing (state < 99)', async () => {
     const { default: EXP_LIC } = await import(
-      '../app/pages/user/expeditions/exp_lic.component'
+      '../features/expediente/expeditions/exp_lic.component'
     );
     // fun_clocks has no clock with state=99 → shows "fecha no disponible" message
     const itemNoClock99 = {
@@ -684,7 +684,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_lic renders with state=100 and license date', async () => {
     const { default: EXP_LIC } = await import(
-      '../app/pages/user/expeditions/exp_lic.component'
+      '../features/expediente/expeditions/exp_lic.component'
     );
     const itemWithLicense = {
       ...minimalCurrentItem,
@@ -714,7 +714,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_lic renders with state=200 (DESISTIDA)', async () => {
     const { default: EXP_LIC } = await import(
-      '../app/pages/user/expeditions/exp_lic.component'
+      '../features/expediente/expeditions/exp_lic.component'
     );
     const itemDesistida = {
       ...minimalCurrentItem,
@@ -745,7 +745,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_areas renders without crashing', async () => {
     const { default: EXP_AREAS } = await import(
-      '../app/pages/user/expeditions/exp_areas.component'
+      '../features/expediente/expeditions/exp_areas.component'
     );
     const { container } = render(
       <MemoryRouter>
@@ -768,7 +768,7 @@ describe('Expedition Components — Render', () => {
 
   test('exp_areas renders with existing areas', async () => {
     const { default: EXP_AREAS } = await import(
-      '../app/pages/user/expeditions/exp_areas.component'
+      '../features/expediente/expeditions/exp_areas.component'
     );
     const recordWithAreas = {
       ...minimalCurrentRecord,
@@ -800,12 +800,12 @@ describe('Expedition Components — Render', () => {
   test('exp_calc renders without crashing', async () => {
     // Import the real EXP_CALC (un-mocked for this file's own test)
     // We need to reimport without the stub — use a workaround with direct path
-    vi.doUnmock('../app/pages/user/expeditions/exp_calc.component');
+    vi.doUnmock('../features/expediente/expeditions/exp_calc.component');
     const { default: EXP_CALC } = await import(
-      '../app/pages/user/expeditions/exp_calc.component?real'
+      '../features/expediente/expeditions/exp_calc.component?real'
     ).catch(() =>
       // Fallback: if query-string import fails, import normally
-      import('../app/pages/user/expeditions/exp_calc.component')
+      import('../features/expediente/expeditions/exp_calc.component')
     );
     const { container } = render(
       <MemoryRouter>
@@ -826,9 +826,9 @@ describe('Expedition Components — Render', () => {
   }, 60000);
 
   test('exp_calc renders in compact mode', async () => {
-    vi.doUnmock('../app/pages/user/expeditions/exp_calc.component');
+    vi.doUnmock('../features/expediente/expeditions/exp_calc.component');
     const { default: EXP_CALC } = await import(
-      '../app/pages/user/expeditions/exp_calc.component'
+      '../features/expediente/expeditions/exp_calc.component'
     );
     const { container } = render(
       <MemoryRouter>

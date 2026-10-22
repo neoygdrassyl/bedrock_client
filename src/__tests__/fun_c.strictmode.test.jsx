@@ -34,47 +34,47 @@ vi.mock('../shared/components/Collapsible', () => ({
   default: ({ children }) => <div>{children}</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_confirmlegal', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_confirmlegal', () => ({
   __esModule: true,
   default: () => <div data-testid="confirm-legal" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_moduleNav', () => ({
   __esModule: true,
   default: () => <div data-testid="module-nav" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_versionNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_versionNav', () => ({
   __esModule: true,
   default: () => <div data-testid="version-nav" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunChecklistWindowSwitcher', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunChecklistWindowSwitcher', () => ({
   __esModule: true,
   default: () => <div data-testid="checklist-switcher" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_g_checklist', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_g_checklist', () => ({
   __esModule: true,
   default: () => <div data-testid="legacy-checklist" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_pdf_check', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_pdf_check', () => ({
   __esModule: true,
   default: () => <div data-testid="pdf-check" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_confirminc', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_confirminc', () => ({
   __esModule: true,
   default: () => <div data-testid="confirm-inc" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_c_clocks.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_c_clocks.component', () => ({
   __esModule: true,
   default: () => <div data-testid="clocks" />,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: getMock,
@@ -99,7 +99,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import FUNC from '../app/pages/user/fun_forms/fun_c';
+import FUNC from '../features/expediente/fun/fun_forms/fun_c';
 
 describe('FUN_C initial fetch under StrictMode', () => {
   beforeEach(() => {

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import FunDocumentManagementModal from '../app/pages/user/fun_forms/components/FunDocumentManagementModal';
+import FunDocumentManagementModal from '../features/expediente/fun/fun_forms/components/FunDocumentManagementModal';
 
 vi.mock('@/shared/components/data-table-bridge', () => ({
   default: ({ data = [] }) => <div data-testid="document-history-table">{data.length}</div>,
@@ -17,7 +17,7 @@ vi.mock('@/shared/components/ProtectedDocument', () => ({
   ProtectedDocumentPreview: ({ source }) => <div data-testid="document-pdf-viewer">PDF:{source}</div>,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: {
     getAll_fun_6_h: vi.fn(async () => ({ data: [] })),
   },

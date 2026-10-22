@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 
 const expeditionDownloadFiles = [
-  'src/app/pages/user/expeditions/exp_res.component.jsx',
-  'src/app/pages/user/expeditions/exp_docs.component.jsx',
-  'src/app/pages/user/expeditions/exp_eje.component.jsx',
+  'src/features/expediente/expeditions/exp_res.component.jsx',
+  'src/features/expediente/expeditions/exp_docs.component.jsx',
+  'src/features/expediente/expeditions/exp_eje.component.jsx',
 ];
 
 describe('Expedition PDF downloads', () => {
@@ -16,9 +16,9 @@ describe('Expedition PDF downloads', () => {
       expect(source).not.toMatch(/\bfetch\([^\n]*pdf(?:-generate)?\//);
     });
 
-    const docs = readFileSync('src/app/pages/user/expeditions/exp_docs.component.jsx', 'utf8');
-    const resolution = readFileSync('src/app/pages/user/expeditions/exp_res.component.jsx', 'utf8');
-    const executory = readFileSync('src/app/pages/user/expeditions/exp_eje.component.jsx', 'utf8');
+    const docs = readFileSync('src/features/expediente/expeditions/exp_docs.component.jsx', 'utf8');
+    const resolution = readFileSync('src/features/expediente/expeditions/exp_res.component.jsx', 'utf8');
+    const executory = readFileSync('src/features/expediente/expeditions/exp_eje.component.jsx', 'utf8');
 
     for (const route of ['expdoc1', 'expdoc2', 'expdoc3', 'expdoc4', 'expdoc5', 'expdoc6', 'expdoc7', 'expdocfinalnot', 'expdoceje']) {
       expect(docs).toContain(`downloadGeneratedPdf(response, \`/pdf/${route}/`);

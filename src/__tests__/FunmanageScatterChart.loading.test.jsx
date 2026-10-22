@@ -7,7 +7,7 @@ const { dashboardServiceMock } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/funmanage_dashboard.service', () => ({
+vi.mock('../features/expediente/api/funmanage_dashboard.service', () => ({
   __esModule: true,
   default: dashboardServiceMock,
 }));
@@ -24,7 +24,7 @@ vi.mock('recharts', () => ({
   ReferenceLine: () => React.createElement('div', null),
 }));
 
-import { FunmanageScatterChart } from '../app/pages/user/fun_forms/components/FunmanageScatterChart';
+import { FunmanageScatterChart } from '../features/expediente/fun/fun_forms/components/FunmanageScatterChart';
 
 describe('FunmanageScatterChart loading state', () => {
   beforeEach(() => {

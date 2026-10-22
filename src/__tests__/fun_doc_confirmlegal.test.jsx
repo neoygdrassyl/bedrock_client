@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { extractConfirmLegalProcessData, normalizeDateInputValue } from '../app/pages/user/fun_forms/components/fun_doc_confirmlegal';
+import { extractConfirmLegalProcessData, normalizeDateInputValue } from '../features/expediente/fun/fun_forms/components/fun_doc_confirmlegal';
 
 describe('extractConfirmLegalProcessData', () => {
   it('devuelve un payload vacio cuando no existe la relacion legal esperada', () => {

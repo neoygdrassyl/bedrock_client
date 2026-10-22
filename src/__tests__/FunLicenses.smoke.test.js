@@ -24,27 +24,27 @@ const IMPORT_TIMEOUT = 60000;
 describe('Módulo Licencias (FUN) — Importación principal', () => {
 
   test('fun.js (contenedor principal) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_c.js (creación de licencia) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_c')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_c')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_g.js (gestión general) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_g')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_g')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_clock.js (relojes de licencia) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_clock')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_clock')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_alertn.js (alertas colindantes) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_alertn')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_alertn')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_macrotable.jsx (tabla macro) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_macrotable')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_macrotable')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });
 
@@ -53,35 +53,35 @@ describe('Módulo Licencias (FUN) — Importación principal', () => {
 describe('Módulo Licencias — Formularios normativos (N)', () => {
 
   test('fun_n.js (contenedor normas) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_1.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_1')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_1')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_2.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_2')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_2')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_3.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_3')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_3')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_4.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_4')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_4')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_51.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_51')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_51')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_52.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_52')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_52')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_n_53.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_n_53')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_n_53')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });
 
@@ -90,59 +90,59 @@ describe('Módulo Licencias — Formularios normativos (N)', () => {
 describe('Módulo Licencias — Componentes internos (components/)', () => {
 
   test('fun_docs.js (documentos) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_docs')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_docs')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_report_data_edit.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_report_data_edit')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_report_data_edit')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_doc_confirminc.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_doc_confirminc')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_doc_confirminc')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_doc_confirmlegal.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_doc_confirmlegal')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_doc_confirmlegal')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_doc_certification.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_doc_certification.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_doc_certification.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_doc_abdicate.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_doc_abdicate.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_doc_abdicate.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_worker_asign.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_worker_asign.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_worker_asign.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_asign.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_asign.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_asign.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_archive.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_archive.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_archive.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_3_g_view.js (DataTable con selectors) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_3_g_view')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_3_g_view')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_clocks_negative.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_clocks_negative.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_clocks_negative.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_macro_clocks.component.jsx se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_macro_clocks.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_macro_clocks.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_g_checklist.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_g_checklist')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_g_checklist')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_6.view.js (vista de documentos 6) se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/fun_6.view')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/fun_6.view')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });
 
@@ -172,14 +172,14 @@ describe('Módulo Licencias — Submit (ventanilla única)', () => {
 describe('Módulo Licencias — Reportes', () => {
 
   test('fun_report_data.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_report_data')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_report_data')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_g_reports.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_g_reports.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_g_reports.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('fun_g_reportMaster.component.jsx se importa sin error', async () => {
-    await expect(import('../app/pages/user/fun_forms/components/fun_g_reportMaster.component')).resolves.toBeTruthy();
+    await expect(import('../features/expediente/fun/fun_forms/components/fun_g_reportMaster.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

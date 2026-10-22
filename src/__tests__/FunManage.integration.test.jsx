@@ -21,12 +21,12 @@ import { MemoryRouter } from 'react-router-dom';
 // FUN_MANAGE imports 18+ sub-components, each with own service dependencies.
 // We stub them to isolate the FUN_MANAGE shell (tabs, breadcrumb, ACCIONES section).
 
-vi.mock('../app/pages/user/fun_forms/components/fun_daily.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_daily.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-daily-stub">FUN_DAILY_COMPONENT</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_asign.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_asign.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-asigns-stub">FUN_ASIGNS_COMPONENT</div>,
 }));
@@ -36,84 +36,84 @@ vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({
   default: (props) => <div data-testid="submit-x-fun-stub">SUBMIT_X_FUN</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid={`fun-worker-asign-stub-${props.type || 'unknown'}`}>FUN_WORKER_ASIGN</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_c', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_c', () => ({
   __esModule: true,
   default: (props) => <div data-testid="func-stub">FUNC</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_g', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_g', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fung-stub">FUNG</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_n', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_n', () => ({
   __esModule: true,
   default: (props) => <div data-testid="funn-stub">FUNN</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_docs', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fund-stub">FUND</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_alertn', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-alert-stub">FUN_ALERT</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_clock', () => ({
   __esModule: true,
   default: (props) => <div data-testid="funclock-stub">FUNCLOCK</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_macrotable', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_macrotable', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-macrotable-stub">FUN_MACROTABLE</div>,
 }));
 
-vi.mock('../app/pages/user/records/record_arc', () => ({
+vi.mock('../features/expediente/records/record_arc', () => ({
   __esModule: true,
   default: (props) => <div data-testid="record-arc-stub">RECORD_ARC</div>,
 }));
 
-vi.mock('../app/pages/user/records/record_law', () => ({
+vi.mock('../features/expediente/records/record_law', () => ({
   __esModule: true,
   default: (props) => <div data-testid="record-law-stub">RECORD_LAW</div>,
 }));
 
-vi.mock('../app/pages/user/records/record_ph', () => ({
+vi.mock('../features/expediente/records/record_ph', () => ({
   __esModule: true,
   default: (props) => <div data-testid="record-ph-stub">RECORD_PH</div>,
 }));
 
-vi.mock('../app/pages/user/records/record_eng', () => ({
+vi.mock('../features/expediente/records/record_eng', () => ({
   __esModule: true,
   default: (props) => <div data-testid="record-eng-stub">RECORD_ENG</div>,
 }));
 
-vi.mock('../app/pages/user/records/record_review', () => ({
+vi.mock('../features/expediente/records/record_review', () => ({
   __esModule: true,
   default: (props) => <div data-testid="record-review-stub">RECORD_REVIEW</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/expedition.page', () => ({
+vi.mock('../features/expediente/expeditions/expedition.page', () => ({
   __esModule: true,
   default: (props) => <div data-testid="expedition-stub">EXPEDITION</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_reports/fun_gen.report', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_reports/fun_gen.report', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-report-gen-stub">FUN_REPORT_GEN</div>,
 }));
 
 // ─── Mock services ─────────────────────────────────────────────────────────
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     getAll_fun: vi.fn(() => Promise.resolve({ data: [] })),
@@ -200,7 +200,7 @@ vi.mock('../app/components/global', () => {
 
 // ─── Import component under test ──────────────────────────────────────────
 
-import FUN_MANAGE from '../app/pages/user/funmanage.page';
+import FUN_MANAGE from '../features/expediente/fun/funmanage.page';
 
 // ─── Test helpers ──────────────────────────────────────────────────────────
 
@@ -335,7 +335,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
     // the default tab is the daily one, which does not need the FUN list, so
     // the request waits until a tab that needs it mounts. FunManage.load-behavior
     // covers the on-demand half.
-    const FUNService = (await import('../app/services/fun.service')).default;
+    const FUNService = (await import('../features/expediente/api/fun.service')).default;
     FUNService.getAll_fun.mockClear();
 
     await act(async () => {
@@ -356,7 +356,7 @@ describe('FUN_MANAGE — Integración: Gestión de Solicitudes', () => {
   });
 
   test('12. Renderiza sin crash con datos mock del servicio', async () => {
-    const FUNService = (await import('../app/services/fun.service')).default;
+    const FUNService = (await import('../features/expediente/api/fun.service')).default;
     FUNService.getAll_fun.mockResolvedValueOnce({
       data: [
         { id: 1, id_public: 'CUB1-2024-0001', state: 1, version: 1, clock_payment: '2024-01-15' },

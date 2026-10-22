@@ -17,7 +17,7 @@ const { funServiceMock, pqrsServiceMock, userServiceMock } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: funServiceMock,
 }));
@@ -63,7 +63,7 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   default: ({ title }) => React.createElement('div', { 'data-testid': 'datatable-stub' }, title),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'table-expanded-stub' }),
 }));

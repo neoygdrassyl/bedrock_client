@@ -45,7 +45,7 @@ vi.mock('../shared/config/jsons/vars', async () => {
   };
 });
 
-import FUN_PDF from '../app/pages/user/fun_forms/components/fun_pdf';
+import FUN_PDF from '../features/expediente/fun/fun_forms/components/fun_pdf';
 
 const swaMsg = {
   title_wait: 'Espere...',

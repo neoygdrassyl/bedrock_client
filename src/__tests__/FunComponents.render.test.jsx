@@ -80,7 +80,7 @@ vi.mock('dayjs', () => {
 
 // ─── Service mocks ───────────────────────────────────────────────────────────
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() =>
@@ -127,57 +127,57 @@ vi.mock('../shared/api/users.service', () => ({
 
 // ─── Heavy sub-component stubs (fun_docs imports ~15 sub-components) ─────────
 
-vi.mock('../app/pages/user/fun_forms/components/fun_6_datalist', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_6_datalist', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-6-datalist-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_confirmlegal', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_confirmlegal', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-doc-confirmlegal-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_d_nav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_d_nav', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-d-nav-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_moduleNav', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-module-nav-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_versionNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_versionNav', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-version-nav-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_checklist_n', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_checklist_n', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-checklist-n-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_alertNeighbour', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_alertNeighbour', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-alert-neighbour-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_report_data_edit', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_report_data_edit', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-report-data-edit-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_pdf', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_pdf', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-pdf-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_pdf_check', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_pdf_check', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-pdf-check-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_seals', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_seals', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-seals-stub' }),
 }));
@@ -187,52 +187,52 @@ vi.mock('../app/pages/user/submit/submit_view.component', () => ({
   default: () => React.createElement('div', { 'data-testid': 'submit-single-view-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_sign_pdf.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_sign_pdf.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-sign-pdf-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/docs_list.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/docs_list.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'docs-list-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_d_control.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_d_control.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-d-control-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_6.view', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_6.view', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-6-view-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_confirminc', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_confirminc', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-doc-confirminc-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_certification.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_certification.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-doc-certification-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_doc_abdicate.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_doc_abdicate.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-doc-abdicate-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_d_control.component_2', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_d_control.component_2', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-d-control-2-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_asign_history.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_asign_history.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-asign-history-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'table-expanded-stub' }),
 }));
@@ -304,10 +304,10 @@ vi.mock('../shared/config/jsons/fun6DocsList.json', () => ({
 
 // ─── Imports under test ──────────────────────────────────────────────────────
 
-import FUN_DOCS from '../app/pages/user/fun_forms/components/fun_docs';
-import FUN_CHECKLIST_N from '../app/pages/user/fun_forms/components/fun_checklist_n';
-import FUN_ASIGNS_COMPONENT from '../app/pages/user/fun_forms/components/fun_asign.component';
-import FUN_ARCHIVE from '../app/pages/user/fun_forms/components/fun_archive.component';
+import FUN_DOCS from '../features/expediente/fun/fun_forms/components/fun_docs';
+import FUN_CHECKLIST_N from '../features/expediente/fun/fun_forms/components/fun_checklist_n';
+import FUN_ASIGNS_COMPONENT from '../features/expediente/fun/fun_forms/components/fun_asign.component';
+import FUN_ARCHIVE from '../features/expediente/fun/fun_forms/components/fun_archive.component';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 

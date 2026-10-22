@@ -46,12 +46,12 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/record_ph.service', () => ({
+vi.mock('../features/expediente/api/record_ph.service', () => ({
   __esModule: true,
   default: hoisted.phService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
@@ -66,7 +66,7 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   default: hoisted.pqrsService,
 }));
 
-vi.mock('../app/services/cubXvr.service', () => ({
+vi.mock('../features/expediente/api/cubXvr.service', () => ({
   __esModule: true,
   default: hoisted.cubXvrService,
 }));
@@ -114,7 +114,7 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
 
 // record_ph_review uses `domains_number` JSX from vars.js which is not in
 // the mockExternals vars mock — stub the whole component to avoid the error.
-vi.mock('../app/pages/user/records/ph/record_ph_review.component', () => ({
+vi.mock('../features/expediente/records/ph/record_ph_review.component', () => ({
   __esModule: true,
   default: () => <div data-testid="ph-review-stub" />,
 }));
@@ -132,14 +132,14 @@ vi.mock('pdf-lib', () => ({
 
 // ─── imports ──────────────────────────────────────────────────────────────────
 
-import RECORD_PH_GEN from '../app/pages/user/records/ph/record_ph_gen.component';
-import RECORD_PH_BUILDING from '../app/pages/user/records/ph/record_ph_building.component';
-import RECORD_PH_FLOOR from '../app/pages/user/records/ph/record_ph_floor.component';
-import RECORD_PH_BLUEPRINT from '../app/pages/user/records/ph/record_ph_blueprint.component';
-import RECORD_PH_GEN_2 from '../app/pages/user/records/ph/record_ph_gen2.component';
-import RECORD_PH_PROFESIONAL from '../app/pages/user/records/ph/record_ph_profesional.component';
-import RECORD_PH_REVIEW from '../app/pages/user/records/ph/record_ph_review.component';
-import RECORD_PH_CHECK_LIST from '../app/pages/user/records/ph/record_ph_check_list.component';
+import RECORD_PH_GEN from '../features/expediente/records/ph/record_ph_gen.component';
+import RECORD_PH_BUILDING from '../features/expediente/records/ph/record_ph_building.component';
+import RECORD_PH_FLOOR from '../features/expediente/records/ph/record_ph_floor.component';
+import RECORD_PH_BLUEPRINT from '../features/expediente/records/ph/record_ph_blueprint.component';
+import RECORD_PH_GEN_2 from '../features/expediente/records/ph/record_ph_gen2.component';
+import RECORD_PH_PROFESIONAL from '../features/expediente/records/ph/record_ph_profesional.component';
+import RECORD_PH_REVIEW from '../features/expediente/records/ph/record_ph_review.component';
+import RECORD_PH_CHECK_LIST from '../features/expediente/records/ph/record_ph_check_list.component';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
 

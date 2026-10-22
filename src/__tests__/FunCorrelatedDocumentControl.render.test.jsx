@@ -3,18 +3,18 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import FunCorrelatedDocumentControl from '../app/pages/user/fun_forms/components/FunCorrelatedDocumentControl';
-import FUN_CHECKLIST_N from '../app/pages/user/fun_forms/components/fun_checklist_n';
-import FUNService from '../app/services/fun.service';
-import checklistService from '../app/services/checklist.service';
+import FunCorrelatedDocumentControl from '../features/expediente/fun/fun_forms/components/FunCorrelatedDocumentControl';
+import FUN_CHECKLIST_N from '../features/expediente/fun/fun_forms/components/fun_checklist_n';
+import FUNService from '../features/expediente/api/fun.service';
+import checklistService from '../features/expediente/api/checklist.service';
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: {
     getUnifiedDocumentEntries: vi.fn(() => Promise.resolve({ data: [] })),
   },
 }));
 
-vi.mock('../app/services/checklist.service', () => ({
+vi.mock('../features/expediente/api/checklist.service', () => ({
   default: {
     getIntelligentChecklist: vi.fn(() => Promise.resolve({ data: { requirements: [], vrs: [], links: [] } })),
     updateRequirementEvaluation: vi.fn(() => Promise.resolve({ data: {} })),

@@ -33,12 +33,12 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/record_law.service', () => ({
+vi.mock('../features/expediente/api/record_law.service', () => ({
   __esModule: true,
   default: hoisted.lawService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
@@ -50,27 +50,27 @@ vi.mock('../app/services/submit.service', () => ({
 
 // ─── sub-component stubs ──────────────────────────────────────────────────────
 
-vi.mock('../app/pages/user/fun_forms/fun_n_1', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_n_1', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-n-1-stub" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_n_2', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_n_2', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-n-2-stub" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_n_53', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_n_53', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-n-53-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/law/record_law_pdf', () => ({
+vi.mock('../features/expediente/records/law/record_law_pdf', () => ({
   __esModule: true,
   default: () => <div data-testid="law-pdf-stub" />,
 }));
 
-vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
+vi.mock('../features/expediente/records/record_docVersion.component', () => ({
   __esModule: true,
   default: () => <div data-testid="doc-version-stub" />,
 }));
@@ -92,13 +92,13 @@ vi.mock('../shared/components/Collapsible', () => ({
 
 // ─── imports ──────────────────────────────────────────────────────────────────
 
-import RECORD_LAW_STEP_1 from '../app/pages/user/records/law/record_law_step1.cmponent';
-import RECORD_LAW_FUN_1 from '../app/pages/user/records/law/record_law_fun_1.component';
-import RECORD_LAW_FUN_2 from '../app/pages/user/records/law/record_law_fun_2.component';
-import RECORD_LAW_FUN_51 from '../app/pages/user/records/law/record_law_fun_51.component';
-import RECORD_LAW_FUN_52 from '../app/pages/user/records/law/record_law_fun_52.component';
-import RECORD_LAW_FUN_53 from '../app/pages/user/records/law/record_law_fun_53.component';
-import RECORD_LAW_EVALUATION from '../app/pages/user/records/law/record_law_review';
+import RECORD_LAW_STEP_1 from '../features/expediente/records/law/record_law_step1.cmponent';
+import RECORD_LAW_FUN_1 from '../features/expediente/records/law/record_law_fun_1.component';
+import RECORD_LAW_FUN_2 from '../features/expediente/records/law/record_law_fun_2.component';
+import RECORD_LAW_FUN_51 from '../features/expediente/records/law/record_law_fun_51.component';
+import RECORD_LAW_FUN_52 from '../features/expediente/records/law/record_law_fun_52.component';
+import RECORD_LAW_FUN_53 from '../features/expediente/records/law/record_law_fun_53.component';
+import RECORD_LAW_EVALUATION from '../features/expediente/records/law/record_law_review';
 
 // ─── shared fixtures ──────────────────────────────────────────────────────────
 

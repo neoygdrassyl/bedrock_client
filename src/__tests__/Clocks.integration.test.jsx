@@ -26,17 +26,17 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.mockFunService,
 }));
 
-vi.mock('../app/services/fun.service.js', () => ({
+vi.mock('../features/expediente/api/fun.service.js', () => ({
   __esModule: true,
   default: hoisted.mockFunService,
 }));
 
-vi.mock('../app/pages/user/clocks/components/ClockRow', () => ({
+vi.mock('../features/expediente/clocks/components/ClockRow', () => ({
   DEFAULT_CLOCK_COLUMN_VISIBILITY: {
     scheduledLimit: false,
     scheduledAlarm: false,
@@ -62,7 +62,7 @@ vi.mock('../app/pages/user/clocks/components/ClockRow', () => ({
   },
 }));
 
-vi.mock('../app/pages/user/clocks/components/SidebarInfo', () => ({
+vi.mock('../features/expediente/clocks/components/SidebarInfo', () => ({
   SidebarInfo: ({ manager }) => (
     <aside data-testid='sidebar-info-mock'>
       <div data-testid='curaduria-status'>{manager?.curaduriaDetails?.status || 'N/A'}</div>
@@ -77,27 +77,27 @@ vi.mock('../app/pages/user/clocks/components/SidebarInfo', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/clocks/components/HolidayCalendar', () => ({
+vi.mock('../features/expediente/clocks/components/HolidayCalendar', () => ({
   HolidayCalendar: () => <div data-testid='holiday-calendar-mock' />,
 }));
 
-vi.mock('../app/pages/user/clocks/components/ControlBar', () => ({
+vi.mock('../features/expediente/clocks/components/ControlBar', () => ({
   ControlBar: () => <div data-testid='control-bar-mock' />,
 }));
 
-vi.mock('../app/pages/user/clocks/components/ScheduleModal', () => ({
+vi.mock('../features/expediente/clocks/components/ScheduleModal', () => ({
   ScheduleModal: () => <div data-testid='schedule-modal-mock' />,
 }));
 
-vi.mock('../app/pages/user/clocks/components/AlarmsWidget', () => ({
+vi.mock('../features/expediente/clocks/components/AlarmsWidget', () => ({
   AlarmsWidget: ({ alarms = [] }) => <div data-testid='alarms-widget-mock'>alarmas:{alarms.length}</div>,
 }));
 
-vi.mock('../app/pages/user/clocks/components/gantt/GanttModal', () => ({
+vi.mock('../features/expediente/clocks/components/gantt/GanttModal', () => ({
   GanttModal: () => <div data-testid='gantt-modal-mock' />,
 }));
 
-vi.mock('../app/pages/user/clocks/components/ToolsMenu', () => ({
+vi.mock('../features/expediente/clocks/components/ToolsMenu', () => ({
   ToolsMenu: ({ onAction }) => (
     <div data-testid='tools-menu-mock'>
       <button data-testid='tool-action-schedule' onClick={() => onAction('schedule')}>
@@ -107,7 +107,7 @@ vi.mock('../app/pages/user/clocks/components/ToolsMenu', () => ({
   ),
 }));
 
-import EXP_CLOCKS from '../app/pages/user/clocks/centralClocks.component';
+import EXP_CLOCKS from '../features/expediente/clocks/centralClocks.component';
 
 const TODAY = dayjs().format('YYYY-MM-DD');
 

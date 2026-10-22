@@ -10,7 +10,7 @@ const { funServiceMock } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: funServiceMock,
 }));
@@ -47,72 +47,72 @@ vi.mock('../shared/components/legacy-ui', () => ({
   MDBTabsPane: ({ children }) => React.createElement('div', null, children),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_c', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_c', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-c-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_g', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_g', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-g-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_n', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_n', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-n-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_docs', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_docs', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-docs-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_alertn', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_alertn', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-alert-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_clock', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_clock', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-clock-modal' }),
 }));
 
-vi.mock('../app/pages/user/records/record_arc', () => ({
+vi.mock('../features/expediente/records/record_arc', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'record-arc-modal' }),
 }));
 
-vi.mock('../app/pages/user/records/record_law', () => ({
+vi.mock('../features/expediente/records/record_law', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'record-law-modal' }),
 }));
 
-vi.mock('../app/pages/user/records/record_eng', () => ({
+vi.mock('../features/expediente/records/record_eng', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'record-eng-modal' }),
 }));
 
-vi.mock('../app/pages/user/records/record_ph', () => ({
+vi.mock('../features/expediente/records/record_ph', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'record-ph-modal' }),
 }));
 
-vi.mock('../app/pages/user/records/record_review', () => ({
+vi.mock('../features/expediente/records/record_review', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'record-review-modal' }),
 }));
 
-vi.mock('../app/pages/user/expeditions/expedition.page', () => ({
+vi.mock('../features/expediente/expeditions/expedition.page', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'expedition-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_reports/fun_gen.report', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_reports/fun_gen.report', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-report-modal' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_macrotable', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_macrotable', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-macrotable-modal' }),
 }));
@@ -123,22 +123,22 @@ vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({
     React.createElement('div', { 'data-testid': simple ? 'submit-summary' : 'submit-docs-tab' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({
   __esModule: true,
   default: ({ type }) => React.createElement('div', { 'data-testid': `worker-${type}` }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_daily.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_daily.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'daily-tab' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_asign.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_asign.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'assigns-tab' }),
 }));
 
-import FUN_MANAGE from '../app/pages/user/funmanage.page';
+import FUN_MANAGE from '../features/expediente/fun/funmanage.page';
 
 const breadCrums = {
   bc_01: 'Inicio',

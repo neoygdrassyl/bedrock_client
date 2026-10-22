@@ -33,7 +33,7 @@ vi.mock('recharts', () => ({
   ZAxis: () => React.createElement('div', null),
 }));
 
-import FUN_CHART_MACRO_GRANTT from '../app/pages/user/fun_forms/components/charts_components/chart_macroGant.component';
+import FUN_CHART_MACRO_GRANTT from '../features/expediente/fun/fun_forms/components/charts_components/chart_macroGant.component';
 
 describe('FUN_CHART_MACRO_GRANTT loading behavior', () => {
   beforeEach(() => {

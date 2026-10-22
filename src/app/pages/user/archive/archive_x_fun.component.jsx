@@ -6,8 +6,8 @@ import { LegacyModal as ReactModal } from '@/shared/components/legacy-modal';
 import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../../shared/config/customClasses/typeParse';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
-import FUN_6_VIEW from '../fun_forms/fun_6.view';
+import FUN_6_UPLOAD from '../../../../features/expediente/fun/fun_forms/components/fun_6_upload.component';
+import FUN_6_VIEW from '../../../../features/expediente/fun/fun_forms/fun_6.view';
 import { Icon } from '@/shared/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 

@@ -62,9 +62,9 @@ vi.mock('../shared/config/customClasses/typeParse', () => ({
 
 // ─── Imports under test ──────────────────────────────────────────────────────
 
-import FUN_G_REPORTS from '../app/pages/user/fun_forms/components/fun_g_reports.component';
-import FUN_G_REPORT_MASTER from '../app/pages/user/fun_forms/components/fun_g_reportMaster.component';
-import FUN_REPORT_DATA from '../app/pages/user/fun_forms/components/fun_report_data';
+import FUN_G_REPORTS from '../features/expediente/fun/fun_forms/components/fun_g_reports.component';
+import FUN_G_REPORT_MASTER from '../features/expediente/fun/fun_forms/components/fun_g_reportMaster.component';
+import FUN_REPORT_DATA from '../features/expediente/fun/fun_forms/components/fun_report_data';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 

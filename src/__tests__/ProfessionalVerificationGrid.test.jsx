@@ -2,8 +2,8 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 
-import ProfessionalVerificationGrid, { getExperienceStatus, getProfessionalQualityStatus, getProfessionalActiveStatus, getProfessionalActionRecognitionStatus } from '../app/pages/user/records/law/ProfessionalVerificationGrid';
-import { getRequiredExperienceYears } from '../app/pages/user/records/law/professionalResponsibility.constants';
+import ProfessionalVerificationGrid, { getExperienceStatus, getProfessionalQualityStatus, getProfessionalActiveStatus, getProfessionalActionRecognitionStatus } from '../features/expediente/records/law/ProfessionalVerificationGrid';
+import { getRequiredExperienceYears } from '../features/expediente/records/law/professionalResponsibility.constants';
 
 const professional = {
   id: 52,

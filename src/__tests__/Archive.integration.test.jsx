@@ -37,7 +37,7 @@ vi.mock('../app/services/archive.service', () => ({
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     getAll_fun: vi.fn(() => Promise.resolve({ data: [] })),
@@ -58,7 +58,7 @@ vi.mock('../app/pages/user/archive/archive_x_fun.component', () => ({
   default: (props) => <div data-testid="archive-x-fun-stub">ARCHIVE_X_FUN</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/fun_6.view', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_6.view', () => ({
   __esModule: true,
   default: (props) => <div data-testid="fun-6-view-stub">FUN_6_VIEW</div>,
 }));

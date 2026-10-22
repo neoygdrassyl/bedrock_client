@@ -118,9 +118,9 @@ const NAV_ITEMS = [
 
 const ROUTE_PRELOADERS = {
   '/dashboard': () => import('../pages/user/dashboard'),
-  '/licencias': () => import('../pages/user/fun'),
-  '/licencias/gestion': () => import('../pages/user/funmanage.page'),
-  '/licencias/gestion-nueva': () => import('../pages/user/funmanage_new.page'),
+  '/licencias': () => import('../../features/expediente/fun/fun'),
+  '/licencias/gestion': () => import('../../features/expediente/fun/funmanage.page'),
+  '/licencias/gestion-nueva': () => import('../../features/expediente/fun/funmanage_new.page'),
   '/peticiones': () => import('../pages/user/pqrs/pqrsadmin'),
   '/ventanilla': () => import('../pages/user/submit/submit'),
   '/mensajes': () => import('../pages/user/mail'),

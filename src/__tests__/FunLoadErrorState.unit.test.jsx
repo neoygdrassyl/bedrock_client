@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
-import FUN from '@/app/pages/user/fun';
+import FUN from '@/features/expediente/fun/fun';
 
 const { funServiceMock, userServiceMock } = vi.hoisted(() => ({
   funServiceMock: {
@@ -14,9 +14,9 @@ const { funServiceMock, userServiceMock } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({ default: () => null }));
-vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({ default: () => null }));
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({ default: () => null }));
+vi.mock('@/features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({ default: () => null }));
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: new Proxy(funServiceMock, {
     get: (target, prop) => {
       if (prop in target) return target[prop];

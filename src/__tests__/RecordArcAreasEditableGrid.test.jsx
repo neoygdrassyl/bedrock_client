@@ -7,17 +7,17 @@ const { updateAreaMock } = vi.hoisted(() => ({
   updateAreaMock: vi.fn(),
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas_resumen.component', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas_resumen.component', () => ({
   default: () => <div data-testid="areas-summary" />,
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   default: {
     update_arc_33_area: updateAreaMock,
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: {},
 }));
 
@@ -27,7 +27,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import RecordArcAreas from '../app/pages/user/records/arc/record_arc_areas_2.component';
+import RecordArcAreas from '../features/expediente/records/arc/record_arc_areas_2.component';
 
 describe('Información de Áreas central grid', () => {
   test('renders the shared editable grid with the dynamic architectural area columns', async () => {

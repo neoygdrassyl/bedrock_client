@@ -1,0 +1,577 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Button } from '@/shared/ui/button';
+import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse'
+import FUNService from '../../../api/fun.service'
+import CubXVrDataService from '../../../api/cubXvr.service'
+import dayjs from 'dayjs';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
+import DCO_LIS from '../../../../../shared/config/jsons/fun6DocsList.json';
+import PQRS_Service from '../../../../../app/services/pqrs_main.service';
+
+import SubmitService from '../../../../../app/services/submit.service'
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { LEGAL_FORM_NOT_EVALUABLE_MESSAGE } from '../../../documental/shared/expediente-documental.utils';
+import { getMissingRequirements } from '@/features/expediente/api/documentaryOperations.service';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
+
+const STALE_EVALUATION_MESSAGE = 'La evaluación de requisitos no está vigente; revise la sugerencia antes de usarla.';
+
+// Suggests the missing documents of a canonical project from the documentary API.
+function missingRequirementsSuggestion(result) {
+    return result.requirements
+        .filter((requirement) => requirement.status === 'missing')
+        .map((requirement, index) => `${index + 1}. Solicitar ${requirement.name || requirement.code}.`)
+        .join('\n');
+}
+
+function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, requestUpdate, swaMsg }) {
+        const [vrsRelated, setVrsRelated] = useState([]);
+        const [vrSelected, setVrSelected] = useState(null);
+        const [cubSelected, setCubSelected] = useState(null);
+        const [idCUBxVr, setIdCUBxVr] = useState(null);
+        const [missingFieldValue, setMissingFieldValue] = useState('');
+        const [missingFieldMode, setMissingFieldMode] = useState('auto');
+        const [calculatedMissingSuggestion, setCalculatedMissingSuggestion] = useState('');
+        const [missingSuggestionMeta, setMissingSuggestionMeta] = useState({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
+        const missingFieldModeRef = useRef('auto');
+    const _SET_CHILD_1_FOREIGNER = useCallback(() => {
+        var _CHILD = currentItem.fun_1s;
+        var _CURRENT_VERSION = currentVersion - 1;
+        var _CHILD_VARS = {
+            tipo: [],
+            tramite: [],
+            m_urb: [],
+            m_sub: [],
+            m_lic: []
+        }
+        if (_CHILD) {
+            if (_CHILD[_CURRENT_VERSION] != null) {
+                _CHILD_VARS.tipo = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                _CHILD_VARS.tramite = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
+                _CHILD_VARS.m_urb = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                _CHILD_VARS.m_sub = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                _CHILD_VARS.m_lic = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+            }
+        }
+        return _CHILD_VARS;
+    }, [currentItem.fun_1s, currentVersion]);
+    const retrieveItem = useCallback(async () => {
+        try {
+            await SubmitService.getIdRelated(currentItem.id_public).then(response => {
+                setVrsRelated(response.data)
+            })
+            const responseCubXVr = await CubXVrDataService.getByFUN(currentItem.id_public);
+            const data = responseCubXVr.data.find(item => item.process === 'CARTA INCOMPLETO');
+
+            if(data) {
+                document.getElementById("vr_selected1").value = data.vr
+                setVrSelected(data.vr);
+                setCubSelected(data.cub);
+                setIdCUBxVr(data.id)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, [currentItem.id_public]);
+    const retrieveMissingSuggestion = useCallback(async () => {
+        if (!currentItem?.id) {
+            setCalculatedMissingSuggestion('');
+            setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
+            return;
+        }
+
+        setMissingSuggestionMeta((current) => ({ ...current, loading: true, error: '' }));
+
+        try {
+            const result = await getMissingRequirements(currentItem.id);
+
+            if (!result.applicable) {
+                // Nothing to suggest: keep whatever the field already holds.
+                setCalculatedMissingSuggestion('');
+                setMissingSuggestionMeta({ loading: false, error: '', sourceMessage: '', sourceLabel: '', notEvaluable: true, notEvaluableMessage: LEGAL_FORM_NOT_EVALUABLE_MESSAGE });
+                return;
+            }
+
+            const suggestion = missingRequirementsSuggestion(result);
+            setCalculatedMissingSuggestion(suggestion);
+            setMissingSuggestionMeta({
+                loading: false,
+                error: '',
+                sourceMessage: result.state === 'current' ? '' : STALE_EVALUATION_MESSAGE,
+                sourceLabel: '',
+                notEvaluable: false,
+                notEvaluableMessage: '',
+            });
+            setMissingFieldValue((currentValue) => missingFieldModeRef.current === 'manual' ? currentValue : suggestion);
+            if (missingFieldModeRef.current !== 'manual') {
+                setMissingFieldMode('auto');
+                missingFieldModeRef.current = 'auto';
+            }
+        } catch (error) {
+            setCalculatedMissingSuggestion('');
+            setMissingSuggestionMeta({ loading: false, error: 'No fue posible consultar los documentos faltantes.', sourceMessage: '', sourceLabel: '', notEvaluable: false, notEvaluableMessage: '' });
+        }
+    }, [currentItem?.id]);
+
+    useEffect(() => {
+        if (currentVersion != null) {
+            var _CHILD_1 = _SET_CHILD_1_FOREIGNER();
+            document.getElementById('geni_type').value = formsParser1(_CHILD_1)
+        }
+    }, [currentVersion, _SET_CHILD_1_FOREIGNER]);
+
+    useEffect(() => {
+        retrieveItem();
+    }, [retrieveItem]);
+
+    useEffect(() => {
+        const json = getJSONFull(currentItem?.fun_law?.cub_inc_json) || {};
+        const persistedMissing = String(json?.missing || '').trim();
+
+        setMissingFieldValue(persistedMissing);
+        setMissingFieldMode(persistedMissing ? 'manual' : 'auto');
+        missingFieldModeRef.current = persistedMissing ? 'manual' : 'auto';
+    }, [currentItem?.fun_law?.cub_inc_json]);
+
+    useEffect(() => {
+        retrieveMissingSuggestion();
+    }, [retrieveMissingSuggestion]);
+
+        function capitalize(s) {
+            return s && s[0].toUpperCase() + s.slice(1);
+        }
+
+        let _GET_LAST_ID = (_id) => {
+            let new_id = "";
+            PQRS_Service.getlascub()
+                .then(response => {
+                    new_id = response.data[0].cub;
+                    new_id = _MANAGE_IDS(new_id, 'end')
+                    document.getElementById(_id).value = new_id;
+                })
+                .catch(e => {
+                    console.log(e);
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar el consecutivo, inténtelo nuevamente." });
+                });
+
+        }
+        let _SET_CHILD_1 = () => {
+            var _CHILD = currentItem.fun_1s;
+            var _CURRENT_VERSION = currentVersion - 1;
+            var _CHILD_VARS = {
+                tipo: [],
+                tramite: [],
+                m_urb: [],
+                m_sub: [],
+                m_lic: [],
+            }
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD_VARS.tipo = _CHILD[_CURRENT_VERSION].tipo;
+                    _CHILD_VARS.tramite = _CHILD[_CURRENT_VERSION].tramite;
+                    _CHILD_VARS.m_urb = _CHILD[_CURRENT_VERSION].m_urb;
+                    _CHILD_VARS.m_sub = _CHILD[_CURRENT_VERSION].m_sub;
+                    _CHILD_VARS.m_lic = _CHILD[_CURRENT_VERSION].m_lic;
+                }
+            }
+            return _CHILD_VARS;
+
+        }
+        let _SET_CHILD_53 = () => {
+            var _CHILD = currentItem.fun_53s;
+            var _CURRENT_VERSION = currentVersion - 1;
+            var _CHILD_VARS = {
+                item_530: "",
+                item_5311: "",
+                item_5312: "",
+                item_532: "",
+                item_533: "",
+                item_534: "",
+                item_535: "",
+                item_536: "",
+            }
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD_VARS.item_530 = _CHILD[_CURRENT_VERSION].id;
+                    _CHILD_VARS.item_5311 = _CHILD[_CURRENT_VERSION].name;
+                    _CHILD_VARS.item_5312 = _CHILD[_CURRENT_VERSION].surname;
+                    _CHILD_VARS.item_532 = _CHILD[_CURRENT_VERSION].id_number;
+                    _CHILD_VARS.item_533 = _CHILD[_CURRENT_VERSION].role;
+                    _CHILD_VARS.item_534 = _CHILD[_CURRENT_VERSION].number;
+                    _CHILD_VARS.item_535 = _CHILD[_CURRENT_VERSION].email;
+                    _CHILD_VARS.item_536 = _CHILD[_CURRENT_VERSION].address;
+                }
+            }
+            return _CHILD_VARS;
+        }
+        let _GET_CHILD_REVIEW = () => {
+            var _CHILD = currentItem.fun_rs;
+            var _CURRENT_VERSION = currentVersion - 1;
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD = _CHILD[_CURRENT_VERSION]
+                } else {
+                    _CHILD = false
+                }
+            }
+            return _CHILD;
+        }
+        let _GET_CHILD_LAW = () => {
+            var _CHILD = currentItem.fun_law;
+            var _CHILD_VARS = {
+                id: _CHILD ? (_CHILD.id ?? null) : null,
+                sign: _CHILD ? (_CHILD.sign ?? '') : '',
+                new_type: _CHILD ? (_CHILD.new_type ?? '') : '',
+                publish_neighbour: _CHILD ? (_CHILD.publish_neighbour ?? '') : '',
+                id6payment: _CHILD ? (_CHILD.id6payment ?? '') : '',
+                cub_inc: _CHILD ? (_CHILD.cub_inc ?? '') : '',
+                cub_inc_json: _CHILD ? (_CHILD.cub_inc_json ?? null) : null,
+            }
+            return _CHILD_VARS;
+        }
+
+        let _GET_CLOCK = () => {
+            var _CHILD = currentItem.fun_clocks;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CLOCK_STATE = (_state) => {
+            var _CLOCK = _GET_CLOCK();
+            if (_state == null) return false;
+            for (var i = 0; i < _CLOCK.length; i++) {
+                if (_CLOCK[i].state == _state) return _CLOCK[i];
+            }
+            return false;
+        }
+        function _SET_MISSING_FUN_R() {
+            let _FUN_R = _GET_CHILD_REVIEW();
+            let fun_r = _FUN_R ? _FUN_R.code ? _FUN_R.code.split(',') : [] : [];
+            let fun_rc = _FUN_R ? _FUN_R.checked ? _FUN_R.checked.split(',') : [] : [];
+            let dooc_sting = '';
+            let _i = 1;
+
+            fun_rc.map((rew, i) => {
+                if (rew == 0) {
+                    let str = DCO_LIS[fun_r[i]];
+                    dooc_sting += `${_i}. ${str}.\n`;
+                    _i++;
+                }
+            })
+
+            return dooc_sting;
+        }
+
+        // *********************************
+        let _GENDOC_COMPONENT = () => {
+            var _CHILD_1 = _SET_CHILD_1();
+            //var _CHILD_2 = _SET_CHILD_2();
+            var _CHILD_53 = _SET_CHILD_53();
+            let _JSON = getJSONFull(_GET_CHILD_LAW().cub_inc_json);
+            const shouldShowCalculatedSuggestion = missingFieldMode === 'manual'
+                && calculatedMissingSuggestion
+                && calculatedMissingSuggestion !== missingFieldValue;
+            return <>
+                <div className="row mb-3">
+                    <div className="col">
+                        <label>5.1 Fecha del documento</label>
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_doc" required
+                            defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
+                    </div>
+
+                    <div className="col">
+                        <label>5.2 Número de Radicación</label>
+                        <input type="text" className="form-control mb-3" id="geni_id_public" disabled
+                            defaultValue={currentItem.id_public} />
+                    </div>
+
+                    <div className="col">
+                        <label className="mt-1">5.3 {infoCud.serials.end} Carta Incompleto</label>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geng_cub_inc"
+                                defaultValue={_GET_CHILD_LAW().cub_inc || cubSelected || ""} />
+                            {edit  ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                                : ''}
+                        </div>
+                    </div>
+                    <div className="col">
+                        <label className="mt-1">5.2.1 {infoCud.serials.start}</label>
+                            <div className="input-group">
+                                <select className="form-select" id="vr_selected1" defaultValue={vrSelected || ""}>
+                                    <option disabled value=''>Seleccione una opción</option>
+                                    {vrsRelated.map((value, key) => (
+                                        <option key={value.id} value={value.id_public}>
+                                            {value.id_public}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                    </div>
+
+                </div>
+
+                <div className="row mb-3">
+                    <div className="col">
+                        <label>5.4 Ciudad</label>
+                        <input type="text" className="form-control mb-3" id="geni_city"
+                            defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
+                    </div>
+                    <div className="col">
+                        <label>5.5. Fecha Radicación</label>
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date" required
+                            defaultValue={_JSON.date || _GET_CLOCK_STATE(3).date_start} />
+                    </div>
+                    <div className="col">
+                        <label>5.6. Fecha Limite</label>
+                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
+                            defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(3).date_start, 30)} />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <div className="col">
+                        <label>5.7 Responsable</label>
+                        <input type="text" className="form-control mb-3" id="geni_name"
+                            defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
+                    </div>
+                    <div className="col">
+                        <label>5.8 Dirección</label>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geni_address"
+                                defaultValue={_JSON.address || _CHILD_53.item_536} />
+                        </div>
+                    </div>
+                    <div className="col">
+                        <label>5.9 Email</label>
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="geni_email"
+                                defaultValue={_JSON.email || _CHILD_53.item_535} />
+                        </div>
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <div className="col">
+                        <label>5.10 Tipo de Solicitud</label>
+                        <textarea rows="3" className="form-control mb-3" id="geni_type" defaultValue={_JSON.type || formsParser1(_CHILD_1)}></textarea>
+                    </div>
+                    <div className="col">
+                        <label>5.11 Documentos faltantes</label>
+                        <textarea rows="3" className="form-control mb-2" id="geni_missing" value={missingFieldValue} onChange={(event) => {
+                            setMissingFieldValue(event.target.value);
+                            setMissingFieldMode('manual');
+                            missingFieldModeRef.current = 'manual';
+                        }}></textarea>
+                        {missingSuggestionMeta.loading ? <div className="mb-2 text-xs text-muted-foreground" role="status" aria-live="polite">Consultando documentos faltantes...</div> : null}
+                        {missingSuggestionMeta.error ? <div className="mb-2 rounded border border-danger-subtle bg-danger-subtle px-2 py-1 text-xs text-danger-emphasis" role="alert">{missingSuggestionMeta.error}</div> : null}
+                        {missingSuggestionMeta.notEvaluable ? <div className="mb-2 rounded border border-border bg-light px-2 py-1 text-xs text-muted-foreground" role="note">{missingSuggestionMeta.notEvaluableMessage || LEGAL_FORM_NOT_EVALUABLE_MESSAGE}</div> : null}
+                        {missingSuggestionMeta.sourceMessage ? <div className="mb-2 rounded border border-warning-subtle bg-warning-subtle px-2 py-1 text-xs text-warning-emphasis" role="alert">{missingSuggestionMeta.sourceMessage}</div> : null}
+                        {shouldShowCalculatedSuggestion ? <details className="rounded border border-border bg-light px-2 py-2 text-xs text-muted-foreground">
+                            <summary className="cursor-pointer select-none font-semibold text-foreground">Sugerencia calculada</summary>
+                            <div className="mt-2 whitespace-pre-line text-foreground">{calculatedMissingSuggestion}</div>
+                        </details> : null}
+                    </div>
+                </div>
+            </>
+        }
+
+        let gen_confirmDoc = (e) => {
+            if (e) e.preventDefault();
+            let formData = new FormData();
+            let date_doc = document.getElementById("geni_date_doc").value;
+            let date = document.getElementById("geni_date").value;
+            let date_limit = document.getElementById("geni_date_limit").value;
+            let id_public = document.getElementById("geni_id_public").value;
+            let name = document.getElementById("geni_name").value;
+            let city = document.getElementById("geni_city").value;
+            let email = document.getElementById("geni_email").value;
+            let address = document.getElementById("geni_address").value;
+            let type = document.getElementById("geni_type").value;
+            let missing = document.getElementById("geni_missing").value;
+            let cub = document.getElementById("geng_cub_inc").value;
+
+            formData.set('date_doc', date_doc);
+            formData.set('date', date);
+            formData.set('date_limit', date_limit);
+            formData.set('id_public', id_public);
+            formData.set('name', name);
+            formData.set('city', city);
+            formData.set('email', email);
+            formData.set('address', address);
+            formData.set('type', type);
+            formData.set('missing', missing);
+            formData.set('cub', cub);
+
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            FUNService.gen_doc_incomplete(formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        swalClose();
+                        const filename = `Carta_Incompleto_${currentItem.id_public}.pdf`;
+                        return downloadProtectedPdf(`/pdf/confirminc/${encodeURIComponent(filename)}`, filename);
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                });
+
+        }
+
+        let save_doc = (e) => {
+            if (e) e.preventDefault();
+            let formData = new FormData();
+            let cub_inc_json = getJSONFull(_GET_CHILD_LAW().cub_inc_json);
+
+            let new_id = document.getElementById("geng_cub_inc").value;
+            formData.set('new_id', new_id || false);
+            formData.set('prev_id', _GET_CHILD_LAW().cub_inc);
+            formData.set('aim_cub', 'cub_inc');
+
+            let date_doc = document.getElementById("geni_date_doc").value;
+            let date = document.getElementById("geni_date").value;
+            let date_limit = document.getElementById("geni_date_limit").value;
+            let id_public = document.getElementById("geni_id_public").value;
+            let name = document.getElementById("geni_name").value;
+            let city = document.getElementById("geni_city").value;
+            let email = document.getElementById("geni_email").value;
+            let address = document.getElementById("geni_address").value;
+            let type = document.getElementById("geni_type").value;
+            let missing = document.getElementById("geni_missing").value;
+
+            cub_inc_json.date_doc = date_doc;
+            cub_inc_json.date = date;
+            cub_inc_json.date_limit = date_limit;
+            cub_inc_json.id_public = id_public;
+            cub_inc_json.name = name;
+            cub_inc_json.address = address;
+            cub_inc_json.email = email;
+            cub_inc_json.city = city;
+            cub_inc_json.type = type;
+            cub_inc_json.missing = missing;
+
+            formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
+
+            manage_law(true, formData);
+            createVRxCUB_relation(new_id);
+            retrieveItem();
+        }
+        let manage_law = (useMySwal, formData) => {
+            var _CHILD = _GET_CHILD_LAW();
+            formData.set('fun0Id', currentItem.id);
+            if (useMySwal) {
+                swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            }
+            if (_CHILD.id) {
+                FUNService.update_law(_CHILD.id, formData)
+                    .then(response => {
+                        if (response.data === 'OK') {
+                            if (useMySwal) {
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id)
+                            }
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            swalError({ title: "ERROR DE DUPLICACION" });
+                        } else {
+                            if (useMySwal) {
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                            }
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        if (useMySwal) {
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                        }
+                    });
+            }
+            else {
+                FUNService.create_law(formData)
+                    .then(response => {
+                        if (response.data === 'OK') {
+                            if (useMySwal) {
+                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                requestUpdate(currentItem.id)
+                            }
+                        } else if (response.data === 'ERROR_DUPLICATE') {
+                            swalError({ title: "ERROR DE DUPLICACION" });
+                        } else {
+                            if (useMySwal) {
+                                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                            }
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e);
+                        if (useMySwal) {
+                            swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                        }
+                    });
+            }
+
+        }
+        let createVRxCUB_relation = (cub_selected) => {
+            let vr = document.getElementById("vr_selected1").value;
+            console.log(vr)
+            let cub = cub_selected;
+            let formatData = new FormData();
+
+            formatData.set('vr', vr);
+            formatData.set('cub', cub);
+            formatData.set('fun', currentItem.id_public);
+            formatData.set('process', 'CARTA INCOMPLETO');
+
+            let desc = document.getElementById('geni_type').value;
+            formatData.set('desc', desc);
+            let date = document.getElementById('geni_date_doc').value;
+
+            formatData.set('date', date);
+            if (idCUBxVr) {
+                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                // Crear relación
+                CubXVrDataService.createCubXVr(formatData)
+                    .then((response) => {
+                        if (response.data === 'OK') {
+                            // Refrescar la UI
+                            requestUpdate(currentItem.id, true);
+                        } 
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+
+            }
+
+        };
+        return (
+            <form id="genc_doc_form" onSubmit={save_doc}>
+                {_GENDOC_COMPONENT()}
+                <div className="row text-center">
+                    {edit ?
+                        <div className="col">
+                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
+                        </div>
+                        : ''}
+                    <div className="col">
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                    </div>
+                </div>
+            </form>
+
+        );
+}
+
+export default FUN_DOC_CONFIRM_INCOMPLETE;

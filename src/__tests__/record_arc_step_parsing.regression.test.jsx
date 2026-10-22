@@ -15,12 +15,12 @@ const hoisted = vi.hoisted(() => ({
   funService: {},
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   __esModule: true,
   default: hoisted.recordArcService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
@@ -43,17 +43,17 @@ vi.mock('../shared/components/vizualizer.component', () => ({
   default: () => <div data-testid="vizualizer" />,
 }));
 
-vi.mock('../app/pages/user/records/exp_areas_record.component', () => ({
+vi.mock('../features/expediente/records/exp_areas_record.component', () => ({
   __esModule: true,
   default: () => <div data-testid="exp-areas-record" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas.component', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas.component', () => ({
   __esModule: true,
   default: () => <div data-testid="record-arc-areas" />,
 }));
 
-vi.mock('../app/pages/user/records/arc/record_arc_areas_2.component.jsx', () => ({
+vi.mock('../features/expediente/records/arc/record_arc_areas_2.component.jsx', () => ({
   __esModule: true,
   default: () => <div data-testid="record-arc-areas-2" />,
 }));
@@ -68,7 +68,7 @@ vi.mock('@/shared/components/rich-text-editor', () => ({
   default: ({ hiddenName, value = '' }) => <textarea name={hiddenName} defaultValue={value} />,
 }));
 
-vi.mock('../app/pages/user/records/arc/recordArcRichTextUpload', () => ({
+vi.mock('../features/expediente/records/arc/recordArcRichTextUpload', () => ({
   uploadRecordArcRichTextImage: vi.fn(),
 }));
 
@@ -89,9 +89,9 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import RECORD_ARC_31 from '../app/pages/user/records/arc/record_arc_31';
-import RECORD_ARC_33 from '../app/pages/user/records/arc/record_arc_33';
-import RECORD_ARC_DESC from '../app/pages/user/records/arc/record_arc_desc';
+import RECORD_ARC_31 from '../features/expediente/records/arc/record_arc_31';
+import RECORD_ARC_33 from '../features/expediente/records/arc/record_arc_33';
+import RECORD_ARC_DESC from '../features/expediente/records/arc/record_arc_desc';
 
 const baseProps = {
   translation: {},

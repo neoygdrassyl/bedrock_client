@@ -103,7 +103,7 @@ const mockFunItem = {
   record_ph: null,
 };
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: mockFunItem })),
@@ -126,12 +126,12 @@ vi.mock('../shared/api/users.service', () => ({
 
 // ─── Sub-component stubs ─────────────────────────────────────────────────────
 
-vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_moduleNav', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-module-nav-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/clocks_control.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/clocks_control.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'clocks-control-stub' }),
 }));
@@ -141,7 +141,7 @@ vi.mock('../app/components/emails.component', () => ({
   default: () => React.createElement('div', { 'data-testid': 'emails-stub' }),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_clocks_email.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_clocks_email.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'fun-clocks-emails-stub' }),
 }));
@@ -176,12 +176,12 @@ vi.mock('../shared/config/customClasses/typeParse', () => ({
 
 // ─── Imports under test ──────────────────────────────────────────────────────
 
-import FUNCLOCK from '../app/pages/user/fun_forms/fun_clock';
-import FUN_C_CLOCKS from '../app/pages/user/fun_forms/components/fun_c_clocks.component';
-import FUN_CLOCK_CONTROL from '../app/pages/user/fun_forms/components/fun_clock_control';
-import FUN_CLOCK_EVENTS from '../app/pages/user/fun_forms/components/fun_clocks_events.component';
-import FUN_CLOCKS_NEGATIVE from '../app/pages/user/fun_forms/components/fun_clocks_negative.component';
-import FUN_SERVICE from '../app/services/fun.service';
+import FUNCLOCK from '../features/expediente/fun/fun_forms/fun_clock';
+import FUN_C_CLOCKS from '../features/expediente/fun/fun_forms/components/fun_c_clocks.component';
+import FUN_CLOCK_CONTROL from '../features/expediente/fun/fun_forms/components/fun_clock_control';
+import FUN_CLOCK_EVENTS from '../features/expediente/fun/fun_forms/components/fun_clocks_events.component';
+import FUN_CLOCKS_NEGATIVE from '../features/expediente/fun/fun_forms/components/fun_clocks_negative.component';
+import FUN_SERVICE from '../features/expediente/api/fun.service';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 

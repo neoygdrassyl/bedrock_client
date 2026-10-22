@@ -11,11 +11,11 @@ const { getMissingRequirementsMock, refreshDocumentaryRequirementsMock } = vi.ho
 vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <section aria-label={contentLabel}>{children}</section> : null),
 }));
-vi.mock('@/app/services/documentaryOperations.service', () => ({
+vi.mock('@/features/expediente/api/documentaryOperations.service', () => ({
   getMissingRequirements: getMissingRequirementsMock,
   refreshDocumentaryRequirements: refreshDocumentaryRequirementsMock,
 }));
-vi.mock('@/app/services/documentary.service', () => ({
+vi.mock('@/features/expediente/api/documentary.service', () => ({
   documentaryError: (error) => error.message || 'Error',
 }));
 

@@ -44,7 +44,7 @@ vi.mock('../shared/config/jsons/vars', () => ({
 
 // ─── Service mocks ───────────────────────────────────────────────────────────
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: {} })),
@@ -113,11 +113,11 @@ vi.mock('../shared/config/customClasses/typeParse', () => ({
 
 // ─── Imports under test ──────────────────────────────────────────────────────
 
-import FUNN1 from '../app/pages/user/fun_forms/fun_n_1';
-import FUNN2 from '../app/pages/user/fun_forms/fun_n_2';
-import FUNN3 from '../app/pages/user/fun_forms/fun_n_3';
-import FUNN4 from '../app/pages/user/fun_forms/fun_n_4';
-import FUNService from '../app/services/fun.service';
+import FUNN1 from '../features/expediente/fun/fun_forms/fun_n_1';
+import FUNN2 from '../features/expediente/fun/fun_forms/fun_n_2';
+import FUNN3 from '../features/expediente/fun/fun_forms/fun_n_3';
+import FUNN4 from '../features/expediente/fun/fun_forms/fun_n_4';
+import FUNService from '../features/expediente/api/fun.service';
 
 // ─── Minimal props shared by all fun_n_* components ─────────────────────────
 

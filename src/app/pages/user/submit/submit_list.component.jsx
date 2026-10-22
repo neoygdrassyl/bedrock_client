@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
-import funService from '../../../services/fun.service';
+import funService from '../../../../features/expediente/api/fun.service';
 import dayjs from 'dayjs';
 import { PDFDocument } from 'pdf-lib';
 
@@ -10,10 +10,10 @@ import { PDFDocument } from 'pdf-lib';
 import Fun6DocList from '../../../../shared/config/jsons/fun6DocsList.json'
 import { Lists } from '../../../../shared/config/jsons/lists_submit'
 
-import DOCS_LIST from '../fun_forms/components/docs_list.component';
+import DOCS_LIST from '../../../../features/expediente/fun/fun_forms/components/docs_list.component';
 import { Icon } from '@/shared/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
-import { DOCUMENT_ORIGIN_STATE } from '../shared/expediente-documental.constants';
+import { DOCUMENT_ORIGIN_STATE } from '../../../../features/expediente/documental/shared/expediente-documental.constants';
 import { LegacyModal } from '@/shared/components/legacy-modal';
 import MissingDocumentsModal from './MissingDocumentsModal.jsx';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';

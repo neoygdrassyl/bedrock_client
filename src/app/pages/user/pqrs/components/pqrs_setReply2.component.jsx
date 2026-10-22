@@ -6,7 +6,7 @@ import { infoCud } from '../../../../../shared/config/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import 'jodit-pro/es2021/jodit.fat.min.css';
 import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
-import CubXVrDataService from '../../../../services/cubXvr.service'
+import CubXVrDataService from '../../../../../features/expediente/api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 

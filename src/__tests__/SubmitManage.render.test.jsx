@@ -12,7 +12,7 @@ vi.mock('../app/services/submit.service', () => ({
   },
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     getLastIdPublic: vi.fn(() => Promise.resolve({ data: [] })),

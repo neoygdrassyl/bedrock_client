@@ -18,7 +18,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ─── Mock services ─────────────────────────────────────────────────────────
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({
@@ -41,7 +41,7 @@ vi.mock('../app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/services/expedition.service', () => ({
+vi.mock('../features/expediente/api/expedition.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
@@ -52,7 +52,7 @@ vi.mock('../app/services/expedition.service', () => ({
   },
 }));
 
-vi.mock('../app/services/record_law.service', () => ({
+vi.mock('../features/expediente/api/record_law.service', () => ({
   __esModule: true,
   default: {
     getRecord: vi.fn(() => Promise.resolve({ data: [] })),
@@ -86,37 +86,37 @@ vi.mock('../app/services/record_arc.js', () => ({
 
 // ─── Mock sub-components (to isolate unit under test) ──────────────────────
 
-vi.mock('../app/pages/user/expeditions/exp_1.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_1.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-1">EXP_1 Info General</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_areas.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_areas.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-areas">EXP_AREAS Áreas</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_2.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_2.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-2">EXP_2 Pagos</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_docs.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_docs.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-docs">EXP_DOCS Documentos</div>,
 }));
 
-vi.mock('../app/pages/user/expeditions/exp_lic.component', () => ({
+vi.mock('../features/expediente/expeditions/exp_lic.component', () => ({
   __esModule: true,
   default: (props) => <div data-testid="exp-lic">EXP_LIC Licencia</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_versionNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_versionNav', () => ({
   __esModule: true,
   default: (props) => <div data-testid="version-nav">Version Nav</div>,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_moduleNav', () => ({
   __esModule: true,
   default: (props) => <div data-testid="module-nav">Module Nav</div>,
 }));
@@ -169,7 +169,7 @@ vi.mock('../app/components/global', () => {
 
 // ─── Import component ──────────────────────────────────────────────────────
 
-import EXPEDITION from '../app/pages/user/expeditions/expedition.page';
+import EXPEDITION from '../features/expediente/expeditions/expedition.page';
 
 // ─── Test helpers ──────────────────────────────────────────────────────────
 
@@ -221,7 +221,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('2. Muestra "CARGANDO INFORMACION..." mientras carga datos', async () => {
-    const FUN_SERVICE = (await import('../app/services/fun.service')).default;
+    const FUN_SERVICE = (await import('../features/expediente/api/fun.service')).default;
     FUN_SERVICE.get.mockReturnValueOnce(new Promise(() => {})); // Never resolves
 
     await act(async () => {
@@ -232,7 +232,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('3. EXPEDITION_SERVICE.getRecord() se llama al montar', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockClear();
 
     await act(async () => {
@@ -243,7 +243,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('4. FUN_SERVICE.get() se llama con currentId al montar', async () => {
-    const FUN_SERVICE = (await import('../app/services/fun.service')).default;
+    const FUN_SERVICE = (await import('../features/expediente/api/fun.service')).default;
     FUN_SERVICE.get.mockClear();
 
     await act(async () => {
@@ -254,7 +254,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('5. RECORD_LAW_SERVICE.getRecord() se llama al montar', async () => {
-    const RECORD_LAW_SERVICE = (await import('../app/services/record_law.service')).default;
+    const RECORD_LAW_SERVICE = (await import('../features/expediente/api/record_law.service')).default;
     RECORD_LAW_SERVICE.getRecord.mockClear();
 
     await act(async () => {
@@ -265,7 +265,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('6. Muestra botón "GENERAR EXPEDICION EN BLANCO" cuando getRecord devuelve vacío', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({ data: [] });
 
     await act(async () => {
@@ -278,7 +278,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('7. Click "GENERAR EXPEDICION EN BLANCO" llama EXPEDITION_SERVICE.create()', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({ data: [] });
     EXPEDITION_SERVICE.create.mockClear();
     EXPEDITION_SERVICE.create.mockResolvedValueOnce({ data: 'OK' });
@@ -296,7 +296,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('8. Con record existente, muestra secciones del expediente', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({
       data: [{ id: 1, fun0Id: 1, version: 1 }],
     });
@@ -318,7 +318,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('8.1. El acceso de tiempos reutiliza la navegación canónica del expediente', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     const navigation = vi.fn();
 
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({
@@ -336,7 +336,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('9. Navigation components presentes con record existente', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({
       data: [{ id: 1, fun0Id: 1, version: 1 }],
     });
@@ -352,7 +352,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('10. FUN_SERVICE.loadPQRSxFUN se llama después de cargar el item', async () => {
-    const FUN_SERVICE = (await import('../app/services/fun.service')).default;
+    const FUN_SERVICE = (await import('../features/expediente/api/fun.service')).default;
     FUN_SERVICE.loadPQRSxFUN.mockClear();
 
     await act(async () => {
@@ -378,7 +378,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('12. Renderiza correctamente con diferentes currentVersion', async () => {
-    const EXPEDITION_SERVICE = (await import('../app/services/expedition.service')).default;
+    const EXPEDITION_SERVICE = (await import('../features/expediente/api/expedition.service')).default;
     EXPEDITION_SERVICE.getRecord.mockResolvedValueOnce({
       data: [{ id: 1, fun0Id: 1, version: 2 }],
     });

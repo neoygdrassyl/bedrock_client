@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const recordArcSource = readFileSync('src/app/pages/user/records/record_arc.jsx', 'utf8');
-const typographySource = readFileSync('src/app/pages/user/records/arc/record_arc_typography.css', 'utf8');
+const recordArcSource = readFileSync('src/features/expediente/records/record_arc.jsx', 'utf8');
+const typographySource = readFileSync('src/features/expediente/records/arc/record_arc_typography.css', 'utf8');
 
 describe('Control de contenido de arquitectura', () => {
     it('mantiene cada interruptor junto a su etiqueta', () => {

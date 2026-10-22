@@ -22,7 +22,7 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   ),
 }));
 
-import BlueprintTable from '../app/pages/user/records/arc/components/BlueprintTable';
+import BlueprintTable from '../features/expediente/records/arc/components/BlueprintTable';
 
 describe('BlueprintTable', () => {
   test('renders plan data and delegates document and row actions', () => {

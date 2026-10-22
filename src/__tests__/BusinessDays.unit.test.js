@@ -3,7 +3,7 @@ import {
   calcularDiasHabiles,
   FUN_0_TYPE_TIME,
   sumarDiasHabiles,
-} from '../app/pages/user/clocks/hooks/useClocksManager';
+} from '../features/expediente/clocks/hooks/useClocksManager';
 
 describe('BusinessDays utils', () => {
   beforeEach(() => {

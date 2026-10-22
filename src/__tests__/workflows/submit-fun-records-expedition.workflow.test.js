@@ -13,11 +13,11 @@
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import ExpeditionService from '../../app/services/expedition.service';
-import FunService from '../../app/services/fun.service';
-import RecordArcService from '../../app/services/record_arc.service';
-import RecordEngService from '../../app/services/record_eng.service';
-import RecordLawService from '../../app/services/record_law.service';
+import ExpeditionService from '../../features/expediente/api/expedition.service';
+import FunService from '../../features/expediente/api/fun.service';
+import RecordArcService from '../../features/expediente/api/record_arc.service';
+import RecordEngService from '../../features/expediente/api/record_eng.service';
+import RecordLawService from '../../features/expediente/api/record_law.service';
 import SubmitService from '../../app/services/submit.service';
 
 // ── Infraestructura MSW ──────────────────────────────────────────────────────

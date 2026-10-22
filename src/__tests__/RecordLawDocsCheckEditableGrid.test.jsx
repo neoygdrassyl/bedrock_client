@@ -8,7 +8,7 @@ const { getIdRelatedMock, updateReviewMock } = vi.hoisted(() => ({
   updateReviewMock: vi.fn().mockResolvedValue({ data: 'OK' }),
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: { update_r: updateReviewMock },
 }));
 
@@ -31,7 +31,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import RecordLawDocsCheck from '../app/pages/user/records/law/record_law_docs_check';
+import RecordLawDocsCheck from '../features/expediente/records/law/record_law_docs_check';
 
 describe('Inf. Arq document inventory EditableDataGrid', () => {
   test('renders the opt-in visual grid and preserves evaluation saving without attachment controls', async () => {

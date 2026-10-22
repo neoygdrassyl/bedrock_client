@@ -9,7 +9,7 @@ const getSearchMock = vi.fn();
 const getFunByPublicMock = vi.fn();
 const getSummaryByIdPublicMock = vi.fn();
 
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: {
     getSearch: (...args) => getSearchMock(...args),
     get_fun_IdPublic: (...args) => getFunByPublicMock(...args),

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useAlarms } from '../app/pages/user/clocks/hooks/useAlarms';
-import { FUN_0_TYPE_TIME } from '../app/pages/user/clocks/hooks/useClocksManager';
+import { useAlarms } from '../features/expediente/clocks/hooks/useAlarms';
+import { FUN_0_TYPE_TIME } from '../features/expediente/clocks/hooks/useClocksManager';
 
 const makeManager = (overrides = {}) => {
   const clocksMap = overrides.clocksMap || {};

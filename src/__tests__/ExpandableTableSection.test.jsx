@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 
-import ExpandableTableSection from '../app/pages/user/records/arc/components/ExpandableTableSection';
+import ExpandableTableSection from '../features/expediente/records/arc/components/ExpandableTableSection';
 
 describe('ExpandableTableSection', () => {
   test('starts expanded when it has items and collapsed when it is empty', () => {
