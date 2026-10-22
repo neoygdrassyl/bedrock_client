@@ -1,8 +1,8 @@
 import { expect, it, vi } from 'vitest';
 import { validateDocumentaryView } from '../pages/user/expediente_documental/documentaryViewContract';
 import * as api from './documentaryOperations.service';
-import http from '../../http-common';
-vi.mock('../../http-common',()=>({default:{get:vi.fn(),put:vi.fn(),post:vi.fn(),patch:vi.fn(),delete:vi.fn()}}));
+import http from '../../shared/api/http-common';
+vi.mock('../../shared/api/http-common',()=>({default:{get:vi.fn(),put:vi.fn(),post:vi.fn(),patch:vi.fn(),delete:vi.fn()}}));
 const checksum='a'.repeat(64), key='11111111-1111-4111-8111-111111111111';
 const documentId='c-doc-1';
 const receipt={id:10,fun0Id:1,configurationId:2,documentClass:'requirement',documentId,listTitle:'Lista A',versionCount:1,documentKey:key,versionSequence:1,rowVersion:1,evidenceRevision:1,hasPhysical:true,hasDigital:false,hasScan:false,files:{digital:null,scan:null}};

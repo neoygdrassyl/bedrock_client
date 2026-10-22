@@ -1,6 +1,6 @@
 import FUNService from '@/app/services/fun.service';
 import SubmitService from '@/app/services/submit.service';
-import { nextLicenseIdPublic, nextVrId } from '@/app/utils/consecutives';
+import { nextLicenseIdPublic, nextVrId } from '@/shared/utils/consecutives';
 
 /**
  * Prefill values for "Llevar a radicación", computed with the same rules as "Radicar" (fun.js)

@@ -1,9 +1,9 @@
 import './components/editorStyles.css'
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import PQRS_SERVICES from '../../../services/pqrs_main.service'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component'
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 export const ACESS_EDIT = (props) => {
 

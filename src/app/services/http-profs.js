@@ -1,4 +1,4 @@
-import { createDovelaHttpClient } from "@/http-client-factory";
+import { createDovelaHttpClient } from "@/shared/api/http-client-factory";
 
 // Third-party host (server.prof.curaduria1bucaramanga.com) — different
 // origin from the main API (VITE_API_URL). The app JWT must not be

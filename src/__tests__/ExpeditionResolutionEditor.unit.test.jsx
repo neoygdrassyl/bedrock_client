@@ -59,7 +59,7 @@ vi.mock('../app/utils/ExecEngineTemp', () => ({
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalClose: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),
@@ -67,12 +67,12 @@ vi.mock('../app/utils/swalAdapter', () => ({
   swalUpdateProgress: vi.fn(),
 }));
 
-vi.mock('../app/utils/pdfDownload', () => ({
+vi.mock('../shared/utils/pdfDownload', () => ({
   downloadProtectedPdf: vi.fn(() => Promise.resolve()),
 }));
 
 import EXP_RES_2 from '../app/pages/user/expeditions/exp_res_2.component';
-import { downloadProtectedPdf } from '../app/utils/pdfDownload';
+import { downloadProtectedPdf } from '../shared/utils/pdfDownload';
 
 describe('EXP_RES_2', () => {
   beforeEach(() => {

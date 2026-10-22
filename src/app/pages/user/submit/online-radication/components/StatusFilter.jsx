@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { STATUS_FILTERS } from '../onlineRadicationModel';
 
 const PILL_BASE = 'inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none tabular-nums';

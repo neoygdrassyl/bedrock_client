@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import SubmitService from '../../../services/submit.service';
-import DataTable from '@/components/data-table-bridge';
-import { dateParser } from '../../../components/customClasses/typeParse';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser } from '../../../../shared/config/customClasses/typeParse';
 import SUBTMIT_MANAGE from './submit_manage'
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import dayjs from 'dayjs';
-import ListsCodes from '../../../components/jsons/fun6DocsList.json'
-import { Icon } from '@/components/icon';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import ListsCodes from '../../../../shared/config/jsons/fun6DocsList.json'
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { VentanillaTabs } from './VentanillaTabs';
 
 // Maps a sortable table column to the column the API accepts in `?sort=`.

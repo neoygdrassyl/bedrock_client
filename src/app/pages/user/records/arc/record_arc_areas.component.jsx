@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { Spreadsheet } from "react-spreadsheet";
-import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { _FUN_1_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/shared/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import TagInput from '../../../../components/TagInput';
-import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import TagInput from '../../../../../shared/components/TagInput';
+import { getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_ARC_AREAS(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

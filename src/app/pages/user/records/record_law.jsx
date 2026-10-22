@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import submitService from '../../../services/submit.service';
@@ -37,7 +37,7 @@ import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import FUNN51 from '../fun_forms/fun_n_51';
 import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 import { buildFunInformationViewModel } from './law/funInformationViewModel';
 

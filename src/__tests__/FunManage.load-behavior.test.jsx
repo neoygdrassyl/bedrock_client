@@ -15,7 +15,7 @@ vi.mock('../app/services/fun.service', () => ({
   default: funServiceMock,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   regexChecker_isPh: vi.fn(() => false),
   regexChecker_isOA: vi.fn(() => false),
 }));
@@ -27,11 +27,11 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen }) => (isOpen ? React.createElement('div', null, children) : null),
 }));
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBRow: ({ children }) => React.createElement('div', null, children),
   MDBCol: ({ children }) => React.createElement('div', null, children),
   MDBCard: ({ children }) => React.createElement('div', null, children),

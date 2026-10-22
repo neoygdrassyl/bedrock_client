@@ -1,5 +1,5 @@
 import { Loader2, RefreshCw } from 'lucide-react';
-import { DovelaInput } from '@/components/dovela-ui';
+import { DovelaInput } from '@/shared/dovela-ui';
 
 export const VR_PATTERN = /^VR\d{2}-\d{4,}$/;
 export const VR_FORMAT_MESSAGE = 'Use el formato VR{AA}-NNNN, por ejemplo VR26-0123.';

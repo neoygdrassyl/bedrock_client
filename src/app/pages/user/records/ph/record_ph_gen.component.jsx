@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import usePHSave from './hooks/usePHSave';
 

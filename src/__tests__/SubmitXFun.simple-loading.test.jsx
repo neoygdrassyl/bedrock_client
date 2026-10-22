@@ -27,7 +27,7 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   default: pqrsServiceMock,
 }));
 
-vi.mock('../app/services/users.service', () => ({
+vi.mock('../shared/api/users.service', () => ({
   __esModule: true,
   default: userServiceMock,
 }));
@@ -39,17 +39,17 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen }) => (isOpen ? React.createElement('div', null, children) : null),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser_finalDate: vi.fn(() => '2024-01-01'),
   dateParser_timeLeft: vi.fn(() => 5),
   formsParser1: vi.fn(() => 'Licencia'),
 }));
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBadge: ({ children }) => React.createElement('span', null, children),
   MDBBtn: ({ children, onClick, ...props }) => React.createElement('button', { onClick, ...props }, children),
   MDBPopover: ({ children }) => React.createElement('div', null, children),
@@ -58,7 +58,7 @@ vi.mock('../app/components/ui', () => ({
   MDBTypography: ({ children }) => React.createElement('div', null, children),
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ title }) => React.createElement('div', { 'data-testid': 'datatable-stub' }, title),
 }));

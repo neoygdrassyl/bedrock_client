@@ -44,12 +44,12 @@ vi.mock('../app/pages/user/pqrs/components/pqrs_emails.component', () => ({
   default: () => <div data-testid="pqrs-emails-stub" />,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [] }) => <div data-testid="datatable-stub">{data.length}</div>,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: vi.fn((d) => d || ''),
   dateParser_finalDate: vi.fn(() => ''),
   dateParser_dateDiff: vi.fn(() => 0),
@@ -60,7 +60,7 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
   _CALCULATE_EXPENSES: vi.fn(() => ({ cf: 0, cv: 0, ct: 0 })),
 }));
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBTooltip: ({ children }) => <>{children}</>,
   MDBBtn: ({ children, ...props }) => <button {...props}>{children}</button>,
   MDBCollapse: ({ children }) => <div>{children}</div>,

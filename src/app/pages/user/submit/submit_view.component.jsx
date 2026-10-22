@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import SubmitService from '../../../services/submit.service';
-import { dateParser } from '../../../components/customClasses/typeParse';
-import Collapsible from '../../../components/Collapsible';
-import DataTable from '@/components/data-table-bridge';
+import { dateParser } from '../../../../shared/config/customClasses/typeParse';
+import Collapsible from '../../../../shared/components/Collapsible';
+import DataTable from '@/shared/components/data-table-bridge';
 
 
 

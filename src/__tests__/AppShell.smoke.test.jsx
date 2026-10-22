@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock the theme provider
-vi.mock('@/components/theme-provider', () => ({
+vi.mock('@/shared/components/theme-provider', () => ({
   useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
   ThemeProvider: ({ children }) => <>{children}</>,
 }));

@@ -1,11 +1,11 @@
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/shared/ui/dropdown-menu';
+import { Button } from '@/shared/ui/button';
 import React, { useState, useEffect } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess, swalFormDialog } from '@/app/utils/swalAdapter';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess, swalFormDialog } from '@/shared/utils/swalAdapter';
 
 function RECORD_ENG_SISMIC(props) {
     const [isNew, setIsNew] = useState(false);

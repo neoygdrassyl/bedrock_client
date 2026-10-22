@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import dayjs from 'dayjs';
 import { PDFDocument } from 'pdf-lib';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import ListJson from '@/app/components/jsons/fun6DocsList.json';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { Input } from '@/shared/ui/input';
+import { cn } from '@/shared/lib/utils';
+import ListJson from '@/shared/config/jsons/fun6DocsList.json';
 import {
     DOCUMENT_ORIGIN_LABEL,
     DOCUMENT_ORIGIN_STATE,

@@ -1,11 +1,11 @@
-import ChartErrorBoundary from '../../components/ChartErrorBoundary';
+import ChartErrorBoundary from '../../../shared/components/ChartErrorBoundary';
 import { useReducer, useEffect, useRef } from 'react';
-import { TabPane } from '@/components/ui/tab-pane';
-import { swalLoading, swalSuccess, swalError, swalClose } from '@/app/utils/swalAdapter';
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { TabPane } from '@/shared/ui/tab-pane';
+import { swalLoading, swalSuccess, swalError, swalClose } from '@/shared/utils/swalAdapter';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,14 +13,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
+} from '@/shared/ui/dropdown-menu';
+import { Badge } from '@/shared/ui/badge';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
-import USER_SERVICE from '../../services/users.service';
+import USER_SERVICE from '../../../shared/api/users.service';
 
 // FUN FAMILY!
 import FUNC from './fun_forms/fun_c'
@@ -30,8 +30,8 @@ import FUND from './fun_forms/components/fun_docs'
 import FUN_ALERT from './fun_forms/fun_alertn';
 import FUNCLOCK from './fun_forms/fun_clock';
 
-import { dateParser_finalDate, dateParser_timePassed, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../components/customClasses/typeParse';
-import { DiasHabilesColombia } from '../../utils/BusinessDaysCol';
+import { dateParser_finalDate, dateParser_timePassed, formsParser1, regexChecker_isPh, regexChecker_isOA, regexChecker_isOA_2 } from '../../../shared/config/customClasses/typeParse';
+import { DiasHabilesColombia } from '../../../shared/utils/BusinessDaysCol';
 
 // RECORDS
 import RECORD_ARC from './records/record_arc';
@@ -44,8 +44,8 @@ import EXPEDITION from './expeditions/expedition.page';
 import FUN_REPORT_GEN from './fun_forms/fun_reports/fun_gen.report';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 import { shouldUseStructuralReport } from './fun_forms/utils/expedienteDomainRules';
-import { nomens } from '../../components/jsons/vars';
-import { nextLicenseIdPublic } from '../../utils/consecutives';
+import { nomens } from '../../../shared/config/jsons/vars';
+import { nextLicenseIdPublic } from '../../../shared/utils/consecutives';
 import SUBMIT_X_FUN from './submit/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
 

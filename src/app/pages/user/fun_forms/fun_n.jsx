@@ -18,7 +18,7 @@ import FUN_SERVICE from '../../../services/fun.service';
 import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 const SHOW_FUN_HISTORY_TABLE = true;
 

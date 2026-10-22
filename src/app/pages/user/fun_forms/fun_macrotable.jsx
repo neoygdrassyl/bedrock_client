@@ -1,25 +1,25 @@
 import React, { useReducer, useEffect, useRef } from 'react';
-import DataTable from '@/components/data-table-bridge';
-import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../components/customClasses/typeParse';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, formsParser1, getJSONFull, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh, _SET_PRIORITY, regexChecker_isOA_3 } from '../../../../shared/config/customClasses/typeParse';
 import { shouldUseStructuralReport } from './utils/expedienteDomainRules.js';
 
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { TabPane } from '@/components/ui/tab-pane';
-import TagInput from "../../../components/TagInput";
-import Collapsible from '../../../components/Collapsible';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/shared/ui/dropdown-menu';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
+import { Button } from '@/shared/ui/button';
+import { TabPane } from '@/shared/ui/tab-pane';
+import TagInput from "../../../../shared/components/TagInput";
+import Collapsible from '../../../../shared/components/Collapsible';
 
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
-} from '../../../components/customClasses/funCustomArrays'
-import { Icon } from '@/components/icon';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+} from '../../../../shared/config/customClasses/funCustomArrays'
+import { Icon } from '@/shared/components/icon';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
 
 import FUN_SERVICE from '../../../services/fun.service';
-import USER_SERVICE from '../../../services/users.service';
+import USER_SERVICE from '../../../../shared/api/users.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
 import RECORD_ENG_SERVICE from '../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../services/record_arc.service';
@@ -42,7 +42,7 @@ import TABLE_COMPONENT_EXPANDED from './components/table_components/table.compon
 import FUN_MACROTABLE_FILTERLIST from './components/fun_macro_filterList.component';
 import FUN_CHART_NEGATIVE from './components/charts_components/chart_negative.component';
 import FUN_CHART_TIME from './components/charts_components/chart_time.component';
-import ChartErrorBoundary from '../../../components/ChartErrorBoundary';
+import ChartErrorBoundary from '../../../../shared/components/ChartErrorBoundary';
 
 const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15, '0': 45 };
 const priority_colors = ['4c75a3', '#ed302f ', '#ff4500', '#ffac44', '#25d366']
@@ -117,7 +117,7 @@ const _fun_0_type_days_matrix = {
 }
 import 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilter, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const macroTabRefs = useRef({});
     const [state, setState] = useReducer(

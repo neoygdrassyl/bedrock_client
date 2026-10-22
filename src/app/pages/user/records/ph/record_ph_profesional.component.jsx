@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import DataTable from '@/components/data-table-bridge';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import DataTable from '@/shared/components/data-table-bridge';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
 
 const REQUIRED_ROLES = ['ARQUITECTO PROYECTISTA'];

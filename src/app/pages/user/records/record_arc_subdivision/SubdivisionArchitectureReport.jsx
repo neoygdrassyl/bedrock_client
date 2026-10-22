@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 import RECORD_ARC from '../record_arc';
 import SubdivisionQgisService from '../../../../services/subdivision_qgis.service.js';
 

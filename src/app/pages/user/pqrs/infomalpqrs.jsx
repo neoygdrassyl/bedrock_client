@@ -7,9 +7,9 @@ import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function PQRSINFORMAL({ translation, swaMsg, globals, translation_form, currentId, currentItemAsign, refreshList: refreshListProp, closeModal, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);

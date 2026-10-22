@@ -21,7 +21,7 @@ const {
   bookmarkServiceMock: { list: vi.fn() },
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 
@@ -30,7 +30,7 @@ vi.mock('../app/services/pqrs_main.service', () => ({ __esModule: true, default:
 vi.mock('../app/services/submit.service', () => ({ __esModule: true, default: submitServiceMock }));
 vi.mock('../app/services/mailbox.service', () => ({ __esModule: true, default: mailboxServiceMock }));
 vi.mock('../app/services/appointments.service', () => ({ __esModule: true, default: appointmentsServiceMock }));
-vi.mock('../app/services/bookmark.service', () => ({ __esModule: true, default: bookmarkServiceMock }));
+vi.mock('../shared/api/bookmark.service', () => ({ __esModule: true, default: bookmarkServiceMock }));
 
 describe('Dashboard count failure states', () => {
   beforeEach(() => {

@@ -6,7 +6,7 @@ import PQRS_EDIT_FUN from './components/pqrs_manage_fun.component';
 import PQRS_EDIT_ATTACH from './components/pqrs_manage_attachs.component';
 import PQRS_EDIT_INFO from './components/pqrs_manage_info.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 function PQRS_EDIT({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);

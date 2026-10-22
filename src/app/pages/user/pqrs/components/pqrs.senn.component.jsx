@@ -1,8 +1,8 @@
 import PQRS_SERVICES from '../../../../services/pqrs_main.service';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 export const SEEN_COMPONENT_FORM = (props) => {
     const { swaMsg, worker, retrieveItem, closeComponent, retrievePublish, currentItem, } = props;
 

@@ -15,8 +15,8 @@ import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import SUBMIT_SINGLE_VIEW from '../submit/submit_view.component';
 import { PQRS_COMPONENT_REPLIES_PROFESIONAL1 } from './components/pqrs_replices_11.component';
 import { PQRS_COMPONENT_REPLIES_TOSOLICITOR2 } from './components/pqrs_replies_22.component';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 function PQRSINFO({ translation, swaMsg, globals, translation_form, currentId, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);

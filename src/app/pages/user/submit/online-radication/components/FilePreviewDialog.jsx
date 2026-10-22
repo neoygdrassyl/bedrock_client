@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { CircleAlert, Download, ExternalLink, FileImage, FileText, Loader2, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/shared/ui/dialog';
+import { cn } from '@/shared/lib/utils';
 import OnlineRadicationService, { isRequestCanceled } from '@/app/services/online-radication.service';
 import { ONLINE_RADICATION_SCOPE } from '../onlineRadicationScope';
 import { formatBytes, hasValue } from '../onlineRadicationModel';

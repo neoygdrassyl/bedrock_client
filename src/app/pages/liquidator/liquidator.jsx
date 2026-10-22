@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 import { Link } from "react-router-dom";
-import Collapsible from '../../components/Collapsible';
+import Collapsible from '../../../shared/components/Collapsible';
 import dayjs from 'dayjs';
-import { infoCud } from '../../components/jsons/vars';
-import { Button_navigation } from '../../components/button.component';
-import { Icon } from '@/components/icon';
+import { infoCud } from '../../../shared/config/jsons/vars';
+import { Button_navigation } from '../../../shared/components/button.component';
+import { Icon } from '@/shared/components/icon';
 
 function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
     const [subtotal_cf, setSubtotalCf] = useState(0);

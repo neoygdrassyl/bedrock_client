@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/shared/ui/scroll-area';
+import { Sheet, SheetContent } from '@/shared/ui/sheet';
+import { cn } from '@/shared/lib/utils';
 import { FilePreviewDialog } from './components/FilePreviewDialog';
 import { DetailBody } from './detail/DetailBody';
 import { DetailFooter } from './detail/DetailFooter';

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import FUNService from '../../../services/fun.service'
 
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../services/fun.service';
 import DOCS_LIST from './components/docs_list.component';
 import submitService from '../../../services/submit.service';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { Button } from '@/components/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
 import FunDocumentManagementModal from './components/FunDocumentManagementModal';
 import UnifiedDocumentTable from '../shared/UnifiedDocumentTable';
 import UnifiedDocumentCreateModal from '../shared/UnifiedDocumentCreateModal';

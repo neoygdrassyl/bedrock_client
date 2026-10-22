@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('@/components/theme-provider', () => ({
+vi.mock('@/shared/components/theme-provider', () => ({
   useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
   ThemeProvider: ({ children }) => <>{children}</>,
 }));

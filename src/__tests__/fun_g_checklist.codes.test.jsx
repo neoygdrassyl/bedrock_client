@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 import { getVisibleLegalReviewEntries } from '../app/pages/user/fun_forms/utils/legalReviewEligibility';
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   default: () => <div data-testid="data-table" />,
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   default: () => <div data-testid="visualizer" />,
 }));
 
@@ -23,7 +23,7 @@ vi.mock('../app/services/fun.service', () => ({
   default: { update_r: updateLegacyChecklist, create_funr: createLegacyChecklist },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),

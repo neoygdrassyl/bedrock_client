@@ -1,14 +1,14 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
-import { cities, infoCud, rules_opt } from '../../../components/jsons/vars';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
+import { cities, infoCud, rules_opt } from '../../../../shared/config/jsons/vars';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import record_arcService from '../../../services/record_arc.service';
 import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.component';
 import EXP_CALC from './exp_calc.component';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
-import DataTable from '@/components/data-table-bridge';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import DataTable from '@/shared/components/data-table-bridge';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function PQRS_COMPONENT_ATTACHS({ translation, swaMsg, globals, currentItem, add, retrieveItem }) {
     const [attachs, setAttachs] = useState(0);

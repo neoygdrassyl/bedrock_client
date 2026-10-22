@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 
 import RECORD_ARCSERVICE from '../../../services/record_arc.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
@@ -31,7 +31,7 @@ import RECORD_ARC_DESC from './arc/record_arc_desc';
 import RECORD_ARC_CONTROL from './arc/record_arc_control.component';
 import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
 import './arc/record_arc_typography.css';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

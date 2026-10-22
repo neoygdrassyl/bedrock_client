@@ -20,23 +20,23 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   default: hoisted.pqrsService,
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalLoading: hoisted.swalLoadingMock,
   swalClose: hoisted.swalCloseMock,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (value) => value ?? '',
   dateParser_timeLeft: () => '',
   dateParser_finalDate: (value) => value ?? '',
   dateParser_dateDiff: () => 0,
 }));
 
-vi.mock('../app/utils/BusinessDaysCol', () => ({
+vi.mock('../shared/utils/BusinessDaysCol', () => ({
   DiasHabilesColombia: { diff: () => 0 },
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [], columns = [] }) => (
     <div data-testid="datatable-stub">

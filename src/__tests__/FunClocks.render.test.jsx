@@ -29,7 +29,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -39,12 +39,12 @@ vi.mock('../http-common', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: { name: 'Test', city: 'test', nit: '0', email: 'test@test.com' },
   nomens: 'CUB1',
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return React.createElement(
@@ -115,7 +115,7 @@ vi.mock('../app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/services/users.service', () => ({
+vi.mock('../shared/api/users.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
@@ -148,24 +148,24 @@ vi.mock('../app/pages/user/fun_forms/components/fun_clocks_email.component', () 
 
 // ─── UI component mocks ──────────────────────────────────────────────────────
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBtn: ({ children, onClick, className }) =>
     React.createElement('button', { type: 'button', onClick, className }, children),
   MDBTooltip: ({ children }) => React.createElement('span', null, children),
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ noDataComponent }) =>
     React.createElement('div', { 'data-testid': 'datatable-stub' }, noDataComponent),
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'vizualizer-stub' }),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (v) => v ?? '',
   dateParser_finalDate: (v) => v ?? '',
   dateParser_dateDiff: () => 0,

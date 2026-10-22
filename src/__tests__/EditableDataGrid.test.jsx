@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
 const columns = [
   { id: 'ref', header: '#', width: 48, sticky: true, align: 'center' },

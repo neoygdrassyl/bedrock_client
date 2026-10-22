@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Icon } from '@/shared/components/icon';
 import { useEffect, useState } from 'react';
 const TagGroup = ({ children }) => <span className="flex flex-wrap gap-1">{children}</span>;
 const Tag = ({ color, children }) => (
@@ -10,17 +10,17 @@ const Tag = ({ color, children }) => (
   </Badge>
 );
 
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import ARCHIVE_MANAGE from './archive_manage.component';
 
 import ARCHIVE_X_FUN from './archive_x_fun.component';
-import { getJSON, getJSONFull, regexChecker_isPh } from '../../../components/customClasses/typeParse';
+import { getJSON, getJSONFull, regexChecker_isPh } from '../../../../shared/config/customClasses/typeParse';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
-import { nomens } from '../../../components/jsons/vars';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { nomens } from '../../../../shared/config/jsons/vars';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {};

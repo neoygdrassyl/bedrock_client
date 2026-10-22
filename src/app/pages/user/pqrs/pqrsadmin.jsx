@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TabPane } from '@/components/ui/tab-pane';
-import { Button } from '@/components/ui/button';
+import { TabPane } from '@/shared/ui/tab-pane';
+import { Button } from '@/shared/ui/button';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
-import DataTable from '@/components/data-table-bridge';
-import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../components/customClasses/typeParse'
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../shared/config/customClasses/typeParse'
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 // MODALS FOR PQRS
 import PQRSNEW from './newpqrs'
@@ -26,11 +26,11 @@ import { ACESS_EDIT } from './access_edit';
 
 // JSONS
 import dayjs from 'dayjs';
-import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
-import { Icon } from '@/components/icon';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
+import { DiasHabilesColombia } from '../../../../shared/utils/BusinessDaysCol';
+import { Icon } from '@/shared/components/icon';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
+import { swalClose, swalLoading } from '@/shared/utils/swalAdapter';
 
 function PendingComponent({ pendingOpen, setPendingOpen, pending }) {
     const visiblePending = pending.slice(0, 200);

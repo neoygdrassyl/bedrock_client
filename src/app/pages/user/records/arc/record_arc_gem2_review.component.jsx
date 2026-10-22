@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { REVIEW_DOCS_2 } from '../../../../components/jsons/arcReviewDocs';
+import { REVIEW_DOCS_2 } from '../../../../../shared/config/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_ARC_GEN_2_REVIEW(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

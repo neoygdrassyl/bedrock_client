@@ -13,7 +13,7 @@ import { AlarmsWidget } from './components/AlarmsWidget';
 import { ToolsMenu } from './components/ToolsMenu';
 import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
-import { getIconSvg } from '../../../utils/iconSvgString';
+import { getIconSvg } from '../../../../shared/utils/iconSvgString';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
 import { GanttModal } from './components/gantt/GanttModal';
 
@@ -21,12 +21,12 @@ import FUN_SERVICE from '../../../services/fun.service';
 
 import './centralClocks.css';
 import './gantt.css';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Icon } from '@/shared/components/icon';
 import { getLicenseCompletionClock } from '../shared/processClosure.helpers';
 
-import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../../shared/utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 const getClockEditKey = (value, rowIndex) => `${String(value?.state ?? 'none')}::${String(value?.version ?? 'base')}::${rowIndex}`;

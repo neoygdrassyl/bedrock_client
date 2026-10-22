@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

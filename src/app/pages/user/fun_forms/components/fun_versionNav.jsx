@@ -1,5 +1,5 @@
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 
 function FUN_VERSION_NAV({ translation, currentItem, currentVersion, ON, _RECORD, NAVIGATION_VERSION }) {
         return (<>

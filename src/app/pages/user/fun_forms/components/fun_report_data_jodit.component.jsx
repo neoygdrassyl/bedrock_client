@@ -1,10 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
-import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../components/customClasses/typeParse'
+import { dateParser, dateParser_finalDate, formsParser1 } from '../../../../../shared/config/customClasses/typeParse'
 import JoditEditor from "jodit-pro-react";
 import 'jodit-pro/es2021/jodit.fat.min.css';
 
-import { infoCud } from '../../../../components/jsons/vars';
-import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
+import { _FUN_1_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
 import dayjs from 'dayjs';
 
 export const FUN_REPORT_DATA_JODIT = (props) => {

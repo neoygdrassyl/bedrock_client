@@ -8,8 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from '@/shared/ui/dropdown-menu';
+import { Button } from '@/shared/ui/button';
 import { useAlarmsBell } from '../hooks/useAlarmsV2';
 import FUNService from '../../../../services/fun.service';
 import AlarmService from '../../../../services/alarm.service';

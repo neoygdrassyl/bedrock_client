@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import JSONObjectParser from '../../../components/jsons/jsonReplacer';
-import { axis, infoCud, zones, zonesTable } from '../../../components/jsons/vars'
-import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../components/customClasses/typeParse';
+import JSONObjectParser from '../../../../shared/config/jsons/jsonReplacer';
+import { axis, infoCud, zones, zonesTable } from '../../../../shared/config/jsons/vars'
+import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../../shared/config/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
-import { _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
+import { _FUN_6_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import dayjs from 'dayjs'
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {

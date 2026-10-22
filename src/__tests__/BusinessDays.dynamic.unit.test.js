@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import holidaysData from '../app/components/jsons/holydaysmoment.json';
+import holidaysData from '../shared/config/jsons/holydaysmoment.json';
 import {
   addBusinessCalendarCustomDay,
   DiasHabilesColombia,
   removeBusinessCalendarCustomDay,
   replaceBusinessCalendarCustomDays,
   replaceBusinessCalendarHolidays,
-} from '../app/utils/BusinessDaysCol';
+} from '../shared/utils/BusinessDaysCol';
 
 describe('dynamic business calendar registry', () => {
   afterEach(() => {

@@ -1,8 +1,8 @@
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_REPORT_DATA from '../../fun_forms/components/fun_report_data';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
 

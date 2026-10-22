@@ -1,14 +1,14 @@
 import { useCallback, useState, useEffect } from 'react';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import perfilData from '../../../../components/jsons/perfilesData.json';
-import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import perfilData from '../../../../../shared/config/jsons/perfilesData.json';
+import { getJSONFull, getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 import RECORD_ARC_36_TABLE from './record_arc_36.table';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
-import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import { sanitizeRichTextForLegacyJoin } from '@/shared/utils/richTextBlockNote';
 
 function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {
     const [editElement, setEditElement] = useState(false);

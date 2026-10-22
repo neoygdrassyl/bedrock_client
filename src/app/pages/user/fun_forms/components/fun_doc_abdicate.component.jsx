@@ -1,11 +1,11 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
-import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
+import { dateParser, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
 import dayjs from 'dayjs';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 import writtenNumber from 'written-number';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

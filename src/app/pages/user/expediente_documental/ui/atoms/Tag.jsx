@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 export const TAG_TONES = ['neutral', 'info', 'success', 'warning', 'danger', 'code', 'slate', 'teal'];
 

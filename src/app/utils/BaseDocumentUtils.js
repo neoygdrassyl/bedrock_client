@@ -1,4 +1,4 @@
-import { procesarFecha, procesarFechaRestar } from './BusinessDaysCol';
+import { procesarFecha, procesarFechaRestar } from '../../shared/utils/BusinessDaysCol';
 import dayjs from 'dayjs';
 
 export class BaseDocumentUtils {

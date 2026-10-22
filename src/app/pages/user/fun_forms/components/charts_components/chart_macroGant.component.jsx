@@ -1,13 +1,13 @@
 
 import dayjs from 'dayjs';
 import { useState, useEffect, useRef, memo } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import {
     ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, ReferenceArea, Legend, ZAxis
 } from 'recharts';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2 } from '../../../../../../shared/config/customClasses/typeParse';
 
 var _emptyData = {
     rad: [],

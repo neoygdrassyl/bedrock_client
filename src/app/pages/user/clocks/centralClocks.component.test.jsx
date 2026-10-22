@@ -105,15 +105,15 @@ vi.mock('../shared/processClosure.helpers', () => ({
   getLicenseCompletionClock: vi.fn(() => ({ dateStart: '', label: '' })),
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span aria-hidden="true">{name}</span>,
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/ui/checkbox', () => ({
+vi.mock('@/shared/ui/checkbox', () => ({
   Checkbox: ({ onCheckedChange, ...props }) => <input type="checkbox" onChange={(event) => onCheckedChange?.(event.target.checked)} {...props} />,
 }));
 
@@ -126,7 +126,7 @@ vi.mock('../../../services/fun.service', () => ({
   },
 }));
 
-vi.mock('../../../utils/swalAdapter', () => ({
+vi.mock('../../../../shared/utils/swalAdapter', () => ({
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),
   swalError: vi.fn(),
@@ -136,7 +136,7 @@ vi.mock('../../../utils/swalAdapter', () => ({
   Swal: {},
 }));
 
-vi.mock('../../../utils/iconSvgString', () => ({
+vi.mock('../../../../shared/utils/iconSvgString', () => ({
   getIconSvg: vi.fn(() => ''),
 }));
 

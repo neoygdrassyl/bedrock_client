@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
 import FUN_SERVICE from '../../../../services/fun.service';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
-import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+import { dateParser_finalDate, formsParser1, regexChecker_isPh } from '../../../../../shared/config/customClasses/typeParse';
 
 import FUN_ICON_PROGRESS from './icon_progress.component';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 export default function FUN_MACROTABLE_CLOCKS(props) {
     const { translation, swaMsg, globals, dataFilter, selectedRow, hide_jur, hide_arc, hide_ing, worker_list } = props;

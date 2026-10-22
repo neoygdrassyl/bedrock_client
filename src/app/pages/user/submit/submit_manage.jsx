@@ -1,16 +1,16 @@
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { useState, useEffect, useRef } from 'react';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import FunService from '../../../services/fun.service';
 import SUBMIT_ANEX from './submit_anex.component';
 import SUBMIT_LIST from './submit_list.component';
-import { formsParser1 } from '../../../components/customClasses/typeParse';
-import { Icon } from '@/components/icon';
-import ObservationPanel from '../../../components/ObservationPanel';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { nextVrId } from '@/app/utils/consecutives';
+import { formsParser1 } from '../../../../shared/config/customClasses/typeParse';
+import { Icon } from '@/shared/components/icon';
+import ObservationPanel from '../../../../shared/components/ObservationPanel';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { nextVrId } from '@/shared/utils/consecutives';
 import { useDocumentaryOrigin } from '../expediente_documental/hooks/useDocumentaryOrigin';
 import { isCanonicalMode, useExpedienteMode, usesTraditionalIntake } from '../expediente_documental/expedienteMode';
 import { DocumentaryOriginStatus } from '../expediente_documental/ui/organisms/DocumentaryOriginStatus';

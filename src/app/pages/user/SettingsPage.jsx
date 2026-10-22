@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Bug, Check, Database, FileText, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
-import DataService from '../../services/data.service.js';
+import DataService from '../../../shared/api/data.service.js';
 import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
 import IntegrationsPanel from './IntegrationsPanel.jsx';

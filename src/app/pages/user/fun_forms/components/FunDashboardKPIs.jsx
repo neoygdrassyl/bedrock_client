@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const SIMPLE_KPIS = [
   {

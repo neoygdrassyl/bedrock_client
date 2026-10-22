@@ -1,7 +1,7 @@
 import { CircleAlert, Info } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { getLabels, getMetadata, getSnapshot } from '../onlineRadicationModel';
 import { DocumentEntriesSection } from './DocumentEntriesSection';
 import { DocumentsSection } from './DocumentsSection';

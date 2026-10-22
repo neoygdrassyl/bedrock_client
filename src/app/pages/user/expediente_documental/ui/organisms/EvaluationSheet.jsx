@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { cn } from '@/shared/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import { getCanonicalVersions, saveCanonicalControl, saveCanonicalReview } from '@/app/services/documentaryOperations.service';
 import { clearLegalFormVr, isRevisionConflict, legalFormErrorCode, legalFormErrorMessage, selectionRevisionOf, selectLegalFormVr } from '@/app/services/documentaryLegalForm.service';

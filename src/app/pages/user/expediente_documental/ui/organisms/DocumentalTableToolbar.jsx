@@ -1,7 +1,7 @@
 import { Tag } from '../atoms/Tag';
 import { ListFilter, RotateCcw, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/lib/utils';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';

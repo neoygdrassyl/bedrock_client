@@ -29,7 +29,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -39,12 +39,12 @@ vi.mock('../http-common', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: { name: 'Test', city: 'test', nit: '0', email: 'test@test.com' },
   nomens: 'CUB1',
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return React.createElement(
@@ -116,7 +116,7 @@ vi.mock('../app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/services/users.service', () => ({
+vi.mock('../shared/api/users.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
@@ -251,7 +251,7 @@ vi.mock('pdf-lib', () => ({
 
 // ─── UI component mocks ──────────────────────────────────────────────────────
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBtn: ({ children, onClick, className }) =>
     React.createElement('button', { onClick, className }, children),
   MDBTooltip: ({ children }) => React.createElement('span', null, children),
@@ -259,12 +259,12 @@ vi.mock('../app/components/ui', () => ({
   MDBPopoverBody: ({ children }) => React.createElement('div', null, children),
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'vizualizer-stub' }),
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children, title }) =>
     React.createElement('div', { 'data-testid': 'collapsible-stub' }, title, children),
@@ -275,7 +275,7 @@ vi.mock('../app/components/emails.component', () => ({
   default: () => React.createElement('div', { 'data-testid': 'emails-stub' }),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (v) => v ?? '',
   dateParser_timePassed: (v) => v ?? '',
   dateParser_yearsPassed: (v) => v ?? '',
@@ -297,7 +297,7 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
 }));
 
 // json mock for fun_checklist_n
-vi.mock('../app/components/jsons/fun6DocsList.json', () => ({
+vi.mock('../shared/config/jsons/fun6DocsList.json', () => ({
   default: [],
   __esModule: true,
 }));

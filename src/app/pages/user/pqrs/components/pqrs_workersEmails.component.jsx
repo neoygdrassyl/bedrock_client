@@ -1,12 +1,12 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import USERS_Service from '../../../../services/users.service';
+import USERS_Service from '../../../../../shared/api/users.service';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function PQRS_WORKERS_EMAILS({ translation, swaMsg, globals, currentItem, worker, email_types, retrieveItem, closeComponent }) {
     const [usersList, setUsersList] = useState([]);
     const [attachsForEmails, setAttachsForEmails] = useState(0);

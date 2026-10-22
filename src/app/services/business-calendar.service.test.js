@@ -7,7 +7,7 @@ const { getMock, postMock, deleteMock } = vi.hoisted(() => ({
   deleteMock: vi.fn(),
 }));
 
-vi.mock('../../http-common', () => ({
+vi.mock('../../shared/api/http-common', () => ({
   default: { get: getMock, post: postMock, delete: deleteMock },
 }));
 

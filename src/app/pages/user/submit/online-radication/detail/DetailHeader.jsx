@@ -1,5 +1,5 @@
 import { CalendarDays, FolderOpen } from 'lucide-react';
-import { SheetDescription, SheetTitle } from '@/components/ui/sheet';
+import { SheetDescription, SheetTitle } from '@/shared/ui/sheet';
 import { CopyButton } from '../components/CopyButton';
 import { ExpedienteLink } from '../components/ExpedienteLink';
 import { PendingEntriesBadge } from '../components/PendingEntriesBadge';

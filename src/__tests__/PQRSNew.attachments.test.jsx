@@ -13,7 +13,7 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   },
 }));
 
-vi.mock('../app/utils/BusinessDaysCol', () => ({
+vi.mock('../shared/utils/BusinessDaysCol', () => ({
   DiasHabilesColombia: class {
     esHabil() {
       return true;
@@ -25,7 +25,7 @@ vi.mock('../app/utils/BusinessDaysCol', () => ({
   },
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),

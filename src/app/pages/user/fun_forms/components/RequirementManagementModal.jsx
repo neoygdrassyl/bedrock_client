@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 import { buildDocumentPreviewUrl } from '@/app/pages/user/shared/expediente-documental.utils';
 import './fun_modal_shared.css';
 

@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { infoCud } from '../../../../components/jsons/vars';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import CubXVrDataService from '../../../../services/cubXvr.service'
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export const PQRS_ID_CONFIRM = (props) => {
 

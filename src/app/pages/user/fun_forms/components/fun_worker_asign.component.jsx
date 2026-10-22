@@ -1,12 +1,12 @@
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
+import { Button } from '@/shared/ui/button';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
-import DataTable from '@/components/data-table-bridge';
-import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser_finalDate, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../shared/config/customClasses/typeParse';
 import { shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 import FunService from '../../../../services/fun.service';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const _fun_0_state = {
     '1': 'RADICACIÓN',

@@ -1,10 +1,10 @@
 
 import FUN_SERVICE from '../../../../services/fun.service';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
-import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../components/customClasses/typeParse';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
+import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';

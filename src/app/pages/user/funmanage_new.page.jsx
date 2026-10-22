@@ -13,8 +13,8 @@ import { useAlarmConfigV2 } from './fun_forms/hooks/useAlarmConfigV2';
 import { useBookmarks } from './fun_forms/hooks/useBookmarks';
 import { DEFAULT_FILTERS, mergeFilters, hasActiveFilters } from './fun_forms/utils/filters';
 import { openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 
 const GESTION_NUEVA_IN_DEVELOPMENT = true;
 

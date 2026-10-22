@@ -1,5 +1,5 @@
 import { UserCheck } from 'lucide-react';
-import { DovelaBadge } from '@/components/dovela-ui';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import { formatDateTime, hasValue, labelFor, plural } from '../onlineRadicationModel';
 import { CountPill, DetailCard, EmptyNote } from './DetailPrimitives';
 

@@ -2,7 +2,7 @@ import { useState, memo } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
-import { regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
+import { regexChecker_isPh } from '../../../../../../shared/config/customClasses/typeParse';
 
 const Colors = ['#FF9A42', '#E8514D', '#DA62FF', '#4D56E8', '#54E6FF', '#3DFF74', '#B1E82C', '#FFD130'];
 

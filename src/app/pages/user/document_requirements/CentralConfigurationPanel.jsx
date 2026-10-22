@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, CloudDownload, ExternalLink, Loader2, RefreshCcw } from 'lucide-react';
-import { DovelaBadge, DovelaButton, DovelaInlineAlert } from '@/components/dovela-ui';
+import { DovelaBadge, DovelaButton, DovelaInlineAlert } from '@/shared/dovela-ui';
 import {
   AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+} from '@/shared/ui/alert-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import DocumentRequirementService from '../../../services/document_requirement.service.js';
 
 function unwrapResponse(response) {

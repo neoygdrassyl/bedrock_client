@@ -1,10 +1,10 @@
 import { Suspense, useEffect, useState, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import DataTable from '@/components/data-table-bridge';
-import BICS from "../../../components/jsons/BICS.json"
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import DataTable from '@/shared/components/data-table-bridge';
+import BICS from "../../../../shared/config/jsons/BICS.json"
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function NORM_PREDIOS(props) {
     const { translation, swaMsg, globals, id, setrRfresh } = props;

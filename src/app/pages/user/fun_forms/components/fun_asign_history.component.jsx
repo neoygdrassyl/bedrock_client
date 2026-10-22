@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
-import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import DataTable from '@/components/data-table-bridge';
+import { formsParser1_exlucde2, regexChecker_isPh } from '../../../../../shared/config/customClasses/typeParse';
+import DataTable from '@/shared/components/data-table-bridge';
 
 import dayjs from 'dayjs';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
     const { swaMsg, translation, globals, name, id, type } = props;

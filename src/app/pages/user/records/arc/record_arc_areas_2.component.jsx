@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { Button } from '@/shared/ui/button';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
-import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
+import { _FUN_1_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/shared/ui/collapsible';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import TagInput from '../../../../components/TagInput';
-import { getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import TagInput from '../../../../../shared/components/TagInput';
+import { getJSONFull, getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 import FUNService from '../../../../services/fun.service'
 import RECORD_ARC_AREAS_RESUME from './record_arc_areas_resumen.component';
-import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import JSONObjectParser from '../../../../../shared/config/jsons/jsonReplacer';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_ARC_AREAS_2(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

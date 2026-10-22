@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
+import { isEmptyEntity } from '../../../../../shared/utils/isEmptyEntity';
 
-import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import EXP_CLOCKS from '../../clocks/centralClocks.component';
 import FUN_CLOCK_CHART from './func_clock_chart';
 import FUN_CLOCK_EVENTS from './fun_clocks_events.component';
 import FUN_CLOCKS_NEGATIVE from './fun_clocks_negative.component';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 // Estilos ajustados para la nueva interfaz de pestañas.
 const styles = {

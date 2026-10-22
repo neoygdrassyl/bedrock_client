@@ -1,15 +1,15 @@
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import HTMLDatalist from '../../../components/HTMLDatalist';
-import { LegacyModal as ReactModal } from '@/components/legacy-modal';
-import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
+import { LegacyModal as ReactModal } from '@/shared/components/legacy-modal';
+import { formsParser1, getJSON, getJSONFull, _GET_SERIE_COD, _GET_SUBSERIE_COD } from '../../../../shared/config/customClasses/typeParse';
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
 import FUN_6_UPLOAD from '../fun_forms/components/fun_6_upload.component';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {

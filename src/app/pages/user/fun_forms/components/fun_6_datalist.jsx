@@ -1,4 +1,4 @@
-import JSONDATLIST from '../../../../components/jsons/fun6DocsList.json'
+import JSONDATLIST from '../../../../../shared/config/jsons/fun6DocsList.json'
 
 function FUN6DATALIST() {
 

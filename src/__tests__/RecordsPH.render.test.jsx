@@ -73,17 +73,17 @@ vi.mock('../app/services/cubXvr.service', () => ({
 
 // ─── sub-component stubs ──────────────────────────────────────────────────────
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer-stub" />,
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="collapsible-stub">{children}</div>,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ columns = [], data = [], noDataComponent = 'No hay Items' }) => (
     <div data-testid="data-table-stub">

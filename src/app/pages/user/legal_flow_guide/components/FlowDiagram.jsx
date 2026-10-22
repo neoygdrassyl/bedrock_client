@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import MermaidDiagram from '../../../../components/MermaidDiagram.component';
+import MermaidDiagram from '../../../../../shared/components/MermaidDiagram.component';
 import { generateLegalFlowMermaid } from '../utils/mermaidFlowGenerator';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const LEGEND = [
   { label: 'Curaduria', cls: 'lf-legend-swatch--curaduria' },

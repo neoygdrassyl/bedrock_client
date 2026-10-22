@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 
-import { dateParser } from '../../../../components/customClasses/typeParse';
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function RECORD_LAW_GEN2_11(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
     const [isNew, setIsNew] = useState(false);

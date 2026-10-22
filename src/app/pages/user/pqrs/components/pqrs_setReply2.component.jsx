@@ -1,14 +1,14 @@
 import { useMemo, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { infoCud } from '../../../../components/jsons/vars';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import JoditEditor from "jodit-pro-react";
 import 'jodit-pro/es2021/jodit.fat.min.css';
-import { dateParser } from '../../../../components/customClasses/typeParse';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
 import CubXVrDataService from '../../../../services/cubXvr.service'
-import { Icon } from '@/components/icon';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export const PQRS_SET_REPLY1 = (props) => {
     const { currentItem } = props;

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Icon } from '@/shared/components/icon';
 
 
 function OSHA({ translation, swaMsg }) {

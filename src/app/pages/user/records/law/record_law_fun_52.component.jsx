@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import HTMLDatalist from '../../../../components/HTMLDatalist';
-import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Button } from '@/shared/ui/button';
+import HTMLDatalist from '../../../../../shared/components/HTMLDatalist';
+import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import FUNService from '../../../../services/fun.service';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {

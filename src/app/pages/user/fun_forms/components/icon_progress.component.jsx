@@ -1,13 +1,13 @@
 import React from 'react';
 
-import Icon from '@/components/icon';
+import Icon from '@/shared/components/icon';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
+} from '@/shared/ui/tooltip';
+import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../../shared/config/customClasses/typeParse';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function FUN_ICON_PROGRESS({ translation, globals, currentItem, small }) {

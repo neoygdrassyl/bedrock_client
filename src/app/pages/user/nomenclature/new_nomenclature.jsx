@@ -1,10 +1,10 @@
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import NOMENCLATURE_ANEX from './nomenclature_anex.component';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import ObservationPanel from '../../../components/ObservationPanel';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import ObservationPanel from '../../../../shared/components/ObservationPanel';
 
 
 function NOMENCLATURE_NEW({ translation, swaMsg, globals, currentItem, refreshList, closeModal }) {

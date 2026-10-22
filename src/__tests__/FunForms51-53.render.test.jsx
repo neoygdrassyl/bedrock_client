@@ -28,7 +28,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -38,7 +38,7 @@ vi.mock('../http-common', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: { name: 'Test', city: 'test', nit: '0', email: 'test@test.com' },
   nomens: 'CUB1',
 }));
@@ -87,13 +87,13 @@ vi.mock('../app/services/profesionals.service', () => ({
 
 // ─── UI component mocks ──────────────────────────────────────────────────────
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBtn: ({ children, onClick, className }) =>
     React.createElement('button', { onClick, className }, children),
   MDBTooltip: ({ children }) => React.createElement('span', null, children),
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ columns = [], data = [], noDataComponent }) =>
     React.createElement(
@@ -113,12 +113,12 @@ vi.mock('@/components/data-table-bridge', () => ({
     ),
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => React.createElement('div', { 'data-testid': 'vizualizer-stub' }),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (v) => v ?? '',
   dateParser_timePassed: (v) => v ?? '',
   dateParser_yearsPassed: (v) => v ?? '',
@@ -126,7 +126,7 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
   dateParser_dateDiff: () => 0,
 }));
 
-vi.mock('../app/components/HTMLDatalist', () => ({
+vi.mock('../shared/components/HTMLDatalist', () => ({
   __esModule: true,
   default: ({ id, list }) =>
     React.createElement('div', { 'data-testid': 'html-datalist-stub', id }),

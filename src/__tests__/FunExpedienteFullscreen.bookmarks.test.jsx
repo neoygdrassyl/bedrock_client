@@ -32,7 +32,7 @@ vi.mock('../app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/components/ui/dropdown-menu', () => ({
+vi.mock('@/shared/ui/dropdown-menu', () => ({
   DropdownMenu: ({ children }) => <div>{children}</div>,
   DropdownMenuTrigger: ({ children }) => <>{children}</>,
   DropdownMenuContent: ({ children }) => <div>{children}</div>,
@@ -45,7 +45,7 @@ vi.mock('@/components/ui/dropdown-menu', () => ({
   ),
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, asChild, ...props }) => {
     if (asChild && React.isValidElement(children)) {
       return React.cloneElement(children, props);
@@ -54,15 +54,15 @@ vi.mock('@/components/ui/button', () => ({
   },
 }));
 
-vi.mock('@/components/ui/badge', () => ({
+vi.mock('@/shared/ui/badge', () => ({
   Badge: ({ children, ...props }) => <span {...props}>{children}</span>,
 }));
 
-vi.mock('@/components/ui/scroll-area', () => ({
+vi.mock('@/shared/ui/scroll-area', () => ({
   ScrollArea: ({ children, className }) => <div className={className}>{children}</div>,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 

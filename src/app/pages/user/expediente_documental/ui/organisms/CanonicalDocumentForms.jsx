@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { CircleAlert, ListChecks, Plus, TriangleAlert, UserCheck } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { cn } from '@/shared/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import { createCanonicalSubmit, documentaryReceiptRuleError, getCanonicalVersionSubmitIds, receiveCanonicalDocument, updateCanonicalEvidence } from '@/app/services/documentaryOperations.service';
 import { CatalogueDocumentPicker } from '../molecules/CatalogueDocumentPicker';

@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 import { getRequiredExperienceYears } from './professionalResponsibility.constants';
 
 const baseColumns = [

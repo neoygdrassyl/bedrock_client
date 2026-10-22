@@ -1,7 +1,7 @@
 import { CircleAlert, Clock } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 function pendingActivation(origin) {
   return Array.isArray(origin.warnings) ? origin.warnings.find((warning) => warning && warning.code === 'CENTRAL_ACTIVATION_PENDING') : null;

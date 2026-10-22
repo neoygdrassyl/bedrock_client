@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TabPane } from '@/components/ui/tab-pane';
+import { TabPane } from '@/shared/ui/tab-pane';
 import PQRS_Main from '../../../services/pqrs_main.service'
 import { Link } from "react-router-dom";
-import DataTable from '@/components/data-table-bridge';
-import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../components/customClasses/typeParse'
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser, dateParser_timeLeft, dateParser_finalDate, dateParser_dateDiff } from '../../../../shared/config/customClasses/typeParse'
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 // MODALS FOR PQRS
 import PQRSNEW from './newpqrs'
@@ -17,18 +17,18 @@ import PQRSLOCK from './lockpqrs'
 
 // IMGS
 // STEP BY STEP IMAGES
-import IMG_ASIGN from '../../../img/pqrs/asignarIconosbarra-01.png'
-import IMG_WORKER from '../../../img/pqrs/respuestaproIconosbarra-01.png'
-import IMG_REPLY from '../../../img/pqrs/respuestaoficioIconosbarra-01.png'
-import IMG_LOCK from '../../../img/pqrs/cerrarIconosbarra-01.png'
-import IMG_ARCHIVE from '../../../img/pqrs/archivarIconosbarra-01.png'
+import IMG_ASIGN from '../../../../shared/assets/pqrs/asignarIconosbarra-01.png'
+import IMG_WORKER from '../../../../shared/assets/pqrs/respuestaproIconosbarra-01.png'
+import IMG_REPLY from '../../../../shared/assets/pqrs/respuestaoficioIconosbarra-01.png'
+import IMG_LOCK from '../../../../shared/assets/pqrs/cerrarIconosbarra-01.png'
+import IMG_ARCHIVE from '../../../../shared/assets/pqrs/archivarIconosbarra-01.png'
 // ICON IMGS
-import IMG_ASIGN_ICON from '../../../img/pqrs/asignarIconos-01.png'
-import IMG_WORKER_ICON from '../../../img/pqrs/respuestaproIconos-01.png'
-import IMG_REPLY_ICON from '../../../img/pqrs/respuestaoficioIconos-01.png'
-import IMG_LOCK_ICON from '../../../img/pqrs/cerrarIconos-01.png'
-import IMG_ARCHIVE_ICON from '../../../img/pqrs/archivarIconos-01.png'
-import IMG_SEARCH_ICON from '../../../img/pqrs/Buscaricono-01.png'
+import IMG_ASIGN_ICON from '../../../../shared/assets/pqrs/asignarIconos-01.png'
+import IMG_WORKER_ICON from '../../../../shared/assets/pqrs/respuestaproIconos-01.png'
+import IMG_REPLY_ICON from '../../../../shared/assets/pqrs/respuestaoficioIconos-01.png'
+import IMG_LOCK_ICON from '../../../../shared/assets/pqrs/cerrarIconos-01.png'
+import IMG_ARCHIVE_ICON from '../../../../shared/assets/pqrs/archivarIconos-01.png'
+import IMG_SEARCH_ICON from '../../../../shared/assets/pqrs/Buscaricono-01.png'
 
 // COMPONENTS
 import PQRS_EDIT from './pqrs_edit';
@@ -40,12 +40,12 @@ import { ACESS_EDIT } from './access_edit';
 
 // JSONS
 import dayjs from 'dayjs';
-import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
+import { DiasHabilesColombia } from '../../../../shared/utils/BusinessDaysCol';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
+import { swalClose, swalLoading } from '@/shared/utils/swalAdapter';
 
 function PendingComponent({ pendingOpen, setPendingOpen, pending }) {
     return (

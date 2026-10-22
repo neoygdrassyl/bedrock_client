@@ -1,10 +1,10 @@
 import { ClipboardCheck, History } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/lib/utils';
 import { VrCell } from '../molecules/VrCell';
 import { DocumentSupportList } from '../molecules/DocumentSupportList';
 import { DetailFact, DetailPill, DetailSection } from '../molecules/DetailSection';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/shared/ui/separator';
 import { DocumentalDetailShell } from './DocumentalDetailShell';
 
 function normalizeVr(value) {

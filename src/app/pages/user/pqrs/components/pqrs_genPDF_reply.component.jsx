@@ -1,12 +1,12 @@
 
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { dateParser } from '../../../../components/customClasses/typeParse'
-import { cities } from '../../../../components/jsons/vars';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse'
+import { cities } from '../../../../../shared/config/jsons/vars';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 function PQRS_PDFGEN_REPLY({ translation, swaMsg, globals, currentItem }) {
         var formData = new FormData();
 

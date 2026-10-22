@@ -1,4 +1,4 @@
-import { dateParser, dateParser_finalDate, dateParser_dateDiff } from '../../../../components/customClasses/typeParse'
+import { dateParser, dateParser_finalDate, dateParser_dateDiff } from '../../../../../shared/config/customClasses/typeParse'
 
 function PQRS_COMPONENT_REPLIES_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 

@@ -57,7 +57,7 @@ vi.mock('../app/services/appointments.service', () => ({
 }));
 
 // Mock the Icon component (used by new dashboard cards)
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name, size }) => <span data-testid={`icon-${name}`} />,
 }));
 

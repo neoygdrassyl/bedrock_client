@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import FUNService from '../../../../services/fun.service';
 import ProfessionalVerificationGrid from './ProfessionalVerificationGrid';
 

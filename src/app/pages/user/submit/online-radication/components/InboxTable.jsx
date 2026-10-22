@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { InboxRow } from './InboxRow';
 
 // `px-[…]` replaces the primitive's `px-4` (Bootstrap's `.px-4` is !important and 1.5rem).

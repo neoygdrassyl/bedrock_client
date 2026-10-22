@@ -1,5 +1,5 @@
-import DataTable from '@/components/data-table-bridge';
-import { dateParser } from '../../../../components/customClasses/typeParse';
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
 
 function PQRS_COMPONENT_CONTACTS({ translation, swaMsg, globals, currentItem }) {
 

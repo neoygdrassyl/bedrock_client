@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import FUNService from '../../../../services/fun.service'
 import dayjs from 'dayjs';
-import { formsParser1, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
+import { formsParser1, _ADDRESS_SET_FULL } from '../../../../../shared/config/customClasses/typeParse';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { infoCud } from '../../../../components/jsons/vars';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import SubmitService from '../../../../services/submit.service'
-import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { _FUN_6_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 const normalizeNeighbourField = (value) => String(value ?? '');
 

@@ -1,8 +1,8 @@
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
 
-import { dateParser } from '../../../../components/customClasses/typeParse'
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse'
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 
 function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
 

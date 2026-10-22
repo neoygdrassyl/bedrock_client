@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import MermaidDiagram from '../../../../components/MermaidDiagram.component';
+import { Button } from '@/shared/ui/button';
+import MermaidDiagram from '../../../../../shared/components/MermaidDiagram.component';
 import { generateProjectFlowMermaid } from '../utils/mermaidProjectFlow';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 function ProjectFlowModal({ show, onClose, phases, expediente }) {
   const mermaidString = useMemo(() => {

@@ -1,11 +1,11 @@
 import { Suspense, useEffect, useState, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import NORM_ELEMENT from './norm_element.component';
-import PERFILES from "../../../components/jsons/PERFILES.json"
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import PERFILES from "../../../../shared/config/jsons/PERFILES.json"
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const CARDS = [
     { value: 'ns', name: "NORTE - SUR" },

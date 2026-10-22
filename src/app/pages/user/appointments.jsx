@@ -1,18 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import AppointmentService from '../../services/appointments.service'
-import UserslDataService from '../../services/users.service'
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
-import Collapsible from '../../components/Collapsible';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { dateParser } from '../../components/customClasses/typeParse'
-import ObservationPanel from '../../components/ObservationPanel';
+import UserslDataService from '../../../shared/api/users.service'
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Icon } from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
+import Collapsible from '../../../shared/components/Collapsible';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { dateParser } from '../../../shared/config/customClasses/typeParse'
+import ObservationPanel from '../../../shared/components/ObservationPanel';
 
 
 import dayjs from 'dayjs';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 function Appointments({ translation, globals, breadCrums, swaMsg }) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);

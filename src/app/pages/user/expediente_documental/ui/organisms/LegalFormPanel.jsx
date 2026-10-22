@@ -1,9 +1,9 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { ChevronDown, CircleAlert, CircleCheck, ListChecks, RefreshCw, Scale, TriangleAlert } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { cn } from '@/shared/lib/utils';
 import FUN_SERVICE from '@/app/services/fun.service';
 import { declareLegalForm, listTypologySelections, revokeLegalForm, updateLegalFormDeclaration } from '@/app/services/documentaryLegalForm.service';
 import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';

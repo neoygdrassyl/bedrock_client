@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef, useLayoutEffect } from 'react';
 import dayjs from 'dayjs';
 import { sumarDiasHabiles, calcularDiasHabiles } from '../../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../../utils/scheduleUtils';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const FloatingTooltip = ({ visible, x, y, content }) => {
   if (!visible || !content) return null;

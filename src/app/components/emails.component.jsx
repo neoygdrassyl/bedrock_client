@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import EmailsService from '../services/emails.service';
-import { swalLoading, swalSuccess, swalError, swalConfirm } from '../utils/swalAdapter';
-import { MDBBtn, MDBTooltip } from './ui';
-import DataTable from '@/components/data-table-bridge';
+import { swalLoading, swalSuccess, swalError, swalConfirm } from '../../shared/utils/swalAdapter';
+import { MDBBtn, MDBTooltip } from '../../shared/components/legacy-ui';
+import DataTable from '@/shared/components/data-table-bridge';
 import dayjs from 'dayjs';
-import VIEWER from './viewer.component';
-import { Icon } from '@/components/icon';
+import VIEWER from '../../shared/components/viewer.component';
+import { Icon } from '@/shared/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const EMAIL_TPES = [

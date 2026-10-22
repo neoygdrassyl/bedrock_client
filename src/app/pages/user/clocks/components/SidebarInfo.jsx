@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { swalInfo, swalError } from '../../../../utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { swalInfo, swalError } from '../../../../../shared/utils/swalAdapter';
 import dayjs from 'dayjs';
 import { GanttPreview } from './gantt/GanttPreview';
 import { GanttModal } from './gantt/GanttModal';
-import { Icon } from '@/components/icon';
-import { getIconSvg } from '../../../../utils/iconSvgString';
+import { Icon } from '@/shared/components/icon';
+import { getIconSvg } from '../../../../../shared/utils/iconSvgString';
 
 
 // --- COPIAR Y PEGAR TODOS LOS COMPONENTES AUXILIARES (STATUS_MAP, ResponsiblePill, etc.) ---

@@ -1,4 +1,4 @@
-import http from '../../http-common';
+import http from '../../shared/api/http-common';
 
 const ROUTE = 'document-requirements';
 const JSON_HEADERS = { headers: { 'Content-Type': 'application/json' } };

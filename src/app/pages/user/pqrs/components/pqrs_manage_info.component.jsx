@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol';
+import { DiasHabilesColombia } from '../../../../../shared/utils/BusinessDaysCol';
 import PQRS_EMAILS from './pqrs_emails.component';
 //import PQRS_SET_REPLY from './pqrs_setReply.component';
-import { dateParser_finalDate } from '../../../../components/customClasses/typeParse'
+import { dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse'
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function PQRS_EDIT_INFO({ translation, swaMsg, globals, translation_form, currentItem, refreshCurrentItem: propRefreshCurrentItem, refreshList: propRefreshList }) {
     const [email, setEmail] = useState(false);
 

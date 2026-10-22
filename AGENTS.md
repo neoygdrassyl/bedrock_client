@@ -23,7 +23,7 @@ Regla cardinal:
 
 1. Lee este archivo completo.
 2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `../backend/AGENTS.md`.
-3. Si tu cambio toca login, sesion, guards o interceptores, revisa `src/http-common.js` y `src/app/services/data.service.js`.
+3. Si tu cambio toca login, sesion, guards o interceptores, revisa `src/shared/api/http-common.js` y `src/shared/api/data.service.js`.
 4. Si tu cambio afecta pruebas, revisa los scripts `test` y `test:e2e` de `package.json`.
 5. Si trabajas dentro de Clocks, lee primero los hooks de `src/app/pages/user/clocks/hooks/`.
 
@@ -35,10 +35,10 @@ Regla cardinal:
 | Build | Vite 6 |
 | Tests | Vitest 4 + Testing Library + Playwright |
 | Routing | react-router-dom v6 |
-| HTTP | axios via `src/http-common.js` |
+| HTTP | axios via `src/shared/api/http-common.js` |
 | UI | Bootstrap 5 + wrappers locales + shadcn/ui (Radix + Tailwind) |
-| Editores | BlockNote (`src/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
-| Fechas | dayjs (`src/app/utils/dayjs.config.js`) |
+| Editores | BlockNote (`src/shared/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
+| Fechas | dayjs (`src/shared/utils/dayjs.config.js`) |
 | Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/app/utils/` |
 | Node | 22+ obligatorio |
 
@@ -71,7 +71,7 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 ## 4. Donde vive la verdad operativa
 
 - Providers y Router: `src/app/App.jsx`; tabla de rutas, guard privado, auth context y login: `src/app/router/` (`routes.jsx`, `PrivateRoute.jsx`, `auth.jsx`)
-- Cliente HTTP y sesion: `src/http-common.js`, `src/app/services/data.service.js`, `src/app/services/custom.service.js`
+- Cliente HTTP y sesion: `src/shared/api/http-common.js`, `src/shared/api/data.service.js`, `src/shared/api/custom.service.js`
 - Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
 - Service mas critico: `src/app/services/fun.service.js`
 - Motor documental: `src/app/utils/TemplateEngine.js`
@@ -85,7 +85,7 @@ El arbol actual (`src/app/pages`, `src/app/components`, `src/app/services`) es l
 1. **Feature-first:** cada dominio vive en `src/features/<feature>/` con sus componentes, hooks, api y tests juntos.
 2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios.
 3. **Las features se importan entre si solo via su `index.js`** (API publica). Nada de rutas profundas a otra feature.
-4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/http-common.js` y devuelve datos.
+4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/shared/api/http-common.js` y devuelve datos.
 5. **Nombres:** componentes en `PascalCase.jsx`; modulos sin JSX (hooks, utils, api) en `camelCase.js`. Todo archivo con JSX usa extension `.jsx` (Vite ya no transforma JSX dentro de `.js`).
 6. **Tests colocalizados:** `Componente.test.jsx` / `modulo.test.js` junto al archivo que prueban.
 7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion.
@@ -124,7 +124,7 @@ El arbol actual (`src/app/pages`, `src/app/components`, `src/app/services`) es l
 5. No metas llamadas HTTP directas en componentes; usa `src/app/services/`.
 6. No ocultes ausencia de datos legalmente relevantes con `return null`; usa fallback visible.
 7. No introduzcas una libreria UI nueva sin consenso.
-8. No expongas datos sensibles de `src/app/components/jsons/vars.jsx` en logs.
+8. No expongas datos sensibles de `src/shared/config/jsons/vars.jsx` en logs.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin evidencia directa y proporcional a su alcance. Durante construcción activa, no crear, actualizar ni ejecutar pruebas automatizadas sin instrucción explícita del usuario; reservarlas para un cierre de módulo solicitado expresamente.
 11. **Playwright**: Siempre usa `e2e/config.js` para temp paths. No dejes archivos basura.

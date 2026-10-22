@@ -1,6 +1,6 @@
 import { CircleCheck, CircleX, Clock3 } from 'lucide-react';
-import { DovelaBadge } from '@/components/dovela-ui';
-import { cn } from '@/lib/utils';
+import { DovelaBadge } from '@/shared/dovela-ui';
+import { cn } from '@/shared/lib/utils';
 import { STATUS_META } from '../onlineRadicationModel';
 
 const ICONS = { pending: Clock3, radicated: CircleCheck, rejected: CircleX };

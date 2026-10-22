@@ -66,12 +66,12 @@ describe('Services críticos — Pre-migration baseline', () => {
   });
 
   test('2. custom.service.js exporta clase válida', async () => {
-    const service = await import('../app/services/custom.service');
+    const service = await import('../shared/api/custom.service');
     expect(service).toBeTruthy();
   });
 
   test('3. data.service.js exporta clase válida', async () => {
-    const service = await import('../app/services/data.service');
+    const service = await import('../shared/api/data.service');
     expect(service).toBeTruthy();
   });
 

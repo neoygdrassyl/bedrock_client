@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 // SERVICES
 import Submit_Service from '../../../services/submit.service'
 import funService from '../../../services/fun.service';
 import dayjs from 'dayjs';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
 import { DOCUMENT_ORIGIN_STATE, DOCUMENT_RECEPTION_MEDIUM_OPTIONS } from '../shared/expediente-documental.constants';
 
-import DataTable from '@/components/data-table-bridge';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import DataTable from '@/shared/components/data-table-bridge';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 const getInitialDigitalDoc = () => ({
     code: '',

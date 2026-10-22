@@ -1,16 +1,16 @@
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import SERVICE_CERTIFICATIONS from '../../../../services/certifications.service';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import { formsParser1, getJSONFull } from '../../../../components/customClasses/typeParse';
+import { formsParser1, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
 import dayjs from 'dayjs';
-import { cities, states } from '../../../../components/jsons/vars';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { cities, states } from '../../../../../shared/config/jsons/vars';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

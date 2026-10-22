@@ -26,7 +26,7 @@ vi.mock('@/app/pages/user/fun_forms/components/icon_progress.component', () => (
   default: () => <div data-testid="progress-icons">icons</div>,
 }));
 
-vi.mock('@/app/services/users.service', () => ({
+vi.mock('@/shared/api/users.service', () => ({
   default: {
     getAll: () => Promise.resolve({ data: [] }),
   },
@@ -44,7 +44,7 @@ vi.mock('@/app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/app/components/customClasses/typeParse', async (importOriginal) => {
+vi.mock('@/shared/config/customClasses/typeParse', async (importOriginal) => {
   const actual = await importOriginal();
 
   return {

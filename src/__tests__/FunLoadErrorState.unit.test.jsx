@@ -24,7 +24,7 @@ vi.mock('@/app/services/fun.service', () => ({
     },
   }),
 }));
-vi.mock('@/app/services/users.service', () => ({
+vi.mock('@/shared/api/users.service', () => ({
   default: userServiceMock,
 }));
 

@@ -19,15 +19,15 @@ vi.mock('../app/pages/user/chat/InternalChatPanel', () => ({
   default: () => <div data-testid="internal-chat-panel" />,
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/ui/badge', () => ({
+vi.mock('@/shared/ui/badge', () => ({
   Badge: ({ children, ...props }) => <span {...props}>{children}</span>,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span aria-hidden="true" />,
 }));
 

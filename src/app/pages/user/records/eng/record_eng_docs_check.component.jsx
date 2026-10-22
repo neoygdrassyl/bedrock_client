@@ -1,9 +1,9 @@
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import CodesJson from '../../../../components/jsons/fun6DocsList.json';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import CodesJson from '../../../../../shared/config/jsons/fun6DocsList.json';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function RECORD_ENG_DOCS_CHECK(props) {
         const { translation, swaMsg, globals, _FUN_6, currentItem, currentVersion, currentRecord, currentVersionR, _DOCS, requestUpdateRecord } = props;
 

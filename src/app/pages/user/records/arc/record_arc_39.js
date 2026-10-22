@@ -1,4 +1,4 @@
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 // // Importaciones
 // import React, { Component } from 'react';
 // import { Tabs, Tab, Modal, Button, Form, Table } from 'react-bootstrap';

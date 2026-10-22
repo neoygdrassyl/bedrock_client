@@ -4,10 +4,10 @@ import { AppSidebar } from './AppSidebar';
 import { HeaderBar } from './HeaderBar';
 import { AppFooter } from './AppFooter';
 import { LegacyPageWrapper } from './LegacyPageWrapper';
-import { DovelaSupportLayer } from '../components/DovelaSupportLayer';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { useIsCompactSidebar } from '@/hooks/use-mobile';
+import { DovelaSupportLayer } from '../../shared/components/DovelaSupportLayer';
+import { ScrollArea } from '@/shared/ui/scroll-area';
+import { SidebarInset, SidebarProvider } from '@/shared/ui/sidebar';
+import { useIsCompactSidebar } from '@/shared/hooks/use-mobile';
 import { NavigationPendingProvider } from './navigation-pending-context';
 import { TopProgressBar } from './TopProgressBar';
 

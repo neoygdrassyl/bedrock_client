@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
-import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
+import { Button } from '@/shared/ui/button';
+import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
+import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
-import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../components/jsons/vars';
-import { Collapsible as UiCollapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import Collapsible from '../../../components/Collapsible';
+import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../../shared/config/jsons/vars';
+import { Collapsible as UiCollapsible, CollapsibleContent } from '@/shared/ui/collapsible';
+import Collapsible from '../../../../shared/components/Collapsible';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import dayjs from 'dayjs';
 import EXP_RES from './exp_res.component';
@@ -14,10 +14,10 @@ import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
 import SubmitService from '../../../services/submit.service'
 import CubXVrDataService from '../../../services/cubXvr.service'
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { richTextToPlainText } from '../../../utils/richTextBlockNote';
-import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { richTextToPlainText } from '../../../../shared/utils/richTextBlockNote';
+import { downloadGeneratedPdf } from '../../../../shared/utils/pdfDownload';
 import writtenNumber from 'written-number';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

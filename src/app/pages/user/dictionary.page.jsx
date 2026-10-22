@@ -1,23 +1,23 @@
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { TabPane } from '@/components/ui/tab-pane';
-import { Card, CardContent } from '@/components/ui/card';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
+import { Button } from '@/shared/ui/button';
+import { TabPane } from '@/shared/ui/tab-pane';
+import { Card, CardContent } from '@/shared/ui/card';
 import { useEffect, useState } from 'react';
 
-import SERVICE_CUSTOM from '../../services/custom.service';
+import SERVICE_CUSTOM from '../../../shared/api/custom.service';
 import {
     filterCubDictionary,
     normalizeCubDictionaryPayload,
 } from './dictionary-cub.utils';
 
-import { formsParser1, getJSONFull } from '../../components/customClasses/typeParse';
-import TIPOLOGIA from '../../components/jsons/fun6DocsList.json'
-import SERIES from '../../components/jsons/funCodes.json'
-import SERIES_CB1 from '../../components/jsons/funcCodes.cb1.json'
-import DataTable from '@/components/data-table-bridge';
-import VIZUALIZER from '../../components/vizualizer.component';
-import { infoCud } from '../../components/jsons/vars';
-import { Icon } from '@/components/icon';
+import { formsParser1, getJSONFull } from '../../../shared/config/customClasses/typeParse';
+import TIPOLOGIA from '../../../shared/config/jsons/fun6DocsList.json'
+import SERIES from '../../../shared/config/jsons/funCodes.json'
+import SERIES_CB1 from '../../../shared/config/jsons/funcCodes.cb1.json'
+import DataTable from '@/shared/components/data-table-bridge';
+import VIZUALIZER from '../../../shared/components/vizualizer.component';
+import { infoCud } from '../../../shared/config/jsons/vars';
+import { Icon } from '@/shared/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

@@ -4,7 +4,7 @@ import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_SERVICE from '../../../services/fun.service';
 import CLOCKS_CONTROL from './components/clocks_control.component';
 import EMAILS_COMPONENT from '../../../components/emails.component';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 
 function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, requesRefresh, NAVIGATION }) {

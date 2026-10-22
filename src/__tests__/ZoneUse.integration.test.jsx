@@ -26,7 +26,7 @@ vi.mock('../app/services/zone_use.service', () => ({
 }));
 
 // DataTable mock — renders row data directly without calling column cell functions
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [], noDataComponent, progressPending, progressComponent }) => (
     <div data-testid='mock-datatable'>
@@ -44,7 +44,7 @@ vi.mock('@/components/data-table-bridge', () => ({
   ),
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen }) =>
     isOpen ? <div data-testid='mock-modal'>{children}</div> : null,
 }));

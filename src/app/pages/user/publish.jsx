@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import PublishService from '../../services/publish.service'
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
-import Collapsible from '../../components/Collapsible';
-import { PUBLISH_TYPE_ARRAY } from '../../components/vars.global'
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Icon } from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
+import Collapsible from '../../../shared/components/Collapsible';
+import { PUBLISH_TYPE_ARRAY } from '../../../shared/config/vars.global'
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import publishService from '../../services/publish.service';
 
 
 import dayjs from 'dayjs';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { buildProtectedFilePath } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 
 
 function Publish({ translation, swaMsg, breadCrums }) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-import Icon from '@/components/icon';
+import Icon from '@/shared/components/icon';
 export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesisted }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);

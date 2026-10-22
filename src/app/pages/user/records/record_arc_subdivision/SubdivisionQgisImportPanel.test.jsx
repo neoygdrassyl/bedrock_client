@@ -14,7 +14,7 @@ vi.mock('../../../../services/subdivision_qgis.service.js', () => ({
   default: qgisServiceMock,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 

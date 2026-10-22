@@ -1,10 +1,10 @@
 
-import Icon from '@/components/icon';
+import Icon from '@/shared/components/icon';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
-import { Button } from '@/components/ui/button';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import FUNService from '../../../services/fun.service'
-import { formsParser1, dateParser } from '../../../components/customClasses/typeParse'
+import { formsParser1, dateParser } from '../../../../shared/config/customClasses/typeParse'
 
 function unwrapSavePayload(response) {
     return response?.data?.data ?? response?.data ?? response ?? null;

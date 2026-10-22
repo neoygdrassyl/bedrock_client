@@ -40,13 +40,13 @@ const protectedAttachmentFiles = [
 ];
 
 const protectedPreviewFiles = [
-  'src/app/components/vizualizer.component.jsx',
+  'src/shared/components/vizualizer.component.jsx',
   'src/app/pages/user/shared/UnifiedDocumentEntryModal.jsx',
   'src/app/pages/user/fun_forms/components/FunDocumentManagementModal.jsx',
   'src/app/pages/user/submit/submit_list.component.jsx',
   'src/app/pages/user/fun_forms/components/FunCorrelatedDocumentControl.jsx',
   'src/app/pages/user/fun_forms/components/RequirementManagementModal.jsx',
-  'src/app/components/viewer.component.jsx',
+  'src/shared/components/viewer.component.jsx',
 ];
 
 const protectedPdfTemplateFiles = [

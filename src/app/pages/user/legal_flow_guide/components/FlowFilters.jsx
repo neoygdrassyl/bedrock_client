@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { PROCESS_DEFINITION } from '../utils/legalProcessDefinition';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const PROJECT_TYPES = ['I', 'II', 'III', 'IV'];
 

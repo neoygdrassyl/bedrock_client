@@ -5,15 +5,15 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 import FunDocumentManagementModal from '../app/pages/user/fun_forms/components/FunDocumentManagementModal';
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   default: ({ data = [] }) => <div data-testid="document-history-table">{data.length}</div>,
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <div aria-label={contentLabel}>{children}</div> : null),
 }));
 
-vi.mock('@/app/components/ProtectedDocument', () => ({
+vi.mock('@/shared/components/ProtectedDocument', () => ({
   ProtectedDocumentPreview: ({ source }) => <div data-testid="document-pdf-viewer">PDF:{source}</div>,
 }));
 
@@ -23,7 +23,7 @@ vi.mock('../app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalConfirm: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

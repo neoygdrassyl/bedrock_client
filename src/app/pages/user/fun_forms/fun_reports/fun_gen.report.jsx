@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import Spreadsheet from "react-spreadsheet";
 import FUNService from '../../../../services/fun.service';
-import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_8_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../components/customClasses/typeParse';
-import { infoCud } from '../../../../components/jsons/vars';
-import { Icon } from '@/components/icon';
+import { _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_8_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { _CALCULATE_EXPENSES, formsParser1, getJSON, getJSONFull, regexChecker_isPh } from '../../../../../shared/config/customClasses/typeParse';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
+import { Icon } from '@/shared/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

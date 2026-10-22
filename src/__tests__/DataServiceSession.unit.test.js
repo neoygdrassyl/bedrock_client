@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import DataService from '@/app/services/data.service';
+import DataService from '@/shared/api/data.service';
 
 describe('DataService session shape', () => {
   beforeEach(() => {

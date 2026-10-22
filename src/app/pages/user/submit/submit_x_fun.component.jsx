@@ -1,18 +1,18 @@
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
+import { Button } from '@/shared/ui/button';
 import dayjs from 'dayjs';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../components/customClasses/typeParse';
-import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import { dateParser_finalDate, dateParser_timeLeft, formsParser1 } from '../../../../shared/config/customClasses/typeParse';
+import { DiasHabilesColombia } from '../../../../shared/utils/BusinessDaysCol';
 import FunService from '../../../services/fun.service';
 import PqrsMainDataService from '../../../services/pqrs_main.service';
-import Codes from '../../../components/jsons/fun6DocsList.json';
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import Codes from '../../../../shared/config/jsons/fun6DocsList.json';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import TABLE_COMPONENT_EXPANDED from '../fun_forms/components/table_components/table.component_expanded';
-import USER_SERVICE from '../../../services/users.service';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import USER_SERVICE from '../../../../shared/api/users.service';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 function SUBMIT_X_FUN({ translation, globals, swaMsg, type, simple, hide, setSubtmitRows, openModal, listIncomplete }) {
     const [currentItems, setCurrentItems] = useState([]);

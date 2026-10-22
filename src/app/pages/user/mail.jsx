@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import MailboxService from '../../services/mailbox.service'
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Icon } from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
 import dayjs from 'dayjs';
 import InternalChatPanel from './chat/InternalChatPanel';
 

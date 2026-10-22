@@ -1,17 +1,17 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { Button } from '@/shared/ui/button';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
-import Icon from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
+import Icon from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import parkingData from '../../../../components/jsons/parkingData.json'
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
+import parkingData from '../../../../../shared/config/jsons/parkingData.json'
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
-import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
-import ObservationPanel from '../../../../components/ObservationPanel';
+import { sanitizeRichTextForLegacyJoin } from '@/shared/utils/richTextBlockNote';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
 import ExpandableTableSection from './components/ExpandableTableSection';
 
 function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {

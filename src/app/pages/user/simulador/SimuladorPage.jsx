@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const SIMULATOR_OPTIONS = [
   {

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-import { formsParser1 } from '../../../../components/customClasses/typeParse';
-import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
+import { regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
     // Check if CSS variable is already set to determine initial state

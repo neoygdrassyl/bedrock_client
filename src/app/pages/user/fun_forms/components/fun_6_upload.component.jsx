@@ -1,12 +1,12 @@
 
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { useEffect, useState } from 'react';
 import FunService from '../../../../services/fun.service';
 import DOCS_LIST from './docs_list.component';
 import FUN6DATALIST from './fun_6_datalist';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 
 export default function FUN_6_UPLOAD(props) {

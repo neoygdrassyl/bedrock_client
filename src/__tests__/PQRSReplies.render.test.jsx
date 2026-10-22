@@ -76,13 +76,13 @@ vi.mock('jspdf', () => ({
   })),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: vi.fn((d) => d || ''),
   dateParser_finalDate: vi.fn(() => ''),
   dateParser_dateDiff: vi.fn(() => 0),
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'Bucaramanga',

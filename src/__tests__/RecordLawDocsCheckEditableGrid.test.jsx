@@ -16,16 +16,16 @@ vi.mock('../app/services/submit.service', () => ({
   default: { getIdRelated: getIdRelatedMock },
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   GEM_CODE_LIST: () => [{ parent: '6.1 DOC COMUNES A TODA SOLIC', codes: ['511'] }],
   VR_DOCUMENTS_OF_INTEREST: { arc: ['511'] },
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   default: () => <span>Visualizador</span>,
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),

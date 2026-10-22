@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { Icon } from '@/shared/components/icon';
 
 function formatDate(value) {
     if (!value) return '';

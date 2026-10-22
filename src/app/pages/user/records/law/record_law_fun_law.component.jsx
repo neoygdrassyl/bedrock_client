@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { dateParser_dateDiff } from '../../../../components/customClasses/typeParse';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { dateParser_dateDiff } from '../../../../../shared/config/customClasses/typeParse';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import FUNService from '../../../../services/fun.service';
 import Record_lawService from '../../../../services/record_law.service';
 import FUN_3_G_VIEW from '../../fun_forms/components/fun_3_g_view';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_LAW(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

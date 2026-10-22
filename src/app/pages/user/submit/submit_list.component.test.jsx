@@ -31,11 +31,11 @@ vi.mock('@/app/services/documentaryOperations.service', () => ({
   refreshDocumentaryRequirements: vi.fn(),
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <section aria-label={contentLabel}>{children}</section> : null),
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalConfirm: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

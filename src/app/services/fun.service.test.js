@@ -4,7 +4,7 @@ const { getMock } = vi.hoisted(() => ({
   getMock: vi.fn(),
 }));
 
-vi.mock('../../http-common', () => ({
+vi.mock('../../shared/api/http-common', () => ({
   default: {
     get: getMock,
     post: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('../../http-common', () => ({
 }));
 
 import FUNService from './fun.service';
-import { clearPendingRequests } from './requestCache';
+import { clearPendingRequests } from '../../shared/api/requestCache';
 
 afterEach(() => {
   clearPendingRequests();

@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { cn } from '@/shared/lib/utils';
 import { ONLINE_RADICATION_SCOPE } from '../onlineRadicationScope';
 
 const BONE = 'motion-reduce:animate-none';

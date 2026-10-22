@@ -1,12 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { CircleAlert, CircleCheck, ClipboardCheck, FileOutput, FilePlus2, Inbox, Scale, Settings2, TriangleAlert } from 'lucide-react';
-import DataService from '@/app/services/data.service';
+import DataService from '@/shared/api/data.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Tag } from './ui/atoms/Tag';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import UnifiedDocumentEntryModal from '../shared/UnifiedDocumentEntryModal';
 import { useExpedienteDocumental } from './hooks/useExpedienteDocumental';
 import { DocumentalWorkspaceHeader } from './ui/organisms/DocumentalWorkspaceHeader';

@@ -1,5 +1,5 @@
-import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _IDENTIFY_SERIES, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _IDENTIFY_SERIES, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../../shared/config/customClasses/typeParse';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
 function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR }) {
 

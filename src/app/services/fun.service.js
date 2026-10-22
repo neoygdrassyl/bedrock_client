@@ -1,5 +1,5 @@
-import http from "../../http-common";
-import { cachedGet, dedupeGet } from "./requestCache";
+import http from "../../shared/api/http-common";
+import { cachedGet, dedupeGet } from "../../shared/api/requestCache";
 
 const route = "fun"
 

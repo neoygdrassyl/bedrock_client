@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import { REVIEW_DOCS } from '../../../../../shared/config/jsons/arcReviewDocs';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service';
-import { swalError } from '../../../../utils/swalAdapter';
+import { swalError } from '../../../../../shared/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
 

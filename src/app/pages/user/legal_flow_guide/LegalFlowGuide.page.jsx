@@ -3,7 +3,7 @@ import FlowFilters from './components/FlowFilters';
 import FlowDiagram from './components/FlowDiagram';
 import FlowRouteSummary from './components/FlowRouteSummary';
 import './LegalFlowGuide.css';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const DEFAULT_FILTERS = {
   projectType: 'I',

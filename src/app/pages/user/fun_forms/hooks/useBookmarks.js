@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import BookmarkService from '../../../../services/bookmark.service';
+import BookmarkService from '../../../../../shared/api/bookmark.service';
 
 function normalizeScope(scope) {
   return scope === 'user' ? 'personal' : scope;

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { Icon } from '@/components/icon';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 
 export const PQRS_SEND_DATE = (props) => {

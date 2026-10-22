@@ -1,17 +1,17 @@
-import TagInput from '../../../../../components/TagInput';
-import { Button } from '@/components/ui/button';
+import TagInput from '../../../../../../shared/components/TagInput';
+import { Button } from '@/shared/ui/button';
 import React, { useEffect, useState } from 'react';
 import FUN_SERVICE from '../../../../../services/fun.service';
-import USER_SERVICE from '../../../../../services/users.service';
+import USER_SERVICE from '../../../../../../shared/api/users.service';
 import RECORD_LAW_SERVICE from '../../../../../services/record_law.service';
 import RECORD_ENG_SERVICE from '../../../../../services/record_eng.service';
 import RECORD_ARC_SERVICE from '../../../../../services/record_arc.service';
 import RECORD_PH_SERVICE from '../../../../../services/record_ph.service';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, regexChecker_isOA, regexChecker_isOA_2, regexChecker_isPh } from '../../../../../../shared/config/customClasses/typeParse';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function TABLE_COMPONENT_EXPANDED(props) {
     const { currentItem, swaMsg, worker_list, lenghtL, dataL } = props;

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RecordLawService from '../../../../services/record_law.service';
 
 const STEP_ID = 'f53';

@@ -1,6 +1,6 @@
-import http from "../../http-common";
-import { captureDovelaHttpError } from "../utils/errorReporting";
-import { requestProtectedBlob } from "../utils/pdfDownload";
+import http from "../../shared/api/http-common";
+import { captureDovelaHttpError } from "../../shared/utils/errorReporting";
+import { requestProtectedBlob } from "../../shared/utils/pdfDownload";
 
 /**
  * Online radication inbox (`/api/online-radications`): requests filed from the citizen portal

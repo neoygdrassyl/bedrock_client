@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Icon } from '@/shared/components/icon';
 import ChatService from '../../../services/chat.service';
 import InternalChatPanel from './InternalChatPanel';
 

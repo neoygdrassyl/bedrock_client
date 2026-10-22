@@ -1,11 +1,11 @@
 import { Suspense, useEffect, useState, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import DataTable from '@/components/data-table-bridge';
-import PERFILES from "../../../components/jsons/PERFILES.json"
+import DataTable from '@/shared/components/data-table-bridge';
+import PERFILES from "../../../../shared/config/jsons/PERFILES.json"
 import { ELEMENTS } from './norm.vars'
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function NORM_ELEMENT(props) {
     const { translation, swaMsg, globals, perfil } = props;

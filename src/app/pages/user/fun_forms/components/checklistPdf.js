@@ -1,9 +1,9 @@
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import dayjs from 'dayjs';
-import { dateParser } from '../../../../components/customClasses/typeParse';
-import { swalError } from '@/app/utils/swalAdapter';
-import { toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
+import { swalError } from '@/shared/utils/swalAdapter';
+import { toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/shared/utils/protectedDocumentAction';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

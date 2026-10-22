@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
+import { cn } from '@/shared/lib/utils';
 import { MISSING, hasValue } from '../onlineRadicationModel';
 
 const CARD = 'min-w-0 overflow-hidden rounded-xl border bg-[hsl(var(--card))] shadow-sm';

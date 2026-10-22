@@ -18,10 +18,10 @@ import {
   swalClose,
   swalInfo,
   swalFormDialog,
-} from '@/app/utils/swalAdapter';
+} from '@/shared/utils/swalAdapter';
 import Swal from 'sweetalert2';
 
-const swalThemeCss = readFileSync(path.resolve(__dirname, '../app/styles/swal-theme.css'), 'utf8');
+const swalThemeCss = readFileSync(path.resolve(__dirname, '../shared/styles/swal-theme.css'), 'utf8');
 
 describe('swalAdapter', () => {
   beforeEach(() => {

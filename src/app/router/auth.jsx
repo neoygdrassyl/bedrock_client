@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import DataSerive from '../services/data.service';
+import DataSerive from '../../shared/api/data.service';
 
 // Auth context (moved unchanged from App.jsx).
 

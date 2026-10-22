@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DataTable } from '@/components/data-table';
+import { DataTable } from '@/shared/components/data-table';
 
 const sampleColumns = [
   { accessorKey: 'id', header: 'ID' },

@@ -1,7 +1,7 @@
 import { Search, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { cn } from '@/shared/lib/utils';
 
 /** Search box shared by the documentary workspaces (legacy and catalogue-based). */
 export function DocumentalSearchField({

@@ -75,17 +75,17 @@ vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
   default: () => <div data-testid="doc-version-stub" />,
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer-stub" />,
 }));
 
-vi.mock('../app/components/HTMLDatalist', () => ({
+vi.mock('../shared/components/HTMLDatalist', () => ({
   __esModule: true,
   default: () => <div data-testid="html-datalist-stub" />,
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="collapsible-stub">{children}</div>,
 }));

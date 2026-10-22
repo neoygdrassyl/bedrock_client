@@ -1,12 +1,12 @@
 import { Suspense, useEffect, useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import Norms_Service from "../../../services/norm.service"
 import { ELEMENTS } from './norm.vars'
-import UU from "../../../components/jsons/UU.json"
-import FICHA_NORM_JSON from "../../../components/jsons/FICHA_NORM_1.json"
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import UU from "../../../../shared/config/jsons/UU.json"
+import FICHA_NORM_JSON from "../../../../shared/config/jsons/FICHA_NORM_1.json"
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 const default_Item = {
     id: false,

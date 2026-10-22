@@ -1,18 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Badge } from '@/shared/ui/badge';
 
 import FUNService from '../../services/fun.service';
 import PqrsMainService from '../../services/pqrs_main.service';
 import SubmitService from '../../services/submit.service';
 import MailboxService from '../../services/mailbox.service';
 import AppointmentsService from '../../services/appointments.service';
-import BookmarkService from '../../services/bookmark.service';
+import BookmarkService from '../../../shared/api/bookmark.service';
 import { RECENT_EXPEDIENTES_CHANGED_EVENT, getRecentExpedientes } from './fun_forms/utils/expedienteWorkspaceRoute';
 import DashboardCriticalAlerts from './components/DashboardCriticalAlerts';
 

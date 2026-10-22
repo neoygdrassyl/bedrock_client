@@ -1,23 +1,23 @@
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import SubmitService from '../../../services/submit.service';
 import { inventoryBlocker } from '../expediente_documental/documentaryInventoryModel';
 import { useDocumentaryInventory } from '../expediente_documental/hooks/useDocumentaryInventory';
-import Collapsible from '../../../components/Collapsible';
+import Collapsible from '../../../../shared/components/Collapsible';
 
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SERVICE from '../../../services/fun.service';
-import '../../../../styles/docs-expediente.css';
+import '../../../../shared/styles/docs-expediente.css';
 
-import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
+import { cities, domains_number, infoCud, zonesTable } from '../../../../shared/config/jsons/vars';
 
-import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
-import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
+import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
+import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {

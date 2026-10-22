@@ -1,12 +1,12 @@
-import { Input } from '@/components/ui/input';
+import { Input } from '@/shared/ui/input';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+} from '@/shared/ui/select';
+import { cn } from '@/shared/lib/utils';
 
 // Radix `Select.Item` forbids an empty-string value, so the legacy
 // `<option value="">Todos</option>` reset option needs a sentinel that this

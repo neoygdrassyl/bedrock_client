@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../components/customClasses/typeParse'
+import { Button } from '@/shared/ui/button';
+import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse'
 import FUNService from '../../../../services/fun.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
 import dayjs from 'dayjs';
-import { infoCud } from '../../../../components/jsons/vars';
-import DCO_LIS from '../../../../components/jsons/fun6DocsList.json';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
+import DCO_LIS from '../../../../../shared/config/jsons/fun6DocsList.json';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 
 import SubmitService from '../../../../services/submit.service'
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { LEGAL_FORM_NOT_EVALUABLE_MESSAGE } from '../../shared/expediente-documental.utils';
 import { getMissingRequirements } from '@/app/services/documentaryOperations.service';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 const STALE_EVALUATION_MESSAGE = 'La evaluación de requisitos no está vigente; revise la sugerencia antes de usarla.';
 

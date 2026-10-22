@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FUNService from '../../../services/fun.service'
-import { isEmptyEntity } from '../../../utils/isEmptyEntity';
+import { isEmptyEntity } from '../../../../shared/utils/isEmptyEntity';
 
 import dayjs from 'dayjs';
 
@@ -11,15 +11,15 @@ import FUN_ALERT_NEIGHBOUR from './components/fun_alertNeighbour';
 import FUN_SERVICE from '../../../services/fun.service';
 
 import FUN_3_G_VIEW from './components/fun_3_g_view';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
-import { _MANAGE_IDS } from '../../../components/customClasses/typeParse';
+import { _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
 
 import CubXVrDataService from '../../../services/cubXvr.service'
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 
 function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION_VERSION, NAVIGATION, requestUpdate: requestUpdateProp }) {

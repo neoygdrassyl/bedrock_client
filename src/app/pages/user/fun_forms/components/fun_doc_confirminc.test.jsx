@@ -51,7 +51,7 @@ vi.mock('../../../../services/pqrs_main.service', () => ({
   },
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalClose: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

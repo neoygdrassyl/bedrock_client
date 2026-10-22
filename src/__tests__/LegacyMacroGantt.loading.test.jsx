@@ -5,11 +5,11 @@ const { renderedScatterProps } = vi.hoisted(() => ({
   renderedScatterProps: [],
 }));
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBtn: ({ children, onClick, ...props }) => React.createElement('button', { onClick, ...props }, children),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser_dateDiff: vi.fn(() => 15),
   dateParser_finalDate: vi.fn(() => '2026-03-01'),
   dateParser_timeLeft: vi.fn(() => 10),

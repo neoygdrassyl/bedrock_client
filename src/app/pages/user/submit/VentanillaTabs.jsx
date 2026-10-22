@@ -1,8 +1,8 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FileInput, Globe } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { InboxSkeleton } from './online-radication/components/InboxSkeleton';
 import { useOnlineRadicationCounts } from './online-radication/hooks/useOnlineRadicationCounts';
 

@@ -62,16 +62,16 @@ vi.mock('../app/services/fun.service', () => ({
   default: funServiceMock,
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalError: (...args) => swalErrorMock(...args),
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-bridge" />,
 }));
 
-vi.mock('../app/components/customClasses/funCustomArrays', () => ({
+vi.mock('../shared/config/customClasses/funCustomArrays', () => ({
   _FUN_1_PARSER: () => '',
   _FUN_2_PARSER: () => '',
   _FUN_3_PARSER: () => '',
@@ -87,13 +87,13 @@ vi.mock('../app/components/customClasses/funCustomArrays', () => ({
   _FUN_25_PARSER: () => '',
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: () => '',
   dateParser_yearsPassed: () => 0,
   regexChecker_isOA_2: () => false,
 }));
 
-vi.mock('@/components/icon', () => {
+vi.mock('@/shared/components/icon', () => {
   // The module exports Icon both named and as default; consumers use either.
   const Icon = () => <span aria-hidden="true" />;
   return { __esModule: true, Icon, default: Icon };
@@ -124,7 +124,7 @@ vi.mock('../app/pages/user/fun_forms/components/fun_3_g_view', () => ({
   default: () => <div data-testid="fun-3-g-view" />,
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer" />,
 }));

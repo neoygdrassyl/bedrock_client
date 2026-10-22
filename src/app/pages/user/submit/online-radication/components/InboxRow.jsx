@@ -1,8 +1,8 @@
 import { ChevronRight, Hourglass } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { TableCell, TableRow } from '@/shared/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+import { cn } from '@/shared/lib/utils';
 import {
   MISSING,
   WAITING_WARNING_BUSINESS_DAYS,
