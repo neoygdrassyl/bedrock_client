@@ -1,5 +1,5 @@
 import axios from "axios";
-import { logHttpError, newRequestId, REQUEST_ID_HEADER } from "@/shared/observability/logger";
+import { clearLogQueue, logHttpError, newRequestId, REQUEST_ID_HEADER } from "@/shared/observability/logger";
 
 // Binary requests (blob/arraybuffer) receive their error body undecoded; turn
 // a JSON payload back into an object so callers can read the server message.
@@ -78,6 +78,7 @@ export function createDovelaHttpClient({ baseURL, headers, attachAuth = true } =
       }
       const isLoginRequest = (error?.config?.url || '').replace(/^\/+/, '') === 'login';
       if (attachAuth && error.response && error.response.status === 401 && !isLoginRequest) {
+        clearLogQueue();
         localStorage.removeItem("dovela_token");
         localStorage.removeItem("dovela_user");
         window.user = null;

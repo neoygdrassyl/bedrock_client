@@ -121,7 +121,8 @@ Además, el evento `vite:preloadError` (falla la carga de un chunk de Vite) regi
 
 - En desarrollo, cada evento también se imprime en la consola.
 - Los eventos se agrupan en memoria y se envían a **`POST /api/client-events`** (requiere JWT) cada 5 segundos, al juntar 10, o cuando la pestaña pasa a segundo plano. Sólo se envían si hay sesión.
-- Un mismo evento con el mismo mensaje se descarta durante 30 segundos, y cada carga de página envía como máximo 50 eventos. Los datos pasan por la misma redacción de secretos (`redactObject`, `safeText`).
+- Un mismo evento con el mismo mensaje y el mismo `relatedRequestId` se descarta durante 30 segundos, y se aceptan como máximo 50 eventos por ventana móvil de 10 minutos. `data` se recorta por debajo de 4000 bytes UTF-8 (el backend acepta 4096). Los datos pasan por la misma redacción de secretos (`redactObject`, `safeText`).
+- Cada evento se envía solo con la sesión en la que se registró: al cerrar sesión (explícito o por un 401) la cola se vacía (`clearLogQueue`), y los eventos registrados antes de iniciar sesión se descartan en lugar de enviarse con el token del siguiente usuario.
 - El envío usa `skipErrorLog: true`: si falla, el lote se descarta y no se registra, para no crear bucles. Si el backend no tiene el endpoint (404/405/501), el logger deja de intentarlo hasta la próxima carga.
 - El interceptor de `http-client-factory.js` registra cada petición fallida como `http_error` (`warn` para 4xx y errores de red, `error` para 5xx) con método, ruta sin query, estado y `relatedRequestId`. No registra los 401 (los resuelve el cierre de sesión), las peticiones canceladas ni las que pasan `skipErrorLog: true` porque manejan el error por su cuenta.
 - `src/index.jsx` instala los listeners globales de `error` y `unhandledrejection` (sin interfaz) y borra las claves de `localStorage` del sistema de reportes retirado.

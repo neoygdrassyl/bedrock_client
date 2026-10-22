@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   __getQueuedEventsForTests,
   __resetLoggerForTests,
+  clearLogQueue,
   flushLogs,
   getRequestIdFromError,
   installGlobalErrorListeners,
@@ -69,6 +70,41 @@ describe('client logger', () => {
     expect(__getQueuedEventsForTests()).toHaveLength(1);
   });
 
+  it('never sends events recorded before login or under another session', async () => {
+    const transport = vi.fn().mockResolvedValue({});
+    setLogTransport(transport);
+
+    localStorage.removeItem('dovela_token');
+    logEvent('error', 'before_login', { message: 'x' });
+    localStorage.setItem('dovela_token', 'jwt-user-a');
+    logEvent('error', 'user_a', { message: 'a' });
+    localStorage.setItem('dovela_token', 'jwt-user-b');
+    logEvent('error', 'user_b', { message: 'b' });
+
+    flushLogs();
+    await settle();
+
+    expect(transport).toHaveBeenCalledTimes(1);
+    expect(transport.mock.calls[0][0].map((event) => event.event)).toEqual(['user_b']);
+    expect(__getQueuedEventsForTests()).toEqual([]);
+  });
+
+  it('clears the queue when the session is torn down', async () => {
+    const transport = vi.fn().mockResolvedValue({});
+    setLogTransport(transport);
+
+    logEvent('error', 'pending', { message: 'x' });
+    clearLogQueue();
+    flushLogs();
+    await settle();
+
+    expect(transport).not.toHaveBeenCalled();
+    expect(__getQueuedEventsForTests()).toEqual([]);
+    // The dedupe memory is cleared too, so the next session can record it again.
+    expect(logEvent('error', 'pending', { message: 'x' })).not.toBeNull();
+    expect(__getQueuedEventsForTests()).toHaveLength(1);
+  });
+
   it('deduplicates identical event+message pairs and answers with the first id', () => {
     const first = logEvent('error', 'same', { message: 'boom' });
     const second = logEvent('error', 'same', { message: 'boom' });
@@ -78,11 +114,43 @@ describe('client logger', () => {
     expect(__getQueuedEventsForTests()).toHaveLength(2);
   });
 
-  it('caps the events of one page load at 50', () => {
+  it('keeps events with the same message but a different related request', () => {
+    const first = logEvent('warn', 'ui_load_failed', { message: 'boom', relatedRequestId: 'req_first_1234' });
+    const second = logEvent('warn', 'ui_load_failed', { message: 'boom', relatedRequestId: 'req_second_1234' });
+
+    expect(second).not.toBe(first);
+    expect(__getQueuedEventsForTests().map((event) => event.relatedRequestId)).toEqual(['req_first_1234', 'req_second_1234']);
+  });
+
+  it('accepts at most 50 events per rolling 10-minute window', () => {
+    vi.useFakeTimers();
     for (let index = 0; index < 60; index += 1) logEvent('info', 'capped', { message: `m${index}` });
 
     expect(__getQueuedEventsForTests()).toHaveLength(50);
     expect(logEvent('info', 'capped', { message: 'late' })).toBeNull();
+
+    vi.advanceTimersByTime(10 * 60 * 1000 - 1);
+    expect(logEvent('info', 'capped', { message: 'still late' })).toBeNull();
+
+    vi.advanceTimersByTime(1);
+    expect(logEvent('info', 'capped', { message: 'next window' })).not.toBeNull();
+  });
+
+  it('truncates data to under 4000 UTF-8 bytes', () => {
+    // 3000 accented characters: 3000 chars but about 6000 bytes in UTF-8.
+    const text = 'á'.repeat(3000);
+    logEvent('info', 'big_data', { data: { a: text.slice(0, 1100), b: text.slice(0, 1100), c: text.slice(0, 1100) } });
+
+    const [event] = __getQueuedEventsForTests();
+    const bytes = new TextEncoder().encode(JSON.stringify(event.data)).length;
+    expect(event.data.truncated).toBe(true);
+    expect(bytes).toBeLessThanOrEqual(4000);
+    expect(bytes).toBeGreaterThan(3900);
+  });
+
+  it('keeps data that fits in the byte limit untouched', () => {
+    logEvent('info', 'small_data', { data: { note: 'ñandú' } });
+    expect(__getQueuedEventsForTests()[0].data).toEqual({ note: 'ñandú' });
   });
 
   it('drops a failed batch without logging it again', async () => {
