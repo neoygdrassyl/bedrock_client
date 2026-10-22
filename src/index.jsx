@@ -19,8 +19,10 @@ import './shared/utils/dayjs.config'; // dayjs plugins + locale (must load befor
 import './shared/config/jsons/global-id';
 import App from './app/App';
 import { purgeLegacyErrorReportStorage } from './app/legacy-storage-cleanup';
+import { installGlobalErrorListeners } from './shared/observability/logger';
 
 purgeLegacyErrorReportStorage();
+installGlobalErrorListeners();
 
 const root = createRoot(document.getElementById('root'));
 root.render(

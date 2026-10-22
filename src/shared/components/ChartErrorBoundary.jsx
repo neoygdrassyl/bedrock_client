@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { Icon } from '@/shared/components/icon';
+import { logError } from '@/shared/observability/logger';
 
 /**
  * ErrorBoundary para capturar errores de recharts y otras librerías de charts.
@@ -15,8 +16,9 @@ class ChartErrorBoundary extends Component {
         return { hasError: true, error };
     }
 
+    // A broken chart leaves the rest of the page usable: log it as a symptom.
     componentDidCatch(error, errorInfo) {
-        console.warn('ChartErrorBoundary caught error:', error.message);
+        logError('chart_render_failed', error, { level: 'warn', componentStack: errorInfo?.componentStack });
     }
 
     render() {

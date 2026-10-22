@@ -1,4 +1,5 @@
 import { createDovelaHttpClient } from "@/shared/api/http-client-factory";
+import { setLogTransport } from "@/shared/observability/logger";
 
 const configuredApiBaseUrl = String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const apiBaseUrl = configuredApiBaseUrl || (import.meta.env.DEV ? 'http://localhost:3001/api' : '');
@@ -22,5 +23,13 @@ const http = createDovelaHttpClient({
 if (!apiBaseUrl) {
   http.interceptors.request.use(() => Promise.reject(new Error('VITE_API_URL must be configured outside local development.')));
 }
+
+// Client traceability events go to the main API. `skipErrorLog` keeps a failed
+// batch from being logged again (no loops); the body is JSON, not the client's
+// multipart default.
+setLogTransport((events) => http.post('client-events', { events }, {
+  skipErrorLog: true,
+  headers: { 'Content-Type': 'application/json' },
+}));
 
 export default http;

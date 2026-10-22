@@ -36,11 +36,11 @@ describe('FUNService request dedupe', () => {
   it('permite declarar silencioso un lookup exacto especulativo', () => {
     getMock.mockImplementation(() => new Promise(() => {}));
 
-    FUNService.get_fun_IdPublic('68001-1-25-0233', { skipDovelaErrorCapture: true });
+    FUNService.get_fun_IdPublic('68001-1-25-0233', { skipErrorLog: true });
 
     expect(getMock).toHaveBeenCalledWith(
       '/fun/get/idpublic/68001-1-25-0233',
-      { skipDovelaErrorCapture: true },
+      { skipErrorLog: true },
     );
   });
 
@@ -58,12 +58,12 @@ describe('FUNService request dedupe', () => {
   it('permite silenciar el summary opcional y codifica los términos de búsqueda', () => {
     getMock.mockImplementation(() => new Promise(() => {}));
 
-    FUNService.getSummaryByIdPublic('68001-1-25-0233', { skipDovelaErrorCapture: true });
+    FUNService.getSummaryByIdPublic('68001-1-25-0233', { skipErrorLog: true });
     FUNService.getSearch('4', 'Calle 12 # 34/56 & local');
 
     expect(getMock).toHaveBeenCalledWith(
       '/fun/get/summary/68001-1-25-0233',
-      { skipDovelaErrorCapture: true },
+      { skipErrorLog: true },
     );
     expect(getMock).toHaveBeenCalledWith('/fun/getsearch/4&Calle%2012%20%23%2034%2F56%20%26%20local');
   });

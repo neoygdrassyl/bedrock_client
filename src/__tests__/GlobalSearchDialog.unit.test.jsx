@@ -73,8 +73,8 @@ describe('GlobalSearchDialog', () => {
     await user.click(screen.getByRole('button', { name: /^buscar$/i }));
 
     expect(getSearchMock).toHaveBeenCalledWith('1', '68001-1-26-0001');
-    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipDovelaErrorCapture: true });
-    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipDovelaErrorCapture: true });
+    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipErrorLog: true });
+    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipErrorLog: true });
 
     const radicado = await screen.findByText('68001-1-26-0001');
     expect(radicado.closest('a')).toHaveAttribute('href', '/funmanage/expediente/68001-1-26-0001');

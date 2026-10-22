@@ -1,5 +1,5 @@
 import http from "../../../shared/api/http-common";
-import { captureDovelaHttpError } from "../../../shared/utils/errorReporting";
+import { logHttpError } from "../../../shared/observability/logger";
 import { requestProtectedBlob } from "../../../shared/utils/pdfDownload";
 
 /**
@@ -13,11 +13,11 @@ import { requestProtectedBlob } from "../../../shared/utils/pdfDownload";
  */
 
 const route = "online-radications";
-// Contract outcomes (validation, conflicts, inbox not migrated) are shown inline, so the global
-// error reporter is skipped for every request and only unexpected failures are reported here.
-const NO_AUTO_CAPTURE = { skipDovelaErrorCapture: true };
+// Contract outcomes (validation, conflicts, inbox not migrated) are shown inline, so the HTTP
+// client's error log is skipped for every request and only unexpected failures are logged here.
+const NO_AUTO_LOG = { skipErrorLog: true };
 // The shared client defaults to multipart; these commands are JSON contracts.
-const JSON_BODY = { ...NO_AUTO_CAPTURE, headers: { "Content-Type": "application/json" } };
+const JSON_BODY = { ...NO_AUTO_LOG, headers: { "Content-Type": "application/json" } };
 
 export const ONLINE_RADICATION_STATUSES = ["pending", "radicated", "rejected"];
 /** List filter for requests with `update` document entries waiting to be received. */
@@ -92,7 +92,7 @@ async function request(promise, isValid, { background = false } = {}) {
   } catch (error) {
     if (isRequestCanceled(error)) throw error;
     const failure = toOnlineRadicationError(error);
-    if (!background && !EXPECTED_CODES.has(failure.code)) captureDovelaHttpError(error);
+    if (!background && !EXPECTED_CODES.has(failure.code)) logHttpError(error);
     throw failure;
   }
   const data = response?.data;
@@ -149,7 +149,7 @@ class OnlineRadicationService {
     const params = { status, page, pageSize };
     const query = String(q ?? "").trim();
     if (query) params.q = query;
-    return request(http.get(`/${route}`, { ...NO_AUTO_CAPTURE, params, signal }), (data) => Array.isArray(data.items)).then((data) => ({
+    return request(http.get(`/${route}`, { ...NO_AUTO_LOG, params, signal }), (data) => Array.isArray(data.items)).then((data) => ({
       items: data.items,
       total: toCount(data.total),
       page: Number(data.page) || page,
@@ -161,14 +161,14 @@ class OnlineRadicationService {
   /** `{ pending, radicated, rejected, pendingEntries, all }`. `background` skips error telemetry for silent refreshes. */
   counts({ signal, background = false } = {}) {
     return request(
-      http.get(`/${route}/counts`, { ...NO_AUTO_CAPTURE, signal }),
+      http.get(`/${route}/counts`, { ...NO_AUTO_LOG, signal }),
       (data) => Boolean(data.counts) && typeof data.counts === "object",
       { background },
     ).then((data) => normalizeCounts(data.counts));
   }
 
   async get(id, { signal } = {}) {
-    return request(http.get(`/${route}/${requestId(id)}`, { ...NO_AUTO_CAPTURE, signal }), hasItem).then((data) => data.item);
+    return request(http.get(`/${route}/${requestId(id)}`, { ...NO_AUTO_LOG, signal }), hasItem).then((data) => data.item);
   }
 
   /** Creates the FUN 0 and its VR in one transaction. `date` is YYYY-MM-DD (today when omitted). */
@@ -209,14 +209,14 @@ class OnlineRadicationService {
     const path = getEntryFileUrl(id, entryId, index);
     let response;
     try {
-      response = await requestProtectedBlob(path, { ...NO_AUTO_CAPTURE, signal });
+      response = await requestProtectedBlob(path, { ...NO_AUTO_LOG, signal });
     } catch (error) {
       if (isRequestCanceled(error)) throw error;
       const status = error?.response?.status ?? null;
       const envelope = error?.response?.data?.error;
       if (envelope?.code) throw toOnlineRadicationError(error);
       if (status === 404) throw new OnlineRadicationError(MESSAGES.fileMissing, { status, code: "DOCUMENT_ENTRY_NOT_FOUND", cause: error });
-      if (status !== 403 && status !== 401) captureDovelaHttpError(error);
+      if (status !== 403 && status !== 401) logHttpError(error);
       throw new OnlineRadicationError(error?.response ? MESSAGES.fileFailed : MESSAGES.network, { status, code: "FILE_UNAVAILABLE", cause: error });
     }
     const contentType = String(response.headers?.["content-type"] || response.data?.type || "application/octet-stream").split(";")[0].trim();

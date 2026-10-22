@@ -28,7 +28,7 @@ it('deduplicates the authenticated calendar bootstrap request', async () => {
   expect(getMock).toHaveBeenCalledTimes(1);
   expect(getMock).toHaveBeenCalledWith(
     '/business-calendar/bootstrap?startYear=2021&endYear=2027',
-    { timeout: 10000, skipDovelaErrorCapture: true },
+    { timeout: 10000, skipErrorLog: true },
   );
   resolveRequest({ data: { years: [], customDays: [] } });
   await expect(Promise.all([first, second])).resolves.toHaveLength(2);
@@ -48,8 +48,8 @@ it('keeps all expected legacy 404 fallbacks out of global error capture', async 
 
   expect(response.data.years[0].holidays[0].date).toBe('2026-07-20');
   expect(response.data.customDays).toEqual([]);
-  expect(getMock.mock.calls[1][1]).toEqual({ timeout: 10000, skipDovelaErrorCapture: true });
-  expect(getMock.mock.calls[2][1]).toEqual({ timeout: 10000, skipDovelaErrorCapture: true });
+  expect(getMock.mock.calls[1][1]).toEqual({ timeout: 10000, skipErrorLog: true });
+  expect(getMock.mock.calls[2][1]).toEqual({ timeout: 10000, skipErrorLog: true });
 });
 
 it('rejects the legacy bootstrap when an official year fails unexpectedly', async () => {
