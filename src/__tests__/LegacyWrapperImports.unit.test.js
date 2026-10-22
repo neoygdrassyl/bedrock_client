@@ -3,8 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 const filesWithLegacyItemImport = [
   'src/app/pages/user/profesionals/profesionals.page.jsx',
-  'src/app/pages/user/profesionals/email.page.jsx',
-  'src/app/pages/user/profesionals/public.page.jsx',
   'src/app/pages/user/guide_user/guide_user.page.jsx',
   'src/app/pages/user/dev_guide/dev_guide.page.jsx',
   'src/app/pages/user/norms/norms.page.jsx',

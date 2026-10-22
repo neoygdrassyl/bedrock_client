@@ -23,10 +23,6 @@ class ProfesionalsService {
     return http.get(`/${route}/other/${id}&${reg}`);
   }
 
-  sentEmail(email) {
-    return http.get(`/${route}/email/${email}`);
-  }
-
   create(data) {
     return http.post(`/${route}`, data, { headers: headers() });
   }
@@ -37,10 +33,6 @@ class ProfesionalsService {
 
   update(id, data) {
     return http.put(`/${route}/${id}`, data, { headers:  headers() });
-  }
-  
-  updatePublic(data) {
-    return http.post(`/${route}/other/updatepublic`, data, { headers:  headers() });
   }
 
   delete(id) {

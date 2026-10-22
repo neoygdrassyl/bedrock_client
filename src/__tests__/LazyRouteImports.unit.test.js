@@ -7,14 +7,6 @@ const lazyRouteModules = [
     load: () => import('@/app/pages/user/profesionals/profesionals.page'),
   },
   {
-    name: 'profesionals email page',
-    load: () => import('@/app/pages/user/profesionals/email.page'),
-  },
-  {
-    name: 'profesionals public page',
-    load: () => import('@/app/pages/user/profesionals/public.page'),
-  },
-  {
     name: 'guide user page',
     load: () => import('@/app/pages/user/guide_user/guide_user.page'),
   },

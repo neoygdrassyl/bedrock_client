@@ -14,7 +14,7 @@ import './styles/legacy-bridge.css';
 import './styles/swal-theme.css';
 
 // Router: auth context, guards and the route table (imported after the CSS above
-// so the stylesheet order of the pages they pull in, e.g. home.css, is unchanged).
+// so the stylesheet order of the modules they pull in is unchanged).
 import { ProvideAuth } from './router/auth';
 import { RoutesWithBoundary } from './router/RouteErrorBoundary';
 import AppRoutes from './router/routes';

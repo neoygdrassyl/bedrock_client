@@ -74,24 +74,6 @@ class CustomlDataService {
     return http.get(`/repository/list`);
   }
 
-  checkStatus_Jur(id) {
-    return http.get(`/checkstatus/jur/${id}`);
-  }
-
-  checkStatus_Nr(id) {
-    return http.get(`/checkstatus/nr/${id}`);
-  }
-
-  checkStatus_Lc(id) {
-    return http.get(`/checkstatus/lc/${id}`);
-  }
-  checkStatus_In(id) {
-    return http.get(`/checkstatus/in/${id}`);
-  }
-  checkStatus_vr(id) {
-    return http.get(`/checkstatus/vr/${id}`);
-  }
-
   loadDictionary_vr() {
     return http.get(`/consult/consult_vrDictionary`);
   }

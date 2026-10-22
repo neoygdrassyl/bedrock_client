@@ -66,18 +66,6 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-vi.mock('react-google-recaptcha', () => {
-  const React = require('react');
-  const ReCAPTCHA = ({ ref, ...props }) => {
-    React.useImperativeHandle(ref, () => ({
-      execute: () => Promise.resolve('mock-token'),
-      reset: vi.fn(),
-    }));
-    return <div data-testid="recaptcha-mock" />;
-  };
-  return { default: ReCAPTCHA };
-});
-
 const mockPost = vi.fn();
 const mockGet = vi.fn();
 vi.mock('../http-common', () => ({

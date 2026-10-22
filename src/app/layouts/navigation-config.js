@@ -186,16 +186,3 @@ export function getRouteRedirects() {
     '/seals': '/sellos',
   };
 }
-
-/**
- * Utility modules shown on dashboard but not in icon rail.
- * These are accessible via dashboard cards and the command palette.
- */
-export const UTILITY_MODULES = [
-  { id: 'documentos', label: 'Documentos', icon: 'FileText', route: '/documentos' },
-  { id: 'calculadora', label: 'Calculadora', icon: 'Calculator', route: '/calculadora' },
-  { id: 'consecutivos', label: 'Consecutivos', icon: 'Book', route: '/consecutivos' },
-  { id: 'ayuda', label: 'Ayuda', icon: 'BookOpen', route: '/ayuda' },
-  { id: 'profesionales', label: 'Profesionales', icon: 'HardHat', route: '/profesionales' },
-  { id: 'certificados', label: 'Certificados', icon: 'Contact', route: '/certificados' },
-];

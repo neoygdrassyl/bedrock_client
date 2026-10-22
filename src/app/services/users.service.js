@@ -12,10 +12,6 @@ class UserslDataService {
   }
 
 
-  getCertificate(id, pass) {
-    return http.get(`/${route}/get/certificate/${id}&${pass}`);
-  }
-
   getCertificateData(id) {
     return http.get(`/${route}/get/certificate_data/${id}`);
   }

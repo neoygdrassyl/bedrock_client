@@ -10,15 +10,7 @@ describe('Módulo Profesionales — Smoke', () => {
     await expect(import('../app/pages/user/profesionals/profesionals.page')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
-  test('email.page.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/profesionals/email.page')).resolves.toBeTruthy();
-  }, IMPORT_TIMEOUT);
-
   test('manage.component.js se importa sin error', async () => {
     await expect(import('../app/pages/user/profesionals/manage.component')).resolves.toBeTruthy();
-  }, IMPORT_TIMEOUT);
-
-  test('public.page.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/profesionals/public.page')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

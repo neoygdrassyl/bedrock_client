@@ -22,19 +22,6 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// ─── react-google-recaptcha ─────────────────────────────────────────────────
-
-vi.mock('react-google-recaptcha', () => {
-  const ReCAPTCHA = ({ ref, ...props }) => {
-    React.useImperativeHandle(ref, () => ({
-      execute: () => Promise.resolve('mock-token'),
-      reset: vi.fn(),
-    }));
-    return React.createElement('div', { 'data-testid': 'recaptcha-mock' });
-  };
-  return { default: ReCAPTCHA };
-});
-
 // ─── http-common (Axios instance) ───────────────────────────────────────────
 
 vi.mock('../../http-common', () => ({

@@ -66,18 +66,6 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-vi.mock('react-google-recaptcha', () => {
-  const React = require('react');
-  const ReCAPTCHA = ({ ref, ...props }) => {
-    React.useImperativeHandle(ref, () => ({
-      execute: () => Promise.resolve('mock-token'),
-      reset: vi.fn(),
-    }));
-    return <div data-testid="recaptcha-mock" />;
-  };
-  return { default: ReCAPTCHA };
-});
-
 vi.mock('../http-common', () => ({
   __esModule: true,
   default: {
@@ -119,7 +107,6 @@ describe('Navegación — Post-redesign routes', () => {
   // Public routes that render without auth (no AppShell wrapper)
   const publicRoutes = [
     { path: '/', name: 'raíz → /login' },
-    { path: '/home', name: '/home → /login' },
     { path: '/login', name: '/login' },
     { path: '/normas', name: '/normas (public)' },
     { path: '/certificados', name: '/certificados (public)' },
@@ -171,6 +158,8 @@ describe('Navegación — Post-redesign routes', () => {
     '/ventanilla', '/mensajes', '/calendario', '/archivo',
     '/publicaciones', '/nomenclatura', '/documentos', '/calculadora',
     '/consecutivos', '/profesionales', '/ayuda', '/sellos',
+    // The removed /home copy of the citizen website falls through to login.
+    '/home',
   ];
 
   privateRoutes.forEach((path) => {
