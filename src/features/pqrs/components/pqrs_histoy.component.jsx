@@ -25,7 +25,7 @@ export const HISTORY_PQRS_INFO = (props) => {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente.", symptom: true, error: e });
             });
     }, [validation_1, validation_2])
     useEffect(() => {

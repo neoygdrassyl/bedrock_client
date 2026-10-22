@@ -45,6 +45,8 @@ function FUN_CHECKLIST_N({ currentItem, currentVersion, readOnly, requestUpdate,
             swalError({
                 title: swaMsg?.generic_eror_title || 'Error',
                 text: 'No fue posible cargar la lista de chequeo inteligente.',
+                symptom: true,
+                error,
             });
         } finally {
             setLoading(false);

@@ -235,7 +235,7 @@ export default function FUN_ASIGNS_HISTORY_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, symptom: true, error: e });
             })
             .finally(() => setLoad(1));
 

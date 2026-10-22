@@ -43,28 +43,45 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [inventoryExpanded, setInventoryExpanded] = useState(false);
+    const [recordLoadFailed, setRecordLoadFailed] = useState(false);
 
     const setItem_RecordArc = useCallback((id) => {
         RECORD_ARCSERVICE.getRecord(id || currentId)
             .then(response => {
-                let record_arc = response.data.record_arc
-                record_arc.record_arc_steps = response.data.record_arc_steps;
-                record_arc.record_arc_33_areas = response.data.record_arc_33_areas;
-                record_arc.record_arc_34_ks = response.data.record_arc_34_ks;
-                record_arc.record_arc_34_gens = response.data.record_arc_34_gens;
-                record_arc.record_arc_35_parkings = response.data.record_arc_35_parkings;
-                record_arc.record_arc_36_infos = response.data.record_arc_36_infos;
-                record_arc.record_arc_37s = response.data.record_arc_37s;
-                record_arc.record_arc_35_locations = response.data.record_arc_35_locations;
-                record_arc.record_arc_38s = response.data.record_arc_38s;
-                
+                const data = response?.data || {};
+                const record_arc = data.record_arc;
+                setRecordLoadFailed(false);
+
+                // An expediente without an architectural report yet: show the
+                // "create report" state, as record_law and record_eng do.
+                if (!record_arc) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                    return;
+                }
+
+                record_arc.record_arc_steps = data.record_arc_steps;
+                record_arc.record_arc_33_areas = data.record_arc_33_areas;
+                record_arc.record_arc_34_ks = data.record_arc_34_ks;
+                record_arc.record_arc_34_gens = data.record_arc_34_gens;
+                record_arc.record_arc_35_parkings = data.record_arc_35_parkings;
+                record_arc.record_arc_36_infos = data.record_arc_36_infos;
+                record_arc.record_arc_37s = data.record_arc_37s;
+                record_arc.record_arc_35_locations = data.record_arc_35_locations;
+                record_arc.record_arc_38s = data.record_arc_38s;
+
                 setCurrentRecord(record_arc);
                 setCurrentVersionR(record_arc.version);
                 setLoaded(true);
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                // The request failed: do not offer to create a report that may
+                // already exist; show an inline retry instead.
+                setRecordLoadFailed(true);
+                setLoaded(true);
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', symptom: true, error: e });
             });
     }, [currentId, swaMsg]);
 
@@ -569,9 +586,16 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                             </> : <>
 
                                 <fieldset className="p-3">
-                                    <div className="text-center">
-                                        <Button size="sm" onClick={() => new_record_arc()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
-                                    </div>
+                                    {recordLoadFailed ? (
+                                        <div className="text-center" role="alert">
+                                            <p className="text-sm text-muted-foreground">No fue posible cargar el informe arquitectónico.</p>
+                                            <Button size="sm" variant="outline" onClick={() => setItem_RecordArc()}><Icon name="RefreshCw" size={14} /> Reintentar</Button>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center">
+                                            <Button size="sm" onClick={() => new_record_arc()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
+                                        </div>
+                                    )}
                                 </fieldset>
 
                             </>}

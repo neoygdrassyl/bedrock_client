@@ -127,7 +127,7 @@ function FunDocumentManagementModal({
         } catch (error) {
             console.log(error);
             setHistoryRows([]);
-            swalError({ title: 'ERROR AL CARGAR', text: 'No fue posible consultar el histórico del documento.' });
+            swalError({ title: 'ERROR AL CARGAR', text: 'No fue posible consultar el histórico del documento.', symptom: true, error });
         } finally {
             setHistoryLoaded(true);
         }

@@ -155,7 +155,7 @@ export default function FUN_DAILY_COMPONENT(props) {
                 .catch(e => {
                     if (cancelled) return;
                     console.log(e);
-                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
+                    swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente.", symptom: true, error: e });
                 });
             return () => { cancelled = true; };
         }

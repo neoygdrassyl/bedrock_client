@@ -345,6 +345,35 @@ describe('RECORDS — Integración inicial LAW/ARC/ENG', () => {
     logSpy.mockRestore();
   });
 
+  it('ARC: un expediente sin record_arc no lanza el error genérico', async () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    hoisted.arcService.getRecord.mockResolvedValueOnce({ data: {} });
+    hoisted.funService.get.mockResolvedValue({ data: loadedFunItem });
+
+    renderInRouter(RECORD_ARC);
+
+    expect(await screen.findByRole('button', { name: /GENERAR INFORME EN BLANCO/i })).toBeInTheDocument();
+    expect(hoisted.swalFire).not.toHaveBeenCalled();
+    expect(logSpy).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it('ARC: un fallo real al cargar el informe muestra reintentar, no el modal ni el botón de crear', async () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    hoisted.arcService.getRecord.mockRejectedValueOnce(new Error('network down'));
+    hoisted.funService.get.mockResolvedValue({ data: loadedFunItem });
+
+    renderInRouter(RECORD_ARC);
+
+    expect(await screen.findByRole('button', { name: /Reintentar/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /GENERAR INFORME EN BLANCO/i })).not.toBeInTheDocument();
+    expect(hoisted.swalFire).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: /Reintentar/i }));
+    expect(await screen.findByTestId('arc-32')).toBeInTheDocument();
+    logSpy.mockRestore();
+  });
+
   it('ARC: sin informe existente permite generar informe en blanco', async () => {
     // Arrange
     hoisted.arcService.getRecord.mockResolvedValue({
@@ -369,6 +398,7 @@ describe('RECORDS — Integración inicial LAW/ARC/ENG', () => {
     // Assert precondición
     const createBtn = await screen.findByRole('button', { name: /GENERAR INFORME EN BLANCO/i });
     expect(createBtn).toBeInTheDocument();
+    expect(hoisted.swalFire).not.toHaveBeenCalledWith(expect.objectContaining({ icon: 'warning' }));
 
     // Act
     fireEvent.click(createBtn);
