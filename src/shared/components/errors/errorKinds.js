@@ -22,16 +22,27 @@ export function isChunkLoadError(error) {
   return CHUNK_ERROR_PATTERN.test(text);
 }
 
+/** True when a response carries the request id that every Dovela backend response sets. */
+function isFromDovelaBackend(response) {
+  const headers = response?.headers;
+  if (!headers) return false;
+  const value = typeof headers.get === 'function' ? headers.get('x-dovela-request-id') : headers['x-dovela-request-id'];
+  return Boolean(value);
+}
+
 /**
  * True when the backend could not be reached: an axios error without a response
- * (connection refused, DNS, CORS, offline) or a 502/503/504 from the proxy. A
- * timeout is excluded: the server answered nothing in time but may be up.
+ * (connection refused, DNS, CORS, offline), a 502/503/504 from the proxy, or any
+ * 5xx that did not come from Dovela itself. The backend's first middleware sets
+ * X-Dovela-Request-Id on every response, so a 5xx without it was produced by a
+ * proxy or gateway (e.g. Vite's dev proxy answers an empty 500 when the backend
+ * is down). A timeout is excluded: the server answered nothing in time but may be up.
  */
 export function isServerUnreachable(error) {
   if (!error || typeof error !== 'object') return false;
   if (error.code === 'ERR_CANCELED' || error.__CANCEL__) return false;
   const status = error.response?.status;
-  if (status) return UNAVAILABLE_STATUSES.has(status);
+  if (status) return UNAVAILABLE_STATUSES.has(status) || (status >= 500 && !isFromDovelaBackend(error.response));
   if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') return false;
   return Boolean(error.isAxiosError || error.request || error.code === 'ERR_NETWORK');
 }

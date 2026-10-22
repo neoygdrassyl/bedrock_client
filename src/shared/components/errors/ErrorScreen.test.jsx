@@ -121,7 +121,14 @@ describe('error kind classification', () => {
     expect(isServerUnreachable({ isAxiosError: true, code: 'ERR_NETWORK', request: {} })).toBe(true);
     expect(isServerUnreachable({ isAxiosError: true, response: { status: 503 } })).toBe(true);
     expect(isServerUnreachable({ isAxiosError: true, response: { status: 502 } })).toBe(true);
-    expect(isServerUnreachable({ isAxiosError: true, response: { status: 500 } })).toBe(false);
+    // A 5xx produced by Dovela carries its request id: a real server error, not an outage.
+    expect(isServerUnreachable({ isAxiosError: true, response: { status: 500, headers: { 'x-dovela-request-id': 'req_abc_12345678' } } })).toBe(false);
+    expect(isServerUnreachable({ isAxiosError: true, response: { status: 500, headers: { get: (name) => (name === 'x-dovela-request-id' ? 'req_abc_12345678' : null) } } })).toBe(false);
+    // A 5xx without it came from a proxy or gateway (Vite's dev proxy answers an empty 500 when the backend is down).
+    expect(isServerUnreachable({ isAxiosError: true, response: { status: 500, headers: {} } })).toBe(true);
+    expect(isServerUnreachable({ isAxiosError: true, response: { status: 500 } })).toBe(true);
+    // Client errors are never an outage.
+    expect(isServerUnreachable({ isAxiosError: true, response: { status: 404, headers: {} } })).toBe(false);
     expect(isServerUnreachable({ isAxiosError: true, code: 'ECONNABORTED', request: {} })).toBe(false);
     expect(isServerUnreachable({ code: 'ERR_CANCELED' })).toBe(false);
   });
