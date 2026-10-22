@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bug, Check, Database, FileText, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Check, Database, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../shared/api/data.service.js';
-import ErrorReportsPanel from './ErrorReportsPanel.jsx';
 import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
 import IntegrationsPanel from './IntegrationsPanel.jsx';
-import { isDeveloperUser, isErrorReportManagerUser, isIntegrationManagerUser } from './developerAccess.js';
+import { isIntegrationManagerUser } from './developerAccess.js';
 import {
   DASHBOARD_DENSITY_OPTIONS,
   DASHBOARD_LAYOUT_OPTIONS,
@@ -34,16 +33,12 @@ const NAV_ITEMS = [
     label: 'Cuenta',
     icon: UserCircle2,
   },
-  {
-    key: 'misReportes',
-    label: 'Mis reportes',
-    icon: FileText,
-  },
 ];
 
+// `misReportes`/`errorReports` belonged to the retired in-app error reporting.
 const RETIRED_SETTINGS_TABS = new Set([
   'alarmas', 'catalogo-documental', 'configuracion-actuaciones', 'requisitos-documentales',
-  'revision-documentos',
+  'revision-documentos', 'misReportes', 'errorReports',
 ]);
 
 function formatLastLogin(value) {
@@ -59,18 +54,11 @@ function formatLastLogin(value) {
 export default function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const user = DataService.getUserData();
-  const canSeeTechnicalReports = isDeveloperUser(user);
-  const canManageErrorReports = isErrorReportManagerUser(user) || canSeeTechnicalReports;
   // Same roles the backend accepts for /api/integration-settings (ADM, CUR, developers).
   const canManageIntegrations = isIntegrationManagerUser(user);
   const navItems = [
     ...NAV_ITEMS,
     ...(canManageIntegrations ? [{ key: 'integraciones', label: 'Integraciones', icon: PlugZap }] : []),
-    ...(canManageErrorReports ? [{
-      key: 'errorReports',
-      label: canSeeTechnicalReports ? 'Reportes técnicos' : 'Gestión de reportes',
-      icon: Bug,
-    }] : []),
   ];
   const requestedTab = searchParams.get('tab') || 'configuracion-documental';
   const activeKey = navItems.some((item) => item.key === requestedTab)
@@ -130,10 +118,6 @@ export default function SettingsPage() {
           {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
           {activeKey === 'integraciones' && canManageIntegrations && <IntegrationsPanel />}
-          {activeKey === 'misReportes' && <ErrorReportsPanel mode="mine" />}
-          {activeKey === 'errorReports' && canManageErrorReports && (
-            <ErrorReportsPanel mode={canSeeTechnicalReports ? 'technical' : 'management'} />
-          )}
           {activeKey === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
           )}

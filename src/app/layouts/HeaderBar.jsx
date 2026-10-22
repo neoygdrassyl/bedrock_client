@@ -11,10 +11,9 @@ import {
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { Separator } from '@/shared/ui/separator';
 import { useTheme } from '@/shared/components/theme-provider';
-import { Sun, Moon, LogOut, Search, CalendarDays, ChevronRight, FileText, UserCircle2, AlertTriangle } from 'lucide-react';
+import { Sun, Moon, LogOut, Search, CalendarDays, ChevronRight, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/shared/components/icon';
 import { SidebarTrigger, useSidebar } from '@/shared/ui/sidebar';
-import { requestDovelaErrorReport } from '@/shared/utils/errorReporting';
 import { cn } from '@/shared/lib/utils';
 import ChatLauncher from '../../features/messaging/chat/ChatLauncher';
 import { RUNTIME_FEATURES } from '../../shared/config/runtime-features';
@@ -216,19 +215,6 @@ export function HeaderBar({ user, onLogout }) {
               <UserCircle2 className="h-4 w-4 mr-2" />
               Mi perfil
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="min-h-11 sm:min-h-8">
-            <Link to="/configuracion?tab=misReportes">
-              <FileText className="h-4 w-4 mr-2" />
-              Mis reportes
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => requestDovelaErrorReport({ reportSource: 'header-user-menu' })}
-            className="min-h-11 sm:min-h-8"
-          >
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            Reportar error
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onLogout} className="min-h-11 text-destructive sm:min-h-8">

@@ -7,7 +7,6 @@ vi.mock('../../shared/api/data.service.js', () => ({ default: { getUserData: () 
 vi.mock('./document_requirements/CentralConfigurationPanel.jsx', () => ({
   default: () => <div data-testid="central-configuration-panel" />,
 }));
-vi.mock('./ErrorReportsPanel.jsx', () => ({ default: () => <div /> }));
 import SettingsPage from './SettingsPage.jsx';
 
 describe('SettingsPage navigation', () => {
@@ -34,6 +33,8 @@ describe('SettingsPage navigation', () => {
     'requisitos-documentales',
     'catalogo-documental',
     'alarmas',
+    'misReportes',
+    'errorReports',
   ])('maps the retired %s link to the document configuration view', (tab) => {
     render(<MemoryRouter initialEntries={[`/?tab=${tab}`]}><SettingsPage /></MemoryRouter>);
     expect(screen.getByRole('button', { name: 'Configuración documental' })).toHaveAttribute('aria-current', 'page');
