@@ -21,7 +21,7 @@ class BusinessCalendarService {
     try {
       return await http.get(
         `/business-calendar/bootstrap?startYear=${encodeURIComponent(startYear)}&endYear=${encodeURIComponent(endYear)}`,
-        { timeout: REQUEST_TIMEOUT_MS, skipDovelaErrorCapture: true },
+        { timeout: REQUEST_TIMEOUT_MS, skipErrorLog: true },
       );
     } catch (error) {
       if (error?.response?.status !== 404) throw error;
@@ -31,7 +31,7 @@ class BusinessCalendarService {
 
   async getLegacyBootstrap(startYear, endYear) {
     const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
-    const silentConfig = { skipDovelaErrorCapture: true };
+    const silentConfig = { skipErrorLog: true };
     const [officialResults, customResponses] = await Promise.all([
       Promise.allSettled(years.map(year => this.getYear(year, silentConfig))),
       Promise.all(years.map(year => this.getCustomYear(year, silentConfig))),

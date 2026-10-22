@@ -34,7 +34,7 @@ describe('CustomsDataService appLoginCompatible', () => {
     expect(mockPost).toHaveBeenCalledWith(
       '/login',
       expect.any(FormData),
-      expect.objectContaining({ skipDovelaErrorCapture: true })
+      expect.objectContaining({ skipErrorLog: true })
     );
 
     const payload = formDataToObject(mockPost.mock.calls[0][1]);

@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { captureDovelaError } from '../../shared/utils/errorReporting';
+import { logError } from '../../shared/observability/logger';
 
 class RouteErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorSnapshot: null };
+    this.state = { hasError: false, error: null, eventId: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -15,18 +15,13 @@ class RouteErrorBoundary extends React.Component {
   componentDidUpdate(prevProps) {
     // Reset error when user navigates away from the broken route
     if (this.props.pathname !== prevProps.pathname && this.state.hasError) {
-      this.setState({ hasError: false, error: null, errorSnapshot: null });
+      this.setState({ hasError: false, error: null, eventId: null });
     }
   }
 
   componentDidCatch(error, info) {
-    const errorSnapshot = captureDovelaError(error, {
-      source: 'route-error-boundary',
-      componentStack: info?.componentStack,
-      notify: false,
-    });
-    this.setState({ errorSnapshot });
-    console.error('Route subtree error captured:', error, info);
+    const eventId = logError('ui_crash', error, { componentStack: info?.componentStack });
+    this.setState({ eventId });
   }
 
   render() {

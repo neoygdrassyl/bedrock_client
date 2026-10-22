@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BusinessCalendarService from '@/features/business-calendar/api/business-calendar.service';
 import { replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays } from '@/shared/utils/BusinessDaysCol';
-import { captureDovelaHttpError } from '@/shared/utils/errorReporting';
+import { logHttpError } from '@/shared/observability/logger';
 
 const FIRST_DYNAMIC_YEAR = 2021;
 const FUTURE_YEAR_COUNT = 1;
@@ -32,7 +32,7 @@ export default function BusinessCalendarBootstrap({ children }) {
       })
       .catch((error) => {
         if (!active) return;
-        captureDovelaHttpError(error);
+        logHttpError(error);
         setFailed(true);
         setReady(true);
       });

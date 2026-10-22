@@ -309,7 +309,7 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
 
     const lookups = [FUNService.getSearch(searchField, term)];
     if (searchField === '1' && isCompletePublicId(term)) {
-      lookups.push(FUNService.get_fun_IdPublic(term, { skipDovelaErrorCapture: true }));
+      lookups.push(FUNService.get_fun_IdPublic(term, { skipErrorLog: true }));
     }
 
     const settledLookups = await Promise.allSettled(lookups);
@@ -322,7 +322,7 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
     const summaryLookups = await Promise.allSettled(
       uniqueCandidates.map((candidate) => FUNService.getSummaryByIdPublic(
         pickPublicId(candidate, term),
-        { skipDovelaErrorCapture: true },
+        { skipErrorLog: true },
       ))
     );
 

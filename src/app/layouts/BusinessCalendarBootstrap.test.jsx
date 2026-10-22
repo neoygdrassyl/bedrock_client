@@ -5,7 +5,7 @@ import BusinessCalendarBootstrap from './BusinessCalendarBootstrap';
 const getBootstrapMock = vi.fn();
 const replaceMock = vi.fn();
 const replaceCustomMock = vi.fn();
-const captureHttpErrorMock = vi.fn();
+const logHttpErrorMock = vi.fn();
 
 vi.mock('@/features/business-calendar/api/business-calendar.service', () => ({
   default: {
@@ -18,15 +18,15 @@ vi.mock('@/shared/utils/BusinessDaysCol', () => ({
   replaceBusinessCalendarCustomDays: (...args) => replaceCustomMock(...args),
 }));
 
-vi.mock('@/shared/utils/errorReporting', () => ({
-  captureDovelaHttpError: (...args) => captureHttpErrorMock(...args),
+vi.mock('@/shared/observability/logger', () => ({
+  logHttpError: (...args) => logHttpErrorMock(...args),
 }));
 
 beforeEach(() => {
   getBootstrapMock.mockReset();
   replaceMock.mockReset();
   replaceCustomMock.mockReset();
-  captureHttpErrorMock.mockReset();
+  logHttpErrorMock.mockReset();
 });
 
 it('hydrates every supported fallback year through the canonical API', async () => {
@@ -60,8 +60,8 @@ it.each([
 
   expect(await screen.findByRole('alert')).toHaveTextContent('El calendario laboral no pudo actualizarse.');
   expect(screen.getByText('Private content')).toBeInTheDocument();
-  expect(captureHttpErrorMock).toHaveBeenCalledOnce();
-  expect(captureHttpErrorMock).toHaveBeenCalledWith(error);
+  expect(logHttpErrorMock).toHaveBeenCalledOnce();
+  expect(logHttpErrorMock).toHaveBeenCalledWith(error);
   expect(replaceMock).not.toHaveBeenCalled();
   expect(replaceCustomMock).not.toHaveBeenCalled();
 });

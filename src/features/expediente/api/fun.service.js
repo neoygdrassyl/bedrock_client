@@ -85,16 +85,16 @@ class UserslDataService {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
   get_fun_IdPublic(id_public, config) {
-    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
-    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}:${captureMode}`, () => (
+    const logMode = config?.skipErrorLog ? 'silent' : 'default';
+    return dedupeGet(`${route}:get_fun_IdPublic:${id_public}:${logMode}`, () => (
       config
         ? http.get(`/${route}/get/idpublic/${id_public}`, config)
         : http.get(`/${route}/get/idpublic/${id_public}`)
     ));
   }
   getSummaryByIdPublic(id_public, config) {
-    const captureMode = config?.skipDovelaErrorCapture ? 'silent' : 'default';
-    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}:${captureMode}`, () => (
+    const logMode = config?.skipErrorLog ? 'silent' : 'default';
+    return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}:${logMode}`, () => (
       config
         ? http.get(`/${route}/get/summary/${id_public}`, config)
         : http.get(`/${route}/get/summary/${id_public}`)

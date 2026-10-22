@@ -38,7 +38,7 @@ class CustomlDataService {
     });
 
     try {
-      const response = await this.appLogin(plainPayload, { skipDovelaErrorCapture: true, timeout: 15000 });
+      const response = await this.appLogin(plainPayload, { skipErrorLog: true, timeout: 15000 });
       if (this.isRecognizedLoginResponse(response.data)) {
         return response;
       }
