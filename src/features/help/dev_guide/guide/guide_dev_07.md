@@ -38,7 +38,7 @@ flowchart TB
 
 ### Ejemplo: Crear Página de Reportes
 
-**1. Crear el componente** (`src/app/pages/reports/reports.page.js`):
+**1. Crear el componente** (`src/features/reports/reports.page.jsx`):
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -46,7 +46,7 @@ import { useTranslation } from 'react-i18next';
 import { MDBContainer, MDBCard, MDBCardBody } from 'mdb-react-ui-kit';
 
 // Importar servicio
-import ReportsDataService from '../../services/reports.service';
+import ReportsDataService from './api/reports.service';
 
 const ReportsPage = () => {
     const { t } = useTranslation();
@@ -88,25 +88,20 @@ const ReportsPage = () => {
 export default ReportsPage;
 ```
 
-**2. Agregar ruta en App.js**:
+**2. Agregar ruta en `src/app/router/routes.jsx`**:
 
 ```jsx
-// Importar componente
-import ReportsPage from './pages/reports/reports.page';
+// Importar componente (code-split)
+const REPORTS = lazy(() => import('../../features/reports/reports.page'));
 
-// En el Switch, agregar:
-<PrivateRoute path='/reports'>
-    <NavbarWithAuth />
-    <ReportsPage />
-</PrivateRoute>
+// Dentro de <Route element={<PrivateLayout />}>, agregar:
+<Route path="/reportes" element={<REPORTS />} />
 ```
 
-**3. Agregar al navbar** (`components/navbar.js`):
+**3. Agregar al menú** (`src/app/layouts/navigation-config.js`):
 
-```jsx
-<MDBNavbarLink href='/reports'>
-    {t('navbar.reports')}
-</MDBNavbarLink>
+```js
+{ id: 'reportes', label: 'Reportes', icon: 'FileText', route: '/reportes' }
 ```
 
 ---
@@ -137,10 +132,10 @@ flowchart LR
 
 ### Plantilla de Servicio
 
-Crear archivo en `src/app/services/nuevo.service.js`:
+Crear archivo en `src/features/<feature>/api/nuevo.service.js`:
 
 ```javascript
-import http from "../../http-common";
+import http from "@/shared/api/http-common";
 
 class NuevoDataService {
     /**
@@ -218,7 +213,7 @@ export default new NuevoDataService();
 ### Uso en Componentes
 
 ```javascript
-import NuevoDataService from '../../services/nuevo.service';
+import NuevoDataService from './api/nuevo.service';
 
 // En componente
 const [data, setData] = useState([]);

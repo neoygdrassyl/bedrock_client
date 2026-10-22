@@ -5,7 +5,7 @@ Capa local de componentes parametrizados para normalizar la interfaz de Dovela s
 ## Decisión actual
 
 - `src/shared/ui/*` conserva los primitives shadcn/ui.
-- `src/components/dovela-ui/*` expone los componentes de producto que deben consumir los módulos.
+- `src/shared/dovela-ui/*` expone los componentes de producto que deben consumir los módulos.
 - `src/index.css` define tokens globales y tokens de componente (`--button-*`, `--card-*`, `--alert-*`, etc.).
 - Cada vista mantiene CSS local solo para layout específico del módulo, no para redefinir estados visuales comunes.
 
