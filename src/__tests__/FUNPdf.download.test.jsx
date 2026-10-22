@@ -10,7 +10,7 @@ const { swalErrorMock, swalLoadingMock, swalCloseMock, pdfLoadMock, requestProte
   requestProtectedArrayBufferMock: vi.fn(),
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: swalErrorMock,
   swalLoading: swalLoadingMock,
   swalClose: swalCloseMock,
@@ -25,17 +25,17 @@ vi.mock('pdf-lib', () => ({
   },
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (value) => value ?? '',
   getJSONFull: () => ({}),
 }));
 
-vi.mock('@/app/utils/pdfDownload', () => ({
+vi.mock('@/shared/utils/pdfDownload', () => ({
   requestProtectedArrayBuffer: requestProtectedArrayBufferMock,
   toProtectedApiPath: (value) => value.replace(String(import.meta.env.VITE_API_URL || ''), ''),
 }));
 
-vi.mock('../app/components/jsons/vars', async () => {
+vi.mock('../shared/config/jsons/vars', async () => {
   const React = await import('react');
 
   return {

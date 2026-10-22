@@ -1,6 +1,6 @@
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { dateParser, dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
 function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
 

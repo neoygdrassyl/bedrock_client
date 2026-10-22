@@ -1,11 +1,11 @@
 import { Suspense, useEffect, useState, useRef, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Zone_Use_Service from "../../../services/zone_use.service"
-import { SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
-import UU from "../../../components/jsons/UU.json"
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../shared/config/vars.global';
+import UU from "../../../../shared/config/jsons/UU.json"
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 export default function ZONE_USE_COMPONENT(props) {
     const { translation, swaMsg, globals, id, refresh, setrRfresh } = props;

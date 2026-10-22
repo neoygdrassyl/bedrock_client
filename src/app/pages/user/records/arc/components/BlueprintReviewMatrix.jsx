@@ -1,8 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { swalConfirm, swalFormDialog, swalInfo } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { swalConfirm, swalFormDialog, swalInfo } from '@/shared/utils/swalAdapter';
 
 const BANDS = [
     { title: 'Rótulo', criteria: ['Dirección', 'Firmas', 'Matrículas', 'Escala', 'Modalidad de licencia'] },

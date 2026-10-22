@@ -1,4 +1,4 @@
-import { regexChecker_isOA_3 } from '../../../../components/customClasses/typeParse';
+import { regexChecker_isOA_3 } from '../../../../../shared/config/customClasses/typeParse';
 import FUN_PDF from './fun_pdf';
 import FUN_PDF_CHECK from './fun_pdf_check';
 import FUN_DOC_CONFIRM_INCOMPLETE from './fun_doc_confirminc';

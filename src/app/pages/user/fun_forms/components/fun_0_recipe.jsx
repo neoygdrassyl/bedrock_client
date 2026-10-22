@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import FUNService from '../../../../services/fun.service'
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import TagInput from '../../../../components/TagInput';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import TagInput from '../../../../../shared/components/TagInput';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

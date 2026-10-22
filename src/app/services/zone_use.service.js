@@ -1,4 +1,4 @@
-import http from "../../http-common";
+import http from "../../shared/api/http-common";
 
 const route = "zone_use"
 

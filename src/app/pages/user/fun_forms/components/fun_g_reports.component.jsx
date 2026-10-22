@@ -1,6 +1,6 @@
-import { regexChecker_isPh, regexChecker_movTierra } from '../../../../components/customClasses/typeParse';
-import { Icon } from '@/components/icon';
-//import VIZUALIZER from '../../../../components/vizualizer.component';
+import { regexChecker_isPh, regexChecker_movTierra } from '../../../../../shared/config/customClasses/typeParse';
+import { Icon } from '@/shared/components/icon';
+//import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 
 function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }

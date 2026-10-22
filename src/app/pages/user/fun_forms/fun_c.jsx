@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import FUNService from '../../../services/fun.service'
 
-import DCO_LIS from '../../../components/jsons/fun6DocsList.json'
-import { _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER } from '../../../components/customClasses/funCustomArrays'
+import DCO_LIS from '../../../../shared/config/jsons/fun6DocsList.json'
+import { _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER } from '../../../../shared/config/customClasses/funCustomArrays'
 
 import FUN_DOC_CONFIRMLEGAL from './components/fun_doc_confirmlegal';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
@@ -12,14 +12,14 @@ import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher'
 import FUNG_CHECKLIST from './fun_g_checklist';
 import FUN_PDF_CHECK from './components/fun_pdf_check';
 import FUN_SERVICE from '../../../services/fun.service';
-import Collapsible from '../../../components/Collapsible';
+import Collapsible from '../../../../shared/components/Collapsible';
 import FUN_DOC_CONFIRM_INCOMPLETE from './components/fun_doc_confirminc';
 import FUN_C_CLOCKS from './components/fun_c_clocks.component';
 import dayjs from 'dayjs';
 import submitService from '../../../services/submit.service';
-import { Icon } from '@/components/icon';
-import ObservationPanel from '../../../components/ObservationPanel';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import ObservationPanel from '../../../../shared/components/ObservationPanel';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import {
     evaluateLegalReviewEligibility,
     findVersion,

@@ -1,14 +1,14 @@
 import { Fragment, useState, useEffect, useMemo, useRef } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import USERS_Service from '../../../services/users.service'
+import USERS_Service from '../../../../shared/api/users.service'
 
-import { dateParser, dateParser_finalDate } from '../../../components/customClasses/typeParse'
+import { dateParser, dateParser_finalDate } from '../../../../shared/config/customClasses/typeParse'
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 import PQRS_COMPONENT_ATTACH_PROFESIONAL from './components/pqrs_attach_pro.component';
-import Collapsible from '../../../components/Collapsible';
+import Collapsible from '../../../../shared/components/Collapsible';
 import { PQRS_SET_REPLY1 } from './components/pqrs_setReply2.component';
 import JoditEditor from "jodit-pro-react";
 import 'jodit-pro/es2021/jodit.fat.min.css';
@@ -28,12 +28,12 @@ import { PQRS_ID_CONFIRM } from './components/pqrs_id_confitm.component';
 import cubXvrService from '../../../services/cubXvr.service';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { buildProtectedFilePath, downloadProtectedPdf } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { buildProtectedFilePath, downloadProtectedPdf } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 
 export default function PQRS_MANAGE_COMPONENT(props) {
     const { currentId, globals, swaMsg, translation, retrieveItem, translation_form, retrievePublish, worker } = props;

@@ -7,7 +7,7 @@ import PQRS_COMPONENT_LICENCE from './components/pqrs_licence.component';
 import PQRS_COMPONENT_REPLIES_PROFESIONAL_2 from './components/pqrs_replies_3.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
 import PQRS_SET_REPLY from './components/pqrs_setReply.component';
-import { swalError } from '@/app/utils/swalAdapter';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 function PQRSREPLY({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, closeModal, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);

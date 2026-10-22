@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/shared/ui/collapsible';
 
 describe('Collapsible', () => {
   test('hides content when closed', () => {

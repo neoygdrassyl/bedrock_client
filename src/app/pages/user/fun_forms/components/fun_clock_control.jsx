@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
-import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
-import { dateParser_dateDiff, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
+import { isEmptyEntity } from '../../../../../shared/utils/isEmptyEntity';
+import { dateParser_dateDiff, dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
 
-import Icon from '@/components/icon';
+import Icon from '@/shared/components/icon';
 function FUN_CLOCK_CONTROL({ currentItem }) {
 
         // DATA GETTERS

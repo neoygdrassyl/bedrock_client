@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import ProjectFlowModal from '../../legal_flow_guide/components/ProjectFlowModal';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 import { useAlarms } from '../hooks/useAlarms';
 import legalGuideService from '../../../../services/legalGuide.service';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';

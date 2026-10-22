@@ -1,25 +1,25 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Icon } from '@/components/icon';
-import { Z_CLASS } from '@/lib/layers';
-import { cn } from '@/lib/utils';
+} from '@/shared/ui/dialog';
+import { ScrollArea } from '@/shared/ui/scroll-area';
+import { Icon } from '@/shared/components/icon';
+import { Z_CLASS } from '@/shared/lib/layers';
+import { cn } from '@/shared/lib/utils';
 import FUNService from '../../../../services/fun.service';
 import legalGuideService from '../../../../services/legalGuide.service';
 import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from '../../clocks/hooks/useClocksManager';
 import { useAlarms } from '../hooks/useAlarms';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { formsParser1, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { formsParser1, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import RecordsBinnacleStack from '../../records/RecordsBinnacleStack';
 import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
 import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';

@@ -9,10 +9,10 @@ import {
   Monitor,
   ScanLine,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { cn } from '@/shared/lib/utils';
 import { VrCell } from '../molecules/VrCell';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';

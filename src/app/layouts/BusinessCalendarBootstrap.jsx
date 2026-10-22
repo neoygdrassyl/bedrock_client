@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BusinessCalendarService from '@/app/services/business-calendar.service';
-import { replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays } from '@/app/utils/BusinessDaysCol';
-import { captureDovelaHttpError } from '@/app/utils/errorReporting';
+import { replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays } from '@/shared/utils/BusinessDaysCol';
+import { captureDovelaHttpError } from '@/shared/utils/errorReporting';
 
 const FIRST_DYNAMIC_YEAR = 2021;
 const FUTURE_YEAR_COUNT = 1;

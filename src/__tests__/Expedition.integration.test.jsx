@@ -60,7 +60,7 @@ vi.mock('../app/services/record_law.service', () => ({
   },
 }));
 
-vi.mock('../app/services/custom.service', () => ({
+vi.mock('../shared/api/custom.service', () => ({
   __esModule: true,
   default: {
     loadDictionary_cub_id: vi.fn(() => Promise.resolve({ data: [] })),
@@ -123,7 +123,7 @@ vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
 
 // ─── Mock external libs ────────────────────────────────────────────────────
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -152,7 +152,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'bucaramanga',
@@ -365,7 +365,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
   });
 
   test('11. CUSTOM_DATA_SERVICE.loadDictionary_cub_id se llama después de cargar', async () => {
-    const CUSTOM_DATA_SERVICE = (await import('../app/services/custom.service')).default;
+    const CUSTOM_DATA_SERVICE = (await import('../shared/api/custom.service')).default;
     CUSTOM_DATA_SERVICE.loadDictionary_cub_id.mockClear();
 
     await act(async () => {

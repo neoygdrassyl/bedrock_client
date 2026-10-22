@@ -1,21 +1,21 @@
 import { useState } from "react";
-import { Button } from '@/components/ui/button';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
 import FUN_SERVICE from '../../../services/fun.service';
 
-import { cities, domains_number, infoCud, zonesTable } from '../../../components/jsons/vars';
+import { cities, domains_number, infoCud, zonesTable } from '../../../../shared/config/jsons/vars';
 
-import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints, getJSONFull } from '../../../components/customClasses/typeParse';
-import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../components/customClasses/funCustomArrays';
+import { dateParser, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS, addDecimalPoints, getJSONFull } from '../../../../shared/config/customClasses/typeParse';
+import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import EXP_RES_2 from './exp_res_2.component';
 import dayjs from "dayjs";
-import { Icon } from '@/components/icon';
-import '../../../../styles/docs-expediente.css';
-import { richTextToPlainText } from '../../../utils/richTextBlockNote';
-import { downloadGeneratedPdf } from '../../../utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import '../../../../shared/styles/docs-expediente.css';
+import { richTextToPlainText } from '../../../../shared/utils/richTextBlockNote';
+import { downloadGeneratedPdf } from '../../../../shared/utils/pdfDownload';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

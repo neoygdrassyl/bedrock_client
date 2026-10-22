@@ -1,29 +1,29 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { useTheme } from '@/components/theme-provider';
+} from '@/shared/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { Separator } from '@/shared/ui/separator';
+import { useTheme } from '@/shared/components/theme-provider';
 import { Sun, Moon, LogOut, Search, CalendarDays, ChevronRight, FileText, UserCircle2, AlertTriangle } from 'lucide-react';
-import { Icon } from '@/components/icon';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
-import { requestDovelaErrorReport } from '@/app/utils/errorReporting';
-import { cn } from '@/lib/utils';
+import { Icon } from '@/shared/components/icon';
+import { SidebarTrigger, useSidebar } from '@/shared/ui/sidebar';
+import { requestDovelaErrorReport } from '@/shared/utils/errorReporting';
+import { cn } from '@/shared/lib/utils';
 import ChatLauncher from '../pages/user/chat/ChatLauncher';
-import { RUNTIME_FEATURES } from '../config/runtime-features';
+import { RUNTIME_FEATURES } from '../../shared/config/runtime-features';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/shared/ui/tooltip';
 
 const LazyAlarmBell = lazy(() =>
   import('../pages/user/fun_forms/components/AlarmBell').then((module) => ({

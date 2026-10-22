@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { RICH_TEXT_PREFIX, serializeRichTextBlocks } from '../app/utils/richTextBlockNote';
+import { RICH_TEXT_PREFIX, serializeRichTextBlocks } from '../shared/utils/richTextBlockNote';
 
 // NOTE: We intentionally do NOT import './helpers/mockExternals' here because it
 // registers a minimal vars mock that conflicts with the full mock required by
@@ -70,7 +70,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return React.createElement(
@@ -165,12 +165,12 @@ vi.mock('../app/pages/user/records/arc/record_arc_areas_resumen.component', () =
   default: () => <div data-testid="record-arc-areas-resume-stub" />,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [] }) => <div data-testid="datatable-stub">{data.length}</div>,
 }));
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBTooltip: ({ children }) => <>{children}</>,
   MDBBtn: ({ children, onClick, size, outline, color, className, ...props }) => (
     <button onClick={onClick} className={className} {...props}>{children}</button>
@@ -178,12 +178,12 @@ vi.mock('../app/components/ui', () => ({
   MDBCollapse: ({ children }) => <div>{children}</div>,
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children }) => <div data-testid="collapsible-stub">{children}</div>,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: vi.fn((d) => d || ''),
   dateParser_finalDate: vi.fn(() => ''),
   regexChecker_isOA_2: vi.fn(() => false),
@@ -198,13 +198,13 @@ vi.mock('../app/components/customClasses/typeParse', () => ({
   get_UVT: vi.fn(() => 47065),
 }));
 
-vi.mock('../app/components/customClasses/funCustomArrays', () => ({
+vi.mock('../shared/config/customClasses/funCustomArrays', () => ({
   _FUN_6_PARSER: vi.fn(() => 0),
   _FUN_1_PARSER: vi.fn(() => ''),
   _FUN_4_PARSER: vi.fn(() => ''),
 }));
 
-vi.mock('../app/components/jsons/jsonReplacer', () => ({
+vi.mock('../shared/config/jsons/jsonReplacer', () => ({
   __esModule: true,
   default: vi.fn((v) => JSON.stringify(JSON.stringify(v))),
 }));

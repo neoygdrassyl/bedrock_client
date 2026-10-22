@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 const PAGE_BUTTON = 'h-8 gap-1 px-2.5 text-xs [&_svg]:size-3.5';
 

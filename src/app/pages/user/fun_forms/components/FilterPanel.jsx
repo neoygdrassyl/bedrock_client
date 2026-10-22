@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Icon } from '@/components/icon';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import USER_SERVICE from '../../../../services/users.service';
+import { Icon } from '@/shared/components/icon';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Switch } from '@/shared/ui/switch';
+import USER_SERVICE from '../../../../../shared/api/users.service';
 import { mergeFilters, hasActiveFilters } from '../utils/filters';
 
 const PHASES = [

@@ -21,19 +21,19 @@ vi.mock('../app/services/pqrs_main.service', () => ({
   default: hoisted.pqrsService,
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalConfirm: hoisted.swalConfirmMock,
   swalLoading: hoisted.swalLoadingMock,
   swalSuccess: hoisted.swalSuccessMock,
   swalError: hoisted.swalErrorMock,
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children }) => <div>{children}</div>,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="datatable-stub" />,
 }));

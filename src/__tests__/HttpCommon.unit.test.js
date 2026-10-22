@@ -21,7 +21,7 @@ const buildHttpModule = async () => {
     },
   }));
 
-  const mod = await import('../http-common');
+  const mod = await import('../shared/api/http-common');
 
   return {
     http: mod.default,

@@ -15,7 +15,7 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-vi.mock('@/app/services/custom.service', () => ({
+vi.mock('@/shared/api/custom.service', () => ({
   __esModule: true,
   default: {
     appLoginCompatible: vi.fn(() =>
@@ -36,7 +36,7 @@ vi.mock('@/app/services/custom.service', () => ({
   },
 }));
 
-vi.mock('@/app/services/data.service', () => ({
+vi.mock('@/shared/api/data.service', () => ({
   __esModule: true,
   default: {
     saveToken: vi.fn(),
@@ -52,7 +52,7 @@ vi.mock('sweetalert2', () => ({
 }));
 
 
-vi.mock('@/app/components/jsons/vars', () => ({
+vi.mock('@/shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'CURADURIA URBANA 1',
     city: 'Bucaramanga',
@@ -62,7 +62,7 @@ vi.mock('@/app/components/jsons/vars', () => ({
   },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -71,7 +71,7 @@ vi.mock('../http-common', () => ({
 }));
 
 import LoginPage from '@/app/pages/auth/LoginPage';
-import CustomsDataService from '@/app/services/custom.service';
+import CustomsDataService from '@/shared/api/custom.service';
 
 const routerFutureFlags = {
   v7_startTransition: true,

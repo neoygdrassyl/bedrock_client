@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Icon } from '@/shared/components/icon';
+import { Dialog, DialogContent } from '@/shared/ui/dialog';
 
 // --- Componente para una fila de la tabla en el modal ---
 const AlarmTableRow = ({ alarm }) => {

@@ -2,9 +2,9 @@ import React, { useState, useCallback, useMemo, memo } from 'react';
 import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
-import { Icon } from '@/components/icon';
-import { swalFormDialog } from '../../../../utils/swalAdapter';
-import { getIconSvg } from '../../../../utils/iconSvgString';
+import { Icon } from '@/shared/components/icon';
+import { swalFormDialog } from '../../../../../shared/utils/swalAdapter';
+import { getIconSvg } from '../../../../../shared/utils/iconSvgString';
 
 // --- Anchos de columna centralizados ---
 export const DEFAULT_CLOCK_COLUMN_VISIBILITY = {

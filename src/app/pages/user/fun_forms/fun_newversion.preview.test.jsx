@@ -24,7 +24,7 @@ vi.mock('../../../services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalLoading: swalLoadingMock,
   swalSuccess: swalSuccessMock,
   swalError: swalErrorMock,

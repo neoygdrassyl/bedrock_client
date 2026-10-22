@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 // SERVICES
 import SubmitService from '../../../services/submit.service';
 import funService from '../../../services/fun.service';
@@ -7,18 +7,18 @@ import dayjs from 'dayjs';
 import { PDFDocument } from 'pdf-lib';
 
 // LISTS
-import Fun6DocList from '../../../components/jsons/fun6DocsList.json'
-import { Lists } from '../../../components/jsons/lists_submit'
+import Fun6DocList from '../../../../shared/config/jsons/fun6DocsList.json'
+import { Lists } from '../../../../shared/config/jsons/lists_submit'
 
 import DOCS_LIST from '../fun_forms/components/docs_list.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { DOCUMENT_ORIGIN_STATE } from '../shared/expediente-documental.constants';
-import { LegacyModal } from '@/components/legacy-modal';
+import { LegacyModal } from '@/shared/components/legacy-modal';
 import MissingDocumentsModal from './MissingDocumentsModal.jsx';
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
-import { buildProtectedFilePath, toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { buildProtectedFilePath, toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 
 function downloadDocument(source, filename) {
     if (!source) return Promise.resolve();

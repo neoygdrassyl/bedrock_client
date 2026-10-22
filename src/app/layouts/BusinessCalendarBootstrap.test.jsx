@@ -13,12 +13,12 @@ vi.mock('@/app/services/business-calendar.service', () => ({
   },
 }));
 
-vi.mock('@/app/utils/BusinessDaysCol', () => ({
+vi.mock('@/shared/utils/BusinessDaysCol', () => ({
   replaceBusinessCalendarHolidays: (...args) => replaceMock(...args),
   replaceBusinessCalendarCustomDays: (...args) => replaceCustomMock(...args),
 }));
 
-vi.mock('@/app/utils/errorReporting', () => ({
+vi.mock('@/shared/utils/errorReporting', () => ({
   captureDovelaHttpError: (...args) => captureHttpErrorMock(...args),
 }));
 

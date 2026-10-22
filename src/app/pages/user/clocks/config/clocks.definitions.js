@@ -1,4 +1,4 @@
-import { regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
+import { regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import { NEGATIVE_PROCESS_TITLE } from '../hooks/useClocksManager';
 import dayjs from 'dayjs';
 

@@ -11,7 +11,7 @@ import {
   _FUN_7_PARSER,
   _FUN_8_PARSER,
   _FUN_9_PARSER,
-} from '../../../../components/customClasses/funCustomArrays';
+} from '../../../../../shared/config/customClasses/funCustomArrays';
 import RecordLawService from '../../../../services/record_law.service';
 import FUNService from '../../../../services/fun.service';
 import MatrixInformationTable from './MatrixInformationTable';

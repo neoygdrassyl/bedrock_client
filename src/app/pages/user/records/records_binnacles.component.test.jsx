@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import RECORDS_BINNACLE from './records_binnacles.component';
 
-vi.mock('@/components/rich-text-editor', () => ({
+vi.mock('@/shared/components/rich-text-editor', () => ({
     default: ({ value, hiddenId, readOnly, minHeight, toolbarItems, onSave }) => (
         <div>
             <textarea data-testid="mock-rich-text-editor" defaultValue={value} id={hiddenId} readOnly={readOnly} data-min-height={minHeight} data-toolbar-items={toolbarItems?.join(',') || ''} />
@@ -12,7 +12,7 @@ vi.mock('@/components/rich-text-editor', () => ({
     ),
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
     swalError: vi.fn(),
     swalSuccess: vi.fn(),
 }));
@@ -57,7 +57,7 @@ describe('RECORDS_BINNACLE', () => {
         expect(textarea).toHaveAttribute('rows', '3');
         expect(textarea).toHaveClass('op__static-textarea');
 
-        const css = readFileSync('src/app/components/ObservationPanel.css', 'utf8');
+        const css = readFileSync('src/shared/components/ObservationPanel.css', 'utf8');
         expect(css).toContain('.op__static-card--compact .op__static-body');
         expect(css).toContain('padding: 0.45rem 0.5rem 0.55rem;');
         expect(css).toContain('.op__static-card--compact .op__static-textarea');

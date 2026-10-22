@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RECORD_ARC_AREAS from './record_arc_areas.component';
 import EXP_AREAS_RECORD from '../exp_areas_record.component';
 import RECORD_ARC_DESC from './record_arc_desc';
-import { getJSONFull } from '../../../../components/customClasses/typeParse';
-import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
+import { getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
+import JSONObjectParser from '../../../../../shared/config/jsons/jsonReplacer';
 import RECORD_ARC_AREAS_2 from './record_arc_areas_2.component';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);

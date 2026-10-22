@@ -1,19 +1,19 @@
 import { Fragment, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import HTMLDatalist from '../../../components/HTMLDatalist';
+import { Button } from '@/shared/ui/button';
+import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
 import FUNService from '../../../services/fun.service'
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../components/customClasses/typeParse'
-import VIZUALIZER from '../../../components/vizualizer.component';
+import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../../shared/config/customClasses/typeParse'
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../services/profesionals.service';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);

@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import '@/app/utils/dayjs.config';
+import '@/shared/utils/dayjs.config';
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: ({ name }) => <span data-testid={`icon-${name}`} aria-hidden="true" />,
   default: ({ name }) => <span data-testid={`icon-${name}`} aria-hidden="true" />,
 }));

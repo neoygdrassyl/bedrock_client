@@ -1,13 +1,13 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
-import Icon from '@/components/icon';
+import Icon from '@/shared/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service';
-import Codes from '../../../../components/jsons/fun6DocsList.json';
-import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import Codes from '../../../../../shared/config/jsons/fun6DocsList.json';
+import { SERIES_DOCS, _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../../shared/config/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { normalizeDocumentControlPages } from './documentControlPages';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';
 import { CANONICAL_SAVE_UNAVAILABLE_HINT, generatorSaveErrorText } from './generatorSavePolicy';

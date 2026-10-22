@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { addDecimalPoints, formsParser1 } from '../../../components/customClasses/typeParse';
-import UsersService from '../../../services/users.service';
+import { Button } from '@/shared/ui/button';
+import { addDecimalPoints, formsParser1 } from '../../../../shared/config/customClasses/typeParse';
+import UsersService from '../../../../shared/api/users.service';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 export default function CERTIFICATE_WORKER(props) {
     const translation = props.translation

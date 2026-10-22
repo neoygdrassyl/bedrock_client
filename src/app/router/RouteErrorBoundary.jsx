@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { ErrorReportInlineTrigger } from '../components/DovelaSupportLayer';
-import { captureDovelaError } from '../utils/errorReporting';
+import { ErrorReportInlineTrigger } from '../../shared/components/DovelaSupportLayer';
+import { captureDovelaError } from '../../shared/utils/errorReporting';
 
 class RouteErrorBoundary extends React.Component {
   constructor(props) {

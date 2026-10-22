@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
-import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
+import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
-import { infoCud } from '../../../../components/jsons/vars';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.component';
 import SubmitService from '../../../../services/submit.service';
 import CubXVrDataService from '../../../../services/cubXvr.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

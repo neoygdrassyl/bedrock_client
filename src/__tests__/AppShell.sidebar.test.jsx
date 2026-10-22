@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/components/theme-provider', () => ({
+vi.mock('@/shared/components/theme-provider', () => ({
   useTheme: () => ({ theme: 'light', setTheme: vi.fn(), resolvedTheme: 'light' }),
   ThemeProvider: ({ children }) => <>{children}</>,
 }));

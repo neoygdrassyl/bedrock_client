@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronDown, CircleAlert, FilePlus2 } from 'lucide-react';
 import FUN_SERVICE from '@/app/services/fun.service';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { cn } from '@/shared/lib/utils';
 import {
   buildGeneratorContext,
   evaluateGenerator,

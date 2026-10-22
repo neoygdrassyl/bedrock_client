@@ -1,4 +1,4 @@
-import Collapsible from '../../../../components/Collapsible';
+import Collapsible from '../../../../../shared/components/Collapsible';
 import PQRS_PDFGEN_CONFIRM from './pqrs_genPDF_confirm.component';
 import PQRS_PDFGEN_REPLY from './pqrs_genPDF_reply.component';
 

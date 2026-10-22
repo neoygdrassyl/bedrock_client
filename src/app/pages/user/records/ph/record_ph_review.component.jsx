@@ -1,26 +1,26 @@
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import FUN_SERVICE from "../../../../services/fun.service"
 
 import FUNService from '../../../../services/fun.service';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
-import Collapsible from '../../../../components/Collapsible';
-import { cities, domains_number, infoCud } from '../../../../components/jsons/vars';
-import { getJSONFull, _MANAGE_IDS } from '../../../../components/customClasses/typeParse';
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import { handleArchCheck } from '../../../../../shared/config/customClasses/pdfCheckHandler';
+import Collapsible from '../../../../../shared/components/Collapsible';
+import { cities, domains_number, infoCud } from '../../../../../shared/config/jsons/vars';
+import { getJSONFull, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse';
+import { REVIEW_DOCS } from '../../../../../shared/config/jsons/arcReviewDocs';
 import SubmitService from '../../../../services/submit.service'
 import CubXVrDataService from '../../../../services/cubXvr.service'
-import { Icon } from '@/components/icon';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/shared/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

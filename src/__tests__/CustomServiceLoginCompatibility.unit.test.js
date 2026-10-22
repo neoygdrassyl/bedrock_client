@@ -3,14 +3,14 @@ import { sha256 } from 'js-sha256';
 
 const mockPost = vi.fn();
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     post: (...args) => mockPost(...args),
   },
 }));
 
-const { default: CustomsDataService } = await import('@/app/services/custom.service');
+const { default: CustomsDataService } = await import('@/shared/api/custom.service');
 
 function formDataToObject(formData) {
   return Object.fromEntries(formData.entries());

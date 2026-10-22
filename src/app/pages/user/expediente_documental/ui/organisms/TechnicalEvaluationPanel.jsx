@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { ClipboardCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { Tag } from '../atoms/Tag';
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';

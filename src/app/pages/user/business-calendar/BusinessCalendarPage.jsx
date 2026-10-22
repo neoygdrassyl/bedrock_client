@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, ExternalLink, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent } from '@/shared/ui/card';
 import BusinessCalendarService from '@/app/services/business-calendar.service';
 import {
   addBusinessCalendarCustomDay, removeBusinessCalendarCustomDay,
   replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays,
-} from '@/app/utils/BusinessDaysCol';
+} from '@/shared/utils/BusinessDaysCol';
 import BusinessCalendarCustomDayModal from './BusinessCalendarCustomDayModal';
 import {
   buildMonthGrid, colombiaDate, describeCalendarDay, getDayVisualState, monthName, visualStateClasses,

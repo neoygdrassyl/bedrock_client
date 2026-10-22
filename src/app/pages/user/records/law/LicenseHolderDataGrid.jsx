@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RecordLawService from '../../../../services/record_law.service';
 
 const CHECKS = [

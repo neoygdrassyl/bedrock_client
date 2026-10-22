@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { _FUN_1_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import { _FUN_1_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
 export default function RECORD_ARC_AREAS_RESUME(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

@@ -1,4 +1,4 @@
-import { formsParser1 } from '../../../../components/customClasses/typeParse';
+import { formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
 
 function SHORT_INFO({ translation, swaMsg, globals, currentItem, currentVersion }) {
         let _GET_CHILD_1 = () => {

@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import IntelligentChecklist from './IntelligentChecklist';
 import checklistService from '@/app/services/checklist.service';
 import { normalizeChecklistResponse } from '../utils/intelligentChecklist.utils';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { fatherValues, dvCheckList } from '../utils/funChecklistRules';
 import { findVersion } from '../utils/legalReviewEligibility';
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 export { fatherValues, dvCheckList };
 

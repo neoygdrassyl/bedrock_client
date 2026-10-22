@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
+import { DiasHabilesColombia } from '../../../../../shared/utils/BusinessDaysCol.js';
 import { useProcessPhases } from './useProcessPhases';
 
 // --- INSTANCIA Y HELPERS ---

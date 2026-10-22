@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import ListJson from '../../../../components/jsons/fun6DocsList.json';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import ListJson from '../../../../../shared/config/jsons/fun6DocsList.json';
 import './fun_modal_shared.css';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 
 function DOCS_LIST({ idRef, text, setValues }) {
         const [modalSearchList, setModalSearchList] = useState(false);

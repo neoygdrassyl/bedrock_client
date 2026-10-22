@@ -1,9 +1,9 @@
 import { CircleAlert, FileOutput } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { displayValue, formatDocumentaryDate } from '../../canonicalDocumentaryModel';
 import { DetailPill } from '../molecules/DetailSection';
 

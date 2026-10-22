@@ -1,5 +1,5 @@
 import { Tag } from './Tag';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { getDocumentVrDisplayValue, isInternalReportVr } from '../../../shared/expediente-documental.utils';
 
 const TONES = { empty: 'neutral', report: 'info', value: 'code' };

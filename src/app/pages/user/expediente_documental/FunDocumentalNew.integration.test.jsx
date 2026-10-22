@@ -31,7 +31,7 @@ vi.mock('../shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
 vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: function LegalMock({ onDeclarationChanged }) { mocks.legalMounts(); return <button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button>; } }));
 vi.mock('./ui/organisms/DocumentGeneratorsPanel', () => ({ default: (props) => { mocks.generators(props); return <div>Panel de generadores</div>; } }));
 vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
-vi.mock('@/app/services/data.service', () => ({ default: { getUserData: mocks.user } }));
+vi.mock('@/shared/api/data.service', () => ({ default: { getUserData: mocks.user } }));
 vi.mock('@/app/services/cubXvr.service', () => ({ default: { getByFUN: mocks.cubByFun } }));
 
 const CANONICAL = { mode: 'canonical', project: { fun0Id: 1, idPublic: 'FUN-1' }, publication: { configurationId: 1, releaseVersion: 1 } };

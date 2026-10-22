@@ -25,20 +25,20 @@ vi.mock('../app/services/fun.service', () => ({
   default: hoisted.funService,
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span data-testid="icon" />,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table" />,
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer" />,
 }));
@@ -58,12 +58,12 @@ vi.mock('../app/pages/user/records/arc/record_arc_areas_2.component.jsx', () => 
   default: () => <div data-testid="record-arc-areas-2" />,
 }));
 
-vi.mock('../app/components/jsons/jsonReplacer', () => ({
+vi.mock('../shared/config/jsons/jsonReplacer', () => ({
   __esModule: true,
   default: () => ({}),
 }));
 
-vi.mock('@/components/rich-text-editor', () => ({
+vi.mock('@/shared/components/rich-text-editor', () => ({
   __esModule: true,
   default: ({ hiddenName, value = '' }) => <textarea name={hiddenName} defaultValue={value} />,
 }));
@@ -72,17 +72,17 @@ vi.mock('../app/pages/user/records/arc/recordArcRichTextUpload', () => ({
   uploadRecordArcRichTextImage: vi.fn(),
 }));
 
-vi.mock('../app/utils/richTextBlockNote', () => ({
+vi.mock('../shared/utils/richTextBlockNote', () => ({
   sanitizeRichTextForLegacyJoin: (value) => value,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (value) => value || '',
   dateParser_finalDate: () => '',
   getJSONFull: () => [],
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalConfirm: vi.fn(() => Promise.resolve({ isConfirmed: true })),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

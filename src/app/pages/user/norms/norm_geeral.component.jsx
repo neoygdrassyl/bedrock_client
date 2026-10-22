@@ -1,13 +1,13 @@
 import { Suspense, useEffect, useState, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Norms_Service from "../../../services/norm.service"
 import { NORM_GEN_DATA } from './norm.vars'
 import dayjs from 'dayjs';
-import VIEWER from '../../../components/viewer.component';
-import FICHA_NORM from "../../../components/jsons/FICHA_NORM_1.json"
-import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../components/vars.global';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import VIEWER from '../../../../shared/components/viewer.component';
+import FICHA_NORM from "../../../../shared/config/jsons/FICHA_NORM_1.json"
+import { EJES, SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../shared/config/vars.global';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const default_Item = {
     id: false,

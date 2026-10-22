@@ -4,7 +4,7 @@ import {
   regexChecker_modPlano,
   regexChecker_movTierra,
   regexChecker_piscina,
-} from '@/app/components/customClasses/typeParse';
+} from '@/shared/config/customClasses/typeParse';
 
 export const fatherValues = [
     '511', '512', '513', '516', '517', '518', '519',

@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Bug, CheckCircle2, Copy, Download, Eye, RefreshCw, Search, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,12 +11,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import ErrorReportService from '@/app/services/error_report.service';
-import { cn } from '@/lib/utils';
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
+import ErrorReportService from '@/shared/api/error_report.service';
+import { cn } from '@/shared/lib/utils';
 
 const STATUS_LABELS = {
   open: 'Abierto',

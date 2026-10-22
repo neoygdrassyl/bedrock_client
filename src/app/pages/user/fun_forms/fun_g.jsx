@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import {
     _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER,
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
-} from '../../../components/customClasses/funCustomArrays'
-import { Icon } from '@/components/icon';
-import { dateParser, dateParser_yearsPassed, regexChecker_isOA_2 } from '../../../components/customClasses/typeParse';
+} from '../../../../shared/config/customClasses/funCustomArrays'
+import { Icon } from '@/shared/components/icon';
+import { dateParser, dateParser_yearsPassed, regexChecker_isOA_2 } from '../../../../shared/config/customClasses/typeParse';
 import FUNG_CHECKLIST from './fun_g_checklist';
 import FUNG_NAV from './components/fun_g_nav';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
 import FUN_VERSION_NAV from './components/fun_versionNav';
 import FUN_SERVICE from '../../../services/fun.service';
 import FUN_3_G_VIEW from './components/fun_3_g_view';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import FUN_G_MIX from './components/fun_g_mix.component';
 import FUN_G_REPORTS from './components/fun_g_reports.component';
 import FUN_ARCHIVE from './components/fun_archive.component';
@@ -22,8 +22,8 @@ import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.component';
 import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
 import ARCHIVE_FUN_VIEW from '../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
-import ObservationPanel from '../../../components/ObservationPanel';
-import { swalError } from '@/app/utils/swalAdapter';
+import ObservationPanel from '../../../../shared/components/ObservationPanel';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 const asInputValue = (value) => value ?? '';
 

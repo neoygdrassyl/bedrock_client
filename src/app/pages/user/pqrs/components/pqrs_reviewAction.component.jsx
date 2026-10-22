@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useState } from 'react';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { infoCud } from '../../../../components/jsons/vars'
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalError } from '@/app/utils/swalAdapter';
+import { infoCud } from '../../../../../shared/config/jsons/vars'
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalError } from '@/shared/utils/swalAdapter';
 export const PQRS_ACTION_REVIEW = (props) => {
     const { translation, swaMsg, globals, currentItemId } = props;
     const [currentItem, setCurrentItem] = useState(null)

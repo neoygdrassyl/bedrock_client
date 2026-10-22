@@ -1,5 +1,5 @@
 import { Check, CircleCheck, Clock, Minus } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 // Receipt medium is independent of digital folios, scans and legal approval.
 export function ReceiptStatus({ row, medium }) {

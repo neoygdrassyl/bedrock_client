@@ -1,10 +1,10 @@
 
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { dateParser, dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { splitValue } from '../../shared/expediente-documental.utils';
 
 function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {

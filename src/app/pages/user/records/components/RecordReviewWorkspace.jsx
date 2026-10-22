@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 
 const DEFAULT_TABS = {
     inventory: {

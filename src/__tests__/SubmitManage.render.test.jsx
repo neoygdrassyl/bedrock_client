@@ -30,23 +30,23 @@ vi.mock('../app/pages/user/submit/submit_list.component', () => ({
   default: () => null,
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   formsParser1: vi.fn(),
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span aria-hidden="true" />,
 }));
 
-vi.mock('../app/components/ObservationPanel', () => ({
+vi.mock('../shared/components/ObservationPanel', () => ({
   default: ({ textareaProps }) => <textarea {...textareaProps} />,
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalConfirm: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

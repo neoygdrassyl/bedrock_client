@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
-import USER_SERVICE from '../../../../services/users.service';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import USER_SERVICE from '../../../../../shared/api/users.service';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/shared/ui/dropdown-menu';
+import { Button } from '@/shared/ui/button';
+import { dateParser_dateDiff, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST } from '../../../../../shared/config/customClasses/typeParse';
 import { shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 import TABLE_COMPONENT_EXPANDED from './table_components/table.component_expanded';
 import HeatMap from '@uiw/react-heat-map';
-import { infoCud, nomens } from '../../../../components/jsons/vars';
+import { infoCud, nomens } from '../../../../../shared/config/jsons/vars';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 // rsuite Badge/Tag/TagGroup/Whisper/Popover replaced with inline components (Phase 9.1)
 const Tag = ({ color, children }) => (
   <span className="badge me-1" style={{ backgroundColor: color === 'blue' ? 'var(--dvl-info)' : color === 'green' ? 'var(--dvl-success)' : 'var(--dvl-gray-400)', fontSize: 'var(--dvl-text-xs)' }}>{children}</span>
@@ -37,11 +37,11 @@ const Whisper = ({ children, speaker }) => {
   );
 };
 const Popover = ({ children }) => <>{children}</>;
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import FUN_ASIGNS_HISTORY_COMPONENT from './fun_asign_history.component';
 import './fun_modal_shared.css';
-import { swalError } from '@/app/utils/swalAdapter';
-import holyDays from '../../../../components/jsons/holydaysmoment.json';
+import { swalError } from '@/shared/utils/swalAdapter';
+import holyDays from '../../../../../shared/config/jsons/holydaysmoment.json';
 
 const customStylesForModal = {};
 

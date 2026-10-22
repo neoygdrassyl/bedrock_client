@@ -1,12 +1,12 @@
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import perfilData from '../../../../components/jsons/perfilesData.json';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import perfilData from '../../../../../shared/config/jsons/perfilesData.json';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_ARC_36_TABLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

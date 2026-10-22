@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import { Search, X } from 'lucide-react';
-import { DovelaInput } from '@/components/dovela-ui';
+import { DovelaInput } from '@/shared/dovela-ui';
 import { StatusFilter } from './StatusFilter';
 
 /** Status filter + debounced search (the debounce lives in the container). */

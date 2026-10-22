@@ -1,21 +1,21 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { Button } from '@/shared/ui/button';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import { zones } from '../../../../components/jsons/vars'
+import { zones } from '../../../../../shared/config/jsons/vars'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import { dateParser, getJSONFull, getJSON_Simple } from '../../../../components/customClasses/typeParse';
-import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
-import parkingData from '../../../../components/jsons/parkingData.json'
-import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../components/vars.global';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
+import { dateParser, getJSONFull, getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
+import JSONObjectParser from '../../../../../shared/config/jsons/jsonReplacer';
+import parkingData from '../../../../../shared/config/jsons/parkingData.json'
+import { SUBMIT_ARC_AMENAZA, SUBMIT_ARC_AREA_ACTIVIDAD, SUBMIT_ARC_TRATAMIENTO_URBANISTICO, SUBMIT_ARC_ZONS_RESTRICCION } from '../../../../../shared/config/vars.global';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
-import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
-import ObservationPanel from '../../../../components/ObservationPanel';
+import { sanitizeRichTextForLegacyJoin } from '@/shared/utils/richTextBlockNote';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
 import ExpandableTableSection from './components/ExpandableTableSection';
 
 function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord }) {

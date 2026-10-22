@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../../expediente_documental/hooks/useLegalForm', () => ({ useLegalForm: (fun0Id) => (fun0Id ? { status: 'ready', data: mocks.legalForm, error: '', reload: mocks.reload } : null) }));
 vi.mock('../../expediente_documental/hooks/useDocumentaryInventory', () => ({ useDocumentaryInventory: () => mocks.inventory }));
 vi.mock('@/app/services/documentaryLegalForm.service', async (importOriginal) => ({ ...(await importOriginal()), saveLegalFormReview: mocks.saveReview, saveLegalFormSheet: mocks.saveSheet }));
-vi.mock('@/app/utils/swalAdapter', () => ({ swalClose: vi.fn(), swalLoading: vi.fn(), swalSuccess: mocks.swalSuccess, swalError: mocks.swalError }));
+vi.mock('@/shared/utils/swalAdapter', () => ({ swalClose: vi.fn(), swalLoading: vi.fn(), swalSuccess: mocks.swalSuccess, swalError: mocks.swalError }));
 vi.mock('../../../../services/fun.service', () => ({ default: { update_r: vi.fn(), create_funr: vi.fn() } }));
 
 const { saveControlSheetReviews } = await import('./fun_d_control.component');

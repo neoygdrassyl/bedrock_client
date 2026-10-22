@@ -1,7 +1,7 @@
 import { Tag } from '../atoms/Tag';
 import { Check } from 'lucide-react';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { cn } from '@/lib/utils';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/shared/ui/command';
+import { cn } from '@/shared/lib/utils';
 
 /**
  * Searchable catalogue selector: type part of the code or the name to narrow the list.

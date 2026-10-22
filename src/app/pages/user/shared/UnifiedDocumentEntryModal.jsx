@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
-import { toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 import { DOCUMENT_ORIGIN_META, DOCUMENT_ORIGIN_STATE } from './expediente-documental.constants';
 import { buildDocumentDownloadUrl, buildDocumentPreviewUrl } from './expediente-documental.utils';
 

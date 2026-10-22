@@ -40,7 +40,7 @@ vi.mock('../app/layouts/AppShell', () => {
   };
 });
 
-vi.mock('@/components/ui/sonner', () => {
+vi.mock('@/shared/ui/sonner', () => {
   const React = require('react');
   return { Toaster: () => React.createElement('div', { 'data-testid': 'toaster' }) };
 });
@@ -54,7 +54,7 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -65,7 +65,7 @@ vi.mock('../http-common', () => ({
 }));
 
 vi.mock('sweetalert2', () => ({ default: { fire: vi.fn(() => Promise.resolve({ isConfirmed: true })), close: vi.fn() } }));
-vi.mock('../app/components/jsons/vars', () => ({ infoCud: { name: 'Curaduría Urbana Test', city: 'bucaramanga', nit: '000-000', email: 'test@test.com' } }));
+vi.mock('../shared/config/jsons/vars', () => ({ infoCud: { name: 'Curaduría Urbana Test', city: 'bucaramanga', nit: '000-000', email: 'test@test.com' } }));
 
 import App from '../app/App';
 

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import FUN6JSON from '../../../../components/jsons/fun6DocsList.json'
+import FUN6JSON from '../../../../../shared/config/jsons/fun6DocsList.json'
 import FUN_SERVICE from '../../../../services/fun.service';
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import DataTable from '@/components/data-table-bridge';
-import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import DataTable from '@/shared/components/data-table-bridge';
+import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../../shared/config/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { Button } from '@/components/ui/button';
-import { EditableDataGrid } from '@/components/editable-data-grid';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 import { Maximize2, Minimize2 } from 'lucide-react';
 
 const MODALITY_ABBREVIATIONS = [

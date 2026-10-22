@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
 import dayjs from 'dayjs';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 
-import { cities } from '../../../components/jsons/vars';
-import { Icon } from '@/components/icon';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { cities } from '../../../../shared/config/jsons/vars';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 function NOMENCLATURE_ANEX({ translation, swaMsg, globals, currentItem, refreshList, refreshItem }) {
         var formData = new FormData();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_ENG_STEP_4323(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;

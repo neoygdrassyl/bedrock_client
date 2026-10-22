@@ -13,11 +13,11 @@ vi.mock('../../../services/fun.service', () => ({
     },
 }));
 
-vi.mock('../../../components/viewer.component', () => ({
+vi.mock('../../../../shared/components/viewer.component', () => ({
     default: () => <div data-testid="legacy-viewer" />,
 }));
 
-vi.mock('../../../components/vizualizer.component', () => ({
+vi.mock('../../../../shared/components/vizualizer.component', () => ({
     default: ({ url, apipath, previewUrl, downloadUrl }) => (
         <div
             data-testid="fun6-vizualizer"
@@ -35,7 +35,7 @@ vi.mock('pdf-lib', () => ({
     },
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
     swalError: vi.fn(),
     swalLoading: vi.fn(),
     swalSuccess: vi.fn(),

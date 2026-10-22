@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { isEmptyEntity } from '../../../../utils/isEmptyEntity';
+import { isEmptyEntity } from '../../../../../shared/utils/isEmptyEntity';
 import dayjs from 'dayjs';
-import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../components/customClasses/typeParse';
+import { dateParser, dateParser_dateDiff, dateParser_finalDate, dateParser_timePassed, formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
 import {
     ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer, ReferenceArea, ReferenceLine, ZAxis

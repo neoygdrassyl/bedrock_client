@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import dayjs from 'dayjs';
-import { DiasHabilesColombia } from '../../../../utils/BusinessDaysCol.js';
-import { Icon } from '@/components/icon';
+import { DiasHabilesColombia } from '../../../../../shared/utils/BusinessDaysCol.js';
+import { Icon } from '@/shared/components/icon';
 
 const businessDaysCalculator = new DiasHabilesColombia();
 

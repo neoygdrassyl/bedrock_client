@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ columns, data, noDataComponent }) => (
     <table>

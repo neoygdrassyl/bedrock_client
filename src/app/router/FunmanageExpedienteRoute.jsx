@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, lazy } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import FUNService from '../services/fun.service';
-import { ErrorReportInlineTrigger } from '../components/DovelaSupportLayer';
+import { ErrorReportInlineTrigger } from '../../shared/components/DovelaSupportLayer';
 import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 import LoadingFallback from './LoadingFallback';
 

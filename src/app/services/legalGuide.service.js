@@ -1,4 +1,4 @@
-import http from "../../http-common";
+import http from "../../shared/api/http-common";
 
 const ROUTE = "legal-guide";
 

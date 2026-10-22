@@ -1,6 +1,6 @@
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import { useEffect, useState } from 'react';
 const profs = [
     ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],

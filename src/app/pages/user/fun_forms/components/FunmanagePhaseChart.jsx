@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 import {
   BarChart,
   Bar,

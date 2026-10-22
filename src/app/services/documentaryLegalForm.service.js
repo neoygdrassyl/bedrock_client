@@ -1,4 +1,4 @@
-import http from '../../http-common';
+import http from '../../shared/api/http-common';
 import { documentaryProjectId } from './documentary.service';
 import { isRowEvaluation } from '../pages/user/expediente_documental/documentaryViewContract';
 

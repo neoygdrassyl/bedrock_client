@@ -1,7 +1,7 @@
 
 import Record_lawService from '../../../../services/record_law.service';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_LAW_STEP_1(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

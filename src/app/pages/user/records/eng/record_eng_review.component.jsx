@@ -1,21 +1,21 @@
 
 import { useState, useEffect } from 'react';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import dayjs from 'dayjs';
-import { cities, domains_number } from '../../../../components/jsons/vars';
-import { handleEnghCheck } from '../../../../components/customClasses/pdfCheckHandler';
-import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import { cities, domains_number } from '../../../../../shared/config/jsons/vars';
+import { handleEnghCheck } from '../../../../../shared/config/customClasses/pdfCheckHandler';
+import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../../shared/config/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
-import { Icon } from '@/components/icon';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { downloadGeneratedPdf, downloadProtectedPdf, toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/shared/utils/protectedDocumentAction';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

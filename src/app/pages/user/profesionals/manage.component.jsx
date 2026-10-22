@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
-import VIEWER from '../../../components/viewer.component';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import VIEWER from '../../../../shared/components/viewer.component';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import profesionalsService from '../../../services/profesionals.service';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function PROFESIONALS_MANAGE(props) {
     const { translation, swaMsg, globals, id } = props;

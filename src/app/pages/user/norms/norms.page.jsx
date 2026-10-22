@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import { Link } from 'react-router-dom';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import Norms_Service from "../../../services/norm.service"
 import NORM_GENERAL from './norm_geeral.component';
 import NORM_PREDIOS from './norm_predio.component';
 import NORM_NEIGHBORS from './norm_neighbors.component';
 import NORM_PERFIL from './norm_perfil.component';
 import NORM_RESUME from './norm_resume.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
 
 function ExpandableTableSection({ id, title, itemCount, children }) {
     const count = Number(itemCount) || 0;

@@ -78,12 +78,12 @@ vi.mock('../app/pages/user/records/arc/record_arc_38', () => ({
 
 // ─── sub-component stubs ──────────────────────────────────────────────────────
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer-stub" />,
 }));
 
-vi.mock('../app/components/TagInput', () => ({
+vi.mock('../shared/components/TagInput', () => ({
   __esModule: true,
   default: () => <div data-testid="tag-input-stub" />,
 }));
@@ -108,7 +108,7 @@ vi.mock('../app/pages/user/records/exp_areas_record.component', () => ({
   default: () => <div data-testid="exp-areas-stub" />,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-stub" />,
 }));

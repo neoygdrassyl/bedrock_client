@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
-import { Icon } from '@/components/icon';
-import { swalConfirm } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm } from '@/shared/utils/swalAdapter';
 import usePHSave from './hooks/usePHSave';
 
 const INITIAL_FORM = { number: '', predial: '', matricula: '', nomenclature: '', area: '' };

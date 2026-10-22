@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import DataTable from '@/components/data-table-bridge';
-import { swalError } from '@/app/utils/swalAdapter';
+import DataTable from '@/shared/components/data-table-bridge';
+import { swalError } from '@/shared/utils/swalAdapter';
 export const HISTORY_PQRS_INFO = (props) => {
     const {currentItem } = props;
     const [history_pqrs_inf, setHistory_pqrs] = useState([])

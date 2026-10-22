@@ -1,11 +1,11 @@
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { getJSON_Simple } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { getJSON_Simple } from '../../../../../shared/config/customClasses/typeParse';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_ARC_37(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;

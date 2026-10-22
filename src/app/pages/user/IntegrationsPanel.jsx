@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useId, useState } from 'react';
 import { Copy, Eye, EyeOff, KeyRound, PlugZap, RefreshCcw, Save } from 'lucide-react';
 import {
   DovelaBadge, DovelaButton, DovelaField, DovelaInlineAlert, DovelaInput, DovelaSectionPanel,
-} from '@/components/dovela-ui';
+} from '@/shared/dovela-ui';
 import {
   AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/shared/ui/alert-dialog';
 import IntegrationSettingsService from '../../services/integration_settings.service.js';
 
 function unwrap(response) {

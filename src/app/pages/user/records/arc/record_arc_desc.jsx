@@ -1,18 +1,18 @@
 import { useCallback, useState, useEffect } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
 import FUN_SERVICE from '../../../../services/fun.service'
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import RECORD_ARC_AREAS from './record_arc_areas.component';
 import EXP_AREAS_RECORD from '../exp_areas_record.component';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
-import { sanitizeRichTextForLegacyJoin } from '@/app/utils/richTextBlockNote';
+import { sanitizeRichTextForLegacyJoin } from '@/shared/utils/richTextBlockNote';
 import { splitValue } from '../../shared/expediente-documental.utils';
-import ObservationPanel from '../../../../components/ObservationPanel';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
 
 function RECORD_ARC_DESC({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, _FUN_R, requestUpdateRecord, requestUpdate }) {
     const [editBlueprint, setEditBlueprint] = useState(false);

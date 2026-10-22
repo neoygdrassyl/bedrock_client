@@ -1,14 +1,14 @@
-import { formsParser1 } from '../../../../components/customClasses/typeParse';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import FUN_SERVICE from '../../../../services/fun.service'
-import { cities, infoCud } from '../../../../components/jsons/vars';
+import { cities, infoCud } from '../../../../../shared/config/jsons/vars';
 
-import JSONObjectParser from '../../../../components/jsons/jsonReplacer';
+import JSONObjectParser from '../../../../../shared/config/jsons/jsonReplacer';
 
 import dayjs from 'dayjs';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
 
         // DATA GETERS

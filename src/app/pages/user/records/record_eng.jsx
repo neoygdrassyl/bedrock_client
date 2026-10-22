@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 
@@ -31,7 +31,7 @@ import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../../../services/fun.service';
 import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
 import { ENG_FUEGO } from './eng/record_eng_fuego.component';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 
 // RECORDS

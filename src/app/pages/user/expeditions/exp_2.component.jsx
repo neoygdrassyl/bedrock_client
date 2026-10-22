@@ -2,13 +2,13 @@ import { useState } from 'react';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_ARCSERVICE from '../../../services/record_arc.service';
 import PQRS_Service from '../../../services/pqrs_main.service';
-import JSONObjectParser from '../../../components/jsons/jsonReplacer';
-import { axis, infoCud, zones } from '../../../components/jsons/vars'
-import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../components/customClasses/typeParse';
+import JSONObjectParser from '../../../../shared/config/jsons/jsonReplacer';
+import { axis, infoCud, zones } from '../../../../shared/config/jsons/vars'
+import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { isEmptyEntity } from '../../../utils/isEmptyEntity';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { isEmptyEntity } from '../../../../shared/utils/isEmptyEntity';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 function EXP_2({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord, requestUpdate }) {

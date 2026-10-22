@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 
-import { cities, domains_number } from '../../../../components/jsons/vars';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { cities, domains_number } from '../../../../../shared/config/jsons/vars';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
 import fileDownload from 'js-file-download';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../../expediente_documental/documentaryInventoryModel';

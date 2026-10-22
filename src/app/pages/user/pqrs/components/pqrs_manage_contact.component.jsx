@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import { dateParser } from '../../../../components/customClasses/typeParse';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function PQRS_EDIT_CONTACT({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
     const [edit, setEdit] = useState(false);

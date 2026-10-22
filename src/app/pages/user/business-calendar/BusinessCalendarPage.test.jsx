@@ -21,7 +21,7 @@ vi.mock('@/app/services/business-calendar.service', () => ({
   },
 }));
 
-vi.mock('@/app/utils/BusinessDaysCol', () => ({
+vi.mock('@/shared/utils/BusinessDaysCol', () => ({
   addBusinessCalendarCustomDay: (...args) => addCustomMock(...args),
   removeBusinessCalendarCustomDay: (...args) => removeCustomMock(...args),
   replaceBusinessCalendarHolidays: (...args) => replaceHolidaysMock(...args),

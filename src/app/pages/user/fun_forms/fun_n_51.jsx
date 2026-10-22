@@ -1,11 +1,11 @@
 import { Fragment, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import FUNService from '../../../services/fun.service'
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import VIZUALIZER from '../../../components/vizualizer.component';
-import { Icon } from '@/components/icon';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, initialEdit }) {

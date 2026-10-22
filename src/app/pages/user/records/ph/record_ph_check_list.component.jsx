@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import { REVIEW_DOCS } from '../../../../../shared/config/jsons/arcReviewDocs';
 import RECORD_PH from '../../../../services/record_ph.service';
 import usePHSave from './hooks/usePHSave';
 import { savePHStep } from './utils/phSaveStep';

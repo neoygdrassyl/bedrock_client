@@ -4,15 +4,15 @@ import {
   getCoreRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/shared/ui/tooltip';
 import { MissingDataBadge } from './MissingDataBadge';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 

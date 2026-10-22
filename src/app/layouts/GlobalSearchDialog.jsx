@@ -2,19 +2,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Loader2, Search } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Icon } from '@/components/icon';
-import { formsParser1 } from '@/app/components/customClasses/typeParse';
-import { toDisplayCase } from '@/app/utils/displayCase';
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { Icon } from '@/shared/components/icon';
+import { formsParser1 } from '@/shared/config/customClasses/typeParse';
+import { toDisplayCase } from '@/shared/utils/displayCase';
 import FUNService from '../services/fun.service';
 import { buildExpedienteWorkspaceUrl } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
 

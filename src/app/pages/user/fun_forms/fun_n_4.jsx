@@ -1,8 +1,8 @@
 import FUNService from '../../../services/fun.service'
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const BOUNDARY_TYPES = [

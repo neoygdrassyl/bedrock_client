@@ -1,7 +1,7 @@
 import FUN_SERVICE from '../../../services/fun.service';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { getLicenseCompletionClock } from '../shared/processClosure.helpers';
 
 export default function EXP_LIC(props) {

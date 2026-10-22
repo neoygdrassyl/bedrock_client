@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
-import Icon from '@/components/icon';
-import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../components/customClasses/typeParse';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import Icon from '@/shared/components/icon';
+import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import FUN_SERVICE from '../../../../services/fun.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function FUN_C_CLOCKS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ClipboardCheck, Download, FilePlus2, Info, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Separator } from '@/shared/ui/separator';
+import { cn } from '@/shared/lib/utils';
 import { documentaryError } from '@/app/services/documentary.service';
 import { downloadCanonicalFile, getCanonicalVersions } from '@/app/services/documentaryOperations.service';
 import { VrBadge } from '../atoms/VrBadge';

@@ -1,5 +1,5 @@
 import { HardHat, ShieldCheck, Users } from 'lucide-react';
-import { DovelaBadge } from '@/components/dovela-ui';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import { Chip } from '../components/Chips';
 import {
   PROFILE_KIND_LABELS,

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import FUNService from '../../../../services/fun.service';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading } from '@/shared/utils/swalAdapter';
 
 
 // Options grouped for UI display

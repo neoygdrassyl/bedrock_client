@@ -1,5 +1,5 @@
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 
 function PQRS_MODULE_NAV({ translation, currentItem, FROM, NAVIGATION }) {
     const isAdmin = window.user.name_short === "Luis Parra"

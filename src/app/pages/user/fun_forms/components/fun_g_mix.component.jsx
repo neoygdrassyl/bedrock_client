@@ -1,4 +1,4 @@
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import FUN_REPORT_DATA from './fun_report_data';
 
 function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }) {

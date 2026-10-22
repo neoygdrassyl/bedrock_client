@@ -1,5 +1,5 @@
 import { FilePlus2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { pendingEntriesLabel } from '../onlineRadicationModel';
 
 /** Subtle "N entrada(s) nueva(s)" marker for requests with document entries waiting. */

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { LegacyModal } from '@/components/legacy-modal';
+import { LegacyModal } from '@/shared/components/legacy-modal';
 
 describe('LegacyModal compatibility', () => {
   it('preserves ReactModal class hooks expected by legacy pages and automation', () => {

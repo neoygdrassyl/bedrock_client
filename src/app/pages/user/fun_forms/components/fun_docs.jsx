@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import FUNService from '../../../../services/fun.service'
 
-import Collapsible from '../../../../components/Collapsible';
+import Collapsible from '../../../../../shared/components/Collapsible';
 import dayjs from 'dayjs';
 import FUN6DATALIST from './fun_6_datalist';
 
@@ -15,9 +15,9 @@ import FUN_6_VIEW from '../fun_6.view';
 
 import { PDFDocument } from 'pdf-lib'
 import { buildGeneratorContext, evaluateGenerator, generatorsBySection, getGeneratorProps, GENERATOR_SECTION_AUTOMATIC, GENERATOR_SECTION_SPECIAL } from './documentGeneratorsRegistry';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { Button } from '@/components/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
 
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
         const [attachs, setAttachs] = useState(0);

@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle2, ClipboardList, FileSearch, Info, Loader2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/shared/ui/badge';
 
 function getRequirementCountLabel(count) {
   return `${count} requisito${count === 1 ? '' : 's'}`;

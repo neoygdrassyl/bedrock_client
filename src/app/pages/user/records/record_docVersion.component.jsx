@@ -1,13 +1,13 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import dayjs from 'dayjs';
 import FUNService from '../../../services/fun.service';
 import { PDFDocument } from 'pdf-lib';
-import VIZUALIZER from '../../../components/vizualizer.component';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const customStylesForModal = {
     overlay: {

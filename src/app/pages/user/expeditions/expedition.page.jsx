@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import RECORD_LAW_SERVICE from '../../../services/record_law.service';
 import FUN_VERSION_NAV from '../fun_forms/components/fun_versionNav';
 import FUN_MODULE_NAV from '../fun_forms/components/fun_moduleNav';
-import CUSTOM_DATA_SERVICE from '../../../services/custom.service';
+import CUSTOM_DATA_SERVICE from '../../../../shared/api/custom.service';
 import EXP_1 from './exp_1.component';
 import EXP_AREAS from './exp_areas.component';
 import EXP_DOCS from './exp_docs.component';
 import EXP_LIC from './exp_lic.component';
-import { regexChecker_isOA_2, regexChecker_isPh } from '../../../components/customClasses/typeParse';
+import { regexChecker_isOA_2, regexChecker_isPh } from '../../../../shared/config/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function EXP_CLOCKS_ACCESS({ currentItem, NAVIGATION }) {
     const canOpenTimes = currentItem && typeof NAVIGATION === 'function';

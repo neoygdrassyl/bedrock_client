@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 export function MissingDataBadge({ reason = 'generic' }) {
   const getReasonData = () => {

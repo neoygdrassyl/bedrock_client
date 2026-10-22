@@ -1,5 +1,5 @@
 import { ChevronRight, FileText } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 /**
  * Selectable document title of a documentary table row: icon, name (clamped until

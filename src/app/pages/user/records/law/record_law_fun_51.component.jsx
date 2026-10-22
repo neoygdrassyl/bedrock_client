@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import VIZUALIZER from '../../../../components/vizualizer.component';
+import { Button } from '@/shared/ui/button';
+import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../../../services/record_law.service';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import FUNService from '../../../../services/fun.service';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function RECORD_LAW_FUN_51(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, quickModalStyle } = props;

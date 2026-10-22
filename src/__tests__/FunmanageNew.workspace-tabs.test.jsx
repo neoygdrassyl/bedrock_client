@@ -47,7 +47,7 @@ vi.mock('../app/pages/user/fun_forms/components/FunExpedienteDetail', () => ({
   ),
 }));
 
-vi.mock('@/components/ui/select', () => ({
+vi.mock('@/shared/ui/select', () => ({
   Select: ({ children }) => <div>{children}</div>,
   SelectTrigger: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
   SelectValue: ({ placeholder }) => <span>{placeholder}</span>,
@@ -55,14 +55,14 @@ vi.mock('@/components/ui/select', () => ({
   SelectItem: ({ children, value }) => <div data-value={value}>{children}</div>,
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, asChild, ...props }) => {
     if (asChild && React.isValidElement(children)) return React.cloneElement(children, props);
     return <button type="button" {...props}>{children}</button>;
   },
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span aria-hidden="true" />,
 }));
 

@@ -13,7 +13,7 @@ vi.mock('../app/services/fun.service', () => ({
   default: funServiceMock,
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   nomens: 'CUB1',
 }));
 
@@ -25,13 +25,13 @@ vi.mock('sweetalert2', () => ({
 
 
 
-vi.mock('../app/components/ui', () => ({
+vi.mock('../shared/components/legacy-ui', () => ({
   MDBBtn: ({ children, onClick, ...props }) => React.createElement('button', { onClick, ...props }, children),
   MDBPopover: ({ btnChildren, onClick }) => React.createElement('button', { onClick }, btnChildren),
   MDBPopoverBody: ({ children }) => React.createElement('div', null, children),
 }));
 
-vi.mock('../app/components/ChartErrorBoundary', () => ({
+vi.mock('../shared/components/ChartErrorBoundary', () => ({
   __esModule: true,
   default: ({ children }) => React.createElement(React.Fragment, null, children),
 }));
@@ -41,7 +41,7 @@ vi.mock('../app/pages/user/fun_forms/components/charts_components/chart_macroGan
   default: () => React.createElement('div', { 'data-testid': 'macro-gantt-chart-stub' }, 'legacy scatter'),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser_dateDiff: vi.fn(() => 15),
   dateParser_finalDate: vi.fn(() => '2026-03-01'),
   dateParser_timeLeft: vi.fn(() => 10),

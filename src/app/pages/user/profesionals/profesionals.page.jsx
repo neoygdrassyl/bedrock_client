@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import profesionalsService from '../../../services/profesionals.service';
 import { Link } from "react-router-dom";
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import PROFESIONALS_MANAGE from './manage.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const customStylesForModal = {
   overlay: {

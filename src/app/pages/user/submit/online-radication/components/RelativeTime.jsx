@@ -1,5 +1,5 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+import { cn } from '@/shared/lib/utils';
 import { MISSING, formatDateTime, formatRelative, parseDate } from '../onlineRadicationModel';
 
 /** "hace 2 h" with the absolute date on hover (and in the accessible text). */

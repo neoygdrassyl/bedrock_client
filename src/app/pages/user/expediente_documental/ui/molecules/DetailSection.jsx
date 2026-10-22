@@ -1,5 +1,5 @@
 import { Tag } from '../atoms/Tag';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 /**
  * Card-like block of the "Ficha documental" (same pattern as the Actualizar cards: bordered

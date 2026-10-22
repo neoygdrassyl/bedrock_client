@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 describe('Icon bridge component', () => {
   it('renders a lucide icon for a known FA name', () => {

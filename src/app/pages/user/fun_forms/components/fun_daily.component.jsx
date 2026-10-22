@@ -1,15 +1,15 @@
 import { startTransition, useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import FUN_SERVICE from '../../../../services/fun.service';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../components/customClasses/typeParse';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/shared/ui/dropdown-menu';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
+import { Button } from '@/shared/ui/button';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft, dateParser_timePassed, regexChecker_isOA_2, regexChecker_isOA_3, regexChecker_isPh, VR_DOCUMENTS_OF_INTEREST, _SET_PRIORITY, formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
 import FUN_CHART_MACRO_GRANTT from './charts_components/chart_macroGant.component';
-import { nomens } from '../../../../components/jsons/vars';
-import ChartErrorBoundary from '../../../../components/ChartErrorBoundary';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { nomens } from '../../../../../shared/config/jsons/vars';
+import ChartErrorBoundary from '../../../../../shared/components/ChartErrorBoundary';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 // Helper to create a fresh default data structure (avoids mutation issues)
 function createDefaultData() {

@@ -1,14 +1,14 @@
 import { useRef, useEffect, useMemo, useState } from "react";
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { ResoEngineTemplate } from "../../../utils/ResoEngineTemplate";
 import { ActDesistEngineTemp } from "../../../utils/ActDesistEngineTemp";
 import { ExecEngineTemp } from "../../../utils/ExecEngineTemp";
 import { TemplateEngine } from "../../../utils/TemplateEngine";
 import JoditEditor from "jodit-pro-react";
 import 'jodit-pro/es2021/jodit.fat.min.css';
-import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/app/utils/swalAdapter';
-import { Icon } from '@/components/icon';
-import { downloadProtectedPdf } from '../../../utils/pdfDownload';
+import { swalClose, swalError, swalProgressPDF, swalUpdateProgress } from '@/shared/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { downloadProtectedPdf } from '../../../../shared/utils/pdfDownload';
 
 const numericOr = (value, fallback) => {
   const parsed = Number(value);

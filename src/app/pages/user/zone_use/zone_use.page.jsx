@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import { Link } from 'react-router-dom';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import Zone_Use_Service from "../../../services/zone_use.service"
 import ZONE_USE_COMPONENT from './zone_use.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

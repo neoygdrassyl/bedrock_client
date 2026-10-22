@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { LegacyModal } from '@/components/legacy-modal';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { LegacyModal } from '@/shared/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 import { getMissingRequirements } from '@/app/services/documentaryOperations.service';
 import { refreshRequirementsFor } from '@/app/services/documentaryRequirements.service';
 import { documentaryError } from '@/app/services/documentary.service';

@@ -1,7 +1,7 @@
 import { ArrowUpRight, Ban, FolderPlus } from 'lucide-react';
-import { DovelaButton } from '@/components/dovela-ui';
-import { SheetClose } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { DovelaButton } from '@/shared/dovela-ui';
+import { SheetClose } from '@/shared/ui/sheet';
+import { cn } from '@/shared/lib/utils';
 import { expedienteHref } from '../components/ExpedienteLink';
 
 // The primitive `border` is Bootstrap's !important utility, so tone borders use `border-[1px]`.

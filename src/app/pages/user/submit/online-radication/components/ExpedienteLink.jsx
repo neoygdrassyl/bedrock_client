@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { buildExpedienteWorkspaceUrl } from '../../../fun_forms/utils/expedienteWorkspaceRoute';
 
 /** Route of the FUN 0 workspace, the same one search results and dashboards open. */

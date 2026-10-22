@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Icon } from '@/components/icon';
-import { infoCud } from '@/app/components/jsons/vars';
+import { Icon } from '@/shared/components/icon';
+import { infoCud } from '@/shared/config/jsons/vars';
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +17,7 @@ import {
   SidebarRail,
   SidebarSeparator,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/shared/ui/sidebar';
 import { preloadNavigationRoute } from './navigation-config';
 import { useNavigationPending } from './navigation-pending-context';
 

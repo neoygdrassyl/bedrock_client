@@ -7,7 +7,7 @@ const swalMocks = vi.hoisted(() => ({
   success: vi.fn(),
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: swalMocks.error,
   swalLoading: swalMocks.loading,
   swalSuccess: swalMocks.success,

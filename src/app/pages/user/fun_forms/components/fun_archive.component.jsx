@@ -1,10 +1,10 @@
 
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { _GET_SERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_COD, _GET_SUBSERIE_STR } from '../../../../../shared/config/customClasses/typeParse';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import FUN_SERVICE from '../../../../services/fun.service'
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 function FUN_ARCHIVE({ translation, swaMsg, globals, currentItem, currentVersion, isEdit }) {
 

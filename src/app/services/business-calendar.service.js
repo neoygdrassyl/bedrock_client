@@ -1,4 +1,4 @@
-import http from '../../http-common';
+import http from '../../shared/api/http-common';
 
 const REQUEST_TIMEOUT_MS = 10000;
 const bootstrapRequests = new Map();

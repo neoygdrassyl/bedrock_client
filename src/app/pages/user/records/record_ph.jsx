@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 
 import FUN_SERVICE from '../../../services/fun.service';
 import RECORD_PH_SERVICE from '../../../services/record_ph.service';
@@ -18,7 +18,7 @@ import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
 import FUN_6_VIEW from '../fun_forms/fun_6.view';
 import RECORD_PH_GEN_REVIEW from './ph/record_ph_gen_arc_review.component';
 import RECORD_PH_CHECK_LIST from './ph/record_ph_check_list.component';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 // RECORDS
 

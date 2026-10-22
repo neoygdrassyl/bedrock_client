@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 
 import PQRS_Main from '../../../services/pqrs_main.service'
-import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '../../../components/customClasses/typeParse';
+import { dateParser_dateDiff, dateParser_finalDate, dateParser_timeLeft } from '../../../../shared/config/customClasses/typeParse';
 
 import PQRS_ACTION_REVIEW from './components/pqrs_reviewAction.component';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start, date_end, NAVIGATION_GEN, setSelectedRow }) {
     const [load, setLoad] = useState(false);

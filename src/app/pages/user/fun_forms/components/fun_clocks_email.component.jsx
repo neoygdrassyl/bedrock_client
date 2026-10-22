@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { dateParser, dateParser_finalDate } from '../../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import { dateParser, dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
 import FUN_SERVICE from '../../../../services/fun.service'
-import USERS_Service from '../../../../services/users.service';
+import USERS_Service from '../../../../../shared/api/users.service';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function FUN_CLOCKS_EMAILS(props) {
     const [users_list, setUsers_list] = useState([]);
     const [attachsForEmails, setAttachsForEmails] = useState(0);

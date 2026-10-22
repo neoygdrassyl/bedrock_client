@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
-import { DiasHabilesColombia } from '../../../utils/BusinessDaysCol';
+import { DiasHabilesColombia } from '../../../../shared/utils/BusinessDaysCol';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function PQRSNEW({ translation, swaMsg, globals, translation_form, refreshRequested }) {
     const [solicitors, setSolicitors] = useState(1);
     const [contacts, setContacts] = useState(1);

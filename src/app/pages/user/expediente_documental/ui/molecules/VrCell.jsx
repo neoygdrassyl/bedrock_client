@@ -4,9 +4,9 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/shared/ui/dropdown-menu';
 import { Tag } from '../atoms/Tag';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { getDocumentVrDisplayValue } from '../../../shared/expediente-documental.utils';
 

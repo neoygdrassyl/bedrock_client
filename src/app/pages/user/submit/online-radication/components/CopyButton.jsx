@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 /** Icon button that copies `value`; announces the result to screen readers. */
 export function CopyButton({ value, label, className }) {

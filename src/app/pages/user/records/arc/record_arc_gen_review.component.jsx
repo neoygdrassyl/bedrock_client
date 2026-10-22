@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
+import { REVIEW_DOCS } from '../../../../../shared/config/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

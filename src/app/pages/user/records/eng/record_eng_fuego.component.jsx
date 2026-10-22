@@ -1,5 +1,5 @@
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export const ENG_FUEGO = (props) => {
 

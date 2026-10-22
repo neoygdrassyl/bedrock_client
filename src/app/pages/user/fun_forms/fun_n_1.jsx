@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isCanonicalExpediente } from '../expediente_documental/expedienteMode';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/app/services/documentaryOperations.service';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import FUNService from '../../../services/fun.service'
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 import IdentificationChangeLogTable from './components/IdentificationChangeLogTable.jsx';
 import './fun_n_1.css';

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import Estudios_Simico from '../../../../components/jsons/estudio_eng.json'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import Estudios_Simico from '../../../../../shared/config/jsons/estudio_eng.json'
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_ENG_STEP_431(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version, requestUpdateRecord } = props;

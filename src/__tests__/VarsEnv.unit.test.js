@@ -9,7 +9,7 @@ const importVarsModule = async (globalId) => {
     import.meta.env.VITE_GLOBAL_ID = globalId;
   }
 
-  return import('../app/components/jsons/vars');
+  return import('../shared/config/jsons/vars');
 };
 
 describe('vars environment fallback', () => {

@@ -47,7 +47,7 @@ test.describe('E2E: Login + session expiration', () => {
     // expiry): every subsequent API call now returns 401. Reload to trigger
     // the app's normal data-fetching cycle again — this is the exact
     // "background poll after the session died" scenario the H-08/H-14 fix
-    // targets, per the comment in src/http-common.js.
+    // targets, per the comment in src/shared/api/http-common.js.
     await page.route('**/*', async (route) => {
       const request = route.request();
       const resourceType = request.resourceType();

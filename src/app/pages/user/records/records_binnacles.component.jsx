@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { swalError, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
-import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
-import '@/app/components/ObservationPanel.css';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
+import { richTextToPlainText } from '@/shared/utils/richTextBlockNote';
+import '@/shared/components/ObservationPanel.css';
 import { uploadRecordArcRichTextImage } from './arc/recordArcRichTextUpload';
 export default function RECORDS_BINNACLE(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, SERVICE, AIM, PATH, readOnly, compact = false, idSuffix = '' } = props;

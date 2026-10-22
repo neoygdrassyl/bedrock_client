@@ -20,16 +20,16 @@ const {
   createClockMock: vi.fn(),
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   default: ({ name }) => <span data-testid={`icon-${name}`} />,
   Icon: ({ name }) => <span data-testid={`icon-${name}`} />,
 }));
 
-vi.mock('../app/components/Collapsible', () => ({
+vi.mock('../shared/components/Collapsible', () => ({
   __esModule: true,
   default: ({ children }) => <div>{children}</div>,
 }));
@@ -93,7 +93,7 @@ vi.mock('../app/services/submit.service', () => ({
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),

@@ -1,11 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Archive, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, ClipboardList, FileText, Files, History, Info, Monitor, Plus, RefreshCw, RotateCcw, ScanLine, TriangleAlert } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import DataService from '@/app/services/data.service';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { cn } from '@/shared/lib/utils';
+import DataService from '@/shared/api/data.service';
 import { documentaryError } from '@/app/services/documentary.service';
 import { getCanonicalDocumentRow, getCanonicalDocuments, getCanonicalHistory } from '@/app/services/documentaryOperations.service';
 import { canManageDocumentaryConfiguration } from '@/app/utils/documentaryConfigurationAccess';

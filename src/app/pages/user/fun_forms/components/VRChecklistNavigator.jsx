@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 function getVrLabel(vr) {
   return vr?.id_public || vr?.vr_id_public || `VR ${vr?.id || ''}`.trim();

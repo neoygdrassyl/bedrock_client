@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { GanttChart } from './GanttChart';
 import dayjs from 'dayjs';
 import { sumarDiasHabiles } from '../../hooks/useClocksManager';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 // Panel de detalle (Muestra información específica al hacer click en una fase)
 const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {

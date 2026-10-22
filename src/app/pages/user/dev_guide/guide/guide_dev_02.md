@@ -37,7 +37,7 @@ sequenceDiagram
 
 ### Configuración del Cliente HTTP
 
-El archivo `src/http-common.js` centraliza la configuración de Axios:
+El archivo `src/shared/api/http-common.js` centraliza la configuración de Axios:
 
 ```javascript
 // Configuración base

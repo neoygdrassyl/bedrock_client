@@ -1,9 +1,9 @@
 import { Component, useState } from 'react';
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { Collapsible, CollapsibleContent } from '@/shared/ui/collapsible';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import './fun_modal_shared.css';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 
 export default function FUN_MACROTABLE_FILTERLIST(props) {
     const { idRef, text } = props;

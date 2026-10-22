@@ -1,8 +1,8 @@
 
 import SERVICE_ARCHIVE from '../../../services/archive.service';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function ARCHIVE_MANAGE(props) {

@@ -1,8 +1,8 @@
 import { memo, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import FUNN51 from '../../fun_forms/fun_n_52';
 import { CHECK_COLUMNS, DOCUMENT_COLUMNS, PROFESSIONAL_RESPONSIBILITIES, REQUIRED_EXPERIENCE_YEARS, STATE_META } from './professionalResponsibility.constants';
 import useProfessionalResponsibilityMatrix from './useProfessionalResponsibilityMatrix';

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider, useTheme } from '@/components/theme-provider';
+import { ThemeProvider, useTheme } from '@/shared/components/theme-provider';
 
 // Mock matchMedia for jsdom
 Object.defineProperty(window, 'matchMedia', {

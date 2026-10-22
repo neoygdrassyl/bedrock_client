@@ -1,5 +1,5 @@
 import { Tag } from '../atoms/Tag';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 /**
  * Underlined segmented shortcuts (e.g. Todos / Por escanear / Escaneados).

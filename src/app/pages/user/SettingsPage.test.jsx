@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('../../services/data.service.js', () => ({ default: { getUserData: () => ({}) } }));
+vi.mock('../../../shared/api/data.service.js', () => ({ default: { getUserData: () => ({}) } }));
 vi.mock('./document_requirements/CentralConfigurationPanel.jsx', () => ({
   default: () => <div data-testid="central-configuration-panel" />,
 }));

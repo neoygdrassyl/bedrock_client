@@ -2,16 +2,16 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 // Translations
 import { useTranslation } from 'react-i18next';
-import './translation/i18n';
+import '../shared/i18n/i18n';
 
 // New shell & theme
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/shared/components/theme-provider';
+import { Toaster } from '@/shared/ui/sonner';
 
 // CSS: loaded after Bootstrap (imported in index.jsx) so our overrides win
 import './App.css';
-import './styles/legacy-bridge.css';
-import './styles/swal-theme.css';
+import '../shared/styles/legacy-bridge.css';
+import '../shared/styles/swal-theme.css';
 
 // Router: auth context, guards and the route table (imported after the CSS above
 // so the stylesheet order of the modules they pull in is unchanged).

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Markdown from 'markdown-to-jsx';
 import { useLocation } from "react-router-dom"
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 import DevIndexList from './guide/dev_index'
 import guide_dev_01 from './guide/guide_dev_01.md'
@@ -14,8 +14,8 @@ import guide_dev_06 from './guide/guide_dev_06.md'
 import guide_dev_07 from './guide/guide_dev_07.md'
 import guide_dev_08 from './guide/guide_dev_08.md'
 import guide_dev_09 from './guide/guide_dev_09.md'
-import { PreBlock, CodeBlock } from '../../../components/MermaidDiagram.component'
-import { Icon } from '@/components/icon';
+import { PreBlock, CodeBlock } from '../../../../shared/components/MermaidDiagram.component'
+import { Icon } from '@/shared/components/icon';
 
 export default function DEV_GUIDE(props) {
     const { translation, swaMsg, globals, breadCrums } = props;

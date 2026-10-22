@@ -65,7 +65,7 @@ vi.mock('../app/pages/user/fun_forms/fun_6.view', () => ({
 
 // ─── Mock external libs ────────────────────────────────────────────────────
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -94,14 +94,14 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return <div data-testid="mock-modal" data-label={contentLabel}>{children}</div>;
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'bucaramanga',

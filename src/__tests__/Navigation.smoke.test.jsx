@@ -45,7 +45,7 @@ vi.mock('../app/layouts/AppShell', () => {
   };
 });
 
-vi.mock('@/components/ui/sonner', () => {
+vi.mock('@/shared/ui/sonner', () => {
   const React = require('react');
   return {
     Toaster: () => React.createElement('div', { 'data-testid': 'toaster' }),
@@ -66,7 +66,7 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-vi.mock('../http-common', () => ({
+vi.mock('../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -84,7 +84,7 @@ vi.mock('sweetalert2', () => ({
 }));
 
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'bucaramanga',

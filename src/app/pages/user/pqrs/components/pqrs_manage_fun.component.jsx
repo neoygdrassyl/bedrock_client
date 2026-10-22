@@ -1,7 +1,7 @@
 import PQRS_Service from '../../../../services/pqrs_main.service';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function PQRS_EDIT_FUN({ translation, swaMsg, globals, currentItem, refreshCurrentItem }) {
 

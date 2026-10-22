@@ -2,14 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleAlert, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
-import CustomsDataService from '@/app/services/custom.service';
-import DataSerive from '@/app/services/data.service';
-import { infoCud } from '@/app/components/jsons/vars';
-import { swalError } from '@/app/utils/swalAdapter';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import CustomsDataService from '@/shared/api/custom.service';
+import DataSerive from '@/shared/api/data.service';
+import { infoCud } from '@/shared/config/jsons/vars';
+import { swalError } from '@/shared/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { cn } from '@/shared/lib/utils';
 
 // Fields set an explicit text color: Tailwind preflight is off, so a bare <input>
 // falls back to the browser default (black) and vanishes on the dark theme.

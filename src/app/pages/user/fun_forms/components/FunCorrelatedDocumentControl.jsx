@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 
 import FUNService from '../../../../services/fun.service';
 import {

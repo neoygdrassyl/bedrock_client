@@ -1,4 +1,4 @@
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
 function BlueprintChecklistTable({ items, values, checks, getSelectClassName, onSave }) {
     const checklistItems = items.filter(item => !item.open);

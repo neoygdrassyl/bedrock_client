@@ -1,6 +1,6 @@
-import { Icon } from '@/components/icon';
-import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { Icon } from '@/shared/components/icon';
+import { buildProtectedFilePath } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 
 function PQRS_COMPONENT_ATTACH_PROFESIONAL({ translation, swaMsg, globals, currentItem }) {
 

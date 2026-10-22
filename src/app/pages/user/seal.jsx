@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import SealsService from '../../services/seal.service'
-import CustomService from '../../services/custom.service'
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
-import DataTable from '@/components/data-table-bridge';
-import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../components/customClasses/typeParse'
+import CustomService from '../../../shared/api/custom.service'
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Icon } from '@/shared/components/icon';
+import DataTable from '@/shared/components/data-table-bridge';
+import { formsParser1_exlucde2, dateParser, formsParser1 } from '../../../shared/config/customClasses/typeParse'
 import dayjs from 'dayjs';
-import { swalClose, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 function Seals({ translation, swaMsg, breadCrums }) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);

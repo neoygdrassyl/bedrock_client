@@ -17,7 +17,7 @@ vi.mock('@/app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/components/ui/dialog', () => ({
+vi.mock('@/shared/ui/dialog', () => ({
   Dialog: ({ open, children }) => (open ? <div>{children}</div> : null),
   DialogContent: ({ children, ...props }) => <div {...props}>{children}</div>,
   DialogHeader: ({ children, ...props }) => <div {...props}>{children}</div>,

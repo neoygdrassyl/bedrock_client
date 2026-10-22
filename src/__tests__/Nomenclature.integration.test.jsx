@@ -30,7 +30,7 @@ vi.mock('../app/services/nomeclature.service', () => ({
 }));
 
 // DataTable mock simple — no llama col.cell para evitar deps de UI internas
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: ({ data = [], noDataComponent }) => (
     <div data-testid='mock-datatable'>
@@ -46,7 +46,7 @@ vi.mock('@/components/data-table-bridge', () => ({
   ),
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen }) =>
     isOpen ? <div data-testid='mock-modal'>{children}</div> : null,
 }));
@@ -60,7 +60,7 @@ vi.mock('../app/pages/user/nomenclature/new_nomenclature', () => ({
   ),
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: (date) => date || '',
 }));
 

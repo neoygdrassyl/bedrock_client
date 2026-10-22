@@ -14,10 +14,10 @@ import {
   Info,
   Send,
 } from 'lucide-react';
-import { DovelaBadge, DovelaButton } from '@/components/dovela-ui';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
+import { DovelaBadge, DovelaButton } from '@/shared/dovela-ui';
+import { Button } from '@/shared/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
+import { cn } from '@/shared/lib/utils';
 import { RelativeTime } from '../components/RelativeTime';
 import {
   ENTRY_KIND_LABELS,

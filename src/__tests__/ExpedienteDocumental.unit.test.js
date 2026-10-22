@@ -464,7 +464,7 @@ describe('documentary command transport', () => {
         vi.resetModules();
         const post = vi.fn().mockResolvedValue({ data: {} });
         const put = vi.fn().mockResolvedValue({ data: {} });
-        vi.doMock('../http-common', () => ({ default: { get: vi.fn(), post, put, patch: vi.fn() } }));
+        vi.doMock('../shared/api/http-common', () => ({ default: { get: vi.fn(), post, put, patch: vi.fn() } }));
         const api = await import('../app/services/documentaryOperations.service');
         const command = { expectedInputRevision: 0, idempotencyKey: 'key', reason: 'Reason' };
         await api.activateDocumentaryProject(1, command);
@@ -482,6 +482,6 @@ describe('documentary command transport', () => {
         });
         expect(put.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/documents/10/controls/CTRL%2F20');
         await expect(api.saveCanonicalControl(1, 10, 20, command)).rejects.toThrow();
-        vi.doUnmock('../http-common');
+        vi.doUnmock('../shared/api/http-common');
     });
 });

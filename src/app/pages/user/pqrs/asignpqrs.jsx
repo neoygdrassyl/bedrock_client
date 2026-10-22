@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
-import USERS_Service from '../../../services/users.service'
-import DataTable from '@/components/data-table-bridge';
-import { dateParser } from '../../../components/customClasses/typeParse'
+import USERS_Service from '../../../../shared/api/users.service'
+import DataTable from '@/shared/components/data-table-bridge';
+import { dateParser } from '../../../../shared/config/customClasses/typeParse'
 import PQRS_COMPONENT_SOLICITORS from './components/pqrs_solicitors.component';
 import PQRS_COMPONENT_CONTACTS from './components/pqrs_contancts.component';
 import PQRS_MODULE_NAV from './components/pqrs_moduleNav.component';
@@ -12,10 +12,10 @@ import PQRS_PDFGEN_CONFIRM from './components/pqrs_genPDF_confirm.component';
 import PQRS_WORKERS_EMAILS from './components/pqrs_workersEmails.component';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 function PQRSASIGN({ translation, swaMsg, globals, translation_form, currentId, refreshList: refreshListProp, NAVIGATION }) {
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);

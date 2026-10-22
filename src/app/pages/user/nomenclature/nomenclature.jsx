@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { Link } from "react-router-dom";
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 // SERVICES
 import Nomenclature_Service from '../../../services/nomeclature.service'
-import { dateParser } from '../../../components/customClasses/typeParse'
+import { dateParser } from '../../../../shared/config/customClasses/typeParse'
 
 // COMPONENT
 import NOMENCLATURE_NEW from './new_nomenclature';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function NOMENCLATURE({ translation, swaMsg, globals, breadCrums }) {
     const [isLoaded, setIsLoaded] = useState(false);

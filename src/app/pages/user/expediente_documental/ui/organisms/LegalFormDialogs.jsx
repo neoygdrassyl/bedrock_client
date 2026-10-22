@@ -1,11 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import fileDownload from 'js-file-download';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { cn } from '@/shared/lib/utils';
 import { isRevisionConflict, legalFormErrorCode, legalFormErrorMessage, saveLegalFormChecklist, saveTypologySelection } from '@/app/services/documentaryLegalForm.service';
-import { activeAuthority, activeCity } from '@/app/components/jsons/vars';
+import { activeAuthority, activeCity } from '@/shared/config/jsons/vars';
 import { buildChecklistPdf, CHECKLIST_CODES } from '../../../fun_forms/components/checklistPdf';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { fieldClass, FormField } from '../molecules/FormField';

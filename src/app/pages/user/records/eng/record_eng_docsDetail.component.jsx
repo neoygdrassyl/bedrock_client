@@ -1,7 +1,7 @@
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function RECORD_ENG_DOCS_DESC(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;

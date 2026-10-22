@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 
-import { dateParser } from '../../../components/customClasses/typeParse';
-import VIZUALIZER from '../../../components/vizualizer.component';
+import { dateParser } from '../../../../shared/config/customClasses/typeParse';
+import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import FUN_SERVICE from '../../../services/fun.service';
-import { swalError, swalLoading, swalSuccess } from '../../../utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '../../../../shared/utils/swalAdapter';
 import {
     findVersion,
     isLegacyChecklistGroupVisible,

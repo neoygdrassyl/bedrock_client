@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { dateParser } from '../../../../components/customClasses/typeParse';
-import { infoCud } from '../../../../components/jsons/vars';
+import { dateParser } from '../../../../../shared/config/customClasses/typeParse';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import { pdfExporter } from 'quill-to-pdf';
 import { jsPDF } from "jspdf";
 

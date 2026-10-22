@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
 
 export const ControlBar = ({ timeTravel, onClose }) => {
   const { systemDate, onDateChange, onDateShift, onDateReset } = timeTravel;

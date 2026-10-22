@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 import ChatService from '../../../services/chat.service';
 
 function normalizeList(payload) {

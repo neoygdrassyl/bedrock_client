@@ -1,5 +1,5 @@
-import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
+import { cn } from '@/shared/lib/utils';
 
 const TONES = {
   primary: 'border-primary/20 bg-primary/10 text-[hsl(var(--primary))]',

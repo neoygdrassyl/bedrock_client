@@ -1,7 +1,7 @@
 import { Eye, FileImage, FileText, Info, Paperclip } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DovelaBadge } from '@/components/dovela-ui';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { DovelaBadge } from '@/shared/dovela-ui';
+import { Button } from '@/shared/ui/button';
 import { buildDocumentRows, buildEntryFileIndex, getDocumentEntries, hasValue, plural } from '../onlineRadicationModel';
 import { CountPill, DetailCard, EmptyNote } from './DetailPrimitives';
 

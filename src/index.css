@@ -307,7 +307,7 @@ body {
   color: hsl(var(--foreground));
 }
 
-/* Scrollbars: capa unificada en src/styles/scrollbar.css (+ componente shadcn <ScrollArea>) */
+/* Scrollbars: capa unificada en src/shared/styles/scrollbar.css (+ componente shadcn <ScrollArea>) */
 
 input,
 select,
@@ -591,6 +591,6 @@ h6 { font-size: 11px; }
 
 /* ── Legacy Bridge ──────────────────────────────────────────────────
    Bootstrap component overrides now consolidated in
-   src/app/styles/legacy-bridge.css (imported via App.js).
+   src/shared/styles/legacy-bridge.css (imported via App.js).
    ─────────────────────────────────────────────────────────────────── */
 

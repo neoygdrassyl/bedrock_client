@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 import FUNService from '../../../services/fun.service';
 import { PROCESS_DEFINITION } from '../legal_flow_guide/utils/legalProcessDefinition';
 import { useAlarmsBell } from '../fun_forms/hooks/useAlarmsV2';

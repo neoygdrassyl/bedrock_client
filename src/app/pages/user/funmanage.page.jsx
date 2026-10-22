@@ -1,9 +1,9 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
-import { TabPane } from '@/components/ui/tab-pane';
+import { TabPane } from '@/shared/ui/tab-pane';
 import { Link } from "react-router-dom";
 import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
-import { swalLoading, swalError, swalClose } from '@/app/utils/swalAdapter';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
+import { swalLoading, swalError, swalClose } from '@/shared/utils/swalAdapter';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 // SERVICES
 import FUNService from '../../services/fun.service'
@@ -16,7 +16,7 @@ import FUND from './fun_forms/components/fun_docs'
 import FUN_ALERT from './fun_forms/fun_alertn';
 import FUNCLOCK from './fun_forms/fun_clock';
 
-import { regexChecker_isPh, regexChecker_isOA } from '../../components/customClasses/typeParse';
+import { regexChecker_isPh, regexChecker_isOA } from '../../../shared/config/customClasses/typeParse';
 
 // RECORDS
 import RECORD_ARC from './records/record_arc';
@@ -33,10 +33,10 @@ import FUN_ASIGNS_COMPONENT from './fun_forms/components/fun_asign.component';
 
 // JSONS
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
 import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms/utils/expedienteWorkspaceRoute';
 
 const FUN_DAILY_COMPONENT = lazy(() => import('./fun_forms/components/fun_daily.component'));

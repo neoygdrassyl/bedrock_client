@@ -1,25 +1,25 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import RECORD_ARCSERVICE from '../../../../services/record_arc.service';
 import FUN_SERVICE from '../../../../services/fun.service'
 import dayjs from 'dayjs';
-import { cities, domains_number } from '../../../../components/jsons/vars';
+import { cities, domains_number } from '../../../../../shared/config/jsons/vars';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-import { handleArchCheck } from '../../../../components/customClasses/pdfCheckHandler';
-import { REVIEW_DOCS } from '../../../../components/jsons/arcReviewDocs';
-import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../components/customClasses/typeParse';
+import { handleArchCheck } from '../../../../../shared/config/customClasses/pdfCheckHandler';
+import { REVIEW_DOCS } from '../../../../../shared/config/jsons/arcReviewDocs';
+import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../../shared/config/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import { useDocumentaryInventory } from '../../expediente_documental/hooks/useDocumentaryInventory';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
-import { Icon } from '@/components/icon';
-import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
-import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
+import { richTextToPlainText } from '@/shared/utils/richTextBlockNote';
 import { uploadRecordArcRichTextImage } from './recordArcRichTextUpload';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { downloadProtectedPdf, toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { downloadProtectedPdf, toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/shared/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

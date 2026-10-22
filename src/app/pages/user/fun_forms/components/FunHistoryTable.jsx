@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
-import { Icon } from '@/components/icon';
-import { swalError } from '@/app/utils/swalAdapter';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
+import { Icon } from '@/shared/components/icon';
+import { swalError } from '@/shared/utils/swalAdapter';
 import { formatHistoryDate, getHistoryDocumentLabel } from './funHistory.utils';
 
 export default function FunHistoryTable({ history, loading, error, onDownload, onSaveObservation }) {

@@ -27,7 +27,7 @@ vi.mock('jodit-pro-react', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     city: 'Bucaramanga',
     dir: 'Directora Test',
@@ -53,7 +53,7 @@ vi.mock('../app/services/cubXvr.service', () => ({
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalSuccess: vi.fn(),
 }));

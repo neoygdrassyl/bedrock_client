@@ -1,12 +1,12 @@
 
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 import { useState, useEffect } from 'react';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import PQRS_Service from '../../../../services/pqrs_main.service';
 import PQRS_WORKERS_EMAILS from './pqrs_workersEmails.component'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 function PQRS_COMPONENT_WORKER_FEEDBACK({ translation, swaMsg, globals, currentItem, retrieveItem, refreshList }) {
     const [feedback, setFeedback] = useState(false);

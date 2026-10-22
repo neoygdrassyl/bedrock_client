@@ -8,7 +8,7 @@ const importClientWithMockedFactory = async (modulePath) => {
 
   const mockCreateDovelaHttpClient = vi.fn(() => ({}));
 
-  vi.doMock('@/http-client-factory', () => ({
+  vi.doMock('@/shared/api/http-client-factory', () => ({
     createDovelaHttpClient: mockCreateDovelaHttpClient,
   }));
 

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { swalLoading, swalSuccess, swalError } from '@/app/utils/swalAdapter';
+import { swalLoading, swalSuccess, swalError } from '@/shared/utils/swalAdapter';
 
 export default function usePHSave(swaMsg) {
   const [isSaving, setIsSaving] = useState(false);

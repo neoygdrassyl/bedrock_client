@@ -1,11 +1,11 @@
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { infoCud } from '../../../components/jsons/vars';
-import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../components/customClasses/typeParse';
+import { Button } from '@/shared/ui/button';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { infoCud } from '../../../../shared/config/jsons/vars';
+import { _CALCULATE_EXPENSES, get_SMMV, get_UVT } from '../../../../shared/config/customClasses/typeParse';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 const customStylesForModal = {

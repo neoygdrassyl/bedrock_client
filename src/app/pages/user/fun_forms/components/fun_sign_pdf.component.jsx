@@ -1,13 +1,13 @@
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import writtenNumber from 'written-number';
-import { _FUN_6_PARSER } from '../../../../components/customClasses/funCustomArrays';
-import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../components/customClasses/typeParse';
-import { infoCud } from '../../../../components/jsons/vars';
+import { _FUN_6_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
+import { formsParser1, getJSON, _ADDRESS_SET_FULL } from '../../../../../shared/config/customClasses/typeParse';
+import { infoCud } from '../../../../../shared/config/jsons/vars';
 import FunService from '../../../../services/fun.service';
-import { Icon } from '@/components/icon';
-import { swalClose, swalLoading } from '@/app/utils/swalAdapter';
-import { downloadProtectedPdf } from '@/app/utils/pdfDownload';
+import { Icon } from '@/shared/components/icon';
+import { swalClose, swalLoading } from '@/shared/utils/swalAdapter';
+import { downloadProtectedPdf } from '@/shared/utils/pdfDownload';
 
 function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersion }) {
         // DATA GETTERS

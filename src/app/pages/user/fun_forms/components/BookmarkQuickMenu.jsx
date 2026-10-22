@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/shared/ui/dropdown-menu';
 
 function getVisualState(bookmarkState) {
   if (bookmarkState?.personal && bookmarkState?.team) {

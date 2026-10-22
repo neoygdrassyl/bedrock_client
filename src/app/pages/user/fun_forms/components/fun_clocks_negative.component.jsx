@@ -1,16 +1,16 @@
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 import { useState, useEffect } from 'react';
 
 import FUN_SERVICE from "../../../../services/fun.service"
 import FUN_CLOCKS_EMAILS from './fun_clocks_email.component';
-import { dateParser_finalDate } from '../../../../components/customClasses/typeParse';
-import { TabPane } from '@/components/ui/tab-pane';
-import VIZUALIZER from '../../../../components/vizualizer.component';
-import { Icon } from '@/components/icon';
-import { cn } from '@/lib/utils';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
+import { TabPane } from '@/shared/ui/tab-pane';
+import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const NEGATIVE_PROCESS_START_STATE = -50;
 const LEGACY_VOLUNTARY_DESISTIMIENTO_STATE = -5;

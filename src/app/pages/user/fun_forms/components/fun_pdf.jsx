@@ -1,14 +1,14 @@
 import { useCallback, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/icon';
+import { Button } from '@/shared/ui/button';
+import Icon from '@/shared/components/icon';
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { dateParser, getJSONFull } from '../../../../components/customClasses/typeParse';
+import { dateParser, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
 import dayjs from 'dayjs';
-import { cities, domains, states } from '../../../../components/jsons/vars';
-import { swalClose, swalError, swalLoading } from '@/app/utils/swalAdapter';
-import { toProtectedApiPath } from '@/app/utils/pdfDownload';
-import { requestProtectedArrayBufferWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { cities, domains, states } from '../../../../../shared/config/jsons/vars';
+import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';
+import { toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { requestProtectedArrayBufferWithFeedback } from '@/shared/utils/protectedDocumentAction';
 import fileDownload from 'js-file-download';
 
 const getAdditionalPageCount = (total, capacity) => Math.max(0, Math.ceil(total / capacity) - 1);

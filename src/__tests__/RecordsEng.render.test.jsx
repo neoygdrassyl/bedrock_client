@@ -55,7 +55,7 @@ vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
   default: () => <div data-testid="doc-version-stub" />,
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-stub" />,
 }));

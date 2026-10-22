@@ -22,7 +22,7 @@ vi.mock('../app/services/checklist.service', () => ({
   },
 }));
 
-vi.mock('../app/components/ProtectedDocument', () => ({
+vi.mock('../shared/components/ProtectedDocument', () => ({
   ProtectedDocumentPreview: ({ source, title, className }) => (
     <iframe src={source} title={title} className={className} />
   ),

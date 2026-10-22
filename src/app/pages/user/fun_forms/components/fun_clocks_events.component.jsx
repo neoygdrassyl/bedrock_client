@@ -1,12 +1,12 @@
 
 import dayjs from 'dayjs';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { useEffect, useState } from 'react';
-import DATATABLE from '@/components/data-table-bridge';
+import DATATABLE from '@/shared/components/data-table-bridge';
 import FUN_SERVICE from '../../../../services/fun.service';
-import USER_SERVICE from '../../../../services/users.service'
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import USER_SERVICE from '../../../../../shared/api/users.service'
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function FUN_CLOCK_EVENTS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;

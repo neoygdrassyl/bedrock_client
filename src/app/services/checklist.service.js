@@ -1,4 +1,4 @@
-import http from '@/http-common';
+import http from '@/shared/api/http-common';
 
 class ChecklistService {
   getIntelligentChecklist(funIdPublic, version) {

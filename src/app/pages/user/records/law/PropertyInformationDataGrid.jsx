@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import { _FUN_24_PARSER, _FUN_25_PARSER } from '../../../../components/customClasses/funCustomArrays';
+import { _FUN_24_PARSER, _FUN_25_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
 import RecordLawService from '../../../../services/record_law.service';
 import MatrixInformationTable from './MatrixInformationTable';
 

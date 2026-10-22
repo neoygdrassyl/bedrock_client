@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Ban, CircleAlert } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
-import { DovelaButton, DovelaField, DovelaTextarea } from '@/components/dovela-ui';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Dialog, DialogContent, DialogFooter } from '@/shared/ui/dialog';
+import { DovelaButton, DovelaField, DovelaTextarea } from '@/shared/dovela-ui';
+import { cn } from '@/shared/lib/utils';
 import OnlineRadicationService from '@/app/services/online-radication.service';
 import { ONLINE_RADICATION_SCOPE } from '../onlineRadicationScope';
 import { DialogHeading } from './DialogHeading';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Icon from '@/components/icon';
-import { Button } from '@/components/ui/button';
+import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
 import RECORD_PH_SERVICE from '../../../../services/record_ph.service'
 import usePHSave from './hooks/usePHSave';
 

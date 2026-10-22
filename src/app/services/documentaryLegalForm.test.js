@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import http from '../../http-common';
+import http from '../../shared/api/http-common';
 import * as api from './documentaryLegalForm.service';
 
-vi.mock('../../http-common', () => ({ default: { get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn() } }));
+vi.mock('../../shared/api/http-common', () => ({ default: { get: vi.fn(), put: vi.fn(), post: vi.fn(), delete: vi.fn() } }));
 
 const instance = (extra) => ({ documentKey: 'k-1', instanceLabel: null, currentRowId: 10, evidenceRevision: 1, vrLabel: 'VR-1', controls: { status: 'no_configured_controls', total: 0, complies: 0, doesNotComply: 0, unreviewed: 0 },
   review: null, reviewRevision: 0, verdict: 'pending', source: 'review', ...extra });

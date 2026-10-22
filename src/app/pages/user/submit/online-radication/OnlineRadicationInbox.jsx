@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { CircleAlert, CircleCheck, DatabaseZap, Globe, Inbox, RefreshCw, SearchX } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { TooltipProvider } from '@/shared/ui/tooltip';
+import { cn } from '@/shared/lib/utils';
 import { isUnavailableError } from '@/app/services/online-radication.service';
 import { InboxPagination } from './components/InboxPagination';
 import { InboxRowsSkeleton } from './components/InboxSkeleton';

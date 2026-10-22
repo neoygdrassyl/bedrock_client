@@ -1,9 +1,9 @@
-import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../components/customClasses/typeParse';
+import { formsParser1, _GET_SERIE_COD, _GET_SUBSERIE_COD, _GET_SERIE_STR, _GET_SUBSERIE_STR } from '../../../../../shared/config/customClasses/typeParse';
 import RECORD_ENG_SERVICE from '../../../../services/record_eng.service'
-import { swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import RichTextEditor from '@/components/rich-text-editor';
-import { richTextToPlainText } from '@/app/utils/richTextBlockNote';
-import ObservationPanel from '../../../../components/ObservationPanel';
+import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import RichTextEditor from '@/shared/components/rich-text-editor';
+import { richTextToPlainText } from '@/shared/utils/richTextBlockNote';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
 
 
 function RECORD_ENG_DESC(props) {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import PQRS_Service from '../../../services/pqrs_main.service';
-import DataTable from '@/components/data-table-bridge';
+import DataTable from '@/shared/components/data-table-bridge';
 import PQRS_COMPONENT_REPLIES_PROFESIONAL_2 from './components/pqrs_replies_3.component';
 import PQRS_COMPONENT_INFO from './components/pqrs_gen.component';
 import PQRS_COMPONENT_CLOCKS from './components/pqrs_clock.component';
@@ -15,14 +15,14 @@ import PQRS_COMPONENT_WORKER_FEEDBACK from './components/pqrs_worker_feedback.co
 import PQRS_EMAILS from './components/pqrs_emails.component';
 import PQRS_PDFGEN_REPLY from './components/pqrs_genPDF_reply.component';
 import RTE_PQRS from './components/pqrs_rteReply.component';
-import Collapsible from '../../../components/Collapsible';
+import Collapsible from '../../../../shared/components/Collapsible';
 
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { Button } from '@/components/ui/button';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { buildProtectedFilePath } from '@/app/utils/pdfDownload';
-import { downloadProtectedFileWithFeedback } from '@/app/utils/protectedDocumentAction';
+import { Icon } from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { buildProtectedFilePath } from '@/shared/utils/pdfDownload';
+import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 function PQRSLOCK({ currentId, translation, swaMsg, globals, translation_form, refreshList: propRefreshList, NAVIGATION }) {
     const [attachs, setAttachs] = useState(0);
     const [attachsForEmails, setAttachsForEmails] = useState(0);

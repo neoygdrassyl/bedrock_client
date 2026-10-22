@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import DataTable from '@/components/data-table-bridge';
-import { LegacyModal as Modal } from '@/components/legacy-modal';
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/icon';
-import { ProtectedDocumentPreview } from '@/app/components/ProtectedDocument';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
-import { downloadProtectedFile, toProtectedApiPath } from '@/app/utils/pdfDownload';
+import DataTable from '@/shared/components/data-table-bridge';
+import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { downloadProtectedFile, toProtectedApiPath } from '@/shared/utils/pdfDownload';
 
 import FUN_SERVICE from '../../../../services/fun.service';
 

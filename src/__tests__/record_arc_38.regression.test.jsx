@@ -47,11 +47,11 @@ vi.mock('../../app/components/jsons/vars', () => ({
   domains_number: [<option key="cur1" value="Curaduria 1">Curaduria 1</option>],
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => {
+vi.mock('@/shared/components/icon', () => {
   // The module exports Icon both named and as default; consumers use either.
   const Icon = () => <span data-testid="icon" />;
   return { __esModule: true, Icon, default: Icon };
@@ -62,12 +62,12 @@ vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
   default: () => <div data-testid="record-doc-version" />,
 }));
 
-vi.mock('@/components/rich-text-editor', () => ({
+vi.mock('@/shared/components/rich-text-editor', () => ({
   __esModule: true,
   default: ({ hiddenId, value = '' }) => <textarea id={hiddenId} defaultValue={value} />, 
 }));
 
-vi.mock('../app/utils/richTextBlockNote', () => ({
+vi.mock('../shared/utils/richTextBlockNote', () => ({
   richTextToPlainText: (value) => (typeof value === 'string' ? value : ''),
 }));
 
@@ -75,20 +75,20 @@ vi.mock('../app/pages/user/records/arc/recordArcRichTextUpload', () => ({
   uploadRecordArcRichTextImage: vi.fn(),
 }));
 
-vi.mock('../app/components/customClasses/pdfCheckHandler', () => ({
+vi.mock('../shared/config/customClasses/pdfCheckHandler', () => ({
   handleArchCheck: vi.fn(),
 }));
 
-vi.mock('../app/components/jsons/arcReviewDocs', () => ({
+vi.mock('../shared/config/jsons/arcReviewDocs', () => ({
   REVIEW_DOCS: [],
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   GEM_CODE_LIST: vi.fn(() => ['DOC']),
   VR_DOCUMENTS_OF_INTEREST: { arc: ['DOC'] },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalClose: vi.fn(),
   swalConfirm: vi.fn(() => Promise.resolve({ isConfirmed: true })),
   swalError: vi.fn(),

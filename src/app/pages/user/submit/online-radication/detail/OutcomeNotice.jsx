@@ -1,5 +1,5 @@
 import { CircleCheck, CircleX } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { ExpedienteLink } from '../components/ExpedienteLink';
 import { formatDateTime } from '../onlineRadicationModel';
 

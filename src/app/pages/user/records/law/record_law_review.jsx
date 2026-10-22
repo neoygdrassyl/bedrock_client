@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import RECORD_LAW_SERVICE from '../../../../services/record_law.service'
 import FUN_SERVICE from '../../../../services/fun.service'
 
 import dayjs from 'dayjs';
 import RECORD_LAW_PDF from './record_law_pdf';
 
-import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../components/customClasses/typeParse';
+import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../../shared/config/customClasses/typeParse';
 import submitService from '../../../../services/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
-import { Icon } from '@/components/icon';
-import ObservationPanel from '../../../../components/ObservationPanel';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import ObservationPanel from '../../../../../shared/components/ObservationPanel';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 function RECORD_LAW_EVALUATION(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord } = props;
 

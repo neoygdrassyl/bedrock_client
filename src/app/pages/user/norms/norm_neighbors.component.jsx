@@ -1,11 +1,11 @@
 import { Suspense, useEffect, useState, } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import Norms_Service from "../../../services/norm.service"
-import DataTable from '@/components/data-table-bridge';
-import VIEWER from '../../../components/viewer.component';
+import DataTable from '@/shared/components/data-table-bridge';
+import VIEWER from '../../../../shared/components/viewer.component';
 import dayjs from 'dayjs';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 export default function NORM_NEIGHBORS(props) {
     const { translation, swaMsg, globals, id, id_in, setrRfresh } = props;

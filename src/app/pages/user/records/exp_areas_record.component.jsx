@@ -1,11 +1,11 @@
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import DataTable from '@/components/data-table-bridge';
+import { Button } from '@/shared/ui/button';
+import DataTable from '@/shared/components/data-table-bridge';
 import EXPEDITION_SERVICE from '../../../services/expedition.service';
 import EXP_CALC from '../expeditions/exp_calc.component';
-import { Icon } from '@/components/icon';
-import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/app/utils/swalAdapter';
+import { Icon } from '@/shared/components/icon';
+import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 

@@ -15,7 +15,7 @@ vi.mock('../app/services/alarm.service', () => ({
   },
 }));
 
-vi.mock('../app/services/bookmark.service', () => ({
+vi.mock('../shared/api/bookmark.service', () => ({
   __esModule: true,
   default: {
     list: bookmarkListMock,

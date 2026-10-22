@@ -1,4 +1,4 @@
-import { Icon } from '@/components/icon';
+import { Icon } from '@/shared/components/icon';
 
 const CHANGE_CATEGORIES = [
   ['CORRECCION', 'CORRECCIÓN'],

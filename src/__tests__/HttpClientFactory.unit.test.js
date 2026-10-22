@@ -21,7 +21,7 @@ const buildFactoryModule = async () => {
     },
   }));
 
-  const mod = await import('../http-client-factory');
+  const mod = await import('../shared/api/http-client-factory');
 
   return {
     createDovelaHttpClient: mod.createDovelaHttpClient,
