@@ -56,7 +56,8 @@ it('hydrates every supported fallback year through the canonical API', async () 
 
 it.each([
   ['a timeout', { isAxiosError: true, code: 'ECONNABORTED', request: {} }],
-  ['a server error', { isAxiosError: true, response: { status: 500 } }],
+  // A real Dovela 5xx (it carries the backend request id): the rest of the app keeps working.
+  ['a server error', { isAxiosError: true, response: { status: 500, headers: { 'x-dovela-request-id': 'req_srv_12345678' } } }],
 ])('keeps private content available with visible degradation after %s', async (_label, error) => {
   getBootstrapMock.mockRejectedValue(error);
 
@@ -73,6 +74,7 @@ it.each([
 it.each([
   ['a network failure', { isAxiosError: true, code: 'ERR_NETWORK', request: {} }, null],
   ['a 503 from the proxy', { isAxiosError: true, response: { status: 503, data: { requestId: 'req_abc123_k3j4h5g6' } } }, 'req_abc123_k3j4h5g6'],
+  ['an empty 500 from a gateway (backend down behind the dev proxy)', { isAxiosError: true, response: { status: 500, headers: {} } }, null],
 ])('shows the unavailable screen after %s and retries the bootstrap', async (_label, error, reference) => {
   getBootstrapMock.mockRejectedValueOnce(error).mockResolvedValueOnce({ data: { years: [], customDays: [] } });
 
