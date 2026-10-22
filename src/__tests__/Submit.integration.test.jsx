@@ -107,11 +107,6 @@ vi.mock('../shared/config/jsons/vars', () => ({
   nomens: 'CUB1',
 }));
 
-vi.mock('../app/components/global', () => {
-  const React = require('react');
-  return { GlobalStyles: () => <style data-testid="global-styles" /> };
-});
-
 // ─── Import component under test ──────────────────────────────────────────
 
 import SUBMIT from '../features/ventanilla/submit';

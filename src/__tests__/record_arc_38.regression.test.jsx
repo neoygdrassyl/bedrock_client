@@ -35,18 +35,6 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   default: hoisted.funService,
 }));
 
-vi.mock('../../app/components/jsons/vars', () => ({
-  infoCud: {
-    name: 'Curaduria Urbana Test',
-    city: 'bucaramanga',
-    nit: '000-000',
-    email: 'test@test.com',
-  },
-  nomens: 'CUB1',
-  cities: [<option key="bga" value="Bucaramanga">Bucaramanga</option>],
-  domains_number: [<option key="cur1" value="Curaduria 1">Curaduria 1</option>],
-}));
-
 vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));

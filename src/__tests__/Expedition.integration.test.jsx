@@ -68,22 +68,6 @@ vi.mock('../shared/api/custom.service', () => ({
   },
 }));
 
-vi.mock('../app/services/record_eng.js', () => ({
-  __esModule: true,
-  default: {
-    getRecord: vi.fn(() => Promise.resolve({ data: {} })),
-    get: vi.fn(() => Promise.resolve({ data: {} })),
-  },
-}));
-
-vi.mock('../app/services/record_arc.js', () => ({
-  __esModule: true,
-  default: {
-    getRecord: vi.fn(() => Promise.resolve({ data: {} })),
-    get: vi.fn(() => Promise.resolve({ data: {} })),
-  },
-}));
-
 // ─── Mock sub-components (to isolate unit under test) ──────────────────────
 
 vi.mock('../features/expediente/expeditions/exp_1.component', () => ({
@@ -161,11 +145,6 @@ vi.mock('../shared/config/jsons/vars', () => ({
   },
   nomens: 'CUB1',
 }));
-
-vi.mock('../app/components/global', () => {
-  const React = require('react');
-  return { GlobalStyles: () => <style data-testid="global-styles" /> };
-});
 
 // ─── Import component ──────────────────────────────────────────────────────
 

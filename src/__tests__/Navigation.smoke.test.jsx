@@ -93,11 +93,6 @@ vi.mock('../shared/config/jsons/vars', () => ({
   },
 }));
 
-vi.mock('../app/components/global', () => {
-  const React = require('react');
-  return { GlobalStyles: () => <style data-testid="global-styles" /> };
-});
-
 import App from '../app/App';
 
 // ─── Tests ───────────────────────────────────────────────────────────────────

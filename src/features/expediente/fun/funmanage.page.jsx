@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { TabPane } from '@/shared/ui/tab-pane';
 import { Link } from "react-router-dom";
-import { LegacyPageWrapper } from '@/app/layouts/LegacyPageWrapper';
+import { LegacyPageWrapper } from '@/shared/components/LegacyPageWrapper';
 import { swalLoading, swalError, swalClose } from '@/shared/utils/swalAdapter';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 

@@ -13,7 +13,7 @@ import { test, expect } from '../fixtures/auth.fixture';
  *
  * Explicitly OUT of scope: the /configuracion and /user/settings routes
  * render `SettingsPage`, which conditionally mounts `LegalConfigInitialPage`
- * (src/app/pages/user/legal_config/) only when the "configuracion-actuaciones"
+ * (the former legal_config module) only when the "configuracion-actuaciones"
  * tab is active. That module is mid-refactor with uncommitted local changes
  * as of this run, so this spec covers /configuracion at its DEFAULT tab
  * ("alarmas") only and never clicks into the legal-config tab.

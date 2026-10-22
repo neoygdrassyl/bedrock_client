@@ -37,5 +37,3 @@ vi.mock('../../features/norms/zone-use/zone_use.page', () => ({ __esModule: true
 
 // ─── Componentes de App shell ───────────────────────────────────────────────
 
-vi.mock('../../app/components/navbar', () => ({ __esModule: true, default: (props) => require('react').createElement('nav', { 'data-testid': 'navbar' }, 'Navbar') }));
-vi.mock('../../app/components/btnAccesibility', () => ({ __esModule: true, default: () => null }));

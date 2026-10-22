@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import {
   DASHBOARD_PREFERENCES_CHANGED_EVENT,
   applyDashboardPreferencesToDocument,
-} from '@/features/dashboard/dashboardPreferences';
+} from '@/shared/lib/dashboardPreferences';
 
 const ThemeContext = createContext({
   theme: 'system',

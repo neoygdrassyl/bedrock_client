@@ -81,16 +81,6 @@ vi.mock('@/shared/components/legacy-modal', () => ({
   },
 }));
 
-vi.mock('../../http-common', () => ({
-  __esModule: true,
-  default: {
-    get: vi.fn(() => Promise.resolve({ data: [] })),
-    post: vi.fn(() => Promise.resolve({ data: [] })),
-    put: vi.fn(() => Promise.resolve({ data: [] })),
-    delete: vi.fn(() => Promise.resolve({ data: [] })),
-  },
-}));
-
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key) => key,
@@ -212,29 +202,6 @@ vi.mock('../shared/config/jsons/jsonReplacer', () => ({
 // Override the minimal vars mock from mockExternals.js with a full version
 // Both paths resolve to the same module — use the same relative path as mockExternals.js
 // so Vitest hoisting merges them correctly (last mock declaration wins)
-vi.mock('../../app/components/jsons/vars', () => ({
-  infoCud: {
-    name: 'Curaduría Urbana Test',
-    city: 'Bucaramanga',
-    nit: '000-000',
-    email: 'test@test.com',
-    serials: { start: 'VR', end: 'CUB' },
-    m: 1,
-    pot: 'POT TEST',
-    res_extras: { art1p: 'uso permitido de prueba' },
-    exp_rules: { 0: 'Expensas fijas', 1: 'Expensas variables' },
-  },
-  nomens: 'CUB1',
-  zones: [<option key="z0" value="0">Zona 1</option>],
-  zonesTable: { '0': 0.1, undefined: 0.1 },
-  axis: [<option key="a0" value="5">Eje 5</option>],
-  axisVar: [],
-  zonesVar: [],
-  axisTable: {},
-  cities: [],
-  domains_number: [],
-  rules_opt: [<option key="r0" value="0">Regla 1</option>],
-}));
 
 // exp_docs sets writtenNumber.defaults.lang at module scope, so the mock needs `defaults`.
 vi.mock('written-number', () => ({
