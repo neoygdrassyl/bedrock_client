@@ -217,7 +217,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente.", symptom: true, error: e });
             });
     }
     function retrieveMacroClocks() {
@@ -238,7 +238,7 @@ function FUN_MACROTABLE({ translation, swaMsg, globals, selectedRow, defaultFilt
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente.", symptom: true, error: e });
             });
     }
     function retrieveWorkerList() {

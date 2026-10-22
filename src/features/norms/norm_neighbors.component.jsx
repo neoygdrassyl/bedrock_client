@@ -33,7 +33,7 @@ export default function NORM_NEIGHBORS(props) {
             })
             .catch(e => {
                 console.error(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', symptom: true, error: e });
             });
     }
 

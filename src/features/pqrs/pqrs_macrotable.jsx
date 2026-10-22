@@ -32,7 +32,7 @@ function PQRS_MACROTABLE({ translation, swaMsg, globals, selectedRow, date_start
             .catch(e => {
                 if (requestId !== retrieveRequestIdRef.current) return;
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente.", symptom: true, error: e });
             });
     };
 

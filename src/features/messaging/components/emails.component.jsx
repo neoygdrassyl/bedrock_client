@@ -304,7 +304,7 @@ export default function EMAILS_COMPONENT(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente.", symptom: true, error: e });
             });
     }
 
