@@ -92,7 +92,7 @@ El sistema de reporte de errores dentro de la aplicación (la opción de reporta
 |---|---|---|
 | **Fatal:** la pantalla no puede mostrarse | Pantalla completa de error, con el estilo del login (`shared/components/errors/ErrorScreen.jsx`) | `ui_crash`, `chunk_load_failed` o `http_error` |
 | **Síntoma:** falla una carga, un componente o un cálculo, pero la página sigue mostrando datos | Nada, o un aviso no bloqueante (toast) | `ui_load_failed`, `chart_render_failed`, `js_error`, `unhandled_rejection`, `http_error` |
-| **Acción fallida:** guardar, eliminar, generar, validar | El modal de error de siempre (`swalError`) | `http_error` de la petición que falló |
+| **Acción fallida:** guardar, eliminar, generar, validar | El modal de error de siempre (`swalError`) | `ui_action_failed` y el `http_error` de la petición que falló |
 
 ### Pantallas de error
 
@@ -106,13 +106,14 @@ El sistema de reporte de errores dentro de la aplicación (la opción de reporta
 
 Además, el evento `vite:preloadError` (falla la carga de un chunk de Vite) registra `chunk_load_failed` y muestra un aviso "Hay una versión nueva de Dovela" con el botón "Actualizar". No recarga por su cuenta, porque la importación pudo venir de un botón y una recarga inmediata borraría el trabajo sin guardar.
 
-### Cargas fallidas: síntoma, no modal
+### Cargas fallidas: síntoma solo cuando se marca
 
-`swalError` (`shared/utils/swalAdapter.js`) decide en un solo lugar, sin tocar sus más de mil llamadas:
+`swalError` (`shared/utils/swalAdapter.js`) mantiene el modal bloqueante por defecto. No clasifica por título, texto ni por la última petición fallida: un mismo título ("ERROR AL CARGAR") lo usan también la generación de PDF, las descargas y la asignación de consecutivos, y perder el aviso de una acción es peor que un modal de más.
 
-- **Toast + log `ui_load_failed`** cuando el título o el texto indican una carga ("ERROR AL CARGAR", "no ha sido posible cargar", "no se pudo cargar", "no fue posible cargar", "no se pudieron cargar"), o cuando es el mensaje genérico `swa_messages.generic_eror_*` y la última petición fallida, en los 2 segundos previos, fue un `GET`. Si había un `swalLoading` abierto, se cierra.
-- **Modal** en cualquier otro caso, y siempre que la llamada pida una decisión (botones de cancelar o negar, `input`, `preConfirm`).
-- La opción `{ symptom: true }` o `{ symptom: false }` fuerza un caso u otro. Con `{ error }` o `{ requestId }` el aviso muestra el código de la petición.
+- **Modal + log `ui_action_failed`** (`warn`, con título, texto, ruta y `relatedRequestId` si se pasa) en cualquier llamada sin `{ symptom: true }`. El usuario ve lo mismo de siempre.
+- **Toast + log `ui_load_failed`** solo con `{ symptom: true }`, que se pone únicamente en cargas de fondo verificadas: una lectura (`GET`) que llena datos para mostrar, lanzada al montar o al abrir una pestaña, y sin la cual la página sigue siendo útil. Nunca en generar, descargar, guardar, validar ni asignar consecutivos. Si había un `swalLoading` o un `swalProgressPDF` abierto, se cierra; cualquier otro modal queda abierto.
+- Las llamadas que piden una decisión (botones de cancelar o negar, `input`, `preConfirm`) siempre son modal, incluso con `{ symptom: true }`.
+- Con `{ error }` o `{ requestId }` el log y el aviso llevan el código de la petición.
 
 ### Logger del cliente
 
