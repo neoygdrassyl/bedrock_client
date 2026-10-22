@@ -151,19 +151,19 @@ describe('Módulo Licencias — Componentes internos (components/)', () => {
 describe('Módulo Licencias — Submit (ventanilla única)', () => {
 
   test('submit_view.component.js (DataTable) se importa sin error', async () => {
-    await expect(import('../app/pages/user/submit/submit_view.component')).resolves.toBeTruthy();
+    await expect(import('../features/ventanilla/submit_view.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('submit_x_fun.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/submit/submit_x_fun.component')).resolves.toBeTruthy();
+    await expect(import('../features/ventanilla/submit_x_fun.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('submit.js (listado ventanilla) se importa sin error', async () => {
-    await expect(import('../app/pages/user/submit/submit')).resolves.toBeTruthy();
+    await expect(import('../features/ventanilla/submit')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 
   test('submit_anex.component.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/submit/submit_anex.component')).resolves.toBeTruthy();
+    await expect(import('../features/ventanilla/submit_anex.component')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });
 

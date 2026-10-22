@@ -3,9 +3,9 @@ import { Button } from '@/shared/ui/button';
 import FUNService from '../../../api/fun.service'
 import dayjs from 'dayjs';
 import { formsParser1, _ADDRESS_SET_FULL } from '../../../../../shared/config/customClasses/typeParse';
-import PQRS_Service from '../../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../../pqrs/api/pqrs_main.service';
 import { infoCud } from '../../../../../shared/config/jsons/vars';
-import SubmitService from '../../../../../app/services/submit.service'
+import SubmitService from '../../../../ventanilla/api/submit.service'
 import { _FUN_6_PARSER } from '../../../../../shared/config/customClasses/funCustomArrays';
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading } from '@/shared/utils/swalAdapter';

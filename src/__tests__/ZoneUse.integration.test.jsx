@@ -20,7 +20,7 @@ const hoisted = vi.hoisted(() => ({
   swalFire: vi.fn(() => Promise.resolve({ isConfirmed: false })),
 }));
 
-vi.mock('../app/services/zone_use.service', () => ({
+vi.mock('../features/norms/api/zone_use.service', () => ({
   __esModule: true,
   default: hoisted.zoneUseService,
 }));
@@ -49,7 +49,7 @@ vi.mock('@/shared/components/legacy-modal', () => ({
     isOpen ? <div data-testid='mock-modal'>{children}</div> : null,
 }));
 
-vi.mock('../app/pages/user/zone_use/zone_use.component', () => ({
+vi.mock('../features/norms/zone-use/zone_use.component', () => ({
   __esModule: true,
   default: ({ id }) => (
     <div data-testid='zone-use-component-stub'>Concepto ID: {id}</div>
@@ -57,7 +57,7 @@ vi.mock('../app/pages/user/zone_use/zone_use.component', () => ({
 }));
 
 const { default: ZONE_USE } = await import(
-  '../app/pages/user/zone_use/zone_use.page'
+  '../features/norms/zone-use/zone_use.page'
 );
 
 // ─── Fixtures ───────────────────────────────────────────────────────

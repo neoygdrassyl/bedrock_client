@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { cities, domains_number } from '../../../../shared/config/jsons/vars';
 import { handleEnghCheck } from '../../../../shared/config/customClasses/pdfCheckHandler';
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST } from '../../../../shared/config/customClasses/typeParse';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/shared/components/icon';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';

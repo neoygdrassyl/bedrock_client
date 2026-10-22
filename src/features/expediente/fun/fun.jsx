@@ -46,7 +46,7 @@ import { LEGACY_MODULE_TO_WORKSPACE, openExpedienteWorkspace } from './fun_forms
 import { shouldUseStructuralReport } from './fun_forms/utils/expedienteDomainRules';
 import { nomens } from '../../../shared/config/jsons/vars';
 import { nextLicenseIdPublic } from '../../../shared/utils/consecutives';
-import SUBMIT_X_FUN from '../../../app/pages/user/submit/submit_x_fun.component';
+import SUBMIT_X_FUN from '../../ventanilla/submit_x_fun.component';
 import TABLE_COMPONENT_EXPANDED from './fun_forms/components/table_components/table.component_expanded';
 
 // JSONS

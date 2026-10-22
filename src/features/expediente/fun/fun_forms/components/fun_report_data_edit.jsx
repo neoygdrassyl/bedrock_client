@@ -3,11 +3,11 @@ import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse';
 import FUN_SERVICE from '../../../api/fun.service'
-import PQRS_Service from '../../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../../pqrs/api/pqrs_main.service';
 import FUN_REPORT_DATA_PDF from './fun_report_data_pdf.component';
 import { infoCud } from '../../../../../shared/config/jsons/vars';
 import { FUN_REPORT_DATA_JODIT } from './fun_report_data_jodit.component';
-import SubmitService from '../../../../../app/services/submit.service';
+import SubmitService from '../../../../ventanilla/api/submit.service';
 import CubXVrDataService from '../../../api/cubXvr.service';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { useDocumentaryInventory } from '../../../documental/hooks/useDocumentaryInventory';

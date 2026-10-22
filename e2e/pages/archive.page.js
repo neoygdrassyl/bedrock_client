@@ -4,7 +4,7 @@ import { expect } from '@playwright/test';
 /**
  * Page Object: Archivo Documental / Archive (/archive)
  *
- * Key DOM elements (from src/app/pages/user/archive/archive.page.jsx):
+ * Key DOM elements (from src/features/archive/archive.page.jsx):
  * - Heading: "ARCHIVO"
  * - "NUEVA CAJA" button (MDBBtn color='success', only for roleId 1 or 3)
  * - Search: #search_param (select), #search_text (text), "BUSCAR" button

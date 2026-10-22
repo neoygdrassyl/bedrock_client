@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import ProjectFlowModal from '../../../../../app/pages/user/legal_flow_guide/components/ProjectFlowModal';
+import ProjectFlowModal from '../../../../simulador/legal_flow_guide/components/ProjectFlowModal';
 import { Icon } from '@/shared/components/icon';
 import { useAlarms } from '../hooks/useAlarms';
 import legalGuideService from '../../../api/legalGuide.service';

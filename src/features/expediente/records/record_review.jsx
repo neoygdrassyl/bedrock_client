@@ -17,8 +17,8 @@ import { handleArchCheck, handleEnghCheck, handleLAWhCheck } from '../../../shar
 import RECORD_DOC_LETTER from './record_letter.component';
 import RECORD_DOC_LETTER_2 from './record_letter_2.component';
 import Collapsible from '../../../shared/components/Collapsible';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
-import SubmitService from '../../../app/services/submit.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
+import SubmitService from '../../ventanilla/api/submit.service';
 import CubXVrDataService from '../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';

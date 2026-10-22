@@ -12,7 +12,7 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   default: { update_r: updateReviewMock },
 }));
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   default: { getIdRelated: getIdRelatedMock },
 }));
 

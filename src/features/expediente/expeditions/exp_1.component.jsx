@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import EXPEDITION_SERVICE from '../api/expedition.service';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import JSONObjectParser from '../../../shared/config/jsons/jsonReplacer';
 import { axis, infoCud, zones, zonesTable } from '../../../shared/config/jsons/vars'
 import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../shared/config/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../shared/config/customClasses/funCustomArrays';
 import dayjs from 'dayjs'
-import SubmitService from '../../../app/services/submit.service'
+import SubmitService from '../../ventanilla/api/submit.service'
 import CubXVrDataService from '../api/cubXvr.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 

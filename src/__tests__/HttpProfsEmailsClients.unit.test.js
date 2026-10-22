@@ -23,7 +23,7 @@ describe('http-profs / http-emails client wiring', () => {
   });
 
   it('http-profs uses the shared factory with attachAuth disabled', async () => {
-    const { mockCreateDovelaHttpClient } = await importClientWithMockedFactory('../app/services/http-profs');
+    const { mockCreateDovelaHttpClient } = await importClientWithMockedFactory('../features/professionals/api/http-profs');
 
     expect(mockCreateDovelaHttpClient).toHaveBeenCalledTimes(1);
     const config = mockCreateDovelaHttpClient.mock.calls[0][0];
@@ -34,7 +34,7 @@ describe('http-profs / http-emails client wiring', () => {
   });
 
   it('http-emails uses the shared factory with attachAuth disabled', async () => {
-    const { mockCreateDovelaHttpClient } = await importClientWithMockedFactory('../app/services/http-emails');
+    const { mockCreateDovelaHttpClient } = await importClientWithMockedFactory('../features/messaging/api/http-emails');
 
     expect(mockCreateDovelaHttpClient).toHaveBeenCalledTimes(1);
     const config = mockCreateDovelaHttpClient.mock.calls[0][0];

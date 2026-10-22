@@ -76,7 +76,7 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/services/profesionals.service', () => ({
+vi.mock('../features/professionals/api/profesionals.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),

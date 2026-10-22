@@ -154,7 +154,7 @@ vi.mock('../features/expediente/fun/fun_forms/components/fun_checklist_n', () =>
   default: () => <div data-testid="fun-checklist-n" />,
 }));
 
-vi.mock('../app/pages/user/archive/arcXfun_view.component', () => ({
+vi.mock('../features/archive/arcXfun_view.component', () => ({
   __esModule: true,
   default: () => <div data-testid="archive-fun-view" />,
 }));

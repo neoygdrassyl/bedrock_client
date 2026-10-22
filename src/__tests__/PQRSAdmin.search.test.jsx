@@ -15,7 +15,7 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsService,
 }));
@@ -52,20 +52,20 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/pqrs/newpqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/infopqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/asignpqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/infomalpqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/replypqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/lockpqrs', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/pqrs_edit', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/pqrs_macrotable', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_reviewAction.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/pqrs_manage.view', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/access_edit', () => ({ __esModule: true, ACESS_EDIT: () => <div /> }));
+vi.mock('../features/pqrs/newpqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/infopqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/asignpqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/infomalpqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/replypqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/lockpqrs', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/pqrs_edit', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/pqrs_macrotable', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_reviewAction.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/ventanilla/submit_x_fun.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/pqrs_manage.view', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/access_edit', () => ({ __esModule: true, ACESS_EDIT: () => <div /> }));
 
-import PQRSADMIN from '../app/pages/user/pqrs/pqrsadmin';
+import PQRSADMIN from '../features/pqrs/pqrsadmin';
 
 const baseProps = {
   translation: {},

@@ -56,12 +56,12 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   default: hoisted.funService,
 }));
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: hoisted.submitService,
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsService,
 }));

@@ -117,7 +117,7 @@ vi.mock('../features/expediente/fun/fun_forms/fun_macrotable', () => ({
   default: () => React.createElement('div', { 'data-testid': 'fun-macrotable-modal' }),
 }));
 
-vi.mock('../app/pages/user/submit/submit_x_fun.component', () => ({
+vi.mock('../features/ventanilla/submit_x_fun.component', () => ({
   __esModule: true,
   default: ({ simple }) =>
     React.createElement('div', { 'data-testid': simple ? 'submit-summary' : 'submit-docs-tab' }),

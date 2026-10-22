@@ -16,7 +16,7 @@ const hoisted = vi.hoisted(() => ({
   swalErrorMock: vi.fn(),
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: hoisted.pqrsService,
 }));
@@ -38,21 +38,21 @@ vi.mock('@/shared/components/data-table-bridge', () => ({
   default: () => <div data-testid="datatable-stub" />,
 }));
 
-vi.mock('../app/pages/user/pqrs/components/pqrs_replies_3.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_gen.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_clock.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_licence.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_solicitors.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_contancts.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_attach_pro.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_replies_2.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_moduleNav.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_worker_feedback.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_emails.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_genPDF_reply.component', () => ({ __esModule: true, default: () => <div /> }));
-vi.mock('../app/pages/user/pqrs/components/pqrs_rteReply.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_replies_3.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_gen.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_clock.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_licence.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_solicitors.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_contancts.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_attach_pro.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_replies_2.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_moduleNav.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_worker_feedback.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_emails.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_genPDF_reply.component', () => ({ __esModule: true, default: () => <div /> }));
+vi.mock('../features/pqrs/components/pqrs_rteReply.component', () => ({ __esModule: true, default: () => <div /> }));
 
-import PQRSLOCK from '../app/pages/user/pqrs/lockpqrs';
+import PQRSLOCK from '../features/pqrs/lockpqrs';
 
 const swaMsg = {
   title_wait: 'Espere...',

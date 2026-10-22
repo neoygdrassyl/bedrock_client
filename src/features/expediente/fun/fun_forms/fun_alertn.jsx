@@ -12,7 +12,7 @@ import FUN_SERVICE from '../../api/fun.service';
 
 import FUN_3_G_VIEW from './components/fun_3_g_view';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
-import PQRS_Service from '../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../pqrs/api/pqrs_main.service';
 import FUN_SIGN_PDF from './components/fun_sign_pdf.component';
 import { _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
 

@@ -4,7 +4,7 @@ import { Icon } from '@/shared/components/icon';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 
 import FUN_SERVICE from '../api/fun.service';
-import submitService from '../../../app/services/submit.service';
+import submitService from '../../ventanilla/api/submit.service';
 
 import RECORD_ARCSERVICE from '../api/record_arc.service';
 import RECORD_LAW_SERVICE from '../api/record_law.service';

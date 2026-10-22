@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import BusinessCalendarService from '@/app/services/business-calendar.service';
+import BusinessCalendarService from '@/features/business-calendar/api/business-calendar.service';
 import { replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays } from '@/shared/utils/BusinessDaysCol';
 import { captureDovelaHttpError } from '@/shared/utils/errorReporting';
 

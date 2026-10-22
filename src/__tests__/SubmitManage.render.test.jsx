@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: {} })),
@@ -20,12 +20,12 @@ vi.mock('../features/expediente/api/fun.service', () => ({
   },
 }));
 
-vi.mock('../app/pages/user/submit/submit_anex.component', () => ({
+vi.mock('../features/ventanilla/submit_anex.component', () => ({
   __esModule: true,
   default: () => null,
 }));
 
-vi.mock('../app/pages/user/submit/submit_list.component', () => ({
+vi.mock('../features/ventanilla/submit_list.component', () => ({
   __esModule: true,
   default: () => null,
 }));
@@ -53,7 +53,7 @@ vi.mock('@/shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import SUBMIT_MANAGE from '../app/pages/user/submit/submit_manage';
+import SUBMIT_MANAGE from '../features/ventanilla/submit_manage';
 
 describe('SUBMIT_MANAGE request selector', () => {
   beforeEach(() => {

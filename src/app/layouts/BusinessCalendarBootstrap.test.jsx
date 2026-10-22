@@ -7,7 +7,7 @@ const replaceMock = vi.fn();
 const replaceCustomMock = vi.fn();
 const captureHttpErrorMock = vi.fn();
 
-vi.mock('@/app/services/business-calendar.service', () => ({
+vi.mock('@/features/business-calendar/api/business-calendar.service', () => ({
   default: {
     getBootstrap: (...args) => getBootstrapMock(...args),
   },

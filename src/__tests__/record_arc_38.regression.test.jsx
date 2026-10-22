@@ -20,7 +20,7 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: hoisted.submitService,
 }));

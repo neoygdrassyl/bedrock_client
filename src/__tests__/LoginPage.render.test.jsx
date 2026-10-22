@@ -70,7 +70,7 @@ vi.mock('../shared/api/http-common', () => ({
   },
 }));
 
-import LoginPage from '@/app/pages/auth/LoginPage';
+import LoginPage from '@/features/auth/LoginPage';
 import CustomsDataService from '@/shared/api/custom.service';
 
 const routerFutureFlags = {

@@ -19,7 +19,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ─── Mock services ─────────────────────────────────────────────────────────
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: {
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
@@ -54,7 +54,7 @@ vi.mock('../features/expediente/api/fun.service', () => ({
 
 // ─── Mock sub-components ───────────────────────────────────────────────────
 
-vi.mock('../app/pages/user/submit/submit_manage', () => ({
+vi.mock('../features/ventanilla/submit_manage', () => ({
   __esModule: true,
   default: (props) => <div data-testid="submit-manage-stub">SUBTMIT_MANAGE</div>,
 }));
@@ -114,7 +114,7 @@ vi.mock('../app/components/global', () => {
 
 // ─── Import component under test ──────────────────────────────────────────
 
-import SUBMIT from '../app/pages/user/submit/submit';
+import SUBMIT from '../features/ventanilla/submit';
 
 // ─── Test helpers ──────────────────────────────────────────────────────────
 
@@ -231,7 +231,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('8. SubmitService.getSummaryPage() se llama al montar', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     SubmitService.getSummaryPage.mockClear();
 
     await act(async () => {
@@ -249,7 +249,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('10. Muestra indicador de carga antes de cargar datos', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     // Make the API never resolve (simulating loading)
     SubmitService.getSummaryPage.mockReturnValueOnce(new Promise(() => {}));
 
@@ -276,7 +276,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('12. Renderiza DataTable con datos mock', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     SubmitService.getSummaryPage.mockResolvedValueOnce({
       data: { total: 2, page: 1, size: 20, totalPages: 1, data: [
         {
@@ -322,7 +322,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('13. DataTable muestra encabezados de columnas correctos', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     SubmitService.getSummaryPage.mockResolvedValueOnce({
       data: { total: 1, page: 1, size: 20, totalPages: 1, data: [
         {
@@ -348,7 +348,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('14. Muestra error recuperable y reintento cuando falla la carga inicial', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     SubmitService.getSummaryPage.mockClear();
     SubmitService.getSummaryPage
       .mockRejectedValueOnce(new Error('network down'))
@@ -371,7 +371,7 @@ describe('SUBMIT — Integración: Ventanilla Única', () => {
   });
 
   test('14b. Mantiene las entradas visibles cuando falla una actualización', async () => {
-    const SubmitService = (await import('../app/services/submit.service')).default;
+    const SubmitService = (await import('../features/ventanilla/api/submit.service')).default;
     SubmitService.getSummaryPage.mockClear();
     SubmitService.getSummaryPage
       .mockResolvedValueOnce({

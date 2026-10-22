@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import RECORD_LAW_PDF from './record_law_pdf';
 
 import { GEM_CODE_LIST, VR_DOCUMENTS_OF_INTEREST} from '../../../../shared/config/customClasses/typeParse';
-import submitService from '../../../../app/services/submit.service';
+import submitService from '../../../ventanilla/api/submit.service';
 import RECORD_DOCUMENT_VERSION from '../record_docVersion.component';
 import { Icon } from '@/shared/components/icon';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';

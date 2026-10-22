@@ -6,13 +6,13 @@ import EXPEDITION_SERVICE from '../api/expedition.service';
 import { cities, axisVar, zonesVar, zonesTable, axisTable, domains_number, infoCud, nomens } from '../../../shared/config/jsons/vars';
 import { Collapsible as UiCollapsible, CollapsibleContent } from '@/shared/ui/collapsible';
 import Collapsible from '../../../shared/components/Collapsible';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import dayjs from 'dayjs';
 import EXP_RES from './exp_res.component';
 import EXP_ACT_DESIST from './exp_act_desist.component';
 import EXP_RES_2 from './exp_res_2.component';
 import EXP_EJEC from './exp_eje.component';
-import SubmitService from '../../../app/services/submit.service'
+import SubmitService from '../../ventanilla/api/submit.service'
 import CubXVrDataService from '../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';

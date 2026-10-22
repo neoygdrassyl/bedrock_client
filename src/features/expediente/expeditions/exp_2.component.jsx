@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import EXPEDITION_SERVICE from '../api/expedition.service';
 import RECORD_ARCSERVICE from '../api/record_arc.service';
-import PQRS_Service from '../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import JSONObjectParser from '../../../shared/config/jsons/jsonReplacer';
 import { axis, infoCud, zones } from '../../../shared/config/jsons/vars'
 import { getJSONFull, regexChecker_isOA_2, _MANAGE_IDS } from '../../../shared/config/customClasses/typeParse';

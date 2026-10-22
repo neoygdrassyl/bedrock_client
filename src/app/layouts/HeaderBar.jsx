@@ -16,7 +16,7 @@ import { Icon } from '@/shared/components/icon';
 import { SidebarTrigger, useSidebar } from '@/shared/ui/sidebar';
 import { requestDovelaErrorReport } from '@/shared/utils/errorReporting';
 import { cn } from '@/shared/lib/utils';
-import ChatLauncher from '../pages/user/chat/ChatLauncher';
+import ChatLauncher from '../../features/messaging/chat/ChatLauncher';
 import { RUNTIME_FEATURES } from '../../shared/config/runtime-features';
 import {
   Tooltip,

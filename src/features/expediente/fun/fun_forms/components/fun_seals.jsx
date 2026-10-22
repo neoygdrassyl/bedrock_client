@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 
 import { dateParser, formsParser1, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
-import sealService from '../../../../../app/services/seal.service';
+import sealService from '../../../../seals/api/seal.service';
 import CustomService from '../../../../../shared/api/custom.service';
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';

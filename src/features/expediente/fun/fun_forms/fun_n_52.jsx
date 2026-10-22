@@ -7,7 +7,7 @@ import DataTable from '@/shared/components/data-table-bridge';
 import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../../../../shared/config/customClasses/typeParse'
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
-import profesionalsService from '../../../../app/services/profesionals.service';
+import profesionalsService from '../../../professionals/api/profesionals.service';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;

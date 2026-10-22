@@ -5,14 +5,14 @@ import RECORD_PH_SERVICE from '../../api/record_ph.service'
 import FUN_SERVICE from "../../api/fun.service"
 
 import FUNService from '../../api/fun.service';
-import PQRS_Service from '../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../pqrs/api/pqrs_main.service';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { handleArchCheck } from '../../../../shared/config/customClasses/pdfCheckHandler';
 import Collapsible from '../../../../shared/components/Collapsible';
 import { cities, domains_number, infoCud } from '../../../../shared/config/jsons/vars';
 import { getJSONFull, _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
 import { REVIEW_DOCS } from '../../../../shared/config/jsons/arcReviewDocs';
-import SubmitService from '../../../../app/services/submit.service'
+import SubmitService from '../../../ventanilla/api/submit.service'
 import CubXVrDataService from '../../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';

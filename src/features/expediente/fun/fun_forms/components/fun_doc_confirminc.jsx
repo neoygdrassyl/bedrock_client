@@ -6,9 +6,9 @@ import CubXVrDataService from '../../../api/cubXvr.service'
 import dayjs from 'dayjs';
 import { infoCud } from '../../../../../shared/config/jsons/vars';
 import DCO_LIS from '../../../../../shared/config/jsons/fun6DocsList.json';
-import PQRS_Service from '../../../../../app/services/pqrs_main.service';
+import PQRS_Service from '../../../../pqrs/api/pqrs_main.service';
 
-import SubmitService from '../../../../../app/services/submit.service'
+import SubmitService from '../../../../ventanilla/api/submit.service'
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { LEGAL_FORM_NOT_EVALUABLE_MESSAGE } from '../../../documental/shared/expediente-documental.utils';

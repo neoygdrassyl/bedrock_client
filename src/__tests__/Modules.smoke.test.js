@@ -76,12 +76,12 @@ describe('Services críticos — Pre-migration baseline', () => {
   });
 
   test('4. zone_use.service.js exporta clase válida', async () => {
-    const service = await import('../app/services/zone_use.service');
+    const service = await import('../features/norms/api/zone_use.service');
     expect(service).toBeTruthy();
   });
 
   test('5. pqrs_main.service.js exporta clase válida', async () => {
-    const service = await import('../app/services/pqrs_main.service');
+    const service = await import('../features/pqrs/api/pqrs_main.service');
     expect(service).toBeTruthy();
   });
 });

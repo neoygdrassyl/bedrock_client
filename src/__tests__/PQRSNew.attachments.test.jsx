@@ -5,7 +5,7 @@ const hoisted = vi.hoisted(() => ({
   create: vi.fn(() => Promise.resolve({ data: 'OK' })),
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   __esModule: true,
   default: {
     create: hoisted.create,
@@ -31,7 +31,7 @@ vi.mock('@/shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import PQRSNEW from '../app/pages/user/pqrs/newpqrs';
+import PQRSNEW from '../features/pqrs/newpqrs';
 
 describe('PQRSNEW attachments', () => {
   beforeEach(() => {

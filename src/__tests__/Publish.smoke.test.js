@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Publish — Smoke', () => {
   test('publish.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/publish')).resolves.toBeTruthy();
+    await expect(import('../features/publications/publish')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

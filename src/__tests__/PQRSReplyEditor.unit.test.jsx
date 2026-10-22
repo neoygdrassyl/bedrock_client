@@ -42,7 +42,7 @@ const pqrsServiceMock = vi.hoisted(() => ({
   getlascub: vi.fn(() => Promise.resolve({ data: [{ cub: 'CUB-26-0001' }] })),
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   default: pqrsServiceMock,
 }));
 
@@ -58,7 +58,7 @@ vi.mock('../shared/utils/swalAdapter', () => ({
   swalSuccess: vi.fn(),
 }));
 
-import { PQRS_SET_REPLY1 } from '../app/pages/user/pqrs/components/pqrs_setReply2.component';
+import { PQRS_SET_REPLY1 } from '../features/pqrs/components/pqrs_setReply2.component';
 
 const currentItem = {
   id: 1,
