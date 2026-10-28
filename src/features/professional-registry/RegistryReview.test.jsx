@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-const service = vi.hoisted(() => ({ reviewSummary: vi.fn(), review: vi.fn(), resolve: vi.fn(), list: vi.fn() }));
+const service = vi.hoisted(() => ({ reviewSummary: vi.fn(), review: vi.fn(), resolve: vi.fn(), update: vi.fn(), list: vi.fn() }));
 vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
 
 import RegistryReview from './RegistryReview';
@@ -10,16 +10,19 @@ import RegistryReview from './RegistryReview';
 const queues = {
   duplicados: [{ id: 9, reason: 'MISMO_NOMBRE', a: { id: 1, name: 'ANA LOPEZ', cc: '914980007', projects: 3 }, b: { id: 2, name: 'ANA LOPEZ', cc: '91498007', projects: 1 } }],
   nombres: [{ id: 21, registryId: 1, canonicalName: 'ANA MARIA LOPEZ', name: 'JUAN PEREZ', expediente: '68001-1-25-0007', diffType: 'REVISAR_IDENTIDAD', similarity: 0.42 }],
-  identidad: [
-    { kind: 'persona', id: 4, registryId: 4, name: 'SOLO NOMBRE', expediente: null, version: 2 },
-    { kind: 'participacion', id: 30, registryId: null, name: '', expediente: '68001-1-24-0001', version: 0 },
+  matricula: [{ registryId: 5, name: 'JHON DOMINGUEZ', cc: '91492000', version: 3, options: [
+    { value: '68202-158428', valueNorm: '68202158428', variants: ['68202158428STD'], projects: 320 },
+    { value: 'A68212001-91492000', valueNorm: 'A6821200191492000', variants: [], projects: 23 },
+  ] }],
+  experiencia: [
+    { kind: 'fecha', registryId: 6, name: 'ELSA RUIZ', version: 2, dates: [{ date: '2000-07-19', projects: 8 }, { date: '2021-07-19', projects: 1 }] },
+    { kind: 'rol', registryId: 1, name: 'ANA LOPEZ', roleCode: 'ARQ_PROY', monthsLatest: 24, monthsMax: 21731 },
   ],
-  experiencia: [{ registryId: 1, name: 'ANA LOPEZ', roleCode: 'ARQ_PROY', monthsLatest: 24, monthsMax: 21731 }],
   roles: [{ id: 50, registryId: 1, role: 'PLOMERO', expediente: '68001-1-24-0009' }],
 };
 
 function mockQueues() {
-  service.reviewSummary.mockResolvedValue({ data: { duplicados: 1, nombres: 1, identidad: 2, experiencia: 1, roles: 1 } });
+  service.reviewSummary.mockResolvedValue({ data: { duplicados: 1, nombres: 1, matricula: 1, experiencia: 1, roles: 1 } });
   service.review.mockImplementation(({ type }) => Promise.resolve({ data: { type, data: queues[type], total: queues[type].length, page: 1, limit: 25 } }));
   service.resolve.mockResolvedValue({ data: {} });
 }
@@ -32,7 +35,8 @@ describe('RegistryReview', () => {
 
     expect(await screen.findByText('Mismo nombre con otra cédula')).toBeInTheDocument();
     expect(service.review).toHaveBeenCalledWith({ type: 'duplicados', page: 1, limit: 25 });
-    expect(screen.getByRole('button', { name: /Identidad pendiente/ })).toHaveTextContent('2');
+    expect(screen.queryByRole('button', { name: /Identidad pendiente/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Experiencia atípica/ })).toHaveTextContent('1');
     expect(screen.getByRole('button', { name: /Posibles duplicados/ })).toHaveAttribute('aria-current', 'page');
   });
 
@@ -75,21 +79,62 @@ describe('RegistryReview', () => {
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'nombres', id: 21, action: 'reviewed' }));
   });
 
-  it('confirms a pending identity and assigns an unidentified participation', async () => {
+  it('lets the user choose the right matrícula among the several a professional has', async () => {
     const user = userEvent.setup();
-    service.list.mockResolvedValue({ data: { data: [{ id: 1, name: 'ANA LOPEZ', cc: '914980007', projects: 3 }] } });
     render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
-    await user.click(await screen.findByRole('button', { name: /Identidad pendiente/ }));
+    expect(await screen.findByRole('button', { name: /Matrícula múltiple/ })).toHaveTextContent('1');
+    await user.click(screen.getByRole('button', { name: /Matrícula múltiple/ }));
 
-    await user.click(await screen.findByRole('button', { name: 'Confirmar identidad' }));
-    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'identidad', action: 'confirm', id: 4, expectedVersion: 2 }));
+    expect(await screen.findByText('A68212001-91492000')).toBeInTheDocument();
+    expect(screen.getByText('(misma matrícula: 68202158428STD)')).toBeInTheDocument();
+    expect(screen.getByText('320 expedientes')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Usar esta matrícula' })).toHaveLength(2);
+    await user.click(screen.getAllByRole('button', { name: 'Usar esta matrícula' })[0]);
 
-    await user.click(screen.getByRole('button', { name: 'Asignar a un profesional' }));
-    await user.type(screen.getByLabelText('Profesional correcto'), 'ana');
-    await user.click(screen.getByRole('button', { name: 'Buscar' }));
-    await user.click(await screen.findByRole('button', { name: /ANA LOPEZ/ }));
-    await user.click(screen.getByRole('button', { name: 'Asignar' }));
-    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'identidad', action: 'assign', participationId: 30, registryId: 1 }));
+    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'matricula', action: 'choose', registryId: 5, value: '68202158428', expectedVersion: 3 }));
+  });
+
+  it('lets the user type the right matrícula when none of the options is correct', async () => {
+    const user = userEvent.setup();
+    service.update.mockResolvedValue({ data: { id: 5, version: 4 } });
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Matrícula múltiple/ }));
+    await user.click(await screen.findByRole('button', { name: 'Ninguna es correcta' }));
+
+    await user.type(screen.getByLabelText('Matrícula correcta de JHON DOMINGUEZ'), '6-8');
+    await user.click(screen.getByRole('button', { name: 'Guardar matrícula' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('entre 4 y 40 caracteres');
+    expect(service.update).not.toHaveBeenCalled();
+
+    await user.clear(screen.getByLabelText('Matrícula correcta de JHON DOMINGUEZ'));
+    await user.type(screen.getByLabelText('Matrícula correcta de JHON DOMINGUEZ'), '68202-999999');
+    await user.click(screen.getByRole('button', { name: 'Guardar matrícula' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledWith(5, { expectedVersion: 3, registration: '68202-999999' }));
+    await waitFor(() => expect(service.review).toHaveBeenCalledTimes(3));
+  });
+
+  it('shows the server refusal when the typed matrícula belongs to someone else and lets the user cancel', async () => {
+    const user = userEvent.setup();
+    service.update.mockRejectedValue({ response: { status: 409, data: { code: 'REGISTRATION_EXISTS', message: 'Ya existe un profesional con esa matrícula.' } } });
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Matrícula múltiple/ }));
+    await user.click(await screen.findByRole('button', { name: 'Ninguna es correcta' }));
+    await user.type(screen.getByLabelText('Matrícula correcta de JHON DOMINGUEZ'), '68202999999');
+    await user.click(screen.getByRole('button', { name: 'Guardar matrícula' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Ya existe un profesional con esa matrícula.');
+    expect(screen.getByLabelText('Matrícula correcta de JHON DOMINGUEZ')).toHaveValue('68202999999');
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+    expect(screen.getByRole('button', { name: 'Ninguna es correcta' })).toBeInTheDocument();
+  });
+
+  it('hides the choose buttons when the user cannot write', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite={false} onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Matrícula múltiple/ }));
+    await screen.findByText('A68212001-91492000');
+    expect(screen.queryByRole('button', { name: 'Usar esta matrícula' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Ninguna es correcta' })).not.toBeInTheDocument();
   });
 
   it('accepts the latest experience of an atypical case', async () => {
@@ -97,10 +142,31 @@ describe('RegistryReview', () => {
     render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /Experiencia atípica/ }));
 
-    expect(await screen.findByText(/Último: 2 años · Máximo: 1810 años 11 meses/)).toBeInTheDocument();
+    expect(await screen.findByText(/Último: 2 años · Máximo:/)).toBeInTheDocument();
+    expect(screen.getByText('1810 años 11 meses')).toHaveClass('text-destructive');
+    expect(screen.getByText('Valor improbable: revisar expedientes').closest('li')).toHaveAttribute('data-implausible', 'true');
     await user.click(screen.getByRole('button', { name: 'Aceptar 2 años' }));
 
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'experiencia', action: 'override', registryId: 1, roleCode: 'ARQ_PROY', months: 24 }));
+  });
+
+  it('lists the people whose expedientes carry different matrícula issue dates and lets the user pick the right one', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Experiencia atípica/ }));
+
+    expect(await screen.findByText('Fechas de expedición distintas')).toBeInTheDocument();
+    expect(screen.getByText('8 expedientes')).toBeInTheDocument();
+    await user.click(screen.getAllByRole('button', { name: 'Usar esta fecha' })[0]);
+    await waitFor(() => expect(service.update).toHaveBeenCalledWith(6, { expectedVersion: 2, registrationDate: '2000-07-19' }));
+  });
+
+  it('hides the date buttons when the user cannot write', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite={false} onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Experiencia atípica/ }));
+    await screen.findByText('Fechas de expedición distintas');
+    expect(screen.queryByRole('button', { name: 'Usar esta fecha' })).not.toBeInTheDocument();
   });
 
   it('lists participations without a role and shows empty queues and errors', async () => {

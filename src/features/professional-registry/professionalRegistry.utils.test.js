@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { canWriteRegistry, errorCode, errorText, formatCc, formatDate, formatMonths } from './professionalRegistry.utils';
+import { canWriteRegistry, errorCode, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 describe('professional registry utils', () => {
   it('formats months as years and months, with a fallback for missing or zero values', () => {
@@ -46,5 +46,16 @@ describe('professional registry utils', () => {
     expect(canWriteRegistry({ role_short: 'Secretario', role: 'Secretario' })).toBe(false);
     expect(canWriteRegistry(null)).toBe(false);
     expect(canWriteRegistry({})).toBe(false);
+  });
+});
+
+describe('isImplausibleMonths', () => {
+  it('flags only values above 50 years', () => {
+    expect(isImplausibleMonths(21731)).toBe(true);
+    expect(isImplausibleMonths(601)).toBe(true);
+    expect(isImplausibleMonths(600)).toBe(false);
+    expect(isImplausibleMonths(154)).toBe(false);
+    expect(isImplausibleMonths(null)).toBe(false);
+    expect(isImplausibleMonths(undefined)).toBe(false);
   });
 });

@@ -9,7 +9,7 @@ import ProfessionalRegistryService from '@/features/professional-registry/api/pr
 import { cn } from '@/shared/lib/utils';
 import RegistryForm from './RegistryForm';
 import RegistryPicker from './RegistryPicker';
-import { DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatMonths } from './professionalRegistry.utils';
+import { DIALOG_CLOSE_CLASS, DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 const TABS = [
   ['datos', 'Datos'],
@@ -121,7 +121,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
 
   return (
     <Dialog open onOpenChange={(next) => { if (!next) onClose?.(); }}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-auto">
+      <DialogContent className={`max-h-[90vh] max-w-4xl overflow-auto ${DIALOG_CLOSE_CLASS}`}>
         <DialogHeader>
           <DialogTitle>{detail ? detail.name : 'Profesional'}</DialogTitle>
           <DialogDescription>{detail ? `Cédula ${formatCc(detail.cc)}` : 'Cargando información del profesional.'}</DialogDescription>
@@ -161,7 +161,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                   <Field label="Correo">{detail.email}</Field>
                   <Field label="Teléfono">{detail.phone}</Field>
                   <Field label="Identificadores">
-                    <ul>{detail.identifiers.map((item) => <li key={`${item.kind}-${item.value}`}>{item.kind === 'CC' ? 'Cédula' : 'Matrícula'}: {item.value}</li>)}</ul>
+                    <ul>{detail.identifiers.map((item) => <li key={`${item.kind}-${item.value}`} className={item.discarded ? 'text-muted-foreground line-through' : undefined}>{item.kind === 'CC' ? 'Cédula' : 'Matrícula'}: {item.value}{item.discarded ? <span className="ml-1 text-xs no-underline">(descartada)</span> : null}</li>)}</ul>
                   </Field>
                   <Field label="Expedientes sin origen">{detail.unlinked ? `${detail.unlinked} (el registro de origen fue eliminado)` : null}</Field>
                 </dl>
@@ -209,7 +209,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                         <td className="py-1">{role.label}{role.outlier ? <Badge variant="destructive" className="ml-2">Revisar</Badge> : null}</td>
                         <td>{role.projects}</td>
                         <td>{formatMonths(role.monthsLatest)}</td>
-                        <td>{formatMonths(role.monthsMax)}</td>
+                        <td className={isImplausibleMonths(role.monthsMax) ? 'font-semibold text-destructive' : undefined}>{formatMonths(role.monthsMax)}</td>
                         <td>{role.monthsOverride !== null && role.monthsOverride !== undefined ? formatMonths(role.monthsOverride) : '—'}</td>
                       </tr>
                     ))}
@@ -224,11 +224,19 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                   <h4 className="text-sm font-semibold">{role.label} <span className="font-normal text-muted-foreground">({role.projects})</span></h4>
                   <ul className="space-y-0.5 text-sm">
                     {role.expedientes.map((item) => (
-                      <li key={item.participationId} className="flex flex-wrap gap-x-3">
+                      <li key={item.participationId} className={cn('flex flex-wrap gap-x-3 rounded-md px-2 py-0.5', isImplausibleMonths(item.months) && 'border border-destructive bg-destructive/5')} data-implausible={isImplausibleMonths(item.months) ? 'true' : undefined}>
                         <span className="font-medium tabular-nums">{item.expediente}</span>
                         <span className="text-muted-foreground">{formatDate(item.date)}</span>
                         <span className="text-muted-foreground">{item.name}</span>
-                        <span className="text-muted-foreground">{formatMonths(item.months)}</span>
+                        <span className={isImplausibleMonths(item.months) ? 'font-semibold text-destructive' : 'text-muted-foreground'}>{formatMonths(item.months)}</span>
+                        {isImplausibleMonths(item.months) ? <Badge variant="destructive">Experiencia improbable: revisar este expediente</Badge> : null}
+                        {item.registration ? <span className="text-muted-foreground">Matrícula: {item.registration}</span> : null}
+                        {item.registrationOwner ? (
+                          <span className="inline-flex items-center gap-2 rounded-md bg-amber-100 px-2 text-xs font-medium text-amber-900">
+                            Esta matrícula pertenece a {item.registrationOwner.name}
+                            <button type="button" className="underline text-amber-900" onClick={() => onOpen?.(item.registrationOwner.id)}>Abrir</button>
+                          </span>
+                        ) : null}
                       </li>
                     ))}
                   </ul>
@@ -288,7 +296,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
         />
 
         <Dialog open={mergeOpen} onOpenChange={setMergeOpen}>
-          <DialogContent>
+          <DialogContent className={DIALOG_CLOSE_CLASS}>
             <DialogHeader>
               <DialogTitle>Fusionar con otro profesional</DialogTitle>
               <DialogDescription>Los expedientes, cédulas y matrículas de este profesional pasan al que elija. El registro actual quedará eliminado.</DialogDescription>
@@ -302,7 +310,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
         </Dialog>
 
         <Dialog open={Boolean(relinkFor)} onOpenChange={(next) => { if (!next) setRelinkFor(null); }}>
-          <DialogContent>
+          <DialogContent className={DIALOG_CLOSE_CLASS}>
             <DialogHeader>
               <DialogTitle>Asignar el expediente a otro profesional</DialogTitle>
               <DialogDescription>{relinkFor ? `Expediente ${relinkFor.expediente}, registrado como «${relinkFor.name}».` : ''}</DialogDescription>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
-import { errorText } from './professionalRegistry.utils';
+import { DIALOG_CLOSE_CLASS, errorText } from './professionalRegistry.utils';
 
 const LINES = [
   ['sourceRows', 'Registros de profesionales en los expedientes'],
@@ -45,7 +45,7 @@ export default function RegistryConsolidate({ open, onClose, onApplied }) {
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose?.(); }}>
-      <DialogContent>
+      <DialogContent className={DIALOG_CLOSE_CLASS}>
         <DialogHeader>
           <DialogTitle>Reconciliar con los expedientes</DialogTitle>
           <DialogDescription>Compara la base con los profesionales registrados en los expedientes. Las ediciones manuales no se modifican.</DialogDescription>

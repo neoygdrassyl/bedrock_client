@@ -5,9 +5,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
-import { errorCode, errorText } from './professionalRegistry.utils';
+import { DIALOG_CLOSE_CLASS, errorCode, errorText, formatDate } from './professionalRegistry.utils';
 
-const EMPTY = { name: '', cc: '', registration: '', email: '', phone: '' };
+const EMPTY = { name: '', cc: '', registration: '', registrationDate: '', email: '', phone: '' };
+const MIN_REGISTRATION_DATE = '1900-01-01';
+const today = () => new Date().toLocaleDateString('en-CA');
+const squash = (value) => String(value || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+// A professional holds ONE matrícula; one with several different cards is fixed in "Por revisar", not here.
 const NAME_PATTERN = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ .'-]+$/;
 
 // Same rules as the server, so the user sees the problem before sending the form.
@@ -18,8 +22,9 @@ export function validateRegistryForm(values, mode) {
   const cc = values.cc.replace(/[.\-\s]/g, '');
   if (values.cc.trim() && (!/^\d{6,10}$/.test(cc))) errors.cc = 'La cédula debe tener entre 6 y 10 dígitos y no puede incluir letras.';
   const registration = values.registration.replace(/[^A-Za-z0-9]/g, '');
-  if (mode === 'create' && values.registration.trim() && (registration.length < 4 || registration.length > 40)) errors.registration = 'La matrícula debe tener entre 4 y 40 caracteres alfanuméricos.';
+  if (values.registration.trim() && (registration.length < 4 || registration.length > 40)) errors.registration = 'La matrícula debe tener entre 4 y 40 caracteres alfanuméricos.';
   if (mode === 'create' && !values.cc.trim() && !values.registration.trim()) errors.cc = 'Indique la cédula o, si no la tiene, la matrícula profesional.';
+  if (values.registrationDate && (!/^\d{4}-\d{2}-\d{2}$/.test(values.registrationDate) || values.registrationDate < MIN_REGISTRATION_DATE || values.registrationDate > today())) errors.registrationDate = 'La fecha de expedición debe ser una fecha válida entre 1900 y hoy.';
   const email = values.email.trim();
   if (email && (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) errors.email = 'El correo no tiene un formato válido.';
   const phone = values.phone.trim();
@@ -38,7 +43,7 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
     setErrors({});
     setServerError(null);
     setValues(mode === 'edit' && registry
-      ? { ...EMPTY, cc: registry.cc || '', email: registry.email || '', phone: registry.phone || '' }
+      ? { ...EMPTY, cc: registry.cc || '', email: registry.email || '', phone: registry.phone || '', registration: registry.registration || '', registrationDate: registry.registrationDate || '' }
       : EMPTY);
   }, [open, mode, registry]);
 
@@ -51,6 +56,8 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
     if (Object.keys(found).length) return;
     setSaving(true);
     setServerError(null);
+    const registrationChanged = mode === 'edit' && values.registration.trim() && squash(values.registration) !== squash(registry.registration);
+    const registrationDateChanged = mode === 'edit' && values.registrationDate && values.registrationDate !== (registry.registrationDate || '');
     try {
       const response = mode === 'create'
         ? await ProfessionalRegistryService.create({ name: values.name, cc: values.cc, registration: values.registration, email: values.email, phone: values.phone })
@@ -59,6 +66,8 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
           email: values.email,
           phone: values.phone,
           ...(values.cc.replace(/\D/g, '') !== String(registry.cc || '') ? { cc: values.cc } : {}),
+          ...(registrationChanged ? { registration: values.registration } : {}),
+          ...(registrationDateChanged ? { registrationDate: values.registrationDate } : {}),
         });
       onSaved?.(response?.data);
     } catch (e) {
@@ -78,19 +87,25 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose?.(); }}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className={`max-w-lg ${DIALOG_CLOSE_CLASS}`}>
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Nuevo profesional' : 'Editar datos del profesional'}</DialogTitle>
           <DialogDescription>
             {mode === 'create'
               ? 'Se crea un registro manual. Si el profesional no tiene cédula, registre su matrícula profesional.'
-              : 'El nombre se corrige desde el detalle. La cédula anterior sigue vinculada a este profesional.'}
+              : 'El nombre se corrige desde el detalle. La cédula y la matrícula anteriores siguen vinculadas a este profesional.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-3" noValidate>
           {mode === 'create' ? field('registry-name', 'Nombre completo *', { key: 'name' }) : null}
           {field('registry-cc', mode === 'create' ? 'Cédula' : 'Cédula', { key: 'cc' })}
-          {mode === 'create' ? field('registry-registration', 'Matrícula profesional', { key: 'registration' }) : null}
+          {mode === 'edit' && registry?.registrationConflict
+            ? <p className="text-xs text-muted-foreground">Tiene varias matrículas registradas: elija la correcta en «Por revisar».</p>
+            : field('registry-registration', 'Matrícula profesional', { key: 'registration' })}
+          {mode === 'edit' ? field('registry-registration-date', 'Fecha de expedición de la matrícula', { key: 'registrationDate', props: { type: 'date', min: MIN_REGISTRATION_DATE, max: today() } }) : null}
+          {mode === 'edit' && !registry?.registrationDate && registry?.registrationDates?.length > 1
+            ? <p className="text-xs text-muted-foreground">Los expedientes traen fechas distintas ({registry.registrationDates.map((item) => formatDate(item.date)).join(', ')}): indique la correcta.</p>
+            : null}
           {field('registry-email', 'Correo', { key: 'email', props: { type: 'email' } })}
           {field('registry-phone', 'Teléfono', { key: 'phone' })}
           {serverError ? (

@@ -60,7 +60,7 @@ export default function RegistryPicker({ excludeId, selectedId, onSelect, label 
               <button
                 type="button"
                 aria-pressed={selectedId === item.id}
-                className={cn('w-full rounded-md border border-border px-3 py-2 text-left text-sm hover:bg-muted', selectedId === item.id && 'border-primary bg-primary/5')}
+                className={cn('w-full rounded-md border border-border px-3 py-2 text-left text-sm text-foreground hover:bg-muted', selectedId === item.id && 'border-primary bg-primary/5')}
                 onClick={() => onSelect(item)}
               >
                 <span className="font-medium">{item.name}</span>

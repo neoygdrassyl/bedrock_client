@@ -21,6 +21,14 @@ export function formatMonths(months) {
   return [years ? `${years} ${years === 1 ? 'año' : 'años'}` : '', rest ? `${rest} ${rest === 1 ? 'mes' : 'meses'}` : ''].filter(Boolean).join(' ');
 }
 
+// Same limit the server uses to flag an experience as atypical (50 years): beyond it the value is almost surely a typing error.
+export const IMPLAUSIBLE_MONTHS = 600;
+
+export function isImplausibleMonths(months) {
+  const value = Number(months);
+  return months !== null && months !== undefined && Number.isFinite(value) && value > IMPLAUSIBLE_MONTHS;
+}
+
 export function formatCc(cc) {
   return cc ? String(cc).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : 'Sin cédula';
 }
@@ -68,3 +76,6 @@ export function errorText(error, fallback = 'No fue posible completar la operaci
   const data = error?.response?.data;
   return SAFE_CODES.has(data?.code) && typeof data.message === 'string' && data.message ? data.message : fallback;
 }
+
+// The shared dialog's close button inherits a near-white color here; this makes the "X" dark on the light dialog.
+export const DIALOG_CLOSE_CLASS = '[&>button.absolute]:text-foreground';

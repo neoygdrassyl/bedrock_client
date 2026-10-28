@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const service = vi.hoisted(() => ({
@@ -62,6 +62,29 @@ describe('RegistryDetail', () => {
 
     await user.click(screen.getByRole('button', { name: 'Historial' }));
     expect(screen.getByRole('list', { name: 'Historial' })).toHaveTextContent('CREACION');
+  });
+
+  it('shows the registered matrícula per expediente and flags the ones that belong to another professional', async () => {
+    const user = userEvent.setup();
+    const onOpen = vi.fn();
+    const base = detail();
+    const [role] = base.roles;
+    service.get.mockResolvedValue({ data: detail({ roles: [{ ...role, expedientes: [
+      { ...role.expedientes[0], registration: '68202-158428', registrationOwner: null },
+      { ...role.expedientes[1], registration: 'A68041999-91490031', registrationOwner: { id: 77, name: 'ANGELO QUINTERO' } },
+    ] }] }) });
+    open({ onOpen });
+    await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
+
+    await user.click(screen.getByRole('button', { name: 'Expedientes' }));
+    const region = screen.getByRole('region', { name: 'ARQUITECTO PROYECTISTA' });
+    expect(region).toHaveTextContent('Matrícula: 68202-158428');
+    expect(region).toHaveTextContent('Matrícula: A68041999-91490031');
+    expect(region).toHaveTextContent('Esta matrícula pertenece a ANGELO QUINTERO');
+    expect(region).not.toHaveTextContent('pertenece a ANA');
+
+    await user.click(within(region).getByRole('button', { name: 'Abrir' }));
+    expect(onOpen).toHaveBeenCalledWith(77);
   });
 
   it('is read-only when the user cannot write', async () => {

@@ -2,18 +2,51 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
-import RegistryPicker from './RegistryPicker';
-import { DIFF_LABELS, DUPLICATE_REASONS, errorText, formatCc, formatMonths } from './professionalRegistry.utils';
+import { cn } from '@/shared/lib/utils';
+import { DIFF_LABELS, DUPLICATE_REASONS, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 const QUEUES = [
   ['duplicados', 'Posibles duplicados'],
   ['nombres', 'Nombres dudosos'],
-  ['identidad', 'Identidad pendiente'],
+  ['matricula', 'Matrícula múltiple'],
   ['experiencia', 'Experiencia atípica'],
   ['roles', 'Rol sin clasificar'],
 ];
+
+// Same rule as the server: 4 to 40 letters or digits once separators are removed.
+const registrationLength = (value) => String(value || '').replace(/[^A-Za-z0-9]/g, '').length;
+
+// "None of these is right": the person types the correct matrícula. It goes through the same update as "Editar datos".
+function OtherRegistration({ item, busy, onSave }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const [problem, setProblem] = useState('');
+  const id = `other-registration-${item.registryId}`;
+
+  if (!open) return <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>Ninguna es correcta</Button>;
+
+  const submit = (event) => {
+    event.preventDefault();
+    const length = registrationLength(value);
+    if (length < 4 || length > 40) { setProblem('La matrícula debe tener entre 4 y 40 caracteres alfanuméricos.'); return; }
+    setProblem('');
+    onSave(item, value.trim());
+  };
+
+  return (
+    <form onSubmit={submit} className="flex flex-wrap items-start gap-2" noValidate>
+      <div className="space-y-1">
+        <label htmlFor={id} className="sr-only">Matrícula correcta de {item.name}</label>
+        <Input id={id} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Matrícula correcta" aria-invalid={Boolean(problem)} autoFocus />
+        {problem ? <p className="text-xs text-destructive" role="alert">{problem}</p> : null}
+      </div>
+      <Button type="submit" size="sm" disabled={busy}>Guardar matrícula</Button>
+      <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => { setOpen(false); setValue(''); setProblem(''); }}>Cancelar</Button>
+    </form>
+  );
+}
 
 export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   const [type, setType] = useState('duplicados');
@@ -22,8 +55,6 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   const [queue, setQueue] = useState({ type: null, data: [], total: 0, limit: 25 });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [picking, setPicking] = useState(null);
-  const [target, setTarget] = useState(null);
   const latestRequest = useRef(0);
 
   const load = useCallback(async () => {
@@ -43,11 +74,11 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const resolve = async (body) => {
+  const run = async (action) => {
     setBusy(true);
     setError('');
     try {
-      await ProfessionalRegistryService.resolve(body);
+      await action();
       onChanged?.();
       await load();
     } catch (e) {
@@ -57,12 +88,9 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
     }
   };
 
-  const assign = async () => {
-    const item = picking;
-    await resolve({ type: 'identidad', action: 'assign', participationId: item.id, registryId: target.id });
-    setPicking(null);
-    setTarget(null);
-  };
+  const resolve = (body) => run(() => ProfessionalRegistryService.resolve(body));
+  const saveRegistrationDate = (item, registrationDate) => run(() => ProfessionalRegistryService.update(item.registryId, { expectedVersion: item.version, registrationDate }));
+  const saveRegistration = (item, registration) => run(() => ProfessionalRegistryService.update(item.registryId, { expectedVersion: item.version, registration }));
 
   // The rows of the previous queue must never be drawn with the renderer of the new one while it loads.
   const rows = queue.type === type ? queue.data : [];
@@ -88,7 +116,7 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
             <div className="grid gap-2 sm:grid-cols-2">
               {[item.a, item.b].map((person) => (
                 <div key={person.id} className="rounded-md border border-border/60 p-2">
-                  <button type="button" className="font-medium underline" onClick={() => onOpen?.(person.id)}>{person.name}</button>
+                  <button type="button" className="font-medium text-foreground underline" onClick={() => onOpen?.(person.id)}>{person.name}</button>
                   <p className="text-xs text-muted-foreground">{formatCc(person.cc)} · {person.projects} expedientes</p>
                 </div>
               ))}
@@ -114,27 +142,66 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
           </li>
         )) : null}
 
-        {type === 'identidad' ? rows.map((item) => (
-          <li key={`${item.kind}-${item.id}`} className="rounded-lg border border-border bg-card p-3 text-sm">
-            <p><span className="font-medium">{item.name || 'Sin nombre'}</span> <span className="text-muted-foreground">{item.kind === 'persona' ? 'Persona sin cédula ni matrícula' : `Participación sin identificar en ${item.expediente}`}</span></p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {item.kind === 'persona' ? <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button> : null}
-              {canWrite && item.kind === 'persona' ? <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'identidad', action: 'confirm', id: item.id, expectedVersion: item.version })}>Confirmar identidad</Button> : null}
-              {canWrite && item.kind === 'participacion' ? <Button type="button" size="sm" onClick={() => { setTarget(null); setPicking(item); }}>Asignar a un profesional</Button> : null}
+        {type === 'matricula' ? rows.map((item) => (
+          <li key={item.registryId} className="rounded-lg border border-border bg-card p-3 text-sm">
+            <p><span className="font-medium">{item.name}</span> <span className="text-muted-foreground">{item.cc ? formatCc(item.cc) : 'Sin cédula'}</span></p>
+            <p className="text-xs text-muted-foreground">Un profesional solo puede tener una matrícula. Indique la correcta; las demás quedan descartadas.</p>
+            <ul className="mt-2 space-y-1" aria-label={`Matrículas de ${item.name}`}>
+              {item.options.map((option) => (
+                <li key={option.valueNorm} className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium tabular-nums">{option.value}</span>
+                  {option.variants.length ? <span className="text-xs text-muted-foreground">(misma matrícula: {option.variants.join(', ')})</span> : null}
+                  <span className="text-xs text-muted-foreground">{option.projects} {option.projects === 1 ? 'expediente' : 'expedientes'}</span>
+                  {canWrite ? <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'matricula', action: 'choose', registryId: item.registryId, value: option.valueNorm, expectedVersion: item.version })}>Usar esta matrícula</Button> : null}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-2 flex flex-wrap items-start gap-2">
+              {canWrite ? <OtherRegistration item={item} busy={busy} onSave={saveRegistration} /> : null}
+              <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button>
             </div>
           </li>
         )) : null}
 
-        {type === 'experiencia' ? rows.map((item) => (
-          <li key={`${item.registryId}-${item.roleCode}`} className="rounded-lg border border-border bg-card p-3 text-sm">
-            <p><span className="font-medium">{item.name}</span> <span className="text-muted-foreground">{item.roleCode}</span></p>
-            <p className="text-xs text-muted-foreground">Último: {formatMonths(item.monthsLatest)} · Máximo: {formatMonths(item.monthsMax)}</p>
+        {type === 'experiencia' ? rows.map((item) => {
+          if (item.kind === 'fecha') {
+            return (
+              <li key={`fecha-${item.registryId}`} className="rounded-lg border border-border bg-card p-3 text-sm">
+                <div className="flex flex-wrap items-center gap-x-1">
+                  <span className="font-medium">{item.name}</span>
+                  <Badge variant="secondary" className="ml-2">Fechas de expedición distintas</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Un profesional tiene una sola fecha de expedición de la matrícula y de ella depende su experiencia. Indique la correcta.</p>
+                <ul className="mt-2 space-y-1" aria-label={`Fechas de expedición de ${item.name}`}>
+                  {item.dates.map((option) => (
+                    <li key={option.date} className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium tabular-nums">{formatDate(option.date)}</span>
+                      <span className="text-xs text-muted-foreground">{option.projects} {option.projects === 1 ? 'expediente' : 'expedientes'}</span>
+                      {canWrite ? <Button type="button" size="sm" disabled={busy} onClick={() => saveRegistrationDate(item, option.date)}>Usar esta fecha</Button> : null}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-2">
+                  <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button>
+                </div>
+              </li>
+            );
+          }
+          const absurd = isImplausibleMonths(item.monthsMax);
+          return (
+          <li key={`${item.registryId}-${item.roleCode}`} className={cn('rounded-lg border p-3 text-sm', absurd ? 'border-destructive bg-destructive/5' : 'border-border bg-card')} data-implausible={absurd ? 'true' : undefined}>
+            <div className="flex flex-wrap items-center gap-x-1">
+              <span className="font-medium">{item.name}</span> <span className="text-muted-foreground">{item.roleCode}</span>
+              {absurd ? <Badge variant="destructive" className="ml-2">Valor improbable: revisar expedientes</Badge> : null}
+            </div>
+            <p className="text-xs text-muted-foreground">Último: {formatMonths(item.monthsLatest)} · Máximo: <span className={absurd ? 'font-semibold text-destructive' : undefined}>{formatMonths(item.monthsMax)}</span></p>
             <div className="mt-2 flex flex-wrap gap-2">
               <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button>
               {canWrite && item.monthsLatest ? <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'experiencia', action: 'override', registryId: item.registryId, roleCode: item.roleCode, months: item.monthsLatest })}>Aceptar {formatMonths(item.monthsLatest)}</Button> : null}
             </div>
           </li>
-        )) : null}
+          );
+        }) : null}
 
         {type === 'roles' ? rows.map((item) => (
           <li key={item.id} className="rounded-lg border border-border bg-card p-3 text-sm">
@@ -150,20 +217,6 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
           <Button type="button" variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage((current) => current + 1)}>Siguiente</Button>
         </div>
       </nav>
-
-      <Dialog open={Boolean(picking)} onOpenChange={(next) => { if (!next) setPicking(null); }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Asignar a un profesional</DialogTitle>
-            <DialogDescription>{picking ? `Expediente ${picking.expediente}, registrado como «${picking.name}».` : ''}</DialogDescription>
-          </DialogHeader>
-          <RegistryPicker selectedId={target?.id} onSelect={setTarget} label="Profesional correcto" />
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setPicking(null)}>Cancelar</Button>
-            <Button type="button" disabled={!target || busy} onClick={assign}>Asignar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </section>
   );
 }
