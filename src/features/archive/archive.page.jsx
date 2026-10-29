@@ -250,6 +250,13 @@ export default function ARCHIVE(props) {
             })
             .catch(e => {
                 console.log(e);
+                setLoad(1);
+                const forbidden = e?.response?.status === 403;
+                swalError({
+                    title: swaMsg.generic_eror_title,
+                    text: forbidden ? 'No tiene permisos para consultar el archivo.' : swaMsg.generic_error_text,
+                    icon: 'warning',
+                });
             });
     }
 

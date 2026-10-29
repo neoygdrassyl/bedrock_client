@@ -16,22 +16,19 @@ export default function GUIDE_USER(props) {
     var [md00, setMd00] = useState(null);
     var [indexArray, setIndex] = useState([]);
     var [mdIndex, setMdIndex] = useState(null);
-    var [load, setLoad] = useState(0);
     const changeContentRequestIdRef = useRef(0);
 
     useEffect(() => {
-        // DONT QUESTION THIS, THIS IS HOW MD WORKSs
-        if (load == 0) {
-            let ignore = false;
-            window.scrollTo({ top: 0 });
-            setIndex(IndexList)
-            fetch(indexMd).then((response) => response.text()).then((text) => { if (!ignore) setMdIndex(text); })
-            fetch(guide_00).then((response) => response.text()).then((text) => { if (!ignore) setMd00(text); })
-            fetch(guide_01).then((response) => response.text()).then((text) => { if (!ignore) setMd01(text); })
-            setLoad(1)
-            return () => { ignore = true; };
-        }
-    }, [load]);
+        // Load once on mount. Changing state that is also a dependency here would run the
+        // cleanup before the fetches resolve and leave the page stuck on "CARGANDO...".
+        let ignore = false;
+        window.scrollTo({ top: 0 });
+        setIndex(IndexList)
+        fetch(indexMd).then((response) => response.text()).then((text) => { if (!ignore) setMdIndex(text); })
+        fetch(guide_00).then((response) => response.text()).then((text) => { if (!ignore) setMd00(text); })
+        fetch(guide_01).then((response) => response.text()).then((text) => { if (!ignore) setMd01(text); })
+        return () => { ignore = true; };
+    }, []);
 
     // ***************************  DATA CONVERTER *********************** //
     let CHANGE_CONTENT = (md, ref) => {
