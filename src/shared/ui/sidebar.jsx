@@ -197,7 +197,7 @@ function Sidebar({
     >
       <div
         className={cn(
-          'relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear',
+          'relative w-[--sidebar-width] bg-transparent transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
           'group-data-[collapsible=offcanvas]:w-0',
           'group-data-[side=right]:rotate-180',
           variant === 'floating' || variant === 'inset'
@@ -207,7 +207,7 @@ function Sidebar({
       />
       <div
         className={cn(
-          'fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex',
+          'fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -220,7 +220,7 @@ function Sidebar({
       >
         <div
           data-sidebar="sidebar"
-          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+          className="flex h-full w-full flex-col overflow-hidden bg-sidebar group-data-[variant=floating]:rounded-2xl group-data-[variant=floating]:border group-data-[variant=floating]:border-white/[0.08] group-data-[variant=floating]:shadow-[0_18px_40px_-18px_rgba(15,23,42,0.55)]"
         >
           {children}
         </div>
