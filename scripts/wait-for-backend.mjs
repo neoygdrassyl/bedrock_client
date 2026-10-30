@@ -1,5 +1,4 @@
 import { pathToFileURL } from 'node:url';
-import { loadEnv } from 'vite';
 
 const DEFAULT_GATE_URL = 'http://127.0.0.1:3001';
 const READY_PATH = '/health/ready';
@@ -53,6 +52,9 @@ export async function waitForBackend({
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // Loaded only when run as a script: importing Vite (and esbuild) at module
+  // level breaks the unit tests, which run under jsdom.
+  const { loadEnv } = await import('vite');
   const env = loadEnv('development', process.cwd(), '');
   const url = process.env.DOVELA_BACKEND_READY_URL || resolveReadyUrl(env);
   const timeoutMs = Number(process.env.DOVELA_BACKEND_READY_TIMEOUT_MS || 120000);

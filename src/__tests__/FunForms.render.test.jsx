@@ -313,9 +313,12 @@ describe('FunForms — Render (fun_n_1 through fun_n_4)', () => {
       render(<MemoryRouter><FUNN2 {...props} /></MemoryRouter>);
     });
 
-    const comparisonTable = screen.getByRole('table', { name: 'Comparación de información del predio' });
-    expect(comparisonTable).toBeInTheDocument();
-    expect(screen.getAllByRole('table')).toHaveLength(1);
+    // The R/A comparison is split into one table per FUN item (2.1, 2.2, 2.3).
+    ['2.1 Dirección o Nomenclatura', '2.2 Matrícula Inmobiliaria', '2.3 Identificación Catastral'].forEach(name => {
+      expect(screen.getByRole('table', { name })).toBeInTheDocument();
+    });
+    const addressTable = screen.getByRole('table', { name: '2.1 Dirección o Nomenclatura' });
+    expect(within(addressTable).getByRole('rowheader', { name: 'Dirección actual' })).toBeInTheDocument();
     screen.getAllByText('R').forEach(header => expect(header).not.toHaveClass('[writing-mode:vertical-rl]'));
     const valueInput = screen.getByLabelText('Valor de Dirección actual');
     const radicacion = screen.getByLabelText('Estado de Radicación de Dirección actual');

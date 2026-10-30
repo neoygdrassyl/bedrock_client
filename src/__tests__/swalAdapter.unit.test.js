@@ -179,23 +179,21 @@ describe('swalError symptom classification', () => {
     expect(classifySwalError({}).relatedRequestId).toBeNull();
   });
 
-  it('logs and toasts a symptom instead of opening a modal', async () => {
+  it('only logs a symptom: no modal and no toast', async () => {
     const error = { config: { dovelaRequestId: 'req_load_12345678' }, response: { status: 503 } };
 
     const result = await swalError({ title: 'ERROR AL CARGAR', text: 'No ha sido posible cargar este item.', error, symptom: true });
 
     expect(Swal.fire).not.toHaveBeenCalled();
     expect(result).toMatchObject({ isConfirmed: true, symptom: true });
-    expect(toastWarning).toHaveBeenCalledWith('No se pudo cargar parte de la información', expect.objectContaining({
-      description: 'Código: req_load_12345678',
-    }));
+    expect(toastWarning).not.toHaveBeenCalled();
     expect(__getQueuedEventsForTests()).toEqual([
       expect.objectContaining({
         level: 'warn',
         event: 'ui_load_failed',
         message: 'No ha sido posible cargar este item.',
         relatedRequestId: 'req_load_12345678',
-        data: { title: 'ERROR AL CARGAR' },
+        data: { kind: 'runtime', title: 'ERROR AL CARGAR' },
       }),
     ]);
   });
@@ -212,12 +210,12 @@ describe('swalError symptom classification', () => {
         message: 'No fue posible generar el PDF.',
         relatedRequestId: 'req_pdf_12345678',
         path: expect.any(String),
-        data: { title: 'ERROR AL CARGAR', text: 'No fue posible generar el PDF.' },
+        data: { kind: 'runtime', title: 'ERROR AL CARGAR', text: 'No fue posible generar el PDF.' },
       }),
     ]);
   });
 
-  it('closes an open spinner when a symptom becomes a toast', async () => {
+  it('closes an open spinner when a symptom is only logged', async () => {
     Swal.isVisible.mockReturnValueOnce(true);
     Swal.isLoading.mockReturnValueOnce(true);
 
@@ -226,7 +224,7 @@ describe('swalError symptom classification', () => {
     expect(Swal.close).toHaveBeenCalledTimes(1);
   });
 
-  it('closes an open PDF progress popup when a symptom becomes a toast', async () => {
+  it('closes an open PDF progress popup when a symptom is only logged', async () => {
     const popup = document.createElement('div');
     popup.innerHTML = '<div id="swal-pdf-bar"></div>';
     Swal.isVisible.mockReturnValueOnce(true);
@@ -237,7 +235,7 @@ describe('swalError symptom classification', () => {
     expect(Swal.close).toHaveBeenCalledTimes(1);
   });
 
-  it('leaves unrelated modals open when a symptom becomes a toast', async () => {
+  it('leaves unrelated modals open when a symptom is only logged', async () => {
     const cancel = document.createElement('button');
     Swal.isVisible.mockReturnValue(true);
     Swal.getPopup.mockReturnValue(document.createElement('div'));

@@ -2,13 +2,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   __getQueuedEventsForTests,
   __resetLoggerForTests,
+  clearLocalLogs,
   clearLogQueue,
+  exportLocalLogs,
   flushLogs,
   getRequestIdFromError,
   installGlobalErrorListeners,
+  installLogConsole,
+  listLocalLogs,
   logError,
   logEvent,
   newRequestId,
+  redactObject,
   setLogTransport,
 } from './logger';
 
@@ -19,6 +24,8 @@ describe('client logger', () => {
   beforeEach(() => {
     __resetLoggerForTests();
     localStorage.clear();
+    // The local ring buffer is mirrored to sessionStorage and reloaded from it.
+    sessionStorage.clear();
     localStorage.setItem('dovela_token', 'jwt');
   });
 
@@ -144,13 +151,16 @@ describe('client logger', () => {
     const [event] = __getQueuedEventsForTests();
     const bytes = new TextEncoder().encode(JSON.stringify(event.data)).length;
     expect(event.data.truncated).toBe(true);
+    // The kind tag survives truncation and counts toward the byte budget.
+    expect(event.data.kind).toBe('runtime');
     expect(bytes).toBeLessThanOrEqual(4000);
     expect(bytes).toBeGreaterThan(3900);
   });
 
   it('keeps data that fits in the byte limit untouched', () => {
     logEvent('info', 'small_data', { data: { note: 'ñandú' } });
-    expect(__getQueuedEventsForTests()[0].data).toEqual({ note: 'ñandú' });
+    // Only the `kind` tag is added to a payload that already fits.
+    expect(__getQueuedEventsForTests()[0].data).toEqual({ kind: 'runtime', note: 'ñandú' });
   });
 
   it('drops a failed batch without logging it again', async () => {
@@ -230,5 +240,81 @@ describe('client logger', () => {
     const events = __getQueuedEventsForTests();
     expect(events.map((event) => event.event)).toEqual(['js_error', 'unhandled_rejection']);
     expect(events[0].message).toBe('TypeError: x is undefined');
+  });
+
+  it('redacts sensitive keys and query secrets before queueing', () => {
+    logEvent('error', 'redaction_check', {
+      message: 'GET /api/x?token=abc123&page=2',
+      data: { password: 'p4ss', nested: { authorization: 'Bearer x', url: '/a?jwt=zzz' }, keep: 'ok' },
+    });
+
+    const [event] = __getQueuedEventsForTests();
+    expect(event.message).toBe('GET /api/x?token=[REDACTED]&page=2');
+    expect(event.data).toMatchObject({
+      password: '[REDACTED]',
+      nested: { authorization: '[REDACTED]', url: '/a?jwt=[REDACTED]' },
+      keep: 'ok',
+    });
+    expect(JSON.stringify(event)).not.toMatch(/p4ss|Bearer x|abc123|zzz/);
+  });
+
+  it('marks circular references instead of throwing', () => {
+    const value = { name: 'loop' };
+    value.self = value;
+    expect(redactObject(value)).toEqual({ name: 'loop', self: '[CIRCULAR]' });
+  });
+
+  it('collapses repeated local entries into one line with a count', () => {
+    logEvent('warn', 'poll_failed', { message: 'timeout', relatedRequestId: 'req_aaaaaaaa_1' });
+    logEvent('warn', 'poll_failed', { message: 'timeout', relatedRequestId: 'req_bbbbbbbb_2' });
+
+    const entries = listLocalLogs({ text: 'poll_failed' });
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({ count: 2, level: 'warn', requestId: 'req_bbbbbbbb_2' });
+    expect(entries[0]).not.toHaveProperty('key');
+  });
+
+  it('keeps only the last 200 entries in the local ring buffer', () => {
+    for (let index = 0; index < 205; index += 1) logEvent('info', `ring_${index}`, { localOnly: true });
+
+    const entries = listLocalLogs();
+    expect(entries).toHaveLength(200);
+    expect(entries[0].event).toBe('ring_5');
+    expect(entries.at(-1).event).toBe('ring_204');
+  });
+
+  it('keeps localOnly events out of the send queue', () => {
+    logEvent('error', 'optional_endpoint_failed', { localOnly: true });
+
+    expect(__getQueuedEventsForTests()).toEqual([]);
+    expect(listLocalLogs('error')).toHaveLength(1);
+  });
+
+  it('filters, exports and clears the local buffer', () => {
+    logEvent('error', 'http_error', { kind: 'http', data: { status: 500, url: '/api/a' } });
+    logEvent('info', 'note', { message: 'hello' });
+
+    expect(listLocalLogs({ status: 500 })).toHaveLength(1);
+    expect(listLocalLogs('info')).toHaveLength(1);
+    expect(JSON.parse(exportLocalLogs()).entries).toHaveLength(2);
+
+    clearLocalLogs();
+    expect(listLocalLogs()).toEqual([]);
+  });
+
+  it('exposes a frozen window.__dovelaLogs console API once', () => {
+    const target = {};
+    installLogConsole(target);
+    const api = target.__dovelaLogs;
+
+    expect(Object.keys(api).sort()).toEqual(['clear', 'export', 'flush', 'list']);
+    expect(Object.isFrozen(api)).toBe(true);
+    installLogConsole(target);
+    expect(target.__dovelaLogs).toBe(api);
+
+    logEvent('warn', 'console_api', { localOnly: true });
+    expect(api.list('warn')).toHaveLength(1);
+    api.clear();
+    expect(api.list()).toEqual([]);
   });
 });

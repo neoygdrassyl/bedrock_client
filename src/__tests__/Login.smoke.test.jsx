@@ -146,6 +146,10 @@ describe('Login Flow — Pre-migration baseline', () => {
     await waitFor(() => {
       expect(mockPost).toHaveBeenCalledTimes(1);
     }, { timeout: 3000 });
+    // signin() completes on a 100 ms timer; wait for it so it never fires after teardown.
+    await waitFor(() => {
+      expect(window.location.pathname).not.toBe('/login');
+    }, { timeout: 3000 });
   });
 
   test('4. Login fallido dispara SweetAlert', async () => {

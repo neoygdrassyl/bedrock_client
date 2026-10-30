@@ -48,7 +48,7 @@ describe('ProfessionalVerificationGrid', () => {
   test('renders an empty state across the full grid', () => {
     render(<ProfessionalVerificationGrid professionals={[]} onEdit={vi.fn()} />);
 
-    expect(screen.getByText('No hay profesionales registrados. Añada un profesional para comenzar.')).toHaveAttribute('colspan', '21');
+    expect(screen.getByText('No hay profesionales registrados. Añada un profesional para comenzar.')).toHaveAttribute('colspan', '22');
   });
 
   test('renders the registered validity certificate ID and date', () => {

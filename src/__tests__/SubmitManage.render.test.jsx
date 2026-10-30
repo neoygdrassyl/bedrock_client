@@ -76,10 +76,14 @@ describe('SUBMIT_MANAGE request selector', () => {
       />,
     );
 
-    const input = screen.getByLabelText('2. Número de solicitud');
+    const input = screen.getByLabelText('2. Número de solicitud relacionada');
     fireEvent.focus(input);
 
-    expect(screen.getByRole('option', { name: '680001-1-26-0148' })).toBeVisible();
-    expect(screen.getByRole('listbox')).toHaveClass('min-w-[250px]');
+    const option = screen.getByRole('option', { name: '680001-1-26-0148' });
+    expect(option).toBeVisible();
+    // The menu spans the whole field (input + VERIFICAR) and never wraps the number.
+    expect(screen.getByRole('listbox')).toHaveClass('w-full');
+    expect(option).toHaveClass('whitespace-nowrap');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
   });
 });

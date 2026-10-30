@@ -25,8 +25,8 @@ import { test, expect } from '../fixtures/auth.fixture';
 
 test.use({ viewport: { width: 1920, height: 1080 } });
 
-/** Text rendered by App.js's RouteErrorBoundary when a route subtree throws. */
-const ERROR_BOUNDARY_TEXT = 'Error en este módulo';
+/** Title rendered by RouteErrorBoundary when a route subtree throws. */
+const ERROR_BOUNDARY_TEXT = 'No pudimos mostrar esta pantalla';
 
 /**
  * Authenticated routes: rendered inside PrivateLayout (AppShell + Suspense).

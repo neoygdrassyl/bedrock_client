@@ -36,14 +36,16 @@ describe('RouteErrorBoundary', () => {
   it('shows the crash screen with the logged event id as reference', () => {
     const autoReload = renderWithBoundary(new TypeError('Cannot read properties of undefined'));
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Algo falló al mostrar esta pantalla' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'No pudimos mostrar esta pantalla' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Recargar' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Ir al panel' })).toBeInTheDocument();
 
     const [event] = __getQueuedEventsForTests();
     expect(event).toMatchObject({ level: 'error', event: 'ui_crash', message: 'TypeError: Cannot read properties of undefined' });
     expect(event.componentStack).toContain('Boom');
-    expect(screen.getByTestId('error-reference')).toHaveTextContent(event.clientEventId);
+    // The event id is shown as a small support reference.
+    expect(screen.getByText(event.clientEventId).tagName).toBe('CODE');
+    expect(screen.getByRole('status')).toHaveAttribute('data-illustrated-state', 'load-error');
     expect(autoReload).not.toHaveBeenCalled();
   });
 
@@ -52,7 +54,8 @@ describe('RouteErrorBoundary', () => {
     const autoReload = renderWithBoundary(chunkError);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Hay una versión nueva de Dovela' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Actualizar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Recargar' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Ir al panel' })).not.toBeInTheDocument();
     expect(autoReload).toHaveBeenCalledTimes(1);
     expect(__getQueuedEventsForTests()[0]).toMatchObject({ level: 'warn', event: 'chunk_load_failed' });
   });
@@ -86,7 +89,7 @@ describe('RouteErrorBoundary', () => {
         </RoutesWithBoundary>
       </MemoryRouter>,
     );
-    expect(screen.getByText('Algo falló al mostrar esta pantalla')).toBeInTheDocument();
+    expect(screen.getByText('No pudimos mostrar esta pantalla')).toBeInTheDocument();
 
     await userEvent.click(screen.getByText('salir'));
 

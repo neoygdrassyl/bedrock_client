@@ -11,11 +11,11 @@ const {
   appointmentsServiceMock,
   bookmarkServiceMock,
 } = vi.hoisted(() => ({
+  // Mocked only to prove the dashboard no longer touches them.
   funServiceMock: { getAll_fun: vi.fn() },
-  // The dashboard reads counters from the lightweight `/count` endpoints; only
-  // the FUN list is still fetched in full because its rows are reused.
-  pqrsMainServiceMock: { count: vi.fn() },
   submitServiceMock: { count: vi.fn() },
+  // The dashboard reads counters from the lightweight `/count` endpoints only.
+  pqrsMainServiceMock: { count: vi.fn() },
   mailboxServiceMock: { count: vi.fn() },
   appointmentsServiceMock: { count: vi.fn() },
   bookmarkServiceMock: { list: vi.fn() },
@@ -32,55 +32,63 @@ vi.mock('../features/messaging/api/mailbox.service', () => ({ __esModule: true, 
 vi.mock('../features/appointments/api/appointments.service', () => ({ __esModule: true, default: appointmentsServiceMock }));
 vi.mock('../shared/api/bookmark.service', () => ({ __esModule: true, default: bookmarkServiceMock }));
 
+function kpiTile(label) {
+  const list = screen.getByRole('list', { name: 'Indicadores operativos' });
+  return within(list).getByText(label).closest('a');
+}
+
+async function renderDashboard() {
+  const { default: Dashboard } = await import('../features/dashboard/dashboard');
+  render(
+    <MemoryRouter>
+      <Dashboard />
+    </MemoryRouter>,
+  );
+}
+
 describe('Dashboard count failure states', () => {
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+    localStorage.clear();
 
-    funServiceMock.getAll_fun.mockRejectedValue(new Error('FUN down'));
     pqrsMainServiceMock.count.mockRejectedValue(new Error('PQRS down'));
-    submitServiceMock.count.mockRejectedValue(new Error('Submit down'));
     mailboxServiceMock.count.mockRejectedValue(new Error('Mailbox down'));
     appointmentsServiceMock.count.mockRejectedValue(new Error('Appointments down'));
     bookmarkServiceMock.list.mockResolvedValue({ data: [] });
   });
 
-  it('shows a visible fallback instead of silent zeroes when count services fail', async () => {
-    const { default: Dashboard } = await import('../features/dashboard/dashboard');
+  it('shows a dash instead of a silent zero when a count service fails', async () => {
+    await renderDashboard();
 
-    render(
-      <MemoryRouter>
-        <Dashboard breadCrums={{}} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getAllByText(/conteo no disponible/i).length).toBeGreaterThan(0);
-    });
-
-    const card = screen.getByText('Nueva radicación').closest('a');
-    expect(within(card).queryByText(/^0$/)).not.toBeInTheDocument();
+    await waitFor(() => expect(within(kpiTile('PQRS')).getByText('—')).toBeInTheDocument());
+    expect(within(kpiTile('Buzón')).getByText('—')).toBeInTheDocument();
+    expect(within(kpiTile('Citas')).getByText('—')).toBeInTheDocument();
+    expect(within(kpiTile('PQRS')).queryByText(/^0$/)).not.toBeInTheDocument();
+    // Module rows backed by a failed count are flagged as unavailable.
+    expect(screen.getAllByTitle('Conteo no disponible').length).toBeGreaterThan(0);
   });
 
-  it('renders the number returned by the /count endpoints', async () => {
-    funServiceMock.getAll_fun.mockResolvedValue({ data: [] });
+  it('renders the numbers returned by the /count endpoints', async () => {
     // `/count` answers { count: N }, not an array to measure with `.length`.
     pqrsMainServiceMock.count.mockResolvedValue({ data: { count: 1666 } });
-    submitServiceMock.count.mockResolvedValue({ data: { count: 21984 } });
     mailboxServiceMock.count.mockResolvedValue({ data: { count: 9 } });
     appointmentsServiceMock.count.mockResolvedValue({ data: { count: 1005 } });
 
-    const { default: Dashboard } = await import('../features/dashboard/dashboard');
+    await renderDashboard();
 
-    render(
-      <MemoryRouter>
-        <Dashboard breadCrums={{}} />
-      </MemoryRouter>
-    );
+    await waitFor(() => expect(within(kpiTile('PQRS')).getByText((1666).toLocaleString('es-CO'))).toBeInTheDocument());
+    expect(within(kpiTile('Buzón')).getByText('9')).toBeInTheDocument();
+    expect(within(kpiTile('Citas')).getByText((1005).toLocaleString('es-CO'))).toBeInTheDocument();
+  });
 
-    await waitFor(() => {
-      expect(screen.getByText('21984')).toBeInTheDocument();
-    });
-    expect(screen.getByText('1666')).toBeInTheDocument();
+  it('never downloads the FUN list nor counts Ventanilla Única', async () => {
+    pqrsMainServiceMock.count.mockResolvedValue({ data: { count: 1 } });
+
+    await renderDashboard();
+
+    await waitFor(() => expect(pqrsMainServiceMock.count).toHaveBeenCalledTimes(1));
+    expect(funServiceMock.getAll_fun).not.toHaveBeenCalled();
+    expect(submitServiceMock.count).not.toHaveBeenCalled();
   });
 });

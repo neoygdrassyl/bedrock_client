@@ -62,7 +62,7 @@ describe('ProfessionalDataGrid inline updates', () => {
 
     render(<ProfessionalDataGrid currentItem={{ id: 1, fun_52s: [currentProfessional], fun_6s: [] }} requestUpdate={requestUpdate} />);
 
-    fireEvent.change(screen.getByRole('combobox', { name: 'Firma original FUN — JUAN' }), { target: { value: '1' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'FUN — JUAN' }), { target: { value: '1' } });
 
     await waitFor(() => expect(FUNService.update_52).toHaveBeenCalled());
     expect(FUNService.update_52.mock.calls[0][1].get('registration_certificate_status')).toBe('HABILITADO');
@@ -82,7 +82,7 @@ describe('ProfessionalDataGrid inline updates', () => {
     await act(async () => resolveRefresh({ fun_52s: [{ ...professional, postgraduate_applicable: true }] }));
     rerender(<ProfessionalDataGrid currentItem={{ id: 1, fun_52s: [{ ...professional, postgraduate_applicable: true }], fun_6s: [] }} requestUpdate={requestUpdate} />);
 
-    fireEvent.change(screen.getByRole('combobox', { name: 'Firma original FUN — JUAN' }), { target: { value: '1' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'FUN — JUAN' }), { target: { value: '1' } });
 
     await waitFor(() => expect(FUNService.update_52).toHaveBeenCalledTimes(2));
     expect(FUNService.update_52.mock.calls[1][1].get('postgraduate_applicable')).toBe('1');
