@@ -3,7 +3,8 @@ import { Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AppShell } from '../layouts/AppShell';
 import BusinessCalendarBootstrap from '../layouts/BusinessCalendarBootstrap';
 import LoginPage from '../../features/auth/LoginPage';
-import { ErrorScreen } from '../../shared/components/errors/ErrorScreen';
+import { IllustratedState } from '../../shared/components/feedback/IllustratedState';
+import { Button } from '../../shared/ui/button';
 import { useAuth } from './auth';
 import LoadingFallback from './LoadingFallback';
 
@@ -46,10 +47,28 @@ export function LoginPageWithAuth() {
 export function NotFoundRoute() {
   const auth = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (!auth.user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <ErrorScreen kind="not-found" />;
+  return (
+    <IllustratedState
+      fullPage
+      variant="not-found"
+      actions={(
+        <>
+          <Button type="button" onClick={() => navigate('/dashboard')}>Ir al panel</Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/dashboard'))}
+          >
+            Volver
+          </Button>
+        </>
+      )}
+    />
+  );
 }

@@ -1,5 +1,4 @@
 import Swal from 'sweetalert2';
-import { toast } from 'sonner';
 import { getRequestIdFromError, logEvent } from '@/shared/observability/logger';
 
 /**
@@ -70,9 +69,10 @@ export function swalSuccess(opts = {}) {
 //
 // A failed background LOAD (data a page or panel fetches to show, where the page
 // stays usable without it) can opt in to being a symptom with `symptom: true`:
-// no modal, a `ui_load_failed` log and a non-blocking toast with the reference
-// code. There is no automatic detection by title, text or recent request: the
-// caller must have verified that the failure is a background load.
+// no modal and no toast, only a `ui_load_failed` log entry (see
+// `window.__dovelaLogs`). The panel that lacks data shows its own empty or
+// load-error state. There is no automatic detection by title, text or recent
+// request: the caller must have verified that the failure is a background load.
 // Calls that ask for a decision (cancel/deny buttons, inputs, preConfirm) always
 // keep the modal, even with `symptom: true`.
 
@@ -85,7 +85,7 @@ function plainText(value) {
 }
 
 /**
- * Decides whether a swalError call is a load symptom (toast) or an action
+ * Decides whether a swalError call is a load symptom (log only) or an action
  * failure (modal). Exported for tests.
  *
  * @returns {{ symptom: boolean, relatedRequestId: string|null }}
@@ -125,14 +125,6 @@ function reportLoadSymptom(title, text, relatedRequestId) {
   try {
     if (isBusyPopupOpen()) Swal.close();
   } catch {}
-
-  try {
-    toast.warning('No se pudo cargar parte de la información', {
-      id: `load-failed:${relatedRequestId || text || title}`,
-      description: relatedRequestId ? `Código: ${relatedRequestId}` : 'Intente de nuevo en un momento.',
-      duration: 8000,
-    });
-  } catch {}
 }
 
 function reportActionFailure(title, text, relatedRequestId) {
@@ -144,11 +136,11 @@ function reportActionFailure(title, text, relatedRequestId) {
 }
 
 /**
- * Error modal, or a toast for verified background loads (see the rule above).
+ * Error modal, or a silent log entry for verified background loads (see the rule above).
  *
  * @param {object} opts SweetAlert2 options plus:
  * @param {boolean} [opts.symptom] `true` only for a background load whose failure
- *   leaves the page usable: toast instead of modal
+ *   leaves the page usable: logged, no modal
  * @param {unknown} [opts.error] the failed request's error, to read its request id
  * @param {string} [opts.requestId] explicit request id for the reference
  */

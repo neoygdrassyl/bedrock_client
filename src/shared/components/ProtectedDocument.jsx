@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { requestProtectedBlob, toProtectedApiPath } from '@/shared/utils/pdfDownload';
+import { IllustratedState } from '@/shared/components/feedback/IllustratedState';
 
 export function ProtectedDocumentPreview({
   source,
@@ -46,7 +47,14 @@ export function ProtectedDocumentPreview({
   }, [protectedPath, source]);
 
   if (error) {
-    return <div role="alert">{error.message || 'No se pudo cargar el documento.'}</div>;
+    return (
+      <IllustratedState
+        size="compact"
+        variant={kind === 'img' ? 'image' : error?.response?.status === 404 ? 'not-found' : 'load-error'}
+        title={kind === 'img' ? 'Imagen no disponible' : 'No se pudo cargar el documento'}
+        description={error.message || 'No se pudo cargar el documento.'}
+      />
+    );
   }
 
   if (kind === 'img') {

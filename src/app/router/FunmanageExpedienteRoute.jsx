@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import FUNService from '../../features/expediente/api/fun.service';
 import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 import LoadingFallback from './LoadingFallback';
+import { IllustratedState } from '../../shared/components/feedback/IllustratedState';
 
 const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('../../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 
@@ -12,6 +13,9 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // True when the request itself failed (retryable), not when nothing was found.
+  const [requestFailed, setRequestFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const workspaceTarget = useMemo(
     () => parseExpedienteWorkspaceSearch(location.search),
     [location.search]
@@ -37,6 +41,7 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
 
     setLoading(true);
     setError('');
+    setRequestFailed(false);
 
     FUNService.get_fun_IdPublic(radicado)
       .then((response) => {
@@ -48,6 +53,7 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
       .catch(() => {
         if (cancelled) return;
         setExpediente(null);
+        setRequestFailed(true);
         setError('No fue posible cargar el expediente solicitado.');
       })
       .finally(() => {
@@ -57,7 +63,7 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
     return () => {
       cancelled = true;
     };
-  }, [radicado]);
+  }, [radicado, reloadKey]);
 
   useEffect(() => {
     if (!expediente) return;
@@ -75,17 +81,17 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto py-8 px-4">
-        <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 space-y-2">
-          <h4 className="text-base font-semibold text-destructive">Expediente no disponible</h4>
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <div className="flex flex-wrap items-center gap-2 pt-2 text-sm">
-            <a href="/licencias/gestion-nueva" className="text-primary hover:underline">
-              Volver a Gestión Licencias Nuevo
-            </a>
-          </div>
-        </div>
-      </div>
+      <IllustratedState
+        variant={requestFailed ? 'load-error' : 'not-found'}
+        title="Expediente no disponible"
+        onRetry={requestFailed ? () => setReloadKey((value) => value + 1) : undefined}
+        description={error}
+        actions={(
+          <a href="/licencias/gestion-nueva" className="text-sm font-medium underline-offset-4 hover:underline" style={{ color: 'hsl(var(--primary))' }}>
+            Volver a Gestión Licencias Nuevo
+          </a>
+        )}
+      />
     );
   }
 
