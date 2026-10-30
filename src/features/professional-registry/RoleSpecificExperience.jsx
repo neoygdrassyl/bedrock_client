@@ -57,11 +57,11 @@ export default function RoleSpecificExperience({ role, general, canWrite, busy, 
       {FIELDS.map(([key, label]) => (
         <label key={key} className="flex flex-col text-xs text-muted-foreground">
           {label}
+          {/* Text with a numeric keyboard: no spinner arrows and no wheel changes; `check` accepts digits only. */}
           <Input
-            type="number"
-            min={0}
-            max={DURATION_LIMITS[key]}
+            type="text"
             inputMode="numeric"
+            maxLength={2}
             className="h-8 w-16"
             value={draft[key]}
             aria-invalid={Boolean(problem)}
