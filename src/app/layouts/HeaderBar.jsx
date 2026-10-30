@@ -8,7 +8,6 @@ import { Icon } from '@/shared/components/icon';
 import { SidebarTrigger, useSidebar } from '@/shared/ui/sidebar';
 import { cn } from '@/shared/lib/utils';
 import ChatLauncher from '../../features/messaging/chat/ChatLauncher';
-import { RUNTIME_FEATURES } from '../../shared/config/runtime-features';
 import {
   Tooltip,
   TooltipContent,
@@ -16,17 +15,16 @@ import {
   TooltipTrigger,
 } from '@/shared/ui/tooltip';
 
-const LazyAlarmBell = lazy(() =>
-  import('../../features/expediente/fun/fun_forms/components/AlarmBell').then((module) => ({
-    default: module.AlarmBell,
-  })),
-);
+// The palette code is fetched on first use; hovering/focusing the trigger prefetches it.
+const loadCommandPalette = () => import('./command-palette/CommandPalette');
+const LazyCommandPalette = lazy(loadCommandPalette);
+const prefetchCommandPalette = () => { loadCommandPalette().catch(() => undefined); };
 
-const LazyGlobalSearchDialog = lazy(() =>
-  import('./GlobalSearchDialog').then((module) => ({
-    default: module.GlobalSearchDialog,
-  })),
-);
+function isTypingTarget(target) {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || Boolean(target.closest('[contenteditable="true"], [role="textbox"]'));
+}
 
 const MODULE_ICONS = {
   dashboard: 'LayoutGrid',
@@ -58,6 +56,8 @@ export function HeaderBar() {
   const { isMobile, openMobile, state } = useSidebar();
   const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
+  // Stays mounted after the first open so the close animation and loaded chunk are kept.
+  const [paletteMounted, setPaletteMounted] = useState(false);
 
   const sidebarOpen = isMobile ? openMobile : state === 'expanded';
   const shortcutModifier = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
@@ -71,9 +71,13 @@ export function HeaderBar() {
 
   useEffect(() => {
     const handleSearchShortcut = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      const isModK = (event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'k';
+      const isSlash = event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey
+        && !event.defaultPrevented && !isTypingTarget(event.target);
+      if (isModK || isSlash) {
         event.preventDefault();
-        setSearchOpen(true);
+        setPaletteMounted(true);
+        setSearchOpen((current) => (isModK ? !current : true));
       }
     };
 
@@ -82,14 +86,14 @@ export function HeaderBar() {
   }, []);
 
   return (
-    <header className="flex h-16 min-w-0 items-center gap-1.5 overflow-hidden rounded-2xl border border-border/70 bg-card px-2.5 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.35)] select-none">
+    <header className="flex h-16 short:h-12 min-w-0 items-center gap-1.5 overflow-hidden rounded-2xl border border-border/70 bg-card px-2.5 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.35)] select-none">
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
             <SidebarTrigger
               aria-label={sidebarOpen ? 'Ocultar menú lateral' : 'Expandir menú lateral'}
               title={sidebarOpen ? 'Ocultar menú lateral' : 'Expandir menú lateral'}
-              className="h-11 w-11 shrink-0 lg:h-7 lg:w-7"
+              className="h-8 w-8 shrink-0 touch:h-11 touch:w-11"
             />
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={4} className="text-xs">
@@ -148,22 +152,20 @@ export function HeaderBar() {
       {/* Search trigger */}
       <button
         type="button"
-        onClick={() => setSearchOpen(true)}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/60 text-xs text-foreground/60 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card lg:h-8 lg:w-64 lg:justify-start lg:gap-2 lg:px-3"
-        aria-label="Buscar expediente"
+        onClick={() => { setPaletteMounted(true); setSearchOpen(true); }}
+        onPointerEnter={prefetchCommandPalette}
+        onFocus={prefetchCommandPalette}
+        className="flex h-8 w-8 shrink-0 touch:h-11 touch:min-w-11 items-center justify-center rounded-xl border border-border bg-muted/60 text-xs text-foreground/60 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card lg:w-64 lg:justify-start lg:gap-2 lg:px-3"
+        aria-label="Buscar expedientes, módulos o acciones"
+        aria-keyshortcuts="Control+K Meta+K /"
       >
         <Search className="h-3.5 w-3.5 shrink-0" />
-        <span className="hidden lg:inline">Buscar expediente…</span>
+        <span className="hidden lg:inline">Buscar…</span>
         <kbd className="ml-auto hidden rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground shadow-none xl:inline">{shortcutModifier} K</kbd>
       </button>
 
-      {/* Chat & notifications */}
+      {/* Chat */}
       <ChatLauncher />
-      {RUNTIME_FEATURES.alarmsEnabled && (
-        <Suspense fallback={null}>
-          <LazyAlarmBell />
-        </Suspense>
-      )}
 
       {/* Theme toggle */}
       <Button
@@ -171,14 +173,14 @@ export function HeaderBar() {
         size="sm"
         onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         aria-label={resolvedTheme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-        className="h-11 w-11 shrink-0 rounded-xl p-0 text-muted-foreground lg:h-8 lg:w-8"
+        className="h-8 w-8 shrink-0 rounded-xl p-0 text-muted-foreground touch:h-11 touch:w-11"
       >
         {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </Button>
 
-      {searchOpen && (
+      {paletteMounted && (
         <Suspense fallback={null}>
-          <LazyGlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+          <LazyCommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
         </Suspense>
       )}
     </header>
