@@ -34,7 +34,7 @@ export default function RoleSpecificExperience({ role, general, canWrite, busy, 
 
   if (!draft) {
     return (
-      <span className="inline-flex flex-wrap items-center gap-2">
+      <span className="inline-flex flex-nowrap items-center gap-2 whitespace-nowrap">
         <span>{formatDuration(value)}</span>
         {role.specificExceedsGeneral ? <Badge variant="destructive">Supera la experiencia general</Badge> : null}
         {canWrite && role.specificEditable ? (
