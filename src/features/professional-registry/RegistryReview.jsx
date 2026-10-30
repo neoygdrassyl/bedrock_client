@@ -5,10 +5,16 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
 import { cn } from '@/shared/lib/utils';
-import { DIFF_LABELS, DUPLICATE_REASONS, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
+import RegistryMergeCase from './RegistryMergeCase';
+import RegistryPairCase from './RegistryPairCase';
+import {
+  DIFF_LABELS, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths,
+} from './professionalRegistry.utils';
 
 const QUEUES = [
   ['duplicados', 'Posibles duplicados'],
+  ['fusionar', 'Fusionar'],
+  ['compartida', 'Matrícula compartida'],
   ['nombres', 'Nombres dudosos'],
   ['matricula', 'Matrícula múltiple'],
   ['experiencia', 'Experiencia atípica'],
@@ -94,13 +100,16 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
 
   // The rows of the previous queue must never be drawn with the renderer of the new one while it loads.
   const rows = queue.type === type ? queue.data : [];
+  // Only the queues this backend reports: an older one does not know "Fusionar" nor "Matrícula compartida".
+  const queues = Object.keys(summary).length ? QUEUES.filter(([key]) => key in summary) : QUEUES;
+  const caseProps = { canWrite, busy, onResolve: resolve, onOpen };
   const pages = Math.max(Math.ceil(queue.total / queue.limit), 1);
   const selectType = (next) => { setType(next); setPage(1); };
 
   return (
     <section aria-label="Por revisar" className="space-y-3">
       <nav className="flex flex-wrap gap-2" aria-label="Colas de revisión">
-        {QUEUES.map(([key, label]) => (
+        {queues.map(([key, label]) => (
           <Button key={key} type="button" size="sm" variant={type === key ? 'default' : 'outline'} aria-current={type === key ? 'page' : undefined} onClick={() => selectType(key)}>
             {label} <Badge variant="secondary" className="ml-2">{summary[key] ?? 0}</Badge>
           </Button>
@@ -110,25 +119,12 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
       {queue.type === type && !rows.length && !error ? <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">No hay casos pendientes en esta cola.</p> : null}
 
       <ul className="space-y-2">
-        {type === 'duplicados' ? rows.map((item) => (
-          <li key={item.id} className="rounded-lg border border-border bg-card p-3 text-sm">
-            <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">{DUPLICATE_REASONS[item.reason] || item.reason}</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {[item.a, item.b].map((person) => (
-                <div key={person.id} className="rounded-md border border-border/60 p-2">
-                  <button type="button" className="font-medium text-foreground underline" onClick={() => onOpen?.(person.id)}>{person.name}</button>
-                  <p className="text-xs text-muted-foreground">{formatCc(person.cc)} · {person.projects} expedientes</p>
-                </div>
-              ))}
-            </div>
-            {canWrite ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'duplicados', id: item.id, action: 'merge', keepId: item.a.id })}>Conservar «{item.a.name}»</Button>
-                <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'duplicados', id: item.id, action: 'merge', keepId: item.b.id })}>Conservar «{item.b.name}»</Button>
-                <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => resolve({ type: 'duplicados', id: item.id, action: 'dismiss' })}>No son la misma persona</Button>
-              </div>
-            ) : null}
-          </li>
+        {type === 'duplicados' || type === 'compartida' ? rows.map((item) => (
+          <RegistryPairCase key={item.id} type={type} item={item} {...caseProps} />
+        )) : null}
+
+        {type === 'fusionar' ? rows.map((item) => (
+          <RegistryMergeCase key={item.id} item={item} {...caseProps} />
         )) : null}
 
         {type === 'nombres' ? rows.map((item) => (

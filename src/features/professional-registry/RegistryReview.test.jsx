@@ -19,10 +19,24 @@ const queues = {
     { kind: 'rol', registryId: 1, name: 'ANA LOPEZ', roleCode: 'ARQ_PROY', monthsLatest: 24, monthsMax: 21731 },
   ],
   roles: [{ id: 50, registryId: 1, role: 'PLOMERO', expediente: '68001-1-24-0009' }],
+  fusionar: [{
+    id: 7,
+    reason: 'CEDULA_SIMILAR',
+    a: { id: 10, name: 'JOSE RAMON OROZCO', cc: '1098612', projects: 4 },
+    b: { id: 11, name: 'JOSE RAMON OROSCO', cc: '1097612', projects: 1 },
+    differs: { name: true, cc: true },
+  }],
+  compartida: [{
+    id: 8,
+    reason: 'MATRICULA_COMPARTIDA',
+    a: { id: 20, name: 'JORGE RIOS', cc: '70111222', projects: 2 },
+    b: { id: 21, name: 'CARLOS MORA', cc: '80333444', projects: 5 },
+  }],
 };
+const SUMMARY = { duplicados: 1, fusionar: 1, compartida: 1, nombres: 1, matricula: 1, experiencia: 1, roles: 1 };
 
 function mockQueues() {
-  service.reviewSummary.mockResolvedValue({ data: { duplicados: 1, nombres: 1, matricula: 1, experiencia: 1, roles: 1 } });
+  service.reviewSummary.mockResolvedValue({ data: SUMMARY });
   service.review.mockImplementation(({ type }) => Promise.resolve({ data: { type, data: queues[type], total: queues[type].length, page: 1, limit: 25 } }));
   service.resolve.mockResolvedValue({ data: {} });
 }
@@ -196,5 +210,82 @@ describe('RegistryReview', () => {
     expect(onOpen).toHaveBeenCalledWith(1);
     await user.click(screen.getByRole('button', { name: 'No son la misma persona' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('El caso ya no está abierto.');
+  });
+  it('merges a typing error keeping the right name and the right cédula', async () => {
+    const user = userEvent.setup();
+    const onChanged = vi.fn();
+    render(<RegistryReview canWrite onChanged={onChanged} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
+    await screen.findByText('Posible error de digitación');
+    const merge = screen.getByRole('button', { name: 'Fusionar' });
+
+    expect(merge).toBeDisabled();
+    await user.click(screen.getByRole('radio', { name: 'JOSE RAMON OROZCO' }));
+    expect(merge).toBeDisabled();
+    await user.click(screen.getByRole('radio', { name: '1.097.612' }));
+    await user.click(merge);
+
+    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({
+      type: 'fusionar', id: 7, action: 'merge', nameFrom: 10, ccFrom: 11,
+    }));
+    expect(onChanged).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks only for what differs between the two records', async () => {
+    const user = userEvent.setup();
+    const onlyCc = Object.assign({}, queues.fusionar[0], {
+      b: Object.assign({}, queues.fusionar[0].b, { name: 'JOSE RAMON OROZCO' }),
+      differs: { name: false, cc: true },
+    });
+    service.review.mockImplementation(({ type }) => Promise.resolve({
+      data: { type, data: type === 'fusionar' ? [onlyCc] : queues[type], total: 1, page: 1, limit: 25 },
+    }));
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
+    await screen.findByText('Posible error de digitación');
+
+    expect(screen.queryByRole('group', { name: 'Nombre correcto' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: '1.098.612' }));
+    await user.click(screen.getByRole('button', { name: 'Fusionar' }));
+
+    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({
+      type: 'fusionar', id: 7, action: 'merge', nameFrom: 10, ccFrom: 10,
+    }));
+  });
+
+  it('dismisses a typing-error pair and resolves a shared matrícula keeping one person', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
+    await screen.findByText('Posible error de digitación');
+    await user.click(screen.getByRole('button', { name: 'No son la misma persona' }));
+    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'fusionar', id: 7, action: 'dismiss' }));
+
+    await user.click(screen.getByRole('button', { name: /Matrícula compartida/ }));
+    await screen.findByText('JORGE RIOS');
+    await user.click(screen.getByRole('button', { name: 'Conservar «CARLOS MORA»' }));
+    await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({
+      type: 'compartida', id: 8, action: 'merge', keepId: 21,
+    }));
+  });
+
+  it('shows only the queues the backend reports', async () => {
+    service.reviewSummary.mockResolvedValue({ data: { duplicados: 1, nombres: 1, matricula: 1, experiencia: 1, roles: 1 } });
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await screen.findByText('Mismo nombre con otra cédula');
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: /^Fusionar/ })).not.toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: /Matrícula compartida/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Posibles duplicados/ })).toBeInTheDocument();
+  });
+
+  it('shows the typing-error pair without choices to a user who cannot write', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite={false} onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
+    await screen.findByText('Posible error de digitación');
+
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Fusionar' })).not.toBeInTheDocument();
   });
 });
