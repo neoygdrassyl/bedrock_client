@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 const service = vi.hoisted(() => ({
   get: vi.fn(), setCanonicalName: vi.fn(), remove: vi.fn(), restore: vi.fn(), merge: vi.fn(), relink: vi.fn(), resolve: vi.fn(),
-  list: vi.fn(), update: vi.fn(), create: vi.fn(),
+  list: vi.fn(), update: vi.fn(), create: vi.fn(), setSpecificExperience: vi.fn(),
 }));
 vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
 
@@ -31,7 +31,7 @@ describe('RegistryDetail', () => {
   beforeEach(() => {
     Object.values(service).forEach((fn) => fn.mockReset());
     service.get.mockResolvedValue({ data: detail() });
-    [service.setCanonicalName, service.remove, service.restore, service.merge, service.relink, service.resolve, service.update].forEach((fn) => fn.mockResolvedValue({ data: {} }));
+    [service.setCanonicalName, service.remove, service.restore, service.merge, service.relink, service.resolve, service.update, service.setSpecificExperience].forEach((fn) => fn.mockResolvedValue({ data: {} }));
   });
 
   it('shows the person data, identifiers and possible duplicates', async () => {
@@ -57,6 +57,8 @@ describe('RegistryDetail', () => {
     const roles = screen.getByRole('table', { name: 'Roles y experiencia' });
     expect(roles).toHaveTextContent('ARQUITECTO PROYECTISTA');
     expect(roles).toHaveTextContent('8 años');
+    expect(within(roles).getByRole('columnheader', { name: 'Experiencia (último)' })).toBeInTheDocument();
+    expect(within(roles).queryByRole('columnheader', { name: 'Experiencia específica' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Expedientes' }));
     expect(screen.getByRole('region', { name: 'ARQUITECTO PROYECTISTA' })).toHaveTextContent('68001-1-25-0002');
@@ -69,6 +71,109 @@ describe('RegistryDetail', () => {
 
     await user.click(screen.getByRole('button', { name: 'Historial' }));
     expect(screen.getByRole('list', { name: 'Historial' })).toHaveTextContent('CREACION');
+  });
+
+  describe('general and specific experience', () => {
+    const GENERAL = { duration: { years: 16, months: 5, days: 29 }, missing: null };
+    const withExperience = (roleFields, general = GENERAL) => {
+      const base = detail();
+      return detail({
+        registration: '68202-158428', registrationDate: '2010-05-01', generalExperience: general,
+        roles: [{ ...base.roles[0], specificExperience: null, specificExceedsGeneral: false, specificEditable: true, ...roleFields }],
+      });
+    };
+    const openRoles = async (data, props) => {
+      const user = userEvent.setup();
+      service.get.mockResolvedValue({ data });
+      open(props);
+      await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
+      await user.click(screen.getByRole('button', { name: 'Roles y experiencia' }));
+      return { user, roles: screen.getByRole('table', { name: 'Roles y experiencia' }) };
+    };
+    const typeSpecific = async (user, values) => {
+      await user.click(screen.getByRole('button', { name: 'Editar la experiencia específica de ARQUITECTO PROYECTISTA' }));
+      const form = screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' });
+      for (const [label, value] of Object.entries(values)) {
+        const input = within(form).getByLabelText(label);
+        await user.clear(input);
+        if (value !== '') await user.type(input, value);
+      }
+      return form;
+    };
+
+    it('shows the general experience from the principal matrícula and the specific one per role', async () => {
+      const { roles } = await openRoles(withExperience({ specificExperience: { years: 12, months: 0, days: 10 } }));
+
+      expect(within(roles).getByRole('columnheader', { name: 'Experiencia general' })).toBeInTheDocument();
+      expect(within(roles).getByRole('columnheader', { name: 'Experiencia específica' })).toBeInTheDocument();
+      expect(roles).toHaveTextContent('16 años 5 meses 29 días');
+      expect(roles).toHaveTextContent('12 años 10 días');
+      expect(screen.getByText(/desde la fecha de expedición de la matrícula principal \(68202-158428/)).toBeInTheDocument();
+    });
+
+    it('saves the specific experience typed in years, months and days', async () => {
+      const { user } = await openRoles(withExperience());
+
+      const form = await typeSpecific(user, { Años: '12', Meses: '3', Días: '10' });
+      await user.click(within(form).getByRole('button', { name: 'Guardar' }));
+
+      await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { years: 12, months: 3, days: 10, expectedVersion: 2 }));
+      expect(await screen.findByText('Experiencia específica guardada.')).toBeInTheDocument();
+    });
+
+    it('accepts the general experience exactly and refuses one day more without calling the server', async () => {
+      const { user } = await openRoles(withExperience());
+
+      const form = await typeSpecific(user, { Años: '16', Meses: '5', Días: '30' });
+      await user.click(within(form).getByRole('button', { name: 'Guardar' }));
+      expect(within(form).getByRole('alert')).toHaveTextContent('No puede superar la experiencia general (16 años 5 meses 29 días).');
+      expect(service.setSpecificExperience).not.toHaveBeenCalled();
+
+      await user.clear(within(form).getByLabelText('Días'));
+      await user.type(within(form).getByLabelText('Días'), '29');
+      await user.click(within(form).getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { years: 16, months: 5, days: 29, expectedVersion: 2 }));
+    });
+
+    it('refuses months or days out of range', async () => {
+      const { user } = await openRoles(withExperience());
+
+      const form = await typeSpecific(user, { Años: '1', Meses: '12', Días: '' });
+      await user.click(within(form).getByRole('button', { name: 'Guardar' }));
+
+      expect(within(form).getByRole('alert')).toHaveTextContent('Meses: un número entero entre 0 y 11.');
+      expect(service.setSpecificExperience).not.toHaveBeenCalled();
+    });
+
+    it('removes the specific experience with blank fields sent to the server', async () => {
+      const { user } = await openRoles(withExperience({ specificExperience: { years: 2, months: 0, days: 0 } }));
+
+      const form = await typeSpecific(user, {});
+      await user.click(within(form).getByRole('button', { name: 'Quitar' }));
+
+      await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { years: null, months: null, days: null, expectedVersion: 2 }));
+    });
+
+    it('flags a specific experience above the general one and explains a missing general experience', async () => {
+      const { user, roles } = await openRoles(withExperience({ specificExperience: { years: 20, months: 0, days: 0 }, specificExceedsGeneral: true }, { duration: null, missing: 'PRINCIPAL_EMPATADA' }));
+
+      expect(roles).toHaveTextContent('Supera la experiencia general');
+      expect(roles).toHaveTextContent('Defina la matrícula principal');
+      const form = await typeSpecific(user, { Años: '1' });
+      await user.click(within(form).getByRole('button', { name: 'Guardar' }));
+      expect(within(form).getByRole('alert')).toHaveTextContent('el profesional no tiene experiencia general');
+      expect(service.setSpecificExperience).not.toHaveBeenCalled();
+    });
+
+    it('offers no editing for a role without an experience row', async () => {
+      const { roles } = await openRoles(withExperience({ specificEditable: false }));
+      expect(within(roles).queryByRole('button', { name: /Editar la experiencia específica/ })).not.toBeInTheDocument();
+    });
+
+    it('hides the editor from a person without write access', async () => {
+      const { roles } = await openRoles(withExperience(), { canWrite: false });
+      expect(within(roles).queryByRole('button', { name: /Editar la experiencia específica/ })).not.toBeInTheDocument();
+    });
   });
 
   it('shows the registered matrícula per expediente and flags the ones that belong to another professional', async () => {

@@ -9,7 +9,8 @@ import ProfessionalRegistryService from '@/features/professional-registry/api/pr
 import { cn } from '@/shared/lib/utils';
 import RegistryForm from './RegistryForm';
 import RegistryPicker from './RegistryPicker';
-import { DIALOG_CLOSE_CLASS, DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
+import RoleSpecificExperience from './RoleSpecificExperience';
+import { DIALOG_CLOSE_CLASS, DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatGeneralExperience, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 const TABS = [
   ['datos', 'Datos'],
@@ -114,10 +115,24 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
     setRelinkTarget(null);
   }, 'Expediente asignado al otro profesional.');
 
+  // Resolves true when saved, so the role's editor can close; errors are shown by `run`.
+  const saveSpecific = async (role, value) => {
+    let saved = false;
+    await run(async () => {
+      const fields = value || { years: null, months: null, days: null };
+      await ProfessionalRegistryService.setSpecificExperience(id, role.code, { ...fields, expectedVersion: detail.version });
+      saved = true;
+    }, value ? 'Experiencia específica guardada.' : 'Experiencia específica quitada.');
+    return saved;
+  };
+
   const markReviewed = (participationId) => run(
     () => ProfessionalRegistryService.resolve({ type: 'nombres', id: participationId, action: 'reviewed' }),
     'Marcado como revisado.',
   );
+
+  // A backend without the general experience (older release) keeps the previous columns and no specific experience.
+  const withGeneral = detail?.generalExperience !== undefined;
 
   return (
     <Dialog open onOpenChange={(next) => { if (!next) onClose?.(); }}>
@@ -210,20 +225,30 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
 
             {tab === 'roles' ? (
               detail.roles.length ? (
-                <table className="w-full text-sm" aria-label="Roles y experiencia">
-                  <thead><tr className="text-left text-xs uppercase text-muted-foreground"><th>Rol</th><th>Expedientes</th><th>Experiencia (último)</th><th>Máxima</th><th>Ajustada</th></tr></thead>
-                  <tbody>
-                    {detail.roles.map((role) => (
-                      <tr key={role.code} className="border-t border-border/60">
-                        <td className="py-1">{role.label}{role.outlier ? <Badge variant="destructive" className="ml-2">Revisar</Badge> : null}</td>
-                        <td>{role.projects}</td>
-                        <td>{formatMonths(role.monthsLatest)}</td>
-                        <td className={isImplausibleMonths(role.monthsMax) ? 'font-semibold text-destructive' : undefined}>{formatMonths(role.monthsMax)}</td>
-                        <td>{role.monthsOverride !== null && role.monthsOverride !== undefined ? formatMonths(role.monthsOverride) : '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <>
+                  {withGeneral ? (
+                    <p className="text-xs text-muted-foreground">
+                      La experiencia general se cuenta desde la fecha de expedición de la matrícula principal{detail.registration && detail.registrationDate ? ` (${detail.registration}, ${formatDate(detail.registrationDate)})` : ''}.
+                    </p>
+                  ) : null}
+                  <table className="w-full text-sm" aria-label="Roles y experiencia">
+                    <thead><tr className="text-left text-xs uppercase text-muted-foreground"><th>Rol</th><th>Expedientes</th><th>{withGeneral ? 'Experiencia general' : 'Experiencia (último)'}</th>{withGeneral ? <th>Experiencia específica</th> : null}<th>{withGeneral ? 'Máxima declarada' : 'Máxima'}</th><th>Ajustada</th></tr></thead>
+                    <tbody>
+                      {detail.roles.map((role) => (
+                        <tr key={role.code} className="border-t border-border/60">
+                          <td className="py-1">{role.label}{role.outlier ? <Badge variant="destructive" className="ml-2">Revisar</Badge> : null}</td>
+                          <td>{role.projects}</td>
+                          <td>{withGeneral ? formatGeneralExperience(detail.generalExperience) : formatMonths(role.monthsLatest)}</td>
+                          {withGeneral ? (
+                            <td><RoleSpecificExperience role={role} general={detail.generalExperience} canWrite={canWrite && !detail.deleted} busy={busy} onSave={saveSpecific} /></td>
+                          ) : null}
+                          <td className={isImplausibleMonths(role.monthsMax) ? 'font-semibold text-destructive' : undefined}>{formatMonths(role.monthsMax)}</td>
+                          <td>{role.monthsOverride !== null && role.monthsOverride !== undefined ? formatMonths(role.monthsOverride) : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
               ) : <p className="text-sm text-muted-foreground">Este profesional no tiene roles registrados.</p>
             ) : null}
 

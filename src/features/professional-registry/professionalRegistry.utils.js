@@ -21,6 +21,36 @@ export function formatMonths(months) {
   return [years ? `${years} ${years === 1 ? 'año' : 'años'}` : '', rest ? `${rest} ${rest === 1 ? 'mes' : 'meses'}` : ''].filter(Boolean).join(' ');
 }
 
+// Experience as { years, months, days }. Same rules as the server (professional-registry-experience): each component has a
+// maximum, and two durations compare by years, then months, then days, without converting them to days.
+export const DURATION_LIMITS = { years: 99, months: 11, days: 30 };
+const DURATION_UNITS = [['years', 'año', 'años'], ['months', 'mes', 'meses'], ['days', 'día', 'días']];
+
+export function formatDuration(duration) {
+  if (!duration) return '—';
+  const parts = DURATION_UNITS.filter(([key]) => duration[key]).map(([key, one, many]) => `${duration[key]} ${duration[key] === 1 ? one : many}`);
+  return parts.length ? parts.join(' ') : '0 días';
+}
+
+export function compareDuration(a, b) {
+  const key = DURATION_UNITS.map(([name]) => name).find((name) => a[name] !== b[name]);
+  if (!key) return 0;
+  return a[key] < b[key] ? -1 : 1;
+}
+
+// Why the server could not compute the general experience (time since the issue date of the principal matrícula).
+export const GENERAL_MISSING = {
+  SIN_MATRICULA: 'Sin matrícula',
+  PRINCIPAL_EMPATADA: 'Defina la matrícula principal',
+  SIN_FECHA: 'Matrícula principal sin fecha de expedición',
+  FECHA_FUTURA: 'Fecha de expedición posterior a hoy',
+};
+
+export function formatGeneralExperience(general) {
+  if (general?.duration) return formatDuration(general.duration);
+  return GENERAL_MISSING[general?.missing] || 'Sin dato';
+}
+
 // Same limit the server uses to flag an experience as atypical (50 years): beyond it the value is almost surely a typing error.
 export const IMPLAUSIBLE_MONTHS = 600;
 
