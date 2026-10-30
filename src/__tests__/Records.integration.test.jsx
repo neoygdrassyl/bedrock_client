@@ -20,6 +20,7 @@ const hoisted = vi.hoisted(() => ({
       },
     })),
     loadPQRSxFUN: vi.fn(() => Promise.resolve({ data: [] })),
+    getIdentificationUpdateStatus: vi.fn(() => Promise.resolve({ data: { items: {} } })),
     update: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
   arcService: {
@@ -266,7 +267,8 @@ describe('RECORDS — Integración inicial LAW/ARC/ENG', () => {
   it('LAW: cambiar regla de publicidad persiste rules en FUN', async () => {
     // Arrange
     hoisted.lawService.getRecord.mockResolvedValue({
-      data: [{ id: 99, version: 1 }],
+      // The review is linked to the FUN (fun0Id) and to its active version.
+      data: [{ id: 99, fun0Id: 1, version: 1 }],
     });
     hoisted.funService.get.mockResolvedValue({ data: loadedFunItem });
 

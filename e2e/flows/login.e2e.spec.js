@@ -57,9 +57,9 @@ authTest.describe('E2E: Authenticated session', () => {
     // The auth fixture already navigated to /dashboard
     await authExpect(authenticatedPage).toHaveURL(/\/dashboard/);
 
-    // Verify user name appears in the HeaderBar user dropdown trigger
-    const userName = authenticatedPage.locator('header button', { hasText: /Admin/ });
-    await authExpect(userName.first()).toBeVisible({ timeout: 10_000 });
+    // The account menu moved from the header to the sidebar footer
+    const accountButton = authenticatedPage.getByRole('button', { name: /^Cuenta de Admin/ });
+    await authExpect(accountButton).toBeVisible({ timeout: 10_000 });
   });
 
   authTest.fixme('authenticated user can navigate to /licencias — times out, may need backend data', async ({ authenticatedPage }) => {
@@ -85,8 +85,8 @@ authTest.describe('E2E: Authenticated session', () => {
   });
 
   authTest('logout clears session and redirects to login', async ({ authenticatedPage }) => {
-    // Open the user dropdown menu in HeaderBar
-    const userMenuTrigger = authenticatedPage.locator('header button', { hasText: /Admin/ }).first();
+    // Open the account menu in the sidebar footer
+    const userMenuTrigger = authenticatedPage.getByRole('button', { name: /^Cuenta de Admin/ });
     await userMenuTrigger.click();
 
     // Click "Cerrar sesión" in the dropdown

@@ -318,7 +318,7 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
           id: 10,
           id_public: 'FUN-10',
           model: 2022,
-          fun_1s: [{ id: 1, tipo: 'G', tramite: 'A', m_urb: '', m_sub: '', m_lic: '', area: '', cultural: '' }],
+          fun_1s: [{ id: 1, version: 1, tipo: 'G', tramite: 'A', m_urb: '', m_sub: '', m_lic: '', area: '', cultural: '' }],
           fun_rs: [{ id: 22, code: '680,6891', checked: '1,2' }],
           fun_6s: [],
         }}
@@ -338,6 +338,8 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
 
     expect(await screen.findByRole('heading', { name: /Lista general de chequeo de documentos/i })).toBeInTheDocument();
     expect(checklistService.getIntelligentChecklist).toHaveBeenCalledWith('FUN-10', 1);
+    // The heading renders before the checklist request resolves; wait for the loaded rows.
+    await screen.findByRole('row', { name: /6891.*Concepto de norma urbanística/i });
 
     // Section 6.8 is still rendered because '6891' (unconditionally applicable) belongs to it.
     expect(screen.getByText(/6\.8 DOCUMENTOS PARA OTRAS ACTUACIONES/i)).toBeInTheDocument();
@@ -352,7 +354,7 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
     expect(screen.queryByRole('row', { name: /^680\b/i })).not.toBeInTheDocument();
   });
 
-  it('renders only unconditionally applicable requirements when FUN 1 data is missing', async () => {
+  it('renders no applicable requirements when the FUN 1 of the current version is missing', async () => {
     checklistService.getIntelligentChecklist.mockResolvedValue({
       data: {
         requirements: [
@@ -388,12 +390,12 @@ describe('FUN_CHECKLIST_N correlated document integration', () => {
     );
 
     expect(await screen.findByRole('heading', { name: /Lista general de chequeo de documentos/i })).toBeInTheDocument();
+    await waitFor(() => expect(checklistService.getIntelligentChecklist).toHaveBeenCalledWith('FUN-11', 1));
 
-    const row6891 = screen.getByRole('row', { name: /6891.*Concepto de norma urbanística/i });
-    expect(within(row6891).getByRole('combobox', { name: /evaluación del requisito/i })).toBeDisabled();
-
-    // Codes gated on `fun_1s` (e.g. '621') throw when `fun_1s` is missing, so isRequirementApplicable
-    // catches the error and treats them as not applicable — they must not render.
+    // Applicability is evaluated against the FUN 1 of the current version. Without it no
+    // requirement applies, not even the unconditional ones ('511', '6891').
+    expect(await screen.findByText('No hay requisitos aplicables para mostrar.')).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /6891.*Concepto de norma urbanística/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('row', { name: /^621\b/i })).not.toBeInTheDocument();
   });
 });

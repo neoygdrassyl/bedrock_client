@@ -33,8 +33,11 @@ describe('route table fallbacks', () => {
   it('shows the full-page not-found screen for an unknown path with a session', () => {
     renderAt('/ruta-que-no-existe');
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Esta página no existe' })).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveTextContent('no corresponde a ninguna pantalla');
+    expect(screen.getByRole('heading', { level: 1, name: 'No encontramos esta página' })).toBeInTheDocument();
+    const state = screen.getByRole('status');
+    expect(state).toHaveTextContent('no corresponde a ninguna pantalla');
+    expect(state).toHaveAttribute('data-illustrated-state', 'not-found');
+    expect(screen.getByRole('button', { name: 'Volver' })).toBeInTheDocument();
     // Full page: not wrapped in the app shell, and no longer a redirect to the panel.
     expect(screen.queryByTestId('app-shell')).not.toBeInTheDocument();
     expect(screen.queryByTestId('dashboard-page')).not.toBeInTheDocument();
@@ -42,7 +45,7 @@ describe('route table fallbacks', () => {
 
   it('also covers unknown sub-paths of existing modules', () => {
     renderAt('/licencias/no-existe/123');
-    expect(screen.getByRole('heading', { level: 1, name: 'Esta página no existe' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'No encontramos esta página' })).toBeInTheDocument();
   });
 
   it('"Ir al panel" navigates to the dashboard', async () => {
@@ -58,7 +61,7 @@ describe('route table fallbacks', () => {
     renderAt('/ruta-que-no-existe');
 
     expect(screen.getByTestId('login-page')).toBeInTheDocument();
-    expect(screen.queryByText('Esta página no existe')).not.toBeInTheDocument();
+    expect(screen.queryByText('No encontramos esta página')).not.toBeInTheDocument();
   });
 
   it('keeps the legacy redirects', async () => {

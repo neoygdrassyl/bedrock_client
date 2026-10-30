@@ -405,30 +405,34 @@ export function installLogConsole(target = globalThis.window) {
   } catch {}
 }
 
-// Longest prefix of `json` whose `{ truncated, preview }` wrapper fits in
-// MAX_DATA_BYTES once serialized (escaping and multi-byte characters included).
-function truncatedPreview(json) {
+// Longest prefix of `json` whose `{ ...head, truncated, preview }` wrapper fits
+// in MAX_DATA_BYTES once serialized (escaping and multi-byte characters included).
+function truncatedPreview(json, head = {}) {
   let low = 0;
   let high = json.length;
   while (low < high) {
     const mid = Math.ceil((low + high) / 2);
-    const size = utf8Bytes(JSON.stringify({ truncated: true, preview: json.slice(0, mid) }));
+    const size = utf8Bytes(JSON.stringify({ ...head, truncated: true, preview: json.slice(0, mid) }));
     if (size <= MAX_DATA_BYTES) low = mid;
     else high = mid - 1;
   }
-  return { truncated: true, preview: json.slice(0, low) };
+  return { ...head, truncated: true, preview: json.slice(0, low) };
 }
 
-function boundedData(data) {
-  if (data == null) return undefined;
+// Redacts `data` and tags plain objects with `kind`, keeping the whole result
+// (tag included) within MAX_DATA_BYTES. Arrays and primitives are kept untagged.
+function boundedData(data, kind) {
+  if (data == null) return { kind };
   const redacted = redactObject(data);
+  const isPlainObject = typeof redacted === 'object' && redacted !== null && !Array.isArray(redacted);
+  const tagged = isPlainObject ? { kind, ...redacted } : redacted;
   try {
-    const json = JSON.stringify(redacted);
-    if (json === undefined) return undefined;
-    if (utf8Bytes(json) <= MAX_DATA_BYTES) return redacted;
-    return truncatedPreview(json);
+    const json = JSON.stringify(tagged);
+    if (json === undefined) return { kind };
+    if (utf8Bytes(json) <= MAX_DATA_BYTES) return tagged;
+    return isPlainObject ? truncatedPreview(JSON.stringify(redacted), { kind }) : truncatedPreview(json);
   } catch {
-    return undefined;
+    return { kind };
   }
 }
 
@@ -536,6 +540,7 @@ export function logEvent(level, event, fields = {}) {
     if (!name) return null;
 
     const path = fields.path || currentPath();
+    const kind = kindOf(name, fields.kind);
     const entry = {
       level: safeLevel,
       event: name,
@@ -547,12 +552,9 @@ export function logEvent(level, event, fields = {}) {
       relatedRequestId: validRequestId(fields.relatedRequestId) || undefined,
       clientEventId: validRequestId(fields.clientEventId) || newClientEventId(),
       ts: new Date().toISOString(),
-      data: boundedData(fields.data),
+      data: boundedData(fields.data, kind),
     };
     Object.keys(entry).forEach((key) => entry[key] === undefined && delete entry[key]);
-    const kind = kindOf(name, fields.kind);
-    if (entry.data && typeof entry.data === 'object' && !Array.isArray(entry.data)) entry.data = { kind, ...entry.data };
-    else if (!entry.data) entry.data = { kind };
 
     recordLocal(entry, kind);
     // Failures the caller already handles (optional endpoints, the log transport

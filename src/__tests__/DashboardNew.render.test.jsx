@@ -1,9 +1,9 @@
 /**
- * Render tests — Dashboard redesigned (modern card grid)
- * Verifies the dashboard renders module cards with new design.
+ * Render tests — widget dashboard.
+ * Verifies the module groups render as widgets with links to the Spanish routes.
  */
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -36,19 +36,25 @@ function renderDashboard(props = {}) {
 }
 
 describe('Dashboard (redesigned)', () => {
-  it('renders grouped modules section heading', () => {
+  // The layout (order, sizes, favorites) is persisted per user in localStorage.
+  beforeEach(() => localStorage.clear());
+
+  it('renders each module group as a widget with its own heading', () => {
     renderDashboard();
-    expect(screen.getByText(/m[oó]dulos agrupados/i)).toBeInTheDocument();
+    ['Radicación', 'Gestión Curaduría', 'Archivo y Expedición', 'Comunicaciones'].forEach((name) => {
+      expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
+    });
   });
 
   it('renders utility section heading', () => {
     renderDashboard();
-    expect(screen.getByText(/utilidades/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Utilidades' })).toBeInTheDocument();
   });
 
-  it('renders Licencias module card', () => {
+  it('renders Licencias module card in its group and as a seeded quick access', () => {
     renderDashboard();
-    expect(screen.getByText(/nueva radicaci[oó]n/i)).toBeInTheDocument();
+    // Default favorites include /licencias, so it shows in the quick-access strip too.
+    expect(screen.getAllByRole('link', { name: /nueva radicaci[oó]n/i })).toHaveLength(2);
   });
 
   it('renders links to new Spanish routes', () => {

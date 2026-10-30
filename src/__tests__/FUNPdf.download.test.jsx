@@ -130,6 +130,7 @@ describe('FUN_PDF download flow', () => {
 
     await expect(clickHandler()).rejects.toBe(stopAfterContextSetup);
     expect(requestProtectedArrayBufferMock).toHaveBeenCalledWith('/pdf/funflat2026');
-    expect(pdfLoadMock).toHaveBeenCalledTimes(1);
+    // The template is loaded twice: the main document and a copy used for additional pages.
+    expect(pdfLoadMock).toHaveBeenCalledTimes(2);
   });
 });

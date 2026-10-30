@@ -43,7 +43,29 @@ describe('ProtectedDocumentPreview', () => {
 
     render(<ProtectedDocumentPreview source="/api/files/process/untrusted.html" />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('no se puede previsualizar');
+    const state = await screen.findByRole('status', { name: 'No se pudo cargar el documento' });
+    expect(state).toHaveTextContent('Este tipo de archivo (text/html) no se puede previsualizar.');
+    expect(state).toHaveAttribute('data-illustrated-state', 'load-error');
+    expect(screen.queryByTitle('Vista previa del documento')).not.toBeInTheDocument();
     expect(URL.createObjectURL).not.toHaveBeenCalled();
+  });
+
+  it('shows the not-found state when the protected file answers 404', async () => {
+    requestProtectedBlob.mockRejectedValue(Object.assign(new Error('Not found'), { response: { status: 404 } }));
+
+    render(<ProtectedDocumentPreview source="/api/files/process/missing.pdf" />);
+
+    const state = await screen.findByRole('status', { name: 'No se pudo cargar el documento' });
+    expect(state).toHaveAttribute('data-illustrated-state', 'not-found');
+  });
+
+  it('shows the image placeholder when a protected image fails', async () => {
+    requestProtectedBlob.mockRejectedValue(new Error('Network Error'));
+
+    render(<ProtectedDocumentPreview kind="img" source="/api/files/process/photo.png" alt="Foto" />);
+
+    const state = await screen.findByRole('status', { name: 'Imagen no disponible' });
+    expect(state).toHaveAttribute('data-illustrated-state', 'image');
+    expect(screen.queryByRole('img', { name: 'Foto' })).not.toBeInTheDocument();
   });
 });

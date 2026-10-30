@@ -3,14 +3,15 @@
 /**
  * Page Object: Dashboard (/dashboard)
  *
- * The dashboard is the landing page after login. It shows module cards
- * in a responsive grid. The AppShell (IconRail + HeaderBar) wraps all
- * authenticated pages.
+ * The dashboard is the landing page after login: a customizable widget grid
+ * (KPIs, quick access, recent and tracked expedientes, module groups). The
+ * AppShell (floating sidebar + HeaderBar) wraps all authenticated pages.
  *
- * Navigation in the redesigned UI:
- * - IconRail: dark sidebar with icon-only buttons (aria-label matches module name)
- * - HeaderBar: top bar with breadcrumb, theme toggle, and user dropdown
- * - Module cards: direct links on the dashboard grid
+ * Navigation in the current shell:
+ * - Sidebar: `nav[aria-label="Navegación principal"]` with links per module
+ *   (the account menu lives in the sidebar footer, not in the header)
+ * - HeaderBar: breadcrumb, command palette, chat and theme toggle
+ * - Module widgets: direct links on the dashboard grid
  */
 export class DashboardPage {
   /**
@@ -19,11 +20,14 @@ export class DashboardPage {
   constructor(page) {
     this.page = page;
 
-    // Page heading (dashboard)
-    this.heading = page.locator('h1', { hasText: /Panel de Control/i });
+    // Page heading: the dashboard greets the user ("Buenos días, <name>")
+    this.heading = page.locator('h1', { hasText: /Buen[oa]s? (días|tardes|noches)/i });
 
-    // HeaderBar user dropdown trigger (shows user name on md+ viewports)
-    this.userMenuTrigger = page.locator('header button', { hasText: /Admin/ });
+    // Account menu trigger in the sidebar footer (aria-label "Cuenta de <name>")
+    this.userMenuTrigger = page.getByRole('button', { name: /^Cuenta de / });
+
+    // "Personalizar" switches the widget grid into edit mode
+    this.customizeButton = page.getByRole('button', { name: 'Personalizar' });
 
     // Module card links (new Spanish routes)
     this.moduleCards = {
@@ -35,12 +39,13 @@ export class DashboardPage {
       mensajes: page.locator('a[href="/mensajes"]').first(),
     };
 
-    // IconRail navigation buttons (aria-labels match module names)
+    // Sidebar navigation links (stable by route; labels hide when the rail collapses)
+    const nav = page.locator('nav[aria-label="Navegación principal"]');
     this.railButtons = {
-      dashboard: page.locator('nav[aria-label="Navegación principal"] button[aria-label="Dashboard"]'),
-      licencias: page.locator('nav[aria-label="Navegación principal"] button[aria-label="Licencias"]'),
-      ventanilla: page.locator('nav[aria-label="Navegación principal"] button[aria-label="Ventanilla"]'),
-      archivo: page.locator('nav[aria-label="Navegación principal"] button[aria-label="Archivo"]'),
+      dashboard: nav.locator('a[href="/dashboard"]'),
+      licencias: nav.locator('a[href="/licencias"]'),
+      ventanilla: nav.locator('a[href="/ventanilla"]'),
+      archivo: nav.locator('a[href="/archivo"]'),
     };
   }
 
@@ -60,7 +65,7 @@ export class DashboardPage {
   }
 
   /**
-   * Navigate to a module via the IconRail sidebar.
+   * Navigate to a module via the sidebar.
    * @param {'dashboard' | 'licencias' | 'ventanilla' | 'archivo'} module
    */
   async navigateViaRail(module) {
@@ -69,14 +74,14 @@ export class DashboardPage {
   }
 
   /**
-   * Open the user dropdown menu in the HeaderBar.
+   * Open the account menu in the sidebar footer.
    */
   async openUserMenu() {
     await this.userMenuTrigger.click();
   }
 
   /**
-   * Log out via the HeaderBar user dropdown.
+   * Log out via the sidebar account menu.
    */
   async logout() {
     await this.openUserMenu();

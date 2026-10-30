@@ -1,7 +1,7 @@
 import { logEvent } from '@/shared/observability/logger';
 
 /**
- * Classification of fatal errors into ErrorScreen kinds.
+ * Classification of fatal errors (lazy chunk failures, unreachable backend).
  *
  * Fatal means the page cannot render at all (crash, missing route, outdated
  * build, backend unreachable). A component or calculation that fails while the

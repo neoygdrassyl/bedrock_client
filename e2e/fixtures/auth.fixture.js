@@ -462,6 +462,25 @@ async function installE2EMocks(page) {
       return jsonResponse(route, []);
     }
 
+    // Shell requests made on every page (sidebar logo, chat launcher, dashboard
+    // counters). The fake session token would get a 401 from a real backend and
+    // end the session, so they are answered here with neutral data.
+    if (request.method() === 'GET' && pathname.endsWith('/branding')) {
+      return jsonResponse(route, { logo: null });
+    }
+
+    if (request.method() === 'GET' && /\/internal-chat\/(users|inbox)$/.test(pathname)) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'GET' && /\/(pqrs_main|mailbox|appointments)\/count$/.test(pathname)) {
+      return jsonResponse(route, { count: 0 });
+    }
+
+    if (request.method() === 'GET' && pathname.endsWith('/funmanage/bookmarks')) {
+      return jsonResponse(route, []);
+    }
+
     return route.continue();
   });
 }
