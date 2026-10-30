@@ -18,6 +18,14 @@
  *
  * The transport is registered by the main HTTP client (`setLogTransport`) so this
  * module has no import cycle with the API layer.
+ *
+ * Local consumption: every accepted call is also kept in an in-memory ring
+ * buffer (last 200 entries, mirrored to sessionStorage) in a compact shape
+ * `{ ts, lastTs, level, kind, event, message, url, status, route, requestId,
+ * count }`, deduplicated by content inside the dedupe window (`count` grows).
+ * Support reads it from the console through `window.__dovelaLogs`
+ * (`list(filter)`, `clear()`, `export()`, `flush()`). The buffer never holds
+ * tokens, headers or request bodies: only redacted messages and request paths.
  */
 
 const LEVELS = new Set(['error', 'warn', 'info']);
@@ -38,6 +46,20 @@ const MAX_STACK = 3000;
 export const REQUEST_ID_HEADER = 'x-dovela-request-id';
 export const REQUEST_ID_PATTERN = /^[A-Za-z0-9_.:-]{8,80}$/;
 const SESSION_TOKEN_KEY = 'dovela_token';
+const BUFFER_LIMIT = 200;
+const BUFFER_STORAGE_KEY = 'dovela-client-logs';
+const BUFFER_PERSIST_DELAY_MS = 1000;
+const LOG_KINDS = new Set(['http', 'runtime', 'resource', 'chunk', 'render']);
+// Event name -> kind, for callers that do not pass `kind` explicitly.
+const EVENT_KINDS = {
+  http_error: 'http',
+  js_error: 'runtime',
+  unhandled_rejection: 'runtime',
+  chunk_load_failed: 'chunk',
+  ui_crash: 'render',
+  chart_render_failed: 'render',
+  resource_load_failed: 'resource',
+};
 
 const SENSITIVE_KEY_PATTERN = /(password|passwd|contrase|token|authorization|cookie|secret|api[-_]?key|jwt|session|credential|credencial)/i;
 const SENSITIVE_QUERY_PATTERN = /((?:password|passwd|token|authorization|secret|api[-_]?key|jwt|session|cookie)=)[^&\s]+/gi;
@@ -51,6 +73,10 @@ const state = {
   transport: null,
   transportDisabled: false,
   listenersInstalled: false,
+  // Local ring buffer for support (see the header comment).
+  buffer: null,
+  persistTimer: null,
+  unloading: false,
 };
 
 // ── Redaction helpers ────────────────────────────────────────────────
@@ -140,6 +166,7 @@ export function getRequestIdFromError(error) {
     const response = error.response;
     const body = response?.data && typeof response.data === 'object' ? response.data : null;
     return validRequestId(readHeader(response?.headers, REQUEST_ID_HEADER))
+      || validRequestId(readHeader(response?.headers, 'x-request-id'))
       || validRequestId(body?.requestId)
       || validRequestId(body?.error?.requestId)
       || validRequestId(error.config?.dovelaRequestId)
@@ -200,11 +227,181 @@ function shouldEcho() {
   return Boolean(import.meta.env?.DEV) && import.meta.env?.MODE !== 'test';
 }
 
+// Only `error` level reaches the red console channel; warnings and info go to
+// `console.debug` (hidden unless "Verbose" is enabled) so expected failures
+// such as an optional 404 or an aborted poll do not look like app errors.
 function echo(level, entry) {
   if (!shouldEcho()) return;
   try {
+    const method = level === 'error' ? 'error' : 'debug';
     // eslint-disable-next-line no-console
-    console[level](`[dovela:${entry.event}]`, entry.message || '', entry);
+    console[method](`[dovela:${entry.event}]`, entry.message || '', entry);
+  } catch {}
+}
+
+// ── Local ring buffer ────────────────────────────────────────────────
+
+function sessionStore() {
+  try {
+    return globalThis.sessionStorage || null;
+  } catch {
+    return null;
+  }
+}
+
+function loadBuffer() {
+  if (state.buffer) return state.buffer;
+  state.buffer = [];
+  try {
+    const raw = sessionStore()?.getItem(BUFFER_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (Array.isArray(parsed)) state.buffer = parsed.filter((item) => item && typeof item === 'object').slice(-BUFFER_LIMIT);
+  } catch {}
+  return state.buffer;
+}
+
+function persistBuffer() {
+  try {
+    if (state.persistTimer) {
+      clearTimeout(state.persistTimer);
+      state.persistTimer = null;
+    }
+    const store = sessionStore();
+    if (!store) return;
+    if (!state.buffer?.length) store.removeItem(BUFFER_STORAGE_KEY);
+    else store.setItem(BUFFER_STORAGE_KEY, JSON.stringify(state.buffer));
+  } catch {}
+}
+
+function schedulePersist() {
+  if (state.persistTimer) return;
+  try {
+    state.persistTimer = setTimeout(persistBuffer, BUFFER_PERSIST_DELAY_MS);
+  } catch {}
+}
+
+function kindOf(event, explicit) {
+  if (LOG_KINDS.has(explicit)) return explicit;
+  return EVENT_KINDS[event] || 'runtime';
+}
+
+// Adds an entry to the buffer, or bumps `count` on an identical recent one.
+// Identity ignores the request id: a poll failing every minute is one line.
+function recordLocal(entry, kind) {
+  try {
+    const buffer = loadBuffer();
+    const data = entry.data && typeof entry.data === 'object' ? entry.data : {};
+    const status = Number.isFinite(data.status) ? data.status : undefined;
+    const url = typeof data.url === 'string' ? data.url : undefined;
+    const key = `${entry.level}|${kind}|${entry.event}|${entry.message || ''}|${url || ''}|${status ?? ''}`;
+    const now = Date.now();
+
+    for (let index = buffer.length - 1; index >= 0; index -= 1) {
+      const item = buffer[index];
+      if (item.key !== key) continue;
+      if (now - Date.parse(item.lastTs) < DEDUPE_WINDOW_MS) {
+        item.count += 1;
+        item.lastTs = entry.ts;
+        if (entry.relatedRequestId) item.requestId = entry.relatedRequestId;
+        schedulePersist();
+        return;
+      }
+      break;
+    }
+
+    const local = {
+      key,
+      ts: entry.ts,
+      lastTs: entry.ts,
+      level: entry.level,
+      kind,
+      event: entry.event,
+      message: entry.message,
+      url,
+      status,
+      route: entry.path,
+      requestId: entry.relatedRequestId,
+      clientEventId: entry.clientEventId,
+      count: 1,
+    };
+    Object.keys(local).forEach((name) => local[name] === undefined && delete local[name]);
+    buffer.push(local);
+    if (buffer.length > BUFFER_LIMIT) buffer.splice(0, buffer.length - BUFFER_LIMIT);
+    schedulePersist();
+  } catch {}
+}
+
+function publicEntry(item) {
+  const { key: _key, ...rest } = item;
+  return rest;
+}
+
+function matchesFilter(item, filter) {
+  if (!filter) return true;
+  if (typeof filter === 'function') return Boolean(filter(publicEntry(item)));
+  if (typeof filter === 'string') return item.level === filter || item.kind === filter;
+  if (typeof filter !== 'object') return true;
+  if (filter.level && item.level !== filter.level) return false;
+  if (filter.kind && item.kind !== filter.kind) return false;
+  if (filter.status != null && item.status !== filter.status) return false;
+  if (filter.since && Date.parse(item.lastTs) < new Date(filter.since).getTime()) return false;
+  if (filter.text) {
+    const needle = String(filter.text).toLowerCase();
+    const haystack = `${item.event} ${item.message || ''} ${item.url || ''} ${item.route || ''}`.toLowerCase();
+    if (!haystack.includes(needle)) return false;
+  }
+  return true;
+}
+
+/**
+ * Entries kept locally, oldest first.
+ * @param {object|string|function} [filter] `{ level, kind, status, since, text }`,
+ *   a level/kind name, or a predicate.
+ */
+export function listLocalLogs(filter) {
+  try {
+    return loadBuffer().filter((item) => matchesFilter(item, filter)).map(publicEntry);
+  } catch {
+    return [];
+  }
+}
+
+/** Empties the local buffer and its sessionStorage mirror. */
+export function clearLocalLogs() {
+  try {
+    state.buffer = [];
+    persistBuffer();
+  } catch {}
+}
+
+/** Local buffer as a JSON string, for support tickets. */
+export function exportLocalLogs(filter) {
+  try {
+    return JSON.stringify({
+      exportedAt: new Date().toISOString(),
+      route: currentPath(),
+      userAgent: globalThis.navigator?.userAgent,
+      entries: listLocalLogs(filter),
+    }, null, 2);
+  } catch {
+    return '{"entries":[]}';
+  }
+}
+
+/** Installs `window.__dovelaLogs` once. */
+export function installLogConsole(target = globalThis.window) {
+  try {
+    if (!target || target.__dovelaLogs) return;
+    Object.defineProperty(target, '__dovelaLogs', {
+      configurable: true,
+      enumerable: false,
+      value: Object.freeze({
+        list: listLocalLogs,
+        clear: clearLocalLogs,
+        export: exportLocalLogs,
+        flush: flushLogs,
+      }),
+    });
   } catch {}
 }
 
@@ -317,6 +514,8 @@ export function clearLogQueue() {
     }
     state.queue = [];
     state.recent = new Map();
+    // Entries of the user that just left must not be shown to the next one.
+    clearLocalLogs();
   } catch {}
 }
 
@@ -327,7 +526,8 @@ export function clearLogQueue() {
  * @param {'error'|'warn'|'info'} level
  * @param {string} event short snake_case name, e.g. `http_error`
  * @param {object} [fields] message, stack, componentStack, path, module,
- *   relatedRequestId, data, clientEventId
+ *   relatedRequestId, data, clientEventId, kind (http|runtime|resource|chunk|render),
+ *   localOnly (keep in the local buffer only)
  */
 export function logEvent(level, event, fields = {}) {
   try {
@@ -350,7 +550,14 @@ export function logEvent(level, event, fields = {}) {
       data: boundedData(fields.data),
     };
     Object.keys(entry).forEach((key) => entry[key] === undefined && delete entry[key]);
+    const kind = kindOf(name, fields.kind);
+    if (entry.data && typeof entry.data === 'object' && !Array.isArray(entry.data)) entry.data = { kind, ...entry.data };
+    else if (!entry.data) entry.data = { kind };
 
+    recordLocal(entry, kind);
+    // Failures the caller already handles (optional endpoints, the log transport
+    // itself) stay in the local buffer only: never echoed, never sent.
+    if (fields.localOnly) return entry.clientEventId;
     echo(safeLevel, entry);
 
     // A duplicate answers with the id of the event that was actually queued, so
@@ -424,13 +631,17 @@ export function logHttpError(error, fields = {}) {
     if (!error || error.code === 'ERR_CANCELED' || error.__CANCEL__) return null;
     const status = error.response?.status ?? null;
     if (status === 401) return null;
+    // Requests cut by a page unload (logout redirect, reload) are not failures.
+    if (!status && state.unloading) return null;
     const method = String(error.config?.method || 'get').toUpperCase();
     const path = requestPath(error.config);
-    return logEvent(status >= 500 ? 'error' : 'warn', fields.event || 'http_error', {
+    const { level, ...rest } = fields;
+    return logEvent(level || (status >= 500 ? 'error' : 'warn'), rest.event || 'http_error', {
       message: `${method} ${path} -> ${status ?? error.code ?? 'network'}`,
       relatedRequestId: getRequestIdFromError(error) || undefined,
-      ...fields,
-      data: { method, url: path, status, code: error.code || undefined, ...(fields.data || {}) },
+      kind: 'http',
+      ...rest,
+      data: { method, url: path, status, code: error.code || undefined, ...(rest.data || {}) },
     });
   } catch {
     return null;
@@ -451,8 +662,12 @@ function isAxiosError(reason) {
 export function installGlobalErrorListeners(target = globalThis.window) {
   if (state.listenersInstalled || !target?.addEventListener) return;
   state.listenersInstalled = true;
+  installLogConsole(target);
 
   target.addEventListener('error', (event) => {
+    const message = String(event?.message || event?.error?.message || '');
+    // Benign browser notice, not an application error.
+    if (/ResizeObserver loop/i.test(message)) return;
     logError('js_error', event?.error || event?.message, {
       data: { source: event?.filename, line: event?.lineno, column: event?.colno },
     });
@@ -462,8 +677,17 @@ export function installGlobalErrorListeners(target = globalThis.window) {
     const reason = event?.reason;
     // Failed requests were already logged by the HTTP client.
     if (isAxiosError(reason)) return;
-    logError('unhandled_rejection', reason);
+    // Aborted fetches/navigations reject with AbortError: expected, not a failure.
+    if (reason?.name === 'AbortError' || reason?.code === 'ERR_CANCELED' || reason?.__CANCEL__) return;
+    logError('unhandled_rejection', reason, { level: 'warn' });
   });
+
+  const markUnloading = () => {
+    state.unloading = true;
+    persistBuffer();
+  };
+  target.addEventListener('pagehide', markUnloading);
+  target.addEventListener('pageshow', () => { state.unloading = false; });
 
   try {
     globalThis.document?.addEventListener('visibilitychange', () => {
@@ -481,6 +705,10 @@ export function __resetLoggerForTests() {
   state.timer = null;
   state.transport = null;
   state.transportDisabled = false;
+  state.buffer = null;
+  state.unloading = false;
+  if (state.persistTimer) clearTimeout(state.persistTimer);
+  state.persistTimer = null;
 }
 
 /** Test helper: events waiting to be sent. */

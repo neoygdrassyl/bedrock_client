@@ -1,27 +1,25 @@
 import { useEffect, useState } from 'react';
 import BusinessCalendarService from '@/features/business-calendar/api/business-calendar.service';
 import { replaceBusinessCalendarCustomDays, replaceBusinessCalendarHolidays } from '@/shared/utils/BusinessDaysCol';
-import { getRequestIdFromError, logHttpError } from '@/shared/observability/logger';
-import { ErrorScreen } from '@/shared/components/errors/ErrorScreen';
-import { isServerUnreachable } from '@/shared/components/errors/errorKinds';
+import { logHttpError } from '@/shared/observability/logger';
 
 const FIRST_DYNAMIC_YEAR = 2021;
 const FUTURE_YEAR_COUNT = 1;
+// Silent retries after a failed sync: 15 s, 1 min, 5 min.
+const RETRY_DELAYS_MS = [15 * 1000, 60 * 1000, 5 * 60 * 1000];
 
-// First authenticated request of the session. When it cannot reach the backend
-// at all (network failure, 502/503/504) nothing else will work either, so the
-// app shows the full-page `unavailable` screen; any other failure only affects
-// the calendar and keeps the non-blocking banner.
+// First authenticated request of the session: syncs official holidays and the
+// curaduría's custom days. A failure is logged (see `window.__dovelaLogs`) and
+// the app renders anyway with the bundled holiday list; the sync is retried
+// silently a few times. No banner or full-page error: when the backend is fully
+// unreachable each page shows its own load-error state.
 export default function BusinessCalendarBootstrap({ children }) {
   const [ready, setReady] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [unavailable, setUnavailable] = useState(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
-    setFailed(false);
-    setUnavailable(null);
+    let retryTimer = null;
     const currentYear = new Date().getFullYear();
     const endYear = currentYear + FUTURE_YEAR_COUNT;
 
@@ -40,43 +38,20 @@ export default function BusinessCalendarBootstrap({ children }) {
       })
       .catch((error) => {
         if (!active) return;
-        logHttpError(error);
-        if (isServerUnreachable(error)) {
-          // Only a request id the server answered with can be found in its logs.
-          setUnavailable({ referenceId: error?.response ? getRequestIdFromError(error) : null });
-        } else {
-          setFailed(true);
-        }
+        // The service request opts out of automatic logging; record it here.
+        logHttpError(error, { data: { attempt: attempt + 1 } });
         setReady(true);
+        const delay = RETRY_DELAYS_MS[attempt];
+        if (delay) retryTimer = setTimeout(() => setAttempt(value => value + 1), delay);
       });
 
-    return () => { active = false; };
+    return () => {
+      active = false;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, [attempt]);
 
   if (!ready) return null;
 
-  if (unavailable) {
-    return (
-      <ErrorScreen
-        kind="unavailable"
-        referenceId={unavailable.referenceId || undefined}
-        onRetry={() => {
-          setReady(false);
-          setAttempt(value => value + 1);
-        }}
-      />
-    );
-  }
-
-  return (
-    <>
-      {failed && (
-        <div role="alert" className="flex items-center justify-between gap-3 border-b border-warning/40 bg-warning/10 px-4 py-3 text-foreground">
-          <p className="m-0 text-sm">El calendario laboral no pudo actualizarse. Los demás módulos siguen disponibles.</p>
-          <button type="button" className="shrink-0 rounded-md border border-border px-3 py-1.5 text-sm" onClick={() => setAttempt(value => value + 1)}>Reintentar</button>
-        </div>
-      )}
-      {children}
-    </>
-  );
+  return children;
 }

@@ -7,6 +7,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { MDBBtn } from './legacy-ui';
 import { Icon } from '@/shared/components/icon';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { IllustratedState } from '@/shared/components/feedback/IllustratedState';
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
@@ -177,9 +178,11 @@ export default function VIEWER(props) {
                     ) : null}
 
                     {loadData === 2 ? (
-                        <div className="alert alert-danger w-100">
-                            <strong>Documento no encontrado.</strong> El documento no se encontró en la base de datos, comuníquese con el administrador.
-                        </div>
+                        <IllustratedState
+                            variant="not-found"
+                            title="Documento no encontrado."
+                            description="El documento no se encontró en la base de datos, comuníquese con el administrador."
+                        />
                     ) : null}
 
                     <div className="w-100">

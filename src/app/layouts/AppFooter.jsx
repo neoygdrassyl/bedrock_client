@@ -9,7 +9,7 @@ export function AppFooter() {
   return (
     <footer
       role="contentinfo"
-      className="flex items-center h-[22px] px-3 border-t border-border text-[10px] bg-sidebar text-sidebar-foreground gap-2.5 select-none"
+      className="flex short:hidden items-center h-[22px] px-3 border-t border-border text-[10px] bg-sidebar text-sidebar-foreground gap-2.5 select-none"
     >
       <span className="flex items-center gap-1">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80" />
