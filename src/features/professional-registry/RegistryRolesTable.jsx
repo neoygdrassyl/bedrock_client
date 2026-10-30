@@ -13,18 +13,18 @@ const roleName = (role) => (
   </>
 );
 
-// Columns as the current server sends them: general experience from the principal matrícula and a specific one per role.
+// Columns as the current server sends them. Experience is only the general one (from the principal matrícula) and the
+// specific one per role; what the expedientes declared stays out of this table.
 const columns = ({ detail, canWrite, busy, onSaveSpecific }) => [
-  { key: 'rol', header: 'Rol', width: '30%', cell: roleName },
-  { key: 'expedientes', header: 'Expedientes', width: '11%', className: NUMERIC, cell: (role) => role.projects },
-  { key: 'general', header: 'Experiencia general', width: '17%', cell: () => formatGeneralExperience(detail.generalExperience) },
+  { key: 'rol', header: 'Rol', width: '36%', cell: (role) => role.label },
+  { key: 'expedientes', header: 'Expedientes', width: '12%', className: NUMERIC, cell: (role) => role.projects },
+  { key: 'general', header: 'Experiencia general', width: '22%', cell: () => formatGeneralExperience(detail.generalExperience) },
   {
     key: 'especifica',
     header: 'Experiencia específica',
-    width: '27%',
+    width: '30%',
     cell: (role) => <RoleSpecificExperience role={role} general={detail.generalExperience} canWrite={canWrite && !detail.deleted} busy={busy} onSave={onSaveSpecific} />,
   },
-  { key: 'maxima', header: 'Máxima declarada', width: '15%', cell: maxDeclared },
 ];
 
 // An older server sends no general experience: the columns it had, with the experience declared in the expedientes.
@@ -50,7 +50,7 @@ export default function RegistryRolesTable({ detail, canWrite, busy, onSaveSpeci
         </p>
       ) : null}
       <div className="overflow-x-auto rounded-md border border-border/60">
-        <table className="w-full min-w-[640px] table-fixed border-collapse text-sm" aria-label="Roles y experiencia">
+        <table className="w-full min-w-[560px] table-fixed border-collapse text-sm" aria-label="Roles y experiencia">
           <colgroup>
             {shown.map((column) => <col key={column.key} style={{ width: column.width }} />)}
           </colgroup>
