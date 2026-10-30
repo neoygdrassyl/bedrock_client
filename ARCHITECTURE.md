@@ -90,30 +90,29 @@ El sistema de reporte de errores dentro de la aplicación (la opción de reporta
 
 | Caso | Qué ve el usuario | Qué se registra |
 |---|---|---|
-| **Fatal:** la pantalla no puede mostrarse | Pantalla completa de error, con el estilo del login (`shared/components/errors/ErrorScreen.jsx`) | `ui_crash`, `chunk_load_failed` o `http_error` |
-| **Síntoma:** falla una carga, un componente o un cálculo, pero la página sigue mostrando datos | Nada, o un aviso no bloqueante (toast) | `ui_load_failed`, `chart_render_failed`, `js_error`, `unhandled_rejection`, `http_error` |
+| **Fatal:** la pantalla no puede mostrarse | Estado ilustrado a pantalla completa (`shared/components/feedback/IllustratedState.jsx` con `fullPage`) | `ui_crash`, `chunk_load_failed` o `http_error` |
+| **Síntoma:** falla una carga, un componente o un cálculo, pero la página sigue mostrando datos | Nada, o el estado ilustrado del panel que se quedó sin datos (sin toasts) | `ui_load_failed`, `chart_render_failed`, `js_error`, `unhandled_rejection`, `http_error` |
 | **Acción fallida:** guardar, eliminar, generar, validar | El modal de error de siempre (`swalError`) | `ui_action_failed` y el `http_error` de la petición que falló |
 
 ### Pantallas de error
 
-| Tipo (`kind`) | Cuándo aparece | Dónde se dispara |
+| Caso | Cuándo aparece | Dónde se dispara |
 |---|---|---|
-| `not-found` (404) | Ruta desconocida con sesión iniciada | `NotFoundRoute` en `app/router/PrivateRoute.jsx`, ruta `*` de `routes.jsx` |
-| `crash` (500) | Un componente lanza una excepción al renderizar | `app/router/RouteErrorBoundary.jsx` (envuelve todas las rutas) |
-| `chunk` | Falla la carga de un módulo diferido, casi siempre porque se publicó una versión nueva | `RouteErrorBoundary`: recarga una vez sola (con una marca en `sessionStorage` que evita bucles; sin un `sessionStorage` que funcione no recarga) y, si vuelve a fallar, muestra la pantalla |
-| `unavailable` | El backend no responde en la primera petición de la sesión: error de red sin respuesta, 502/503/504, u otro 5xx sin la cabecera `x-dovela-request-id` y con cuerpo vacío (respuesta de un proxy, como el de Vite, o de una app de Passenger detenida). Un 500 real del backend siempre trae cuerpo JSON, así que un despliegue que no expone la cabecera no se bloquea | `app/layouts/BusinessCalendarBootstrap.jsx`. El botón "Reintentar" repite esa petición. Un *timeout* u otro error conserva el aviso amarillo del calendario |
-| `forbidden` (403) | Disponible para páginas que detecten un 403 al cargar: `<ErrorScreen kind="forbidden" />` | Ninguna pantalla lo usa todavía |
+| 404 (`IllustratedState variant="not-found"`) | Ruta desconocida con sesión iniciada | `NotFoundRoute` en `app/router/PrivateRoute.jsx`, ruta `*` de `routes.jsx` |
+| Fallo de render ("No pudimos mostrar esta pantalla") | Un componente lanza una excepción al renderizar | `app/router/RouteErrorBoundary.jsx` (envuelve todas las rutas); muestra el `clientEventId` como referencia |
+| Versión nueva ("Hay una versión nueva de Dovela") | Falla la carga de un módulo diferido, casi siempre porque se publicó una versión nueva | `RouteErrorBoundary`: recarga una vez sola (con una marca en `sessionStorage` que evita bucles; sin un `sessionStorage` que funcione no recarga) y, si vuelve a fallar, muestra el estado con "Recargar" |
+| Calendario laboral sin sincronizar | Falla la primera petición de la sesión (`GET /api/business-calendar/bootstrap`) | `app/layouts/BusinessCalendarBootstrap.jsx`: la app se muestra igual con los festivos incluidos en el bundle, se reintenta en segundo plano (15 s, 1 min, 5 min) y `BusinessCalendarSyncNotice` (montado por `AppShell` bajo el `HeaderBar`) muestra un aviso discreto (`role="status"`) con "Reintentar". El aviso desaparece cuando la sincronización funciona |
 
-Además, el evento `vite:preloadError` (falla la carga de un chunk de Vite) registra `chunk_load_failed` y muestra un aviso "Hay una versión nueva de Dovela" con el botón "Actualizar". No recarga por su cuenta, porque la importación pudo venir de un botón y una recarga inmediata borraría el trabajo sin guardar.
+Además, el evento `vite:preloadError` (falla la carga de un chunk de Vite) solo registra `chunk_load_failed`, sin aviso. No recarga por su cuenta, porque la importación pudo venir de un botón y una recarga inmediata borraría el trabajo sin guardar; si era una ruta diferida, el error llega a `RouteErrorBoundary`.
 
 ### Cargas fallidas: síntoma solo cuando se marca
 
 `swalError` (`shared/utils/swalAdapter.js`) mantiene el modal bloqueante por defecto. No clasifica por título, texto ni por la última petición fallida: un mismo título ("ERROR AL CARGAR") lo usan también la generación de PDF, las descargas y la asignación de consecutivos, y perder el aviso de una acción es peor que un modal de más.
 
 - **Modal + log `ui_action_failed`** (`warn`, con título, texto, ruta y `relatedRequestId` si se pasa) en cualquier llamada sin `{ symptom: true }`. El usuario ve lo mismo de siempre.
-- **Toast + log `ui_load_failed`** solo con `{ symptom: true }`, que se pone únicamente en cargas de fondo verificadas: una lectura (`GET`) que llena datos para mostrar, lanzada al montar o al abrir una pestaña, y sin la cual la página sigue siendo útil. Nunca en generar, descargar, guardar, validar ni asignar consecutivos. Si había un `swalLoading` o un `swalProgressPDF` abierto, se cierra; cualquier otro modal queda abierto.
+- **Solo log `ui_load_failed`** (sin modal ni toast) con `{ symptom: true }`, que se pone únicamente en cargas de fondo verificadas: una lectura (`GET`) que llena datos para mostrar, lanzada al montar o al abrir una pestaña, y sin la cual la página sigue siendo útil. Nunca en generar, descargar, guardar, validar ni asignar consecutivos. Si había un `swalLoading` o un `swalProgressPDF` abierto, se cierra; cualquier otro modal queda abierto.
 - Las llamadas que piden una decisión (botones de cancelar o negar, `input`, `preConfirm`) siempre son modal, incluso con `{ symptom: true }`.
-- Con `{ error }` o `{ requestId }` el log y el aviso llevan el código de la petición.
+- Con `{ error }` o `{ requestId }` el log lleva el código de la petición.
 
 ### Logger del cliente
 

@@ -11,6 +11,7 @@ import { SidebarInset, SidebarProvider } from '@/shared/ui/sidebar';
 import { useIsCompactSidebar } from '@/shared/hooks/use-mobile';
 import { NavigationPendingProvider } from './navigation-pending-context';
 import { TopProgressBar } from './TopProgressBar';
+import { BusinessCalendarSyncNotice } from './BusinessCalendarBootstrap';
 
 const SIDEBAR_STORAGE_KEY = 'dovela-sidebar-collapsed';
 const SIDEBAR_SIZE_VARS = { '--sidebar-width': '16.5rem', '--sidebar-width-icon': '3.5rem' };
@@ -93,6 +94,7 @@ export function AppShell({ user, onLogout, children }) {
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="app-shell-header px-2 pt-2">
                   <HeaderBar />
+                  <BusinessCalendarSyncNotice className="mt-2" />
                 </div>
 
                 <ScrollArea type="always" className="flex-1 app-shell-main-scroll">
