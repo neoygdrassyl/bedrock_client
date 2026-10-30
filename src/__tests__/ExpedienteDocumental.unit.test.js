@@ -8,7 +8,6 @@ import {
     buildDocumentPreviewUrl,
     buildDocumentTableRows,
     buildUnifiedDocumentRows,
-    buildMissingDocumentsSuggestionText,
     decorateDocumentTableRowsWithLegalForm,
     filterDocumentEntryGroups,
     filterDocumentTableRows,
@@ -17,7 +16,7 @@ import {
     normalizeVentanillaDocs,
     summarizeLegalFormRequirements,
     summarizeUnifiedDocumentRows,
-} from '../app/pages/user/shared/expediente-documental.utils';
+} from '../features/expediente/documental/shared/expediente-documental.utils';
 
 describe('expediente-documental utils', () => {
     it('mergea digitalizados y ventanilla por codigo sin perder pendientes de digitalizacion', () => {
@@ -450,14 +449,39 @@ describe('expediente-documental utils', () => {
         });
     });
 
-    it('construye texto sugerido para 5.11 desde el endpoint read-only y preserva el orden recibido', () => {
-        const suggestion = buildMissingDocumentsSuggestionText({
-            missingDocuments: [
-                { suggestedText: 'Solicitar Formulario único nacional.' },
-                { suggestedText: 'Digitalizar o cargar Certificado de libertad físico.' },
-            ],
-        });
+});
 
-        expect(suggestion).toBe('1. Solicitar Formulario único nacional.\n2. Digitalizar o cargar Certificado de libertad físico.');
+describe('legal form not-evaluable sources', () => {
+    it('keeps the original not-evaluable message for unconfigured sources', () => {
+        const summary = summarizeLegalFormRequirements({ source: 'central_snapshot_unconfigured' });
+        expect(summary.notEvaluableMessage).toMatch(/no tiene configuración documental de Dovela Central/i);
+    });
+});
+
+describe('documentary command transport', () => {
+    it('sends strict JSON documentary commands despite the shared multipart default', async () => {
+        const { vi } = await import('vitest');
+        vi.resetModules();
+        const post = vi.fn().mockResolvedValue({ data: {} });
+        const put = vi.fn().mockResolvedValue({ data: {} });
+        vi.doMock('../shared/api/http-common', () => ({ default: { get: vi.fn(), post, put, patch: vi.fn() } }));
+        const api = await import('../features/expediente/api/documentaryOperations.service');
+        const command = { expectedInputRevision: 0, idempotencyKey: 'key', reason: 'Reason' };
+        await api.activateDocumentaryProject(1, command);
+        await api.changeDocumentaryConfiguration(1, command);
+        await api.returnDocumentaryProjectToLegacy(1, command);
+        await api.refreshDocumentaryRequirements(1, command);
+        await api.createCanonicalSubmit(1, command);
+        // Control ids are Dovela Central string ids and travel URL-encoded.
+        await api.saveCanonicalControl(1, 10, 'CTRL/20', command);
+        const calls = [...post.mock.calls, ...put.mock.calls];
+        expect(calls).toHaveLength(6);
+        calls.forEach(([, body, config]) => {
+            expect(body).toBe(command);
+            expect(config?.headers?.['Content-Type']).toBe('application/json');
+        });
+        expect(put.mock.calls.at(-1)[0]).toBe('/fun/documentary/v1/projects/1/documents/10/controls/CTRL%2F20');
+        await expect(api.saveCanonicalControl(1, 10, 20, command)).rejects.toThrow();
+        vi.doUnmock('../shared/api/http-common');
     });
 });

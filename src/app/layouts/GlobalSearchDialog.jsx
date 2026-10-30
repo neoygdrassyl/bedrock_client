@@ -2,20 +2,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Loader2, Search } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Icon } from '@/components/icon';
-import { formsParser1 } from '@/app/components/customClasses/typeParse';
-import FUNService from '../services/fun.service';
-import { buildExpedienteWorkspaceUrl } from '../pages/user/fun_forms/utils/expedienteWorkspaceRoute';
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { Icon } from '@/shared/components/icon';
+import { formsParser1 } from '@/shared/config/customClasses/typeParse';
+import { toDisplayCase } from '@/shared/utils/displayCase';
+import FUNService from '../../features/expediente/api/fun.service';
+import { buildExpedienteWorkspaceUrl } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 
 const MIN_QUERY_LENGTH = 3;
 const RESULT_LIMIT = 8;
@@ -80,6 +81,10 @@ function normalizeQuery(value) {
   return String(value || '').trim();
 }
 
+function isCompletePublicId(value) {
+  return /^\d{5}-\d+-[a-z0-9]{2}-\d{4}$/i.test(value);
+}
+
 function normalizeSummaryPayload(payload) {
   if (!payload) return null;
   if (payload?.data && !Array.isArray(payload.data)) return payload.data;
@@ -103,15 +108,6 @@ function formatFallbackPhase(item) {
   if (rawState >= 30) return 'Observaciones';
   if (rawState >= 5) return 'Estudio y observaciones';
   return 'Radicación';
-}
-
-function toDisplayCase(value) {
-  const text = String(value || '').trim();
-  if (!text) return '';
-
-  return text
-    .toLowerCase()
-    .replace(/\b([a-záéíóúñ])/g, (match) => match.toUpperCase());
 }
 
 function formatLicenseName(item, summary) {
@@ -312,8 +308,8 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
     setResults([]);
 
     const lookups = [FUNService.getSearch(searchField, term)];
-    if (searchField === '1') {
-      lookups.push(FUNService.get_fun_IdPublic(term));
+    if (searchField === '1' && isCompletePublicId(term)) {
+      lookups.push(FUNService.get_fun_IdPublic(term, { skipErrorLog: true }));
     }
 
     const settledLookups = await Promise.allSettled(lookups);
@@ -324,7 +320,10 @@ export function GlobalSearchDialog({ open, onOpenChange }) {
     const uniqueCandidates = dedupeCandidates(candidateRows);
 
     const summaryLookups = await Promise.allSettled(
-      uniqueCandidates.map((candidate) => FUNService.getSummaryByIdPublic(pickPublicId(candidate, term)))
+      uniqueCandidates.map((candidate) => FUNService.getSummaryByIdPublic(
+        pickPublicId(candidate, term),
+        { skipErrorLog: true },
+      ))
     );
 
     const nextResults = uniqueCandidates.map((candidate, index) => {

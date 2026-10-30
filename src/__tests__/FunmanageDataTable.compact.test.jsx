@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { FunmanageDataTable } from '@/app/pages/user/fun_forms/components/FunmanageDataTable';
+import { FunmanageDataTable } from '@/features/expediente/fun/fun_forms/components/FunmanageDataTable';
 
 function renderCompactTable(props = {}) {
   const defaultProps = {

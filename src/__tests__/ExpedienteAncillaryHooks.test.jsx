@@ -6,7 +6,7 @@ const { alarmListMock, bookmarkListMock } = vi.hoisted(() => ({
   bookmarkListMock: vi.fn(),
 }));
 
-vi.mock('../app/services/alarm.service', () => ({
+vi.mock('../features/expediente/api/alarm.service', () => ({
   __esModule: true,
   default: {
     list: alarmListMock,
@@ -15,7 +15,7 @@ vi.mock('../app/services/alarm.service', () => ({
   },
 }));
 
-vi.mock('../app/services/bookmark.service', () => ({
+vi.mock('../shared/api/bookmark.service', () => ({
   __esModule: true,
   default: {
     list: bookmarkListMock,
@@ -24,8 +24,8 @@ vi.mock('../app/services/bookmark.service', () => ({
   },
 }));
 
-import { useAlarms } from '../app/pages/user/fun_forms/hooks/useAlarms';
-import { useBookmarks } from '../app/pages/user/fun_forms/hooks/useBookmarks';
+import { useAlarms } from '../features/expediente/fun/fun_forms/hooks/useAlarms';
+import { useBookmarks } from '../features/expediente/fun/fun_forms/hooks/useBookmarks';
 
 describe('expediente ancillary hooks', () => {
   beforeEach(() => {

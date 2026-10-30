@@ -22,11 +22,10 @@ Regla cardinal:
 ## 2. Como empezar en 5 minutos
 
 1. Lee este archivo completo.
-2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `ai/system-map.md`.
-3. Si tu cambio toca login, sesion, guards o interceptores, lee `ai/auth/session-contract.md`.
-4. Si tu cambio afecta pruebas, crashes o validacion final, lee `ai/testing-runbook.md`.
-5. Si trabajas con librerias externas, aplica `.github/instructions/context7.instructions.md`.
-6. Si trabajas dentro de Clocks, lee primero `.github/instructions/clocks.instructions.md` y los hooks principales.
+2. Si tu cambio afecta dominio, auth, rutas, contratos o integracion frontend-backend, lee `../backend/AGENTS.md`.
+3. Si tu cambio toca login, sesion, guards o interceptores, revisa `src/shared/api/http-common.js` y `src/shared/api/data.service.js`.
+4. Si tu cambio afecta pruebas, revisa los scripts `test` y `test:e2e` de `package.json`.
+5. Si trabajas dentro de Clocks, lee primero los hooks de `src/features/expediente/clocks/hooks/`.
 
 ## 3. Stack esencial
 
@@ -36,10 +35,11 @@ Regla cardinal:
 | Build | Vite 6 |
 | Tests | Vitest 4 + Testing Library + Playwright |
 | Routing | react-router-dom v6 |
-| HTTP | axios via `src/http-common.js` |
-| UI | Bootstrap 5 + wrappers locales + RSuite 5 + styled-components 6 |
-| Fechas | moment + moment-business-days |
-| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/app/utils/` |
+| HTTP | axios via `src/shared/api/http-common.js` |
+| UI | Bootstrap 5 + wrappers locales + shadcn/ui (Radix + Tailwind) |
+| Editores | BlockNote (`src/shared/components/rich-text-editor.jsx`) y jodit-pro; su CSS se carga con el chunk lazy del editor |
+| Fechas | dayjs (`src/shared/utils/dayjs.config.js`) |
+| Documentos | jsPDF, pdf-lib, react-pdf y motor propio en `src/features/expediente/expeditions/engines/` |
 | Node | 22+ obligatorio |
 
 ## 3.1 Priorizacion de skills UI/UX
@@ -70,18 +70,43 @@ Para trabajo sobre build pesado, vistas lentas, `modulepreload`, chunks de Vite,
 
 ## 4. Donde vive la verdad operativa
 
-- Router, layout, auth y login: `src/app/App.js`
-- Cliente HTTP y sesion: `src/http-common.js`, `src/app/services/data.service.js`, `src/app/services/custom.service.js`
-- Mapa de sistema y contrato con backend: `ai/system-map.md`
-- Contrato de sesion y auth actual: `ai/auth/session-contract.md`
-- Runbook de validacion: `ai/testing-runbook.md`
-- Runbook de release readiness: `ai/release-runbook.md`
-- Dominio de Clocks: `src/app/pages/user/clocks/hooks/useClocksManager.js`, `src/app/pages/user/clocks/hooks/useProcessPhases.js`, `src/app/pages/user/clocks/hooks/useAlarms.js`
-- Service mas critico: `src/app/services/fun.service.js`
-- Motor documental: `src/app/utils/TemplateEngine.js`
-- Historial de migracion: `REFACTOR_TRACKING_REACT19.md`
+- Providers y Router: `src/app/App.jsx`; tabla de rutas, guard privado, auth context y login: `src/app/router/` (`routes.jsx`, `PrivateRoute.jsx`, `auth.jsx`)
+- Cliente HTTP y sesion: `src/shared/api/http-common.js`, `src/shared/api/data.service.js`, `src/shared/api/custom.service.js`
+- Dominio de Clocks: `src/features/expediente/clocks/hooks/useClocksManager.js`, `src/features/expediente/clocks/hooks/useProcessPhases.js`, `src/features/expediente/clocks/hooks/useAlarms.js`
+- Service mas critico: `src/features/expediente/api/fun.service.js`
+- Motor documental: `src/features/expediente/expeditions/engines/TemplateEngine.js`
 
 No tomes `README.md` ni prompts historicos como fuente de verdad actual.
+
+## 4.1 Estructura (feature-first)
+
+```
+src/
+  index.jsx, index.css   # entrada de Vite (index.html carga /src/index.jsx) y estilos globales
+  app/                   # App.jsx, router/ y layouts/: arranque, rutas y shell
+  features/<feature>/    # un dominio: paginas, componentes, hooks, api/ y tests juntos
+  shared/                # codigo sin dominio
+    api/                 # http-common, http-client-factory, requestCache y services usados por varias features
+    ui/                  # shadcn/ui (alias de components.json)
+    dovela-ui/           # componentes de diseno Dovela
+    components/          # componentes genericos (legacy-modal, icon, data-table-bridge, legacy-ui, ...)
+    config/              # jsons/, customClasses/, vars.global.js, runtime-features.js
+    lib/ hooks/ utils/ i18n/ styles/ assets/
+  __tests__/ __mocks__/  # suites y mocks globales de Vitest
+```
+
+Features actuales: `auth`, `dashboard`, `expediente` (`fun/`, `documental/`, `records/`, `expeditions/`, `clocks/`, `api/`), `ventanilla`, `pqrs`, `archive`, `publications`, `nomenclature`, `appointments`, `business-calendar`, `certifications`, `liquidator`, `professionals`, `seals`, `dictionary`, `documentos`, `norms` (con `zone-use/`), `simulador` (con `legal_flow_guide/`), `settings`, `messaging`, `help`.
+
+`public/` no se mueve: `TemplateEngine` descarga `/templates/...` en runtime.
+
+1. **Feature-first:** cada dominio vive en `src/features/<feature>/` con sus componentes, hooks, api y tests juntos.
+2. **`src/shared/` nunca importa de `src/features/`.** Lo compartido no conoce dominios. Excepcion legacy pendiente: `shared/components/vizualizer.component.jsx` usa `features/expediente/api/fun.service.js`.
+3. **Las features se importan entre si solo via su `index.js`** (API publica) en codigo nuevo. Las importaciones profundas entre features que ya existen (sobre todo `expediente` <-> `ventanilla` y `expediente` -> `pqrs`) son legacy; no agregues mas.
+4. **Los modulos api nunca importan componentes.** La capa api solo habla HTTP via `src/shared/api/http-common.js` y devuelve datos.
+5. **Nombres:** componentes en `PascalCase.jsx`; modulos sin JSX (hooks, utils, api) en `camelCase.js`. Todo archivo con JSX usa extension `.jsx` (Vite ya no transforma JSX dentro de `.js`).
+6. **Tests colocalizados:** `Componente.test.jsx` / `modulo.test.js` junto al archivo que prueban.
+7. **Router:** rutas nuevas se declaran en `src/app/router/routes.jsx` con `lazy()`; no cambies paths ni redirects existentes sin confirmacion. Toda ruta del backoffice va dentro de `PrivateLayout`; la unica ruta publica es `/login`. La ruta `*` (pantalla 404) queda fuera de `PrivateLayout` para mostrarse a pantalla completa, pero exige sesion por su cuenta (`NotFoundRoute`).
+8. **Errores y logs:** no hay reporte de errores dentro de la app (se retiraron la opcion de reportar del menu de usuario y los paneles de reportes; no los reintroduzcas). Usa `src/shared/observability/logger.js` (`logEvent`, `logError`) para trazabilidad; nunca `console.*` como unico registro de un error real. Un fallo que impide mostrar la pantalla usa `ErrorScreen` (`src/shared/components/errors/`); una accion fallida mantiene el modal de `swalError` (y se registra como `ui_action_failed`); una carga de fondo verificada puede pasar `{ symptom: true }` para mostrarse como toast + log `ui_load_failed`. Nunca marques como sintoma un PDF, una descarga, un consecutivo ni nada que salga de un handler de usuario. Detalle en `ARCHITECTURE.md`, seccion 4. Si un request maneja su propio error, pasa `skipErrorLog: true` en su config.
 
 ## 5. Modulos de alto riesgo
 
@@ -106,7 +131,7 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 
 ### TemplateEngine y plantillas publicas
 
-- No editar `public/templates/` sin entender el motor en `src/app/utils/`.
+- No editar `public/templates/` sin entender el motor en `src/features/expediente/expeditions/engines/`.
 
 ## 6. Restricciones no negociables
 
@@ -114,25 +139,26 @@ No tomes `README.md` ni prompts historicos como fuente de verdad actual.
 2. No cambies contratos de datos a ciegas; verifica backend y services.
 3. No uses `process.env`; usa `import.meta.env.VITE_*`.
 4. No uses `React.forwardRef()` ni `defaultProps` en codigo nuevo.
-5. No metas llamadas HTTP directas en componentes; usa `src/app/services/`.
+5. No metas llamadas HTTP directas en componentes; usa el `api/` de la feature (`src/features/<feature>/api/`) o `src/shared/api/` si el service lo usan varias features.
 6. No ocultes ausencia de datos legalmente relevantes con `return null`; usa fallback visible.
 7. No introduzcas una libreria UI nueva sin consenso.
-8. No expongas datos sensibles de `src/app/components/jsons/vars.js` en logs.
+8. No expongas datos sensibles de `src/shared/config/jsons/vars.jsx` en logs.
 9. No des por buena documentacion vieja si contradice el codigo o el runtime.
 10. No cierres cambios de codigo ejecutable sin evidencia directa y proporcional a su alcance. Durante construcción activa, no crear, actualizar ni ejecutar pruebas automatizadas sin instrucción explícita del usuario; reservarlas para un cierre de módulo solicitado expresamente.
-11. **Playwright**: Siempre usa `src/__playwright/config.js` para temp paths. No dejes archivos basura. Lee `.github/instructions/playwright-standards.md`.
+11. **Playwright**: Siempre usa `e2e/config.js` para temp paths. No dejes archivos basura.
 12. **NUNCA hagas `git merge` ni `git push` a `main` (o `master`) de forma autónoma.** Antes de cualquier integración de ramas, usa `ask_user` en la sesión activa para solicitar confirmación explícita. Esta regla aplica sin excepción, incluso si la tarea parece completamente exitosa.
 13. **Las preguntas al usuario SIEMPRE se hacen con `ask_user` dentro de la sesión en curso.** Nunca termines una respuesta ni la sesión para "esperar al usuario" — eso fuerza una request extra. Usa siempre `ask_user` con opciones claras antes de tomar decisiones que afecten ramas, merges o arquitectura.
 
 ## 7. Backend y limites de este repo
 
-- El frontend consume el backend ubicado en `backend/` dentro del workspace (`/home/diego/dovela/backend/`). Ese es el directorio real en este entorno Linux.
+- Este frontend vive en `/home/diego/dovela/backoffice/frontend/` y consume la API de `/home/diego/dovela/backoffice/backend/`. Son proyectos separados, con configuración, dependencias y despliegues propios. No confundir esta SPA con el portal ciudadano `/home/diego/dovela/frontoffice/`.
+- Runtime local habitual: SPA `http://localhost:3000` y API `http://localhost:3001`; verificar y reutilizar las instancias existentes.
 - El backend es Express 4 + Sequelize 6 + MySQL.
-- No todos los services frontend apuntan a ese backend; revisa `ai/system-map.md` antes de tocar integraciones.
+- No todos los services frontend apuntan a ese backend; revisa `../backend/AGENTS.md` antes de tocar integraciones.
 
 ## 8. Observaciones operativas
 
-- `README.md` sigue describiendo CRA y esta obsoleto.
+- `README.md`, `SETUP.md` y `BUILD_DEPLOYMENT.md` documentan scripts y despliegue; no son fuente de verdad de arquitectura.
 - El comportamiento de auth depende tambien de la configuracion activa del backend.
 - La version visible en UI no coincide claramente con `package.json`.
 - Hay warnings de consola preexistentes en runtime; no los atribuyas automaticamente a tu cambio.
@@ -161,28 +187,5 @@ npm run build
 
 AGENTS.md solo debe darte lo necesario para arrancar. Si el cambio escala, lee la referencia adecuada en vez de inflar este archivo:
 
-- Sistema y contratos -> `ai/system-map.md`
-- Auth y sesion -> `ai/auth/session-contract.md`
-- Validacion -> `ai/testing-runbook.md`
-- Release -> `ai/release-runbook.md`
-- Context7 -> `.github/instructions/context7.instructions.md`
-- Clocks -> `.github/instructions/clocks.instructions.md`
-- Tests -> `.github/instructions/testing.instructions.md`
+- Sistema y contratos -> `../backend/AGENTS.md`
 
-## 11. Rediseno UI en curso (LEER SI VAS A TOCAR ESTILOS O LAYOUT)
-
-**Branch activo:** `feat/ui-redesign-phases-0-2`
-
-Hay un rediseno progresivo en marcha. Antes de cualquier cambio visual, de layout o de componentes UI, lee en este orden:
-
-1. `implementacion-rediseno/README.md` — indice maestro del rediseno y estado actual
-2. `implementacion-rediseno/01-estado-actual.md` — fase actual, alcance y pendientes reales
-3. `implementacion-rediseno/02-principios-inquebrantables.md` — reglas que NO se negocian
-4. `implementacion-rediseno/04-antipatrones.md` — errores que ya se han identificado
-5. `implementacion-rediseno/06-brecha-visual.md` — analisis de la brecha actual vs objetivo
-
-**Agente especializado para el rediseno:** `.github/agents/dovela-ui-redesign.agent.md`
-
-**Inspeccion visual con browser:** Usa primero el skill `visual-inspector` y el agente `.github/agents/visual-inspector.agent.md` para abrir la app, tomar screenshots, verificar transiciones y generar un reporte de critica de diseno alineado con las fases del rediseno. Cuando la revision termine, vuelve a `ui-ux-pro-max` para refinar e implementar.
-
-**Regla critica:** Cualquier commit que toque componentes UI, estilos o layout debe ser comparado visualmente contra las apps de referencia (Linear, Notion, Figma) segun `implementacion-rediseno/03-apps-referencia.md`.

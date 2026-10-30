@@ -1,4 +1,4 @@
-import { infoCud } from '@/app/components/jsons/vars';
+import { infoCud } from '@/shared/config/jsons/vars';
 import packageJson from '../../../package.json';
 
 /**

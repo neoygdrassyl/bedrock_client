@@ -29,13 +29,13 @@ vi.mock('jodit-pro-react', () => ({
   },
 }));
 
-vi.mock('../app/utils/TemplateEngine', () => ({
+vi.mock('../features/expediente/expeditions/engines/TemplateEngine', () => ({
   TemplateEngine: {
     buildTemplate: vi.fn(() => Promise.resolve('<p>Base</p>')),
   },
 }));
 
-vi.mock('../app/utils/ResoEngineTemplate', () => ({
+vi.mock('../features/expediente/expeditions/engines/ResoEngineTemplate', () => ({
   ResoEngineTemplate: class {
     modifyTemplateContent() {
       return '<p>Resolución editable</p>';
@@ -43,7 +43,7 @@ vi.mock('../app/utils/ResoEngineTemplate', () => ({
   },
 }));
 
-vi.mock('../app/utils/ActDesistEngineTemp', () => ({
+vi.mock('../features/expediente/expeditions/engines/ActDesistEngineTemp', () => ({
   ActDesistEngineTemp: class {
     modifyTemplateContent() {
       return '<p>Acta editable</p>';
@@ -51,7 +51,7 @@ vi.mock('../app/utils/ActDesistEngineTemp', () => ({
   },
 }));
 
-vi.mock('../app/utils/ExecEngineTemp', () => ({
+vi.mock('../features/expediente/expeditions/engines/ExecEngineTemp', () => ({
   ExecEngineTemp: class {
     modifyTemplateContent() {
       return '<p>Ejecutoria editable</p>';
@@ -59,7 +59,7 @@ vi.mock('../app/utils/ExecEngineTemp', () => ({
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalClose: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),
@@ -67,27 +67,18 @@ vi.mock('../app/utils/swalAdapter', () => ({
   swalUpdateProgress: vi.fn(),
 }));
 
-vi.mock('file-saver', () => ({
-  saveAs: vi.fn(),
+vi.mock('../shared/utils/pdfDownload', () => ({
+  downloadProtectedPdf: vi.fn(() => Promise.resolve()),
 }));
 
-import EXP_RES_2 from '../app/pages/user/expeditions/exp_res_2.component';
+import EXP_RES_2 from '../features/expediente/expeditions/exp_res_2.component';
+import { downloadProtectedPdf } from '../shared/utils/pdfDownload';
 
 describe('EXP_RES_2', () => {
   beforeEach(() => {
     joditMockState.lastProps = null;
-    const pdfBytes = new TextEncoder().encode('pdf-content');
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(pdfBytes);
-        controller.close();
-      },
-    });
-    global.fetch = vi.fn(() => Promise.resolve({
-      ok: true,
-      headers: { get: () => null },
-      body: stream,
-    }));
+    vi.clearAllMocks();
+    downloadProtectedPdf.mockResolvedValue();
   });
 
   test('renderiza el contenedor del editor PDF con la vista previa editable', async () => {
@@ -160,12 +151,38 @@ describe('EXP_RES_2', () => {
     fireEvent.click(screen.getByRole('button', { name: /descargar pdf/i }));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(downloadProtectedPdf).toHaveBeenCalledTimes(1);
     });
 
-    const [, request] = global.fetch.mock.calls[0];
-    const payload = JSON.parse(request.body);
+    const [path, filename, request] = downloadProtectedPdf.mock.calls[0];
+    expect(path).toBe('/pdf-generate/generate-pdf');
+    expect(filename).toBe('Resolucion CUB1-2024-0001.pdf');
+    expect(request).toMatchObject({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const payload = request.data;
     expect(payload.html).toContain('Resolución editada desde Jodit');
     expect(payload.html).not.toContain('VALOR_OBSOLETO_REF');
+    expect(payload.documentType).toBe('open');
+  });
+
+  test('preserva un margen superior explícito de cero para Ejecutoria', async () => {
+    render(
+      <EXP_RES_2
+        data={{ _DATA: { reso: { m_top: 0 } } }}
+        swaMsg={{ text_wait: 'Procesando', generic_eror_title: 'Error', generic_error_text: 'Error genérico' }}
+        currentItem={{ id_public: 'CUB1-2024-0001', fun_clocks: [] }}
+        currentModel="eje_open"
+      />,
+    );
+
+    await screen.findByText(/Ejecutoria editable/i);
+    fireEvent.click(screen.getByRole('button', { name: /descargar pdf/i }));
+
+    await waitFor(() => expect(downloadProtectedPdf).toHaveBeenCalledTimes(1));
+    const payload = downloadProtectedPdf.mock.calls[0][2].data;
+    expect(payload.documentType).toBe('eje_open');
+    expect(payload.margins.top).toBe(0);
   });
 });

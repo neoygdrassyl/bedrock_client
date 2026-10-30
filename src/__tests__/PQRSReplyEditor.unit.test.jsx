@@ -27,7 +27,7 @@ vi.mock('jodit-pro-react', () => ({
   },
 }));
 
-vi.mock('../app/components/jsons/vars', () => ({
+vi.mock('../shared/config/jsons/vars', () => ({
   infoCud: {
     city: 'Bucaramanga',
     dir: 'Directora Test',
@@ -42,23 +42,23 @@ const pqrsServiceMock = vi.hoisted(() => ({
   getlascub: vi.fn(() => Promise.resolve({ data: [{ cub: 'CUB-26-0001' }] })),
 }));
 
-vi.mock('../app/services/pqrs_main.service', () => ({
+vi.mock('../features/pqrs/api/pqrs_main.service', () => ({
   default: pqrsServiceMock,
 }));
 
-vi.mock('../app/services/cubXvr.service', () => ({
+vi.mock('../features/expediente/api/cubXvr.service', () => ({
   default: {
     createCubXVr: vi.fn(() => Promise.resolve({ data: 'OK' })),
     updateCubVr: vi.fn(() => Promise.resolve({ data: 'OK' })),
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalSuccess: vi.fn(),
 }));
 
-import { PQRS_SET_REPLY1 } from '../app/pages/user/pqrs/components/pqrs_setReply2.component';
+import { PQRS_SET_REPLY1 } from '../features/pqrs/components/pqrs_setReply2.component';
 
 const currentItem = {
   id: 1,

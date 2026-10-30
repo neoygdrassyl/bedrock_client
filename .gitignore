@@ -33,6 +33,7 @@ build.zip
 
 # misc
 .DS_Store
+runtime.local.json
 .env
 .env.local
 .env.development.local
@@ -68,7 +69,9 @@ test-output-full.log
 # AI config files
 .github/
 ai/
-scripts/
+# Local-only helper scripts (the rest of scripts/ is tracked)
+/scripts/generate-informe.js
+/scripts/playwright-tmp-manager.js
 
 # Local agent and visual-inspection artifacts
 .atl/
@@ -81,3 +84,6 @@ scripts/
 /.sisyphus
 # design-sync generated CSS
 .ds-css/
+
+# Local-only agent tooling (not part of the repo)
+/.copilotignore

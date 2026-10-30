@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import PqrsMainService from '../../app/services/pqrs_main.service';
+import PqrsMainService from '../../features/pqrs/api/pqrs_main.service';
 
 let server;
 let resetWorkflowDb;

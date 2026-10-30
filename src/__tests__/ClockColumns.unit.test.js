@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_CLOCK_COLUMN_VISIBILITY,
   getClockTableWidth,
-} from '../app/pages/user/clocks/components/ClockRow';
+} from '../features/expediente/clocks/components/ClockRow';
 
 describe('columnas opcionales de la tabla de tiempos', () => {
   it('oculta por defecto siguiente paso, alarma programada y limite programado', () => {

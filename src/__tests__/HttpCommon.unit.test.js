@@ -21,7 +21,7 @@ const buildHttpModule = async () => {
     },
   }));
 
-  const mod = await import('../http-common');
+  const mod = await import('../shared/api/http-common');
 
   return {
     http: mod.default,
@@ -96,6 +96,22 @@ describe('http-common', () => {
     expect(localStorage.getItem('dovela_token')).toBeNull();
     expect(localStorage.getItem('dovela_user')).toBeNull();
     expect(window.user).toBeNull();
+  });
+
+  it('response interceptor vacia la cola del logger en 401', async () => {
+    const { mockResponseUse } = await buildHttpModule();
+    const logger = await import('../shared/observability/logger');
+    logger.__resetLoggerForTests();
+    const onRejected = mockResponseUse.mock.calls[0][1];
+
+    localStorage.setItem('dovela_token', 'abc123');
+    logger.logEvent('warn', 'pending_before_logout', { message: 'x' });
+    expect(logger.__getQueuedEventsForTests()).toHaveLength(1);
+
+    await expect(onRejected({ config: { url: 'fun/1' }, response: { status: 401, data: {} } })).rejects.toBeTruthy();
+
+    expect(logger.__getQueuedEventsForTests()).toEqual([]);
+    logger.__resetLoggerForTests();
   });
 
   it('response interceptor no limpia sesion en error no-401', async () => {

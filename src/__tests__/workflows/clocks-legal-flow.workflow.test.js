@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import FunService from '../../app/services/fun.service';
+import FunService from '../../features/expediente/api/fun.service';
 
 let server;
 let resetWorkflowDb;

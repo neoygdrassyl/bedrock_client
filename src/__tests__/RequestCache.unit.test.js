@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import * as requestCache from '@/app/services/requestCache';
+import * as requestCache from '@/shared/api/requestCache';
 
 describe('requestCache', () => {
   beforeEach(() => {

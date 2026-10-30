@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { readFileSync } from 'node:fs';
-import ObservationPanel from '@/app/components/ObservationPanel';
+import ObservationPanel from '@/shared/components/ObservationPanel';
 
 describe('ObservationPanel', () => {
   test('opens a textarea panel by default when it has content and toggles it from the header', async () => {
@@ -137,7 +137,7 @@ describe('ObservationPanel', () => {
   });
 
   test('uses the full available page width without a fixed max width', () => {
-    const css = readFileSync('src/app/components/ObservationPanel.css', 'utf8');
+    const css = readFileSync('src/shared/components/ObservationPanel.css', 'utf8');
 
     expect(css).toMatch(/\.op__panel\s*{[^}]*width:\s*100%;/s);
     expect(css).not.toContain('width: min(100%, 720px);');

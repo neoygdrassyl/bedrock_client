@@ -11,24 +11,24 @@ const { dashboardServiceMock } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/funmanage_dashboard.service', () => ({
+vi.mock('../features/expediente/api/funmanage_dashboard.service', () => ({
   __esModule: true,
   default: dashboardServiceMock,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunDashboardKPIs', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunDashboardKPIs', () => ({
   FunDashboardKPIs: () => <div data-testid="fun-dashboard-kpis" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunmanageScatterChart', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunmanageScatterChart', () => ({
   FunmanageScatterChart: () => <div data-testid="funmanage-scatter-chart" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunmanagePhaseChart', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunmanagePhaseChart', () => ({
   FunmanagePhaseChart: () => <div data-testid="funmanage-phase-chart" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunmanageDataTable', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunmanageDataTable', () => ({
   FunmanageDataTable: ({ onViewDetail, onOpenWorkspace }) => (
     <div>
       <button type="button" onClick={() => onViewDetail?.(EXP_A)}>
@@ -41,19 +41,13 @@ vi.mock('../app/pages/user/fun_forms/components/FunmanageDataTable', () => ({
   ),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunExpedienteDetail', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/FunExpedienteDetail', () => ({
   FunExpedienteDetail: ({ expediente }) => (
     <div data-testid="workspace-summary">drawer:{expediente?.radicado}</div>
   ),
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/FunExpedienteWorkspace', () => ({
-  FunExpedienteWorkspace: ({ expediente }) => (
-    <div data-testid="workspace-state">{expediente?.radicado}:workspace</div>
-  ),
-}));
-
-vi.mock('@/components/ui/select', () => ({
+vi.mock('@/shared/ui/select', () => ({
   Select: ({ children }) => <div>{children}</div>,
   SelectTrigger: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
   SelectValue: ({ placeholder }) => <span>{placeholder}</span>,
@@ -61,18 +55,18 @@ vi.mock('@/components/ui/select', () => ({
   SelectItem: ({ children, value }) => <div data-value={value}>{children}</div>,
 }));
 
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, asChild, ...props }) => {
     if (asChild && React.isValidElement(children)) return React.cloneElement(children, props);
     return <button type="button" {...props}>{children}</button>;
   },
 }));
 
-vi.mock('@/components/icon', () => ({
+vi.mock('@/shared/components/icon', () => ({
   Icon: () => <span aria-hidden="true" />,
 }));
 
-import FunManageNewPage from '../app/pages/user/funmanage_new.page';
+import FunManageNewPage from '../features/expediente/fun/funmanage_new.page';
 
 describe('FunManageNewPage workspace behavior', () => {
   beforeEach(() => {

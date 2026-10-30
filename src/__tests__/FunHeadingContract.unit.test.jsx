@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import FUN from '@/app/pages/user/fun';
+import FUN from '@/features/expediente/fun/fun';
 
-vi.mock('@/app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({
   default: () => null,
 }));
-vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({
   default: () => null,
 }));
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: new Proxy({}, {
     get: () => () => Promise.resolve({ data: [] }),
   }),

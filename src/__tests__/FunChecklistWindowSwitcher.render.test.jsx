@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import FunChecklistWindowSwitcher from '../app/pages/user/fun_forms/components/FunChecklistWindowSwitcher';
+import FunChecklistWindowSwitcher from '../features/expediente/fun/fun_forms/components/FunChecklistWindowSwitcher';
 
 function LegacyChecklistStub() {
   return <div data-testid="legacy-checklist">Lista clásica renderizada</div>;

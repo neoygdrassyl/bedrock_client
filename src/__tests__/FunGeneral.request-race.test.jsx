@@ -57,21 +57,21 @@ const { funServiceMock, swalErrorMock } = vi.hoisted(() => ({
   swalErrorMock: vi.fn(),
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: funServiceMock,
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalError: (...args) => swalErrorMock(...args),
 }));
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   __esModule: true,
   default: () => <div data-testid="data-table-bridge" />,
 }));
 
-vi.mock('../app/components/customClasses/funCustomArrays', () => ({
+vi.mock('../shared/config/customClasses/funCustomArrays', () => ({
   _FUN_1_PARSER: () => '',
   _FUN_2_PARSER: () => '',
   _FUN_3_PARSER: () => '',
@@ -87,84 +87,84 @@ vi.mock('../app/components/customClasses/funCustomArrays', () => ({
   _FUN_25_PARSER: () => '',
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser: () => '',
   dateParser_yearsPassed: () => 0,
   regexChecker_isOA_2: () => false,
 }));
 
-vi.mock('@/components/icon', () => {
+vi.mock('@/shared/components/icon', () => {
   // The module exports Icon both named and as default; consumers use either.
   const Icon = () => <span aria-hidden="true" />;
   return { __esModule: true, Icon, default: Icon };
 });
 
-vi.mock('../app/pages/user/fun_forms/fun_g_checklist', () => ({
+vi.mock('../features/expediente/fun/fun_forms/fun_g_checklist', () => ({
   __esModule: true,
   default: () => <div data-testid="fung-checklist" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_g_nav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_g_nav', () => ({
   __esModule: true,
   default: () => <div data-testid="fung-nav" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_moduleNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_moduleNav', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-module-nav" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_versionNav', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_versionNav', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-version-nav" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_3_g_view', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_3_g_view', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-3-g-view" />,
 }));
 
-vi.mock('../app/components/vizualizer.component', () => ({
+vi.mock('../shared/components/vizualizer.component', () => ({
   __esModule: true,
   default: () => <div data-testid="vizualizer" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_g_mix.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_g_mix.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-g-mix" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_g_reports.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_g_reports.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-g-reports" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_archive.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_archive.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-archive" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_g_reportMaster.compoentn', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_g_reportMaster.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-g-report-master" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_checklist_n', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_checklist_n', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-checklist-n" />,
 }));
 
-vi.mock('../app/pages/user/archive/arcXfun_view.component', () => ({
+vi.mock('../features/archive/arcXfun_view.component', () => ({
   __esModule: true,
   default: () => <div data-testid="archive-fun-view" />,
 }));
 
-vi.mock('../app/pages/user/fun_forms/components/fun_duplicate.component', () => ({
+vi.mock('../features/expediente/fun/fun_forms/components/fun_duplicate.component', () => ({
   __esModule: true,
   default: () => <div data-testid="fun-duplicate" />,
 }));
 
-import FUNG from '../app/pages/user/fun_forms/fun_g';
+import FUNG from '../features/expediente/fun/fun_forms/fun_g';
 
 describe('FUNG detail loading lifecycle', () => {
   beforeEach(() => {

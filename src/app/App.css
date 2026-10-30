@@ -104,7 +104,6 @@
   height: 380px;
   width: 280px;
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 /* ── Scroll & overflow utilities ── */
@@ -114,28 +113,23 @@
 
 .chart-clock {
   overflow-x: auto;
-  scrollbar-width: thin;
 }
 
 .container-sh {
   overflow-x: auto;
-  scrollbar-width: thin;
 }
 
 .filter-list {
   overflow-y: auto;
   height: 400px;
-  scrollbar-width: thin;
 }
 
 .ovy {
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .ovx {
   overflow-x: auto;
-  scrollbar-width: thin;
 }
 
 .app-pointer {

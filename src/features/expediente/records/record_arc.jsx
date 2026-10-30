@@ -1,0 +1,706 @@
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/components/icon';
+
+import RECORD_ARCSERVICE from '../api/record_arc.service';
+import RECORD_LAW_SERVICE from '../api/record_law.service';
+import RECORD_ENG_SERVICE from '../api/record_eng.service';
+
+import FUN_VERSION_NAV from '../fun/fun_forms/components/fun_versionNav';
+import FUN_MODULE_NAV from '../fun/fun_forms/components/fun_moduleNav';
+import FUN_SERVICE from '../api/fun.service';
+
+// RECORDS
+import RECORD_ARC_31 from './arc/record_arc_31';
+import RECORD_ARC_32 from './arc/record_arc_32';
+import RECORD_ARC_33 from './arc/record_arc_33';
+import RECORD_ARC_34 from './arc/record_arc_34';
+import RECORD_ARC_35 from './arc/record_arc_35';
+import RECORD_ARC_36 from './arc/record_arc_36';
+import RECORD_ARC_38 from './arc/record_arc_38';
+import RECORD_ARC_EXTRA_1 from './arc/record_arc_extra_1';
+import RECORD_ARC_EXTRA_2 from './arc/record_arc_extra_2';
+import RECORD_ARC_37 from './arc/record_arc_37';
+import RECORD_ENG_PROFESIONALS from './eng/record_eng_profesionals.component';
+import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
+import FUN_6_VIEW from '../fun/fun_forms/fun_6.view';
+import RECORD_ARC_GEN_REVIEW from './arc/record_arc_gen_review.component';
+import RECORDS_BINNACLE from './records_binnacles.component';
+import RECORD_ARC_AREAS from './arc/record_arc_areas.component';
+import RECORD_ARC_DESC from './arc/record_arc_desc';
+import RECORD_ARC_CONTROL from './arc/record_arc_control.component';
+import RECORD_ARC_GEN_2_REVIEW from './arc/record_arc_gem2_review.component';
+import './arc/record_arc_typography.css';
+import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
+import RecordReviewWorkspace from './components/RecordReviewWorkspace';
+
+const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+
+function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, hideInlineBinnacles = false }) {
+    const [currentRecord, setCurrentRecord] = useState(null);
+    const [currentVersionR, setCurrentVersionR] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [pqrsxfun, setPqrsxfun] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [inventoryExpanded, setInventoryExpanded] = useState(false);
+    const [recordLoadFailed, setRecordLoadFailed] = useState(false);
+
+    const setItem_RecordArc = useCallback((id) => {
+        RECORD_ARCSERVICE.getRecord(id || currentId)
+            .then(response => {
+                const data = response?.data || {};
+                const record_arc = data.record_arc;
+                setRecordLoadFailed(false);
+
+                // An expediente without an architectural report yet: show the
+                // "create report" state, as record_law and record_eng do.
+                if (!record_arc) {
+                    setCurrentRecord(null);
+                    setCurrentVersionR(null);
+                    setLoaded(true);
+                    return;
+                }
+
+                record_arc.record_arc_steps = data.record_arc_steps;
+                record_arc.record_arc_33_areas = data.record_arc_33_areas;
+                record_arc.record_arc_34_ks = data.record_arc_34_ks;
+                record_arc.record_arc_34_gens = data.record_arc_34_gens;
+                record_arc.record_arc_35_parkings = data.record_arc_35_parkings;
+                record_arc.record_arc_36_infos = data.record_arc_36_infos;
+                record_arc.record_arc_37s = data.record_arc_37s;
+                record_arc.record_arc_35_locations = data.record_arc_35_locations;
+                record_arc.record_arc_38s = data.record_arc_38s;
+
+                setCurrentRecord(record_arc);
+                setCurrentVersionR(record_arc.version);
+                setLoaded(true);
+            })
+            .catch(e => {
+                console.log(e);
+                // The request failed: do not offer to create a report that may
+                // already exist; show an inline retry instead.
+                setRecordLoadFailed(true);
+                setLoaded(true);
+                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning', symptom: true, error: e });
+            });
+    }, [currentId, swaMsg]);
+
+    const retrievePQRSxFUN = useCallback((id_public) => {
+        FUN_SERVICE.loadPQRSxFUN(id_public)
+            .then(response => {
+                setPqrsxfun(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }, []);
+
+    const retrieveItem = useCallback((id) => {
+        FUN_SERVICE.get(id)
+            .then(response => {
+                setCurrentItem(response.data);
+                setLoaded(true);
+                retrievePQRSxFUN(response.data.id_public);
+            })
+            .catch(e => {
+                console.log(e);
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+            });
+    }, [swaMsg, retrievePQRSxFUN]);
+
+    const requestUpdateRecord = useCallback((id) => {
+        setItem_RecordArc(id);
+    }, [setItem_RecordArc]);
+
+    const requestUpdate = useCallback((id) => {
+        retrieveItem(id);
+    }, [retrieveItem]);
+
+    const navigation_version = useCallback((STEP) => {
+        switch (STEP) {
+            case "minus":
+                setCurrentVersionR(prev => prev - 1);
+                break;
+            case "plus":
+                setCurrentVersionR(prev => prev + 1);
+                break;
+        }
+    }, []);
+
+    useEffect(() => {
+        setItem_RecordArc();
+        retrieveItem(currentId);
+    }, [currentId, setItem_RecordArc, retrieveItem]);
+
+        var formData = new FormData();
+        let subc = Array.isArray(currentRecord?.subcategory)
+            ? currentRecord.subcategory
+            : typeof currentRecord?.subcategory === 'string'
+                ? currentRecord.subcategory.split(',')
+                : [0, 0, 0, 0]
+        let _GET_CHILD_1 = () => {
+            var _CHILD = currentItem.fun_1s;
+            var _CURRENT_VERSION = currentVersion - 1;
+            var _CHILD_VARS = {
+                item_0: "",
+                item_1: "",
+                item_2: "",
+                item_3: "",
+                item_4: "",
+                item_5: "",
+                item_6: "",
+                item_7: "",
+                item_8: "",
+                item_9: "",
+                item_101: "",
+                item_102: "",
+            }
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD_VARS.item_0 = _CHILD[_CURRENT_VERSION].id;
+                    _CHILD_VARS.item_1 = _CHILD[_CURRENT_VERSION].tipo ? _CHILD[_CURRENT_VERSION].tipo : "";
+                    _CHILD_VARS.item_2 = _CHILD[_CURRENT_VERSION].tramite ? _CHILD[_CURRENT_VERSION].tramite : "";
+                    _CHILD_VARS.item_3 = _CHILD[_CURRENT_VERSION].m_urb ? _CHILD[_CURRENT_VERSION].m_urb : "";
+                    _CHILD_VARS.item_4 = _CHILD[_CURRENT_VERSION].m_sub ? _CHILD[_CURRENT_VERSION].m_sub : "";
+                    _CHILD_VARS.item_5 = _CHILD[_CURRENT_VERSION].m_lic ? _CHILD[_CURRENT_VERSION].m_lic : "";
+                    _CHILD_VARS.item_6 = _CHILD[_CURRENT_VERSION].usos ? _CHILD[_CURRENT_VERSION].usos : "";
+                    _CHILD_VARS.item_7 = _CHILD[_CURRENT_VERSION].area ? _CHILD[_CURRENT_VERSION].area : "";
+                    _CHILD_VARS.item_8 = _CHILD[_CURRENT_VERSION].vivienda ? _CHILD[_CURRENT_VERSION].vivienda : "";
+                    _CHILD_VARS.item_9 = _CHILD[_CURRENT_VERSION].cultural ? _CHILD[_CURRENT_VERSION].cultural : "";
+                    _CHILD_VARS.item_101 = _CHILD[_CURRENT_VERSION].regla_1 ? _CHILD[_CURRENT_VERSION].regla_1 : "";
+                    _CHILD_VARS.item_102 = _CHILD[_CURRENT_VERSION].regla_2 ? _CHILD[_CURRENT_VERSION].regla_2 : "";
+                }
+            }
+            return _CHILD_VARS;
+        }
+        let _GET_CHILD_52 = () => {
+            var _CHILD = currentItem.fun_52s;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CHILD_6 = () => {
+            var _CHILD = currentItem.fun_6s;
+            var _LIST = [];
+            if (_CHILD) {
+                _LIST = _CHILD;
+            }
+            return _LIST;
+        }
+        let _GET_CHILD_REVIEW = () => {
+            var _CHILD = currentItem.fun_rs;
+            var _CURRENT_VERSION = currentVersion - 1;
+            if (_CHILD) {
+                if (_CHILD[_CURRENT_VERSION] != null) {
+                    _CHILD = _CHILD[_CURRENT_VERSION]
+                } else {
+                    _CHILD = false
+                }
+            }
+            return _CHILD;
+        }
+        let _SUBCATEGORY_COMPONENT = () => {
+
+            let subcategories = [
+                { desc: 'ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO', v: subc[0], id: 0, },
+                { desc: 'PARQUEADEROS', v: subc[1], id: 1, },
+                { desc: 'ESPACIO PUBLICO', v: subc[2], id: 2, },
+                { desc: 'NSR10', v: subc[3], id: 3, },
+            ]
+            let contentControls = [
+                { id: 'identification', desc: '3.2. IDENTIFICACIÓN DE LA SOLICITUD', locked: true },
+                { id: 'description', desc: '3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA', locked: true },
+            ];
+
+            if (_GET_CHILD_1().item_1.includes('F')) {
+                contentControls.push(
+                    { id: 'decree-1077', desc: 'CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO', locked: true },
+                    { id: 'planning-secretariat', desc: 'INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL', locked: true },
+                );
+            }
+
+            contentControls = contentControls.concat(subcategories.map((itemm, i) => ({
+                id: `subcategory-${itemm.id}`,
+                desc: `3.${i + 4}. ${itemm.desc}`,
+                checked: itemm.v == '1',
+            })));
+            contentControls.push({ id: 'viability', desc: '3.8 VIABILIDAD ARQUITECTÓNICA', locked: true });
+
+            return <div className="record-arc-content-control-list">
+                {contentControls.map((item) => {
+                    const inputId = `record-arc-content-control-${item.id}`;
+                    return <div key={item.id} className="record-arc-content-control-row">
+                        <label htmlFor={inputId} className="record-arc-content-control-label fw-bold">{item.desc}</label>
+                        <div className="form-check form-switch record-arc-content-control-switch">
+                            {item.locked
+                                ? <input id={inputId} className="form-check-input" type="checkbox" checked readOnly disabled />
+                                : <input id={inputId} className="form-check-input" type="checkbox" defaultChecked={item.checked}
+                                    name="sc_checbox" onChange={() => update_subcategory(false)} />}
+                        </div>
+                    </div>
+                })}
+            </div>
+        }
+
+        let new_record_arc = () => {
+            formData = new FormData();
+            formData.set('fun0Id', currentItem.id);
+            formData.set('version', 1);
+            RECORD_ARCSERVICE.create(formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                });
+        }
+        let update_subcategory = (useSwal) => {
+            formData = new FormData();
+            let sub_html = document.getElementsByName('sc_checbox');
+            let subcategory = [];
+            for (let i = 0; i < sub_html.length; i++) {
+                const sub = sub_html[i];
+                subcategory.push(sub.checked ? 1 : 0);
+            }
+            formData.set('subcategory', subcategory.join());
+            RECORD_ARCSERVICE.update(currentRecord.id, formData)
+                .then(response => {
+                    if (response.data === 'OK') {
+                        if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        requestUpdateRecord(currentItem.id)
+                    } else {
+                        if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                    if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                });
+        }
+        return (
+            <div className="record_arc container">
+                {currentItem != null ? <>
+                    {loaded ? <>
+                        {currentRecord
+                            ? <>
+                                <fieldset className="p-3">
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_32">
+                                        <label className="app-p lead fw-normal">3.2. IDENTIFICACIÓN DE LA SOLICITUD</label>
+                                    </legend>
+                                    <RECORD_ARC_32
+                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        currentRecord={currentRecord}
+                                        currentVersionR={currentVersionR}
+                                    />
+                                    {!hideInlineBinnacles ? <>
+                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            SERVICE={RECORD_LAW_SERVICE}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            AIM={"Jurídico"}
+                                            readOnly />
+                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            SERVICE={RECORD_ARCSERVICE}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            AIM={"Arquitectura"}
+                                            PATH={"record_arc"}
+                                        />
+                                        <RECORDS_BINNACLE translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            SERVICE={RECORD_ENG_SERVICE}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            AIM={"Estructural"}
+                                            readOnly />
+                                    </> : null}
+
+                                </fieldset>
+                                <fieldset className="p-3">
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_31">
+                                        <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
+                                    </legend>
+                                    <RecordReviewWorkspace
+                                        inventoryLabel="3.1.1 Inventario de Información Aportada"
+                                        documentsLabel="3.1.2 Expediente documental"
+                                        inventoryExpanded={inventoryExpanded}
+                                        inventoryContent={<RECORD_LAW_DOCSCHECK
+                                            _FUN_1={_GET_CHILD_1()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            _FUN_R={_GET_CHILD_REVIEW()}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            requestUpdate={requestUpdate}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            readOnly={false}
+                                            docsScope={'arc'}
+                                            compactModalityLabels
+                                            expandable
+                                            showAttachmentColumns={false}
+                                            useEditableGrid
+                                            expanded={inventoryExpanded}
+                                            onExpandedChange={setInventoryExpanded}
+                                            hideNotApplicableDefault
+                                            showFilters
+                                        />}
+                                        documentsContent={<FUN_6_VIEW
+                                                translation={translation}
+                                                swaMsg={swaMsg}
+                                                globals={globals}
+                                                currentItem={currentItem}
+                                                currentId={currentId}
+                                                currentVersion={currentVersion}
+                                                requestUpdate={requestUpdate}
+                                                readOnly
+                                                mergeVentanilla
+                                            />}
+                                        professionalsLabel="Profesionales del proyecto"
+                                        professionalsContent={<RECORD_ENG_PROFESIONALS
+                                            _FUN_52={_GET_CHILD_52()}
+                                            _FUN_6={_GET_CHILD_6()}
+                                            currentRecord={currentRecord}
+                                            profs={[
+                                                ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
+                                                ['ARQUITECTO PROYECTISTA'],
+                                            ]}
+                                        />}
+                                    />
+
+                                </fieldset>
+                                {_GLOBAL_ID == 'cb1' ?
+                                    <fieldset className="p-3">
+                                        <legend className="my-2 px-3 bg-success" id="record_arc_sub">
+                                            <label className="app-p lead fw-normal text-light">CONTROL DE CONTENIDO</label>
+                                        </legend>
+                                        {_SUBCATEGORY_COMPONENT()}
+                                    </fieldset>
+                                    : ''}
+
+                                {_GLOBAL_ID == 'cb1' ?
+                                    <>
+
+                                        <fieldset className="p-3">
+                                            <legend className="my-2 px-3 Collapsible" id="record_arc_33">
+                                                <label className="app-p lead fw-normal">3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA</label>
+                                            </legend>
+                                            <RECORD_ARC_33
+                                                translation={translation} swaMsg={swaMsg} globals={globals}
+                                                currentItem={currentItem}
+                                                currentVersion={currentVersion}
+                                                currentRecord={currentRecord}
+                                                currentVersionR={currentVersionR}
+                                                requestUpdateRecord={requestUpdateRecord}
+                                                requestUpdate={requestUpdate}
+                                                _FUN_R={_GET_CHILD_REVIEW()}
+                                            />
+                                        </fieldset>
+                                        {_GET_CHILD_1().item_1.includes("F")
+                                            ? <>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_1">
+                                                        <label className="app-p lead fw-normal text-light">CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO. OBLIGATORIO</label>
+                                                    </legend>
+                                                    <RECORD_ARC_EXTRA_1
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                    />
+                                                </fieldset>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_2">
+                                                        <label className="app-p lead fw-normal text-light">INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL. -SPM- INFORME VISITA AL PREDIO</label>
+                                                    </legend>
+                                                    <RECORD_ARC_EXTRA_2
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                    />
+                                                </fieldset>
+
+                                            </> : ""}
+                                        {subc[0] == '1'
+                                            ? <>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_34">
+                                                        <label className="app-p lead fw-normal">3.4 ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO</label>
+                                                    </legend>
+                                                    <RECORD_ARC_34
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                    />
+                                                </fieldset>
+                                            </>
+                                            : ''}
+                                        {subc[1] == '1'
+                                            ? <>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_35">
+                                                        <label className="app-p lead fw-normal">3.5 PARQUEADEROS</label>
+                                                    </legend>
+                                                    <RECORD_ARC_35
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                    />
+                                                </fieldset>
+                                            </>
+                                            : ''}
+                                        {subc[2] == '1'
+                                            ? <>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_36">
+                                                        <label className="app-p lead fw-normal">3.6 ESPACIO PUBLICO</label>
+                                                    </legend>
+                                                    <RECORD_ARC_36
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                    />
+                                                </fieldset>
+                                            </>
+                                            : ''}
+                                        {subc[3] == '1'
+                                            ? <>
+                                                <fieldset className="p-3">
+                                                    <legend className="my-2 px-3 Collapsible" id="record_arc_37">
+                                                        <label className="app-p lead fw-normal">3.7 NSR10</label>
+                                                    </legend>
+                                                    <RECORD_ARC_37
+                                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                                        currentItem={currentItem}
+                                                        currentVersion={currentVersion}
+                                                        currentRecord={currentRecord}
+                                                        currentVersionR={currentVersionR}
+                                                        requestUpdateRecord={requestUpdateRecord}
+                                                        requestUpdate={requestUpdate}
+                                                    />
+                                                </fieldset>
+                                            </>
+                                            : ''}
+                                    </>
+                                    :
+                                    <fieldset className="p-3">
+
+                                        <legend className="my-2 px-3 Collapsible" id="record_arc_32">
+                                            <label className="app-p lead fw-normal">3.2.1 Antecedentes y Descripción del Proyecto a licencias</label>
+                                        </legend>
+
+                                        <RECORD_ARC_DESC
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                        />
+                                        <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
+                                            <label className="app-p lead fw-normal">3.3 DATOS DE CONTROL</label>
+                                        </legend>
+                                        <RECORD_ARC_CONTROL
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                            _FUN_R={_GET_CHILD_REVIEW()}
+                                        />
+
+                                        <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
+                                            <label className="app-p lead fw-normal">3.4 EVALUACIÓN</label>
+                                        </legend>
+                                        <RECORD_ARC_GEN_REVIEW
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                        />
+
+                                        <RECORD_ARC_GEN_2_REVIEW
+                                            translation={translation} swaMsg={swaMsg} globals={globals}
+                                            currentItem={currentItem}
+                                            currentVersion={currentVersion}
+                                            currentRecord={currentRecord}
+                                            currentVersionR={currentVersionR}
+                                            requestUpdateRecord={requestUpdateRecord}
+                                            requestUpdate={requestUpdate}
+                                        />
+                                    </fieldset>
+                                }
+
+                                <fieldset className="p-3">
+                                    <legend className="my-2 px-3 Collapsible" id="record_arc_38">
+                                        <label className="app-p lead fw-normal">3.8 VIABILIDAD ARQUITECTÓNICA</label>
+                                    </legend>
+                                    <RECORD_ARC_38
+                                        translation={translation} swaMsg={swaMsg} globals={globals}
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        currentRecord={currentRecord}
+                                        currentVersionR={currentVersionR}
+                                        requestUpdateRecord={requestUpdateRecord}
+                                        requestUpdate={requestUpdate}
+                                    />
+                                </fieldset>
+
+                                {/* {NAV_FUNA(_GET_CHILD_1())} */}
+                            </> : <>
+
+                                <fieldset className="p-3">
+                                    {recordLoadFailed ? (
+                                        <div className="text-center" role="alert">
+                                            <p className="text-sm text-muted-foreground">No fue posible cargar el informe arquitectónico.</p>
+                                            <Button size="sm" variant="outline" onClick={() => setItem_RecordArc()}><Icon name="RefreshCw" size={14} /> Reintentar</Button>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center">
+                                            <Button size="sm" onClick={() => new_record_arc()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
+                                        </div>
+                                    )}
+                                </fieldset>
+
+                            </>}
+                    </> : <fieldset className="p-3" id="fung_0">
+                        <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
+                    </fieldset>}
+                    <FUN_VERSION_NAV
+                        translation={translation}
+                        currentItem={currentRecord}
+                        currentVersion={currentVersionR}
+                        NAVIGATION_VERSION={navigation_version}
+                        _RECORD
+                    />
+                    <FUN_MODULE_NAV
+                        translation={translation}
+                        currentItem={currentItem}
+                        currentVersion={currentVersion}
+                        FROM={"record_arc"}
+                        NAVIGATION={NAVIGATION}
+                        pqrsxfun={pqrsxfun}
+                    />
+                </> : <fieldset className="p-3" id="fung_0">
+                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
+                </fieldset>}
+            </div >
+        );
+}
+
+const NAV_FUNA = (_CHILD) => {
+    return (
+        <div className="btn-navpqrs">
+            <div className="">
+                <div className="rounded-lg border border-border bg-card">
+                    <div className="p-1">
+                        <legend className="px-3 pt-2 bg-light text-center">
+                            <h6>Menu de Navegación</h6>
+                        </legend>
+                        <br />
+                        <a href="#record_arc_31">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_32">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.2 Identificación de la Solicitud</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_33">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.3 Descripción de la Actuación</h6>
+                            </legend>
+                        </a>
+                        {_CHILD.item_1.includes("F")
+                            ? <>
+                                <br />
+                                <a href="#record_arc_extra_1">
+                                    <legend className="px-3 rounded text-sm font-medium bg-accent text-accent-foreground">
+                                        <h6>CONSIDERACIONES DECRETO 1077</h6>
+                                    </legend>
+                                </a>
+                                <br />
+                                <a href="#record_arc_extra_2">
+                                    <legend className="px-3 rounded text-sm font-medium bg-accent text-accent-foreground">
+                                        <h6>INTERVENCIÓN DE LA SECRETARIA</h6>
+                                    </legend>
+                                </a>
+                            </> : ""}
+                        <br />
+                        <a href="#record_arc_34">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.4 ANÁLISIS DETERMINANTES URBANAS</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_35">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.5 PARQUEADEROS</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_36">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.6 ESPACIO PUBLICO</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_37">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.7 NSR10</h6>
+                            </legend>
+                        </a>
+                        <br />
+                        <a href="#record_arc_38">
+                            <legend className="px-3 rounded text-sm font-medium bg-primary text-primary-foreground">
+                                <h6>3.8 VIABILIDAD ARQUITECTÓNICA</h6>
+                            </legend>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default RECORD_ARC;

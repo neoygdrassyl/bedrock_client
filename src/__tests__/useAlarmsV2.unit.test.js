@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
-vi.mock('../app/services/alarm.service', () => {
+vi.mock('../features/expediente/api/alarm.service', () => {
   const mock = {
     list: vi.fn(),
     bell: vi.fn(),
@@ -14,8 +14,8 @@ vi.mock('../app/services/alarm.service', () => {
   return { default: mock };
 });
 
-import AlarmService from '../app/services/alarm.service';
-import { useAlarmsV2, useAlarmsBell } from '../app/pages/user/fun_forms/hooks/useAlarmsV2';
+import AlarmService from '../features/expediente/api/alarm.service';
+import { useAlarmsV2, useAlarmsBell } from '../features/expediente/fun/fun_forms/hooks/useAlarmsV2';
 
 describe('useAlarmsV2', () => {
   beforeEach(() => {

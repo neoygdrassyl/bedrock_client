@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   {
     id: 'dashboard',
     label: 'Panel de control',
-    icon: 'LayoutDashboard',
+    icon: 'LayoutGrid',
     route: '/dashboard',
     roles: [],
     children: [],
@@ -19,19 +19,19 @@ const NAV_ITEMS = [
   {
     id: 'licencias',
     label: 'Licencias',
-    icon: 'FileText',
+    icon: 'Building2',
     route: '/licencias',
     roles: [],
     children: [
-      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus' },
-      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderOpen' },
-      { id: 'licencias-gestion-nueva', label: 'Gestión nueva', route: '/licencias/gestion-nueva', icon: 'Layers' },
+      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus2' },
+      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderKanban' },
+      { id: 'licencias-gestion-nueva', label: 'Gestión nueva', route: '/licencias/gestion-nueva', icon: 'LayoutList' },
     ],
   },
   {
     id: 'peticiones',
     label: 'Peticiones',
-    icon: 'FileSpreadsheet',
+    icon: 'MessageSquareText',
     route: '/peticiones',
     roles: [],
     children: [],
@@ -39,7 +39,7 @@ const NAV_ITEMS = [
   {
     id: 'ventanilla',
     label: 'Ventanilla',
-    icon: 'FileInput',
+    icon: 'Inbox',
     route: '/ventanilla',
     roles: [],
     children: [],
@@ -55,7 +55,7 @@ const NAV_ITEMS = [
   {
     id: 'calendario',
     label: 'Calendario',
-    icon: 'Calendar',
+    icon: 'CalendarDays',
     route: '/calendario',
     roles: [],
     children: [],
@@ -63,7 +63,7 @@ const NAV_ITEMS = [
   {
     id: 'archivo',
     label: 'Archivo',
-    icon: 'FolderOpen',
+    icon: 'Archive',
     route: '/archivo',
     roles: [],
     children: [],
@@ -71,7 +71,7 @@ const NAV_ITEMS = [
   {
     id: 'publicaciones',
     label: 'Publicaciones',
-    icon: 'Newspaper',
+    icon: 'Megaphone',
     route: '/publicaciones',
     roles: [],
     children: [],
@@ -79,7 +79,7 @@ const NAV_ITEMS = [
   {
     id: 'nomenclatura',
     label: 'Nomenclatura',
-    icon: 'PenLine',
+    icon: 'Signpost',
     route: '/nomenclatura',
     roles: [],
     children: [],
@@ -87,29 +87,29 @@ const NAV_ITEMS = [
   {
     id: 'normas',
     label: 'Normas urbanas',
-    icon: 'Home',
+    icon: 'Landmark',
     route: '/normas',
     roles: [],
     children: [
       { id: 'normas-urbanas', label: 'Normas', route: '/normas', icon: 'Scale' },
-      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPin' },
+      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPinned' },
     ],
   },
   {
     id: 'simulador',
     label: 'Simulador',
-    icon: 'SearchCheck',
+    icon: 'FlaskConical',
     route: '/simulador',
     roles: [],
     children: [
-      { id: 'simulador-documentos', label: 'Documentos', route: '/simulador/documentos', icon: 'FileText' },
+      { id: 'simulador-documentos', label: 'Documentos', route: '/configuracion?tab=configuracion-documental', icon: 'FileStack' },
       { id: 'simulador-legal', label: 'Legal', route: '/simulador/legal', icon: 'Gavel' },
     ],
   },
   {
     id: 'configuracion',
     label: 'Configuración',
-    icon: 'Settings',
+    icon: 'Settings2',
     route: '/configuracion',
     roles: [],
     children: [],
@@ -117,23 +117,23 @@ const NAV_ITEMS = [
 ];
 
 const ROUTE_PRELOADERS = {
-  '/dashboard': () => import('../pages/user/dashboard'),
-  '/licencias': () => import('../pages/user/fun'),
-  '/licencias/gestion': () => import('../pages/user/funmanage.page'),
-  '/licencias/gestion-nueva': () => import('../pages/user/funmanage_new.page'),
-  '/peticiones': () => import('../pages/user/pqrs/pqrsadmin'),
-  '/ventanilla': () => import('../pages/user/submit/submit'),
-  '/mensajes': () => import('../pages/user/mail'),
-  '/calendario': () => import('../pages/user/appointments'),
-  '/archivo': () => import('../pages/user/archive/archive.page'),
-  '/publicaciones': () => import('../pages/user/publish'),
-  '/nomenclatura': () => import('../pages/user/nomenclature/nomenclature'),
-  '/normas': () => import('../pages/user/norms/norms.page'),
-  '/uso-suelo': () => import('../pages/user/zone_use/zone_use.page'),
-  '/simulador': () => import('../pages/user/simulador'),
-  '/simulador/documentos': () => import('../pages/user/simulador/documentos/DocumentosSimulatorPage'),
-  '/simulador/legal': () => import('../pages/user/legal_flow_guide/LegalFlowGuide.page'),
-  '/configuracion': () => import('../pages/user/SettingsPage'),
+  '/dashboard': () => import('../../features/dashboard/dashboard'),
+  '/licencias': () => import('../../features/expediente/fun/fun'),
+  '/licencias/gestion': () => import('../../features/expediente/fun/funmanage.page'),
+  '/licencias/gestion-nueva': () => import('../../features/expediente/fun/funmanage_new.page'),
+  '/peticiones': () => import('../../features/pqrs/pqrsadmin'),
+  '/ventanilla': () => import('../../features/ventanilla/submit'),
+  '/mensajes': () => import('../../features/messaging/mail'),
+  '/calendario': () => import('../../features/appointments/appointments'),
+  '/archivo': () => import('../../features/archive/archive.page'),
+  '/publicaciones': () => import('../../features/publications/publish'),
+  '/nomenclatura': () => import('../../features/nomenclature/nomenclature'),
+  '/normas': () => import('../../features/norms/norms.page'),
+  '/uso-suelo': () => import('../../features/norms/zone-use/zone_use.page'),
+  '/simulador': () => import('../../features/simulador'),
+  '/simulador/documentos': () => import('../../features/settings/SettingsPage'),
+  '/simulador/legal': () => import('../../features/simulador/legal_flow_guide/LegalFlowGuide.page'),
+  '/configuracion': () => import('../../features/settings/SettingsPage'),
 };
 
 export function preloadNavigationRoute(route) {
@@ -186,16 +186,3 @@ export function getRouteRedirects() {
     '/seals': '/sellos',
   };
 }
-
-/**
- * Utility modules shown on dashboard but not in icon rail.
- * These are accessible via dashboard cards and the command palette.
- */
-export const UTILITY_MODULES = [
-  { id: 'documentos', label: 'Documentos', icon: 'FileText', route: '/documentos' },
-  { id: 'calculadora', label: 'Calculadora', icon: 'Calculator', route: '/calculadora' },
-  { id: 'consecutivos', label: 'Consecutivos', icon: 'Book', route: '/consecutivos' },
-  { id: 'ayuda', label: 'Ayuda', icon: 'BookOpen', route: '/ayuda' },
-  { id: 'profesionales', label: 'Profesionales', icon: 'HardHat', route: '/profesionales' },
-  { id: 'certificados', label: 'Certificados', icon: 'Contact', route: '/certificados' },
-];

@@ -9,7 +9,7 @@ const getSearchMock = vi.fn();
 const getFunByPublicMock = vi.fn();
 const getSummaryByIdPublicMock = vi.fn();
 
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: {
     getSearch: (...args) => getSearchMock(...args),
     get_fun_IdPublic: (...args) => getFunByPublicMock(...args),
@@ -17,7 +17,7 @@ vi.mock('@/app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/components/ui/dialog', () => ({
+vi.mock('@/shared/ui/dialog', () => ({
   Dialog: ({ open, children }) => (open ? <div>{children}</div> : null),
   DialogContent: ({ children, ...props }) => <div {...props}>{children}</div>,
   DialogHeader: ({ children, ...props }) => <div {...props}>{children}</div>,
@@ -73,8 +73,8 @@ describe('GlobalSearchDialog', () => {
     await user.click(screen.getByRole('button', { name: /^buscar$/i }));
 
     expect(getSearchMock).toHaveBeenCalledWith('1', '68001-1-26-0001');
-    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001');
-    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001');
+    expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipErrorLog: true });
+    expect(getSummaryByIdPublicMock).toHaveBeenCalledWith('68001-1-26-0001', { skipErrorLog: true });
 
     const radicado = await screen.findByText('68001-1-26-0001');
     expect(radicado.closest('a')).toHaveAttribute('href', '/funmanage/expediente/68001-1-26-0001');
@@ -99,5 +99,40 @@ describe('GlobalSearchDialog', () => {
 
     expect(getSearchMock).toHaveBeenCalledWith('5', '123456789');
     expect(getFunByPublicMock).not.toHaveBeenCalled();
+  });
+
+  it('no convierte una búsqueda parcial por radicado en un lookup exacto fallido', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <GlobalSearchDialog open onOpenChange={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText(/criterio de búsqueda de expedientes/i), '0003');
+    await user.click(screen.getByRole('button', { name: /^buscar$/i }));
+
+    expect(getSearchMock).toHaveBeenCalledWith('1', '0003');
+    expect(getFunByPublicMock).not.toHaveBeenCalled();
+    expect(await screen.findByText('68001-1-26-0001')).toBeInTheDocument();
+  });
+  it('capitaliza palabras con tildes sin partirlas y conserva las siglas', async () => {
+    const user = userEvent.setup();
+    getSummaryByIdPublicMock.mockResolvedValue({ data: { data: { ...summary, fase_label: 'RADICACIÓN LDF', solicitante: 'ÁLVARO GÓMEZ' } } });
+
+    render(
+      <MemoryRouter>
+        <GlobalSearchDialog open onOpenChange={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText(/criterio de búsqueda de expedientes/i), '68001-1-26-0001');
+    await user.click(screen.getByRole('button', { name: /^buscar$/i }));
+
+    expect(await screen.findByText(/Radicación LDF/)).toBeInTheDocument();
+    expect(screen.getByText(/Álvaro Gómez/)).toBeInTheDocument();
+    expect(screen.queryByText(/RadicaciÓN/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Ldf/)).not.toBeInTheDocument();
   });
 });

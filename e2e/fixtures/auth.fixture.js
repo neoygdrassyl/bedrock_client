@@ -254,6 +254,7 @@ function filterFunRecords(pathname) {
 
 /** @param {import('@playwright/test').Page} page */
 async function installE2EMocks(page) {
+  const customCalendarDays = [];
   await page.route('**/*', async (route) => {
     const request = route.request();
     const resourceType = request.resourceType();
@@ -264,8 +265,59 @@ async function installE2EMocks(page) {
     const url = new URL(request.url());
     const { pathname } = url;
 
+    if (pathname.endsWith('/business-calendar/bootstrap') && request.method() === 'GET') {
+      const startYear = Number(url.searchParams.get('startYear'));
+      const endYear = Number(url.searchParams.get('endYear'));
+      const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => {
+        const year = startYear + index;
+        return {
+          year,
+          holidays: [{ date: `${year}-01-01`, name: 'Año Nuevo' }],
+          available: true,
+          fallback: false,
+        };
+      });
+      return jsonResponse(route, { startYear, endYear, years, customDays: [] });
+    }
+
+    if (pathname.endsWith('/business-calendar/custom-days') && request.method() === 'GET') {
+      const year = Number(url.searchParams.get('year'));
+      return jsonResponse(route, { year, customDays: customCalendarDays.filter(day => day.date.startsWith(`${year}-`)) });
+    }
+
+    if (pathname.endsWith('/business-calendar/custom-days') && request.method() === 'POST') {
+      const payload = request.postDataJSON();
+      const customDay = { ...payload, createdByUserId: TEST_USER.id, createdByUserName: TEST_USER.name_full };
+      customCalendarDays.push(customDay);
+      return jsonResponse(route, customDay, 201);
+    }
+
+    if (pathname.includes('/business-calendar/custom-days/') && request.method() === 'DELETE') {
+      const date = decodeURIComponent(pathname.split('/').pop() || '');
+      const index = customCalendarDays.findIndex(day => day.date === date);
+      if (index >= 0) customCalendarDays.splice(index, 1);
+      return route.fulfill({ status: 204, body: '' });
+    }
+
+    if (request.method() === 'GET' && pathname.endsWith('/business-calendar')) {
+      const year = Number(url.searchParams.get('year'));
+      return jsonResponse(route, {
+        year,
+        holidays: [{ date: `${year}-01-01`, name: 'Año Nuevo' }],
+        sync: { status: 'success', executedAt: '2026-07-28T12:00:00.000Z' },
+      });
+    }
+
+    if (request.method() === 'GET' && pathname.endsWith('/me')) {
+      return jsonResponse(route, TEST_USER);
+    }
+
     if (request.method() === 'GET' && pathname.endsWith('/users')) {
       return jsonResponse(route, [TEST_USER]);
+    }
+
+    if (request.method() === 'GET' && pathname.includes('/fun/loadasign/')) {
+      return jsonResponse(route, []);
     }
 
     if (request.method() === 'GET' && pathname.endsWith('/submit')) {
@@ -379,6 +431,34 @@ async function installE2EMocks(page) {
     }
 
     if (request.method() === 'GET' && pathname.includes('/submit/getlist/')) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'GET' && /\/fun\/documents\/(unified|pending-physical|missing)\//.test(pathname)) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'GET' && pathname.includes('/seals/findfamily/')) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'GET' && pathname.includes('/certification/get/RE/')) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'POST' && pathname.endsWith('/document-requirements/preview')) {
+      return jsonResponse(route, {
+        requiredDocuments: [],
+        matchedRules: [],
+        config: { groups: [], documents: [] },
+      });
+    }
+
+    if (request.method() === 'GET' && pathname.endsWith('/funmanage/alarms')) {
+      return jsonResponse(route, []);
+    }
+
+    if (request.method() === 'GET' && /\/recordeng\/findIdRelated\/\d+$/.test(pathname)) {
       return jsonResponse(route, []);
     }
 

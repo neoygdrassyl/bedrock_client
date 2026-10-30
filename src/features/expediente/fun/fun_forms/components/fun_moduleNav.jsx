@@ -1,0 +1,235 @@
+import { useState, useEffect } from 'react';
+
+import { formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
+import { regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
+import './fun_moduleNav_enhanced.css';
+import { Icon } from '@/shared/components/icon';
+
+function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
+    // Check if CSS variable is already set to determine initial state
+    const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
+    const [isCollapsed, setIsCollapsed] = useState(currentWidth === '60px');
+
+    useEffect(() => {
+        // Ensure CSS variable is set on mount if not already set
+        const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
+        if (!currentWidth || currentWidth === '') {
+            document.documentElement.style.setProperty('--fun-sidebar-width', '240px');
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        setIsCollapsed(prevCollapsed => {
+            const newCollapsedState = !prevCollapsed;
+            // Update CSS variable for dynamic modal positioning
+            document.documentElement.style.setProperty(
+                '--fun-sidebar-width',
+                newCollapsedState ? '60px' : '240px'
+            );
+            return newCollapsedState;
+        });
+    };
+
+        let _REGEX_MATCH_PH = (_string) => {
+            let regex0 = /p\.\s+h/i;
+            let regex1 = /p\.h/i;
+            let regex2 = /PROPIEDAD\s+HORIZONTAL/i;
+            let regex3 = /p\s+h/i;
+            if (regex0.test(_string) || regex2.test(_string) || regex1.test(_string) || regex3.test(_string)) return true;
+            return false;
+        };
+
+        let version = currentItem.version || 1;
+        let fun1 = currentItem.fun_1s ? currentItem.fun_1s[version - 1] : null;
+        let type = "";
+        if (fun1) type = formsParser1(fun1);
+
+        const isPH = _REGEX_MATCH_PH(type);
+        const isOA = regexChecker_isOA_2(fun1);
+        const rules = currentItem.rules ? currentItem.rules.split(';') : [];
+
+        // Definir grupos de navegación con colores - REFACTORIZADO
+        const navGroups = [];
+        
+        // Grupo 1: Detalles y Tiempos
+        navGroups.push({
+            id: 'details_time',
+            color: 'info',
+            items: [
+                { id: 'general', icon: 'FolderOpen', label: 'DETALLES', from: 'general' },
+                { id: 'clock', icon: 'Clock', label: 'TIEMPOS', from: 'clock' }
+            ]
+        });
+
+        // Grupo 2: Documentos y Edición (solo si el estado lo permite)
+        const editGroup = [];
+        editGroup.push({ id: 'archive', icon: 'Archive', label: 'DOCUMENTOS', from: 'archive' });
+        
+        if (currentItem.state !== 101 && currentItem.state <= 200) {
+            editGroup.push({ id: 'edit', icon: 'FolderOpen', label: 'ACTUALIZAR', from: 'edit' });
+            editGroup.push({ id: 'check', icon: 'CheckSquare', label: 'CHECKEO', from: 'check' });
+            
+            if (!isPH && !isOA && rules[0] !== '1') {
+                editGroup.push({ 
+                    id: 'alert', 
+                    icon: 'Signpost', 
+                    label: 'PUBLICIDAD', 
+                    from: 'alert',
+                    badge: pqrsxfun?.length ? 'PQRS' : null
+                });
+            }
+        }
+        
+        if (editGroup.length > 0) {
+            navGroups.push({
+                id: 'documents_edition',
+                color: 'secondary',
+                items: editGroup
+            });
+        }
+
+        // Grupo 3: Informes (solo si el estado lo permite)
+        if (currentItem.state !== 101 && currentItem.state <= 200) {
+            const reportsItems = [];
+
+            if (!isPH) {
+                reportsItems.push({ id: 'record_law', icon: 'Scale', label: 'INF. JURÍDICO', from: 'record_law' });
+
+                if (!isOA) {
+                    reportsItems.push({ id: 'record_arc', icon: 'Building', label: 'INF. ARQ.', from: 'record_arc' });
+                    
+                    if (rules[1] !== '1') {
+                        reportsItems.push({ id: 'record_eng', icon: 'Settings', label: 'INF. ESTRUCT.', from: 'record_eng' });
+                    }
+                }
+            } else {
+                reportsItems.push({ id: 'record_ph', icon: 'PenTool', label: 'INFORME P.H.', from: 'record_ph' });
+            }
+
+            if (reportsItems.length > 0) {
+                navGroups.push({
+                    id: 'reports',
+                    color: 'warning',
+                    items: reportsItems
+                });
+            }
+
+            // Grupo 4: Acta y Expedición
+            const finalItems = [];
+            
+            if (!isPH && !isOA) {
+                finalItems.push({ id: 'record_review', icon: 'FileText', label: 'ACTA', from: 'record_review' });
+            }
+            
+            finalItems.push({ id: 'expedition', icon: 'FileText', label: isPH ? 'EXPEDICIÓN P.H.' : 'EXPEDICIÓN', from: 'expedition' });
+
+            if (finalItems.length > 0) {
+                navGroups.push({
+                    id: 'final_steps',
+                    color: 'warning',
+                    items: finalItems
+                });
+            }
+        }
+
+        return (
+            <>
+                {currentItem && (
+                    <div className={`fun-nav-sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+                        {/* Toggle Button */}
+                        <button 
+                            type="button"
+                            className="fun-nav-toggle"
+                            onClick={toggleSidebar}
+                            aria-label={isCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
+                        >
+                            <Icon name={isCollapsed ? 'chevron-right' : 'chevron-left'} size={16} />
+                        </button>
+
+                        {/* Header con información fija */}
+                        <div className="fun-nav-header">
+                            {!isCollapsed && (
+                                <>
+                                    <div className="fun-nav-header-title">
+                                        <Icon name="folder-open" size={16} />
+                                        <span className="ms-2">NAVEGACIÓN</span>
+                                    </div>
+                                    <div className="fun-nav-header-info">
+                                        <div className="fun-nav-info-item">
+                                            <small className="text-muted">ID Radicación:</small>
+                                            <strong className="d-block">{currentItem.id_public}</strong>
+                                        </div>
+                                        {currentItem.state !== undefined && (
+                                            <div className="fun-nav-info-item mt-2">
+                                                <small className="text-muted">Estado:</small>
+                                                <span className={`badge bg-${
+                                                        currentItem.state >= 100 ? 'success' :
+                                                        currentItem.state >= 50 ? 'info' :
+                                                        currentItem.state >= 5 ? 'warning' :
+                                                        currentItem.state < 0 ? 'danger' : 'secondary'
+                                                    } d-block mt-1`}
+                                                >
+                                                    {currentItem.state >= 100 ? 'ARCHIVADO' :
+                                                     currentItem.state >= 50 ? 'EXPEDICIÓN' :
+                                                     currentItem.state >= 5 ? 'EVALUACIÓN' :
+                                                     currentItem.state < 0 ? 'INCOMPLETO' : 'RADICACIÓN'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Botón de cerrar */}
+                        <div className="fun-nav-section">
+                            <button
+                                type="button"
+                                onClick={() => NAVIGATION(currentItem, "close", FROM)}
+                                className={`fun-nav-item btn-close-module`}
+                                data-tooltip="CERRAR"
+                            >
+                                <Icon name="times-circle" size={16} />
+                                {!isCollapsed && <span className="fun-nav-label">CERRAR</span>}
+                            </button>
+                        </div>
+
+                        {/* Grupos de navegación */}
+                        {navGroups.map(group => (
+                            <div key={group.id} className="fun-nav-section">
+                                {group.items.map(item => {
+                                    const itemColor = item.color || group.color;
+                                    const isActive = FROM === item.from;
+                                    
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={item.id}
+                                            onClick={() => FROM !== item.from && NAVIGATION(currentItem, item.id, FROM)}
+                                            className={`fun-nav-item ${isActive ? 'active' : ''} btn-${itemColor}`}
+                                            disabled={isActive}
+                                            data-tooltip={item.label}
+                                        >
+                                            <Icon name={item.icon} size={16} />
+                                            {!isCollapsed && (
+                                                <span className="fun-nav-label">
+                                                    {item.label}
+                                                    {item.badge && (
+                                                        <span className="badge bg-primary ms-2">
+                                                            {item.badge}
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </>
+        );
+}
+
+export default FUN_MODULE_NAV;

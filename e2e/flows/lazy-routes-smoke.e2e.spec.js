@@ -2,7 +2,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 
 /**
- * E2E smoke: every React.lazy() route declared in src/app/App.js mounts
+ * E2E smoke: every React.lazy() route declared in src/app/router/routes.jsx mounts
  * without throwing and without emitting console errors.
  *
  * Scope (Fase 3, plan 15-auditoria-post-migracion-react19.md item "Smoke de
@@ -13,7 +13,7 @@ import { test, expect } from '../fixtures/auth.fixture';
  *
  * Explicitly OUT of scope: the /configuracion and /user/settings routes
  * render `SettingsPage`, which conditionally mounts `LegalConfigInitialPage`
- * (src/app/pages/user/legal_config/) only when the "configuracion-actuaciones"
+ * (the former legal_config module) only when the "configuracion-actuaciones"
  * tab is active. That module is mid-refactor with uncommitted local changes
  * as of this run, so this spec covers /configuracion at its DEFAULT tab
  * ("alarmas") only and never clicks into the legal-config tab.
@@ -27,17 +27,6 @@ test.use({ viewport: { width: 1920, height: 1080 } });
 
 /** Text rendered by App.js's RouteErrorBoundary when a route subtree throws. */
 const ERROR_BOUNDARY_TEXT = 'Error en este módulo';
-
-/**
- * Public routes: reachable without auth, but still wrapped in
- * ShellAwarePublicRoute + Suspense around a lazy component.
- */
-const PUBLIC_LAZY_ROUTES = [
-  { path: '/normas', label: 'NORMS' },
-  { path: '/certificados', label: 'CERTIFICATE_WORKER' },
-  { path: '/uso-suelo', label: 'ZONE_USE' },
-  { path: '/dev-guide', label: 'DEV_GUIDE' },
-];
 
 /**
  * Authenticated routes: rendered inside PrivateLayout (AppShell + Suspense).
@@ -54,6 +43,7 @@ const PRIVATE_LAZY_ROUTES = [
   { path: '/ventanilla', label: 'SUBMIT' },
   { path: '/mensajes', label: 'Mail' },
   { path: '/calendario', label: 'Appointments' },
+  { path: '/calendario-laboral', label: 'BusinessCalendarPage' },
   { path: '/archivo', label: 'ARCHIVE' },
   { path: '/publicaciones', label: 'Publish' },
   { path: '/nomenclatura', label: 'NOMENCLATURE' },
@@ -67,6 +57,10 @@ const PRIVATE_LAZY_ROUTES = [
   { path: '/ayuda', label: 'GUIDE_USER' },
   { path: '/configuracion', label: 'SETTINGS (default tab, no legal_config)' },
   { path: '/sellos', label: 'Seals' },
+  { path: '/normas', label: 'NORMS' },
+  { path: '/certificados', label: 'CERTIFICATE_WORKER' },
+  { path: '/uso-suelo', label: 'ZONE_USE' },
+  { path: '/dev-guide', label: 'DEV_GUIDE' },
 ];
 
 /**
@@ -105,18 +99,6 @@ async function visitAndCollectDiagnostics(page, path) {
 
   return { consoleErrors, pageErrors };
 }
-
-test.describe('E2E: Lazy routes smoke (public)', () => {
-  for (const { path, label } of PUBLIC_LAZY_ROUTES) {
-    test(`${path} (${label}) mounts without console errors`, async ({ page }) => {
-      const { consoleErrors, pageErrors } = await visitAndCollectDiagnostics(page, path);
-
-      await expect(page.getByText(ERROR_BOUNDARY_TEXT)).toHaveCount(0);
-      expect(pageErrors, `pageerror events on ${path}`).toEqual([]);
-      expect(consoleErrors, `console.error messages on ${path}`).toEqual([]);
-    });
-  }
-});
 
 test.describe('E2E: Lazy routes smoke (authenticated)', () => {
   for (const { path, label } of PRIVATE_LAZY_ROUTES) {
