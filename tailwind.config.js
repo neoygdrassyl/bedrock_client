@@ -14,6 +14,12 @@ module.exports = {
       },
     },
     extend: {
+      // Input/viewport traits instead of width: browser zoom narrows the CSS viewport,
+      // so width breakpoints must not decide touch-target size or vertical density.
+      screens: {
+        touch: { raw: '(pointer: coarse)' },
+        short: { raw: '(max-height: 760px)' },
+      },
       fontFamily: {
         sans: ["Inter", "Roboto", "Helvetica", "Arial", "sans-serif"],
         mono: ["JetBrains Mono", "source-code-pro", "Menlo", "Monaco", "monospace"],

@@ -4,6 +4,7 @@ import { AnimatePresence, LayoutGroup, m } from 'motion/react';
 import { ChevronsUpDown, LogOut, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/shared/components/icon';
 import { infoCud } from '@/shared/config/jsons/vars';
+import { useCuraduriaLogo } from '@/shared/branding/useCuraduriaLogo';
 import { cn } from '@/shared/lib/utils';
 import {
   Sidebar,
@@ -364,14 +365,14 @@ function SidebarAccount({ user, onLogout }) {
           <p className="m-0 text-xs text-muted-foreground">{user?.role_short || 'Usuario'}</p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="min-h-11 rounded-xl sm:min-h-8">
+        <DropdownMenuItem asChild className="min-h-8 rounded-xl touch:min-h-11">
           <Link to="/configuracion?tab=cuenta" className="text-foreground no-underline hover:text-foreground">
             <UserCircle2 size={16} className="mr-2" />
             Mi perfil
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout} className="min-h-11 rounded-xl text-destructive sm:min-h-8">
+        <DropdownMenuItem onClick={onLogout} className="min-h-8 rounded-xl text-destructive touch:min-h-11">
           <LogOut size={16} className="mr-2" />
           Cerrar sesión
         </DropdownMenuItem>
@@ -384,6 +385,8 @@ export function AppSidebar({ items = [], user, onLogout }) {
   const location = useLocation();
   const { linkProps } = useNavHandlers();
   const [closedItems, setClosedItems] = useState(readClosedItems);
+  const { logo: curaduriaLogo } = useCuraduriaLogo();
+  // One data source for both bell placements (header when expanded, rail row when collapsed).
   const mainItems = items.slice(0, UTILITY_START_INDEX);
   const utilityItems = items.slice(UTILITY_START_INDEX);
 
@@ -399,23 +402,21 @@ export function AppSidebar({ items = [], user, onLogout }) {
   return (
     <div className="app-shell-rail">
       <Sidebar collapsible="icon" variant="floating" data-testid="dovela-sidebar">
-        <SidebarHeader className={cn('h-16 shrink-0 justify-center py-2', RAIL_INSET_CLASS)}>
-          <Link
-            {...linkProps('/dashboard')}
-            aria-label={infoCud.name}
-            className="flex h-12 items-center gap-3 rounded-xl px-[6px] no-underline outline-none hover:no-underline transition-colors duration-150 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-          >
-            <span className="flex size-[30px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-0.5 shadow-sm ring-1 ring-white/20">
-              <img src={infoCud.icon} alt="" className="size-full object-contain" />
-            </span>
-            <span className={cn('flex min-w-0 flex-col leading-tight', LABEL_CLASS)}>
-              <span className="truncate text-sm font-semibold text-sidebar-foreground">{infoCud.name}</span>
-              <span className="flex items-center gap-1 text-[11px] text-sidebar-foreground/50">
-                <img src="/logo192.png" alt="" className="size-3.5 shrink-0 object-contain" />
-                <span className="truncate">Dovela</span>
+        <SidebarHeader className={cn('h-16 short:h-12 shrink-0 justify-center py-2', RAIL_INSET_CLASS)}>
+          <div className="flex min-w-0 items-center gap-1">
+            <Link
+              {...linkProps('/dashboard')}
+              aria-label={infoCud.name}
+              className="flex h-12 short:h-10 min-w-0 flex-1 items-center gap-3 rounded-xl px-[6px] no-underline outline-none hover:no-underline transition-colors duration-150 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            >
+              <span className="flex size-[30px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-0.5 shadow-sm ring-1 ring-white/20">
+                <img src={curaduriaLogo} alt="" className="size-full object-contain" />
               </span>
-            </span>
-          </Link>
+              <span className={cn('flex min-w-0 flex-col leading-tight', LABEL_CLASS)}>
+                <span className="truncate text-sm font-semibold text-sidebar-foreground">{infoCud.name}</span>
+              </span>
+            </Link>
+          </div>
         </SidebarHeader>
 
         <div className="mx-4 h-px bg-white/10" aria-hidden="true" />
