@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TabPane } from '@/components/ui/tab-pane';
+import { TabPane } from '@/shared/ui/tab-pane';
 
 describe('TabPane', () => {
   it('renders children when show is true', () => {

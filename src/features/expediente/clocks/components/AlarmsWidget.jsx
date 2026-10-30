@@ -1,0 +1,251 @@
+import { useState, useMemo } from 'react';
+import dayjs from 'dayjs';
+import { Icon } from '@/shared/components/icon';
+import { Dialog, DialogContent } from '@/shared/ui/dialog';
+
+// --- Componente para una fila de la tabla en el modal ---
+const AlarmTableRow = ({ alarm }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    const toggleExpand = () => {
+        if (alarm.suggestion && alarm.suggestion.length > 80) {
+            setExpanded(!expanded);
+        }
+    };
+
+    let statusText, statusClass;
+    
+    // --- LÓGICA PARA ACTIVIDADES BINARIAS ---
+    if (alarm.isBinaryActivity) {
+        statusText = alarm.statusText;
+        if (alarm.alarmType === 'overdue') {
+            statusClass = 'text-danger';
+        } else if (alarm.alarmType === 'completed') {
+            statusClass = 'text-success';
+        } else {
+            statusClass = 'text-warning';
+        }
+    } 
+    // --- LÓGICA ESTÁNDAR ---
+    else {
+        if (alarm.remainingDays < 0) {
+            statusText = `Vencido por ${Math.abs(alarm.remainingDays)} día(s)`;
+            statusClass = 'text-danger';
+        } else if (alarm.remainingDays === 0) {
+            statusText = 'Vence Hoy';
+            statusClass = 'text-danger';
+        } else {
+            statusText = `Vence en ${alarm.remainingDays} día(s)`;
+            statusClass = 'text-warning';
+        }
+    }
+
+    const suggestionText = alarm.suggestion || 'No hay sugerencia.';
+    const isExpandable = suggestionText.length > 80;
+
+    return (
+        <tr>
+            <td>
+                <span className={`alarm-type-badge type-${alarm.type}`}>{alarm.typeLabel}</span>
+            </td>
+            <td>{alarm.eventName}</td>
+            <td className={statusClass}>
+                <strong>{statusText}</strong>
+            </td>
+            <td>{alarm.limitDate}</td>
+            <td onClick={toggleExpand} style={{ cursor: isExpandable ? 'pointer' : 'default', maxWidth: '300px' }}>
+                <span className="d-inline-block text-truncate" style={{ maxWidth: expanded ? 'none' : '250px' }}>
+                    {suggestionText}
+                </span>
+                {isExpandable && !expanded && <small className="text-primary ms-1">(ver más)</small>}
+            </td>
+        </tr>
+    );
+};
+
+// --- Componente para la vista previa (tarjeta pequeña) ---
+const AlarmPreviewCard = ({ alarm }) => {
+    const { eventName, suggestion, severity, type, typeLabel, isBinaryActivity, statusText, alarmType } = alarm;
+    let displayStatusText, statusIcon, statusColor;
+
+    // --- LÓGICA PARA ACTIVIDADES BINARIAS ---
+    if (isBinaryActivity) {
+        displayStatusText = statusText; // "Pendiente", "Vencida", "Completada"
+        if (alarmType === 'overdue') {
+            statusIcon = 'XCircle';
+            statusColor = 'text-danger';
+        } else if (alarmType === 'completed') {
+            statusIcon = 'CheckCircle';
+            statusColor = 'text-success';
+        } else {
+            statusIcon = 'Circle';
+            statusColor = 'text-warning';
+        }
+    } 
+    // --- LÓGICA ESTÁNDAR ---
+    else {
+        if (alarm.remainingDays < 0) {
+            displayStatusText = `Vencido por ${Math.abs(alarm.remainingDays)}d`;
+            statusIcon = 'AlertCircle';
+            statusColor = 'text-danger';
+        } else if (alarm.remainingDays === 0) {
+            displayStatusText = 'Vence Hoy';
+            statusIcon = 'CalendarX';
+            statusColor = 'text-danger';
+        } else {
+            displayStatusText = `Vence en ${alarm.remainingDays}d`;
+            statusIcon = 'Hourglass';
+            statusColor = 'text-warning';
+        }
+    }
+
+    // NUEVO: Clases y estilos específicos por tipo
+    const cardTypeClass = type === 'legal' ? 'alarm-card-legal' : 'alarm-card-scheduled';
+    const typeBadgeClass = type === 'legal' ? 'type-badge-legal' : 'type-badge-scheduled';
+    const typeIcon = type === 'legal' ? 'Gavel' : 'CalendarCheck';
+
+    return (
+        <div className={`alarm-preview-card severity-${severity} ${cardTypeClass}`}>
+            <div className="alarm-preview-header">
+                <div className="d-flex align-items-center gap-2">
+                    <span className={`alarm-type-badge-small ${typeBadgeClass}`}>
+                        <Icon name={typeIcon} size={16} />
+                    </span>
+                    <h6 className="alarm-preview-title mb-0">{eventName}</h6>
+                </div>
+                <div className={`alarm-preview-status ${statusColor}`}>
+                    <Icon name={statusIcon} size={16} className="me-1" />
+                    <span>{displayStatusText}</span>
+                </div>
+            </div>
+            <p className="alarm-preview-suggestion">
+                {suggestion || 'No hay sugerencia específica.'}
+            </p>
+        </div>
+    );
+};
+
+// --- Componente principal del Widget ACTUALIZADO ---
+export const AlarmsWidget = ({ alarms, onClose }) => {
+    const [showExpanded, setShowExpanded] = useState(false);
+
+    return (
+        <>
+        <div className="alarms-widget-preview">
+            <div className="widget-preview-header">
+                <Icon name="bell-on" size={16} />
+                <h5>Alertas ({alarms.length})</h5>
+                <div className="widget-preview-actions">
+                    <button onClick={() => setShowExpanded(true)} className="btn-expand" title="Ver todas las alertas">
+                        <Icon name="expand-alt" size={16} className="me-1" /> Expandir
+                    </button>
+                    <button onClick={onClose} className="btn-close-widget" title="Cerrar">
+                        <Icon name="times" size={16} />
+                    </button>
+                </div>
+            </div>
+            <div className="widget-preview-body">
+                {alarms.length > 0 ? (
+                    alarms.map(alarm => <AlarmPreviewCard key={alarm.id} alarm={alarm} />)
+                ) : (
+                    <div className="widget-preview-empty">
+                        <Icon name="check-circle" size={16} />
+                        <p>¡Todo en orden!</p>
+                        <span>No hay alertas activas.</span>
+                    </div>
+                )}
+            </div>
+        </div>
+        <Dialog open={showExpanded} onOpenChange={setShowExpanded}>
+            <DialogContent
+                overlayClassName="z-[10040]"
+                className="alarm-modal-popup z-[10050]"
+                style={{ maxWidth: '90vw', width: '90vw' }}
+            >
+                <ExpandedAlarmsModal alarms={alarms} />
+            </DialogContent>
+        </Dialog>
+        </>
+    );
+};
+
+// --- Componente para el Modal Expandido ACTUALIZADO ---
+const ExpandedAlarmsModal = ({ alarms }) => {
+    const [filter, setFilter] = useState('all');
+    const [sort, setSort] = useState({ key: 'remainingDays', order: 'asc' });
+
+    const filteredAndSortedAlarms = useMemo(() => {
+        let result = [...alarms];
+
+        if (filter !== 'all') {
+            result = result.filter(alarm => alarm.type === filter);
+        }
+
+        result.sort((a, b) => {
+            let valA = a[sort.key];
+            let valB = b[sort.key];
+            
+            if (sort.key === 'limitDate') {
+                valA = dayjs(a.limitDate, 'DD/MM/YYYY');
+                valB = dayjs(b.limitDate, 'DD/MM/YYYY');
+            }
+            
+            if (valA < valB) return sort.order === 'asc' ? -1 : 1;
+            if (valA > valB) return sort.order === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        return result;
+    }, [alarms, filter, sort]);
+
+    const handleSort = (key) => {
+        setSort(prev => ({
+            key,
+            order: prev.key === key && prev.order === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const getSortIcon = (key) => {
+        if (sort.key !== key) return <Icon name="sort" size={16} className="text-muted" />;
+        if (sort.order === 'asc') return <Icon name="sort-up" size={16} />;
+        return <Icon name="sort-down" size={16} />;
+    };
+
+    return (
+        <div className="alarm-modal-content">
+            <h4 className="alarm-modal-title">Detalle de Alertas ({alarms.length})</h4>
+            <div className="alarm-modal-controls">
+                <div className="alarm-filters">
+                    <span>Filtrar por tipo:</span>
+                    <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>Todos</button>
+                    <button className={filter === 'legal' ? 'active' : ''} onClick={() => setFilter('legal')}>Legal</button>
+                    <button className={filter === 'scheduled' ? 'active' : ''} onClick={() => setFilter('scheduled')}>Programado</button>
+                </div>
+            </div>
+            <div className="alarm-modal-table-container">
+                <table className="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th onClick={() => handleSort('eventName')}>
+                                Evento / Proceso {getSortIcon('eventName')}
+                            </th>
+                            <th onClick={() => handleSort('remainingDays')}>
+                                Detalle {getSortIcon('remainingDays')}
+                            </th>
+                            <th onClick={() => handleSort('limitDate')}>
+                                Fecha Límite {getSortIcon('limitDate')}
+                            </th>
+                            <th>Sugerencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredAndSortedAlarms.map(alarm => (
+                            <AlarmTableRow key={alarm.id} alarm={alarm} />
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};

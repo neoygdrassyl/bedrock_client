@@ -2,10 +2,10 @@ import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import RECORD_ENG_DESC from '../app/pages/user/records/eng/record_eng_desc.component';
-import { serializeRichTextBlocks } from '../app/utils/richTextBlockNote';
+import RECORD_ENG_DESC from '../features/expediente/records/eng/record_eng_desc.component';
+import { serializeRichTextBlocks } from '../shared/utils/richTextBlockNote';
 
-vi.mock('@/components/rich-text-editor', () => ({
+vi.mock('@/shared/components/rich-text-editor', () => ({
   __esModule: true,
   default: ({ value, readOnly, hiddenName, hiddenId, placeholder }) => (
     <section
@@ -19,7 +19,7 @@ vi.mock('@/components/rich-text-editor', () => ({
   ),
 }));
 
-vi.mock('../app/services/record_eng.service', () => ({
+vi.mock('../features/expediente/api/record_eng.service', () => ({
   __esModule: true,
   default: {
     create_review: vi.fn(() => Promise.resolve({ data: 'OK' })),
@@ -29,7 +29,7 @@ vi.mock('../app/services/record_eng.service', () => ({
   },
 }));
 
-vi.mock('@/app/utils/swalAdapter', () => ({
+vi.mock('@/shared/utils/swalAdapter', () => ({
   swalError: vi.fn(),
   swalLoading: vi.fn(),
   swalSuccess: vi.fn(),

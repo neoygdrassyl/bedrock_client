@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useClocksManager, useScheduleConfig } from '../app/pages/user/clocks/hooks/useClocksManager';
+import { useClocksManager, useScheduleConfig } from '../features/expediente/clocks/hooks/useClocksManager';
 
 const baseItem = {
   id: 1,

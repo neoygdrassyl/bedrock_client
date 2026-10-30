@@ -4,7 +4,7 @@ import {
   getRulesWithSubdivisionNoStructural,
   isSubdivisionExpediente,
   shouldUseStructuralReport,
-} from '../app/pages/user/fun_forms/utils/expedienteDomainRules.js';
+} from '../features/expediente/fun/fun_forms/utils/expedienteDomainRules.js';
 
 describe('expedienteDomainRules', () => {
   describe('isSubdivisionExpediente', () => {

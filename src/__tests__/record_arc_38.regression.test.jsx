@@ -20,75 +20,63 @@ const hoisted = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../app/services/submit.service', () => ({
+vi.mock('../features/ventanilla/api/submit.service', () => ({
   __esModule: true,
   default: hoisted.submitService,
 }));
 
-vi.mock('../app/services/record_arc.service', () => ({
+vi.mock('../features/expediente/api/record_arc.service', () => ({
   __esModule: true,
   default: hoisted.recordArcService,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   __esModule: true,
   default: hoisted.funService,
 }));
 
-vi.mock('../../app/components/jsons/vars', () => ({
-  infoCud: {
-    name: 'Curaduria Urbana Test',
-    city: 'bucaramanga',
-    nit: '000-000',
-    email: 'test@test.com',
-  },
-  nomens: 'CUB1',
-  cities: [<option key="bga" value="Bucaramanga">Bucaramanga</option>],
-  domains_number: [<option key="cur1" value="Curaduria 1">Curaduria 1</option>],
-}));
-
-vi.mock('@/components/ui/button', () => ({
+vi.mock('@/shared/ui/button', () => ({
   Button: ({ children, ...props }) => <button {...props}>{children}</button>,
 }));
 
-vi.mock('@/components/icon', () => {
+vi.mock('@/shared/components/icon', () => {
   // The module exports Icon both named and as default; consumers use either.
   const Icon = () => <span data-testid="icon" />;
   return { __esModule: true, Icon, default: Icon };
 });
 
-vi.mock('../app/pages/user/records/record_docVersion.component', () => ({
+vi.mock('../features/expediente/records/record_docVersion.component', () => ({
   __esModule: true,
   default: () => <div data-testid="record-doc-version" />,
 }));
 
-vi.mock('@/components/rich-text-editor', () => ({
+vi.mock('@/shared/components/rich-text-editor', () => ({
   __esModule: true,
   default: ({ hiddenId, value = '' }) => <textarea id={hiddenId} defaultValue={value} />, 
 }));
 
-vi.mock('../app/utils/richTextBlockNote', () => ({
+vi.mock('../shared/utils/richTextBlockNote', () => ({
   richTextToPlainText: (value) => (typeof value === 'string' ? value : ''),
 }));
 
-vi.mock('../app/pages/user/records/arc/recordArcRichTextUpload', () => ({
+vi.mock('../features/expediente/records/arc/recordArcRichTextUpload', () => ({
   uploadRecordArcRichTextImage: vi.fn(),
 }));
 
-vi.mock('../app/components/customClasses/pdfCheckHandler', () => ({
+vi.mock('../shared/config/customClasses/pdfCheckHandler', () => ({
   handleArchCheck: vi.fn(),
 }));
 
-vi.mock('../app/components/jsons/arcReviewDocs', () => ({
+vi.mock('../shared/config/jsons/arcReviewDocs', () => ({
   REVIEW_DOCS: [],
 }));
 
-vi.mock('../app/components/customClasses/typeParse', () => ({
+vi.mock('../shared/config/customClasses/typeParse', () => ({
   GEM_CODE_LIST: vi.fn(() => ['DOC']),
   VR_DOCUMENTS_OF_INTEREST: { arc: ['DOC'] },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalClose: vi.fn(),
   swalConfirm: vi.fn(() => Promise.resolve({ isConfirmed: true })),
   swalError: vi.fn(),
@@ -101,7 +89,7 @@ vi.mock('pdf-lib', () => ({
   StandardFonts: { Helvetica: 'Helvetica' },
 }));
 
-import RECORD_ARC_38 from '../app/pages/user/records/arc/record_arc_38';
+import RECORD_ARC_38 from '../features/expediente/records/arc/record_arc_38';
 
 const baseCurrentItem = {
   id: 1,

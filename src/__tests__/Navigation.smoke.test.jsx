@@ -1,0 +1,173 @@
+/**
+ * SMOKE TESTS — Navegación y rutas clave
+ * Verifica que las rutas públicas y privadas responden sin crash.
+ * Updated for App.js post-redesign (Spanish routes + legacy redirects).
+ */
+
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+
+// ─── Page mocks ──────────────────────────────────────────────────────────────
+
+function MockPage(name) {
+  return (props) => require('react').createElement('div', { 'data-testid': `mock-${name}` }, name);
+}
+
+vi.mock('../features/pqrs/pqrsadmin', () => ({ __esModule: true, default: MockPage('PQRSADMIN') }));
+vi.mock('../features/liquidator/liquidator', () => ({ __esModule: true, default: MockPage('Liquidator') }));
+vi.mock('../features/dashboard/dashboard', () => ({ __esModule: true, default: MockPage('Dashboard') }));
+vi.mock('../features/publications/publish', () => ({ __esModule: true, default: MockPage('Publish') }));
+vi.mock('../features/seals/seal', () => ({ __esModule: true, default: MockPage('Seals') }));
+vi.mock('../features/appointments/appointments', () => ({ __esModule: true, default: MockPage('Appointments') }));
+vi.mock('../features/messaging/mail', () => ({ __esModule: true, default: MockPage('Mail') }));
+vi.mock('../features/expediente/fun/fun', () => ({ __esModule: true, default: MockPage('FUN') }));
+vi.mock('../features/documentos/osha', () => ({ __esModule: true, default: MockPage('OSHA') }));
+vi.mock('../features/nomenclature/nomenclature', () => ({ __esModule: true, default: MockPage('NOMENCLATURE') }));
+vi.mock('../features/ventanilla/submit', () => ({ __esModule: true, default: MockPage('SUBMIT') }));
+vi.mock('../features/archive/archive.page', () => ({ __esModule: true, default: MockPage('ARCHIVE') }));
+vi.mock('../features/dictionary/dictionary.page', () => ({ __esModule: true, default: MockPage('DICTIONARY') }));
+vi.mock('../features/expediente/fun/funmanage.page', () => ({ __esModule: true, default: MockPage('FUN_MANAGE') }));
+vi.mock('../features/expediente/fun/funmanage_new.page', () => ({ __esModule: true, default: MockPage('FUN_MANAGE_NEW') }));
+vi.mock('../features/professionals/profesionals.page', () => ({ __esModule: true, default: MockPage('PROFESIONALS') }));
+vi.mock('../features/help/guide_user/guide_user.page', () => ({ __esModule: true, default: MockPage('GUIDE_USER') }));
+vi.mock('../features/help/dev_guide/dev_guide.page', () => ({ __esModule: true, default: MockPage('DEV_GUIDE') }));
+vi.mock('../features/norms/norms.page', () => ({ __esModule: true, default: MockPage('NORMS') }));
+vi.mock('../features/certifications/certification.page', () => ({ __esModule: true, default: MockPage('CERTIFICATE_WORKER') }));
+vi.mock('../features/norms/zone-use/zone_use.page', () => ({ __esModule: true, default: MockPage('ZONE_USE') }));
+vi.mock('../features/simulador/legal_flow_guide/LegalFlowGuide.page', () => ({ __esModule: true, default: MockPage('LEGAL_FLOW_GUIDE') }));
+
+// Mock new shell layout components
+vi.mock('../app/layouts/AppShell', () => {
+  const React = require('react');
+  return {
+    AppShell: ({ children, user, onLogout }) =>
+      React.createElement('div', { 'data-testid': 'app-shell' }, children),
+  };
+});
+
+vi.mock('@/shared/ui/sonner', () => {
+  const React = require('react');
+  return {
+    Toaster: () => React.createElement('div', { 'data-testid': 'toaster' }),
+  };
+});
+
+// ─── External mocks ─────────────────────────────────────────────────────────
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, opts) => {
+      if (opts && opts.returnObjects) return {};
+      return key;
+    },
+    i18n: { changeLanguage: vi.fn() },
+  }),
+  withTranslation: () => (Component) => (props) => <Component {...props} t={(k) => k} />,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
+vi.mock('../shared/api/http-common', () => ({
+  __esModule: true,
+  default: {
+    get: vi.fn(() => Promise.resolve({ data: [] })),
+    post: vi.fn(() => Promise.resolve({ data: [] })),
+    put: vi.fn(() => Promise.resolve({ data: [] })),
+    delete: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
+vi.mock('sweetalert2', () => ({
+  default: {
+    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+    close: vi.fn(),
+  },
+}));
+
+
+vi.mock('../shared/config/jsons/vars', () => ({
+  infoCud: {
+    name: 'Curaduría Urbana Test',
+    city: 'bucaramanga',
+    nit: '000-000',
+    email: 'test@test.com',
+  },
+}));
+
+import App from '../app/App';
+
+// ─── Tests ───────────────────────────────────────────────────────────────────
+
+describe('Navegación — Post-redesign routes', () => {
+
+  // Public routes that render without auth (no AppShell wrapper)
+  const publicRoutes = [
+    { path: '/', name: 'raíz → /login' },
+    { path: '/login', name: '/login' },
+  ];
+
+  publicRoutes.forEach(({ path, name }) => {
+    test(`Ruta pública ${name} renderiza sin crash`, () => {
+      window.history.pushState({}, '', path);
+      const { container } = render(<App />);
+      expect(container.firstChild).toBeTruthy();
+    });
+  });
+
+  // Legacy routes redirect to new Spanish names, then to /login (no auth)
+  const legacyRedirects = [
+    { from: '/fun', to: '/licencias' },
+    { from: '/funmanage', to: '/licencias/gestion' },
+    { from: '/pqrsadmin', to: '/peticiones' },
+    { from: '/mail', to: '/mensajes' },
+    { from: '/appointments', to: '/calendario' },
+    { from: '/submit', to: '/ventanilla' },
+    { from: '/publish', to: '/publicaciones' },
+    { from: '/nomenclature', to: '/nomenclatura' },
+    { from: '/archive', to: '/archivo' },
+    { from: '/dictionary', to: '/consecutivos' },
+    { from: '/profesionals', to: '/profesionales' },
+    { from: '/guide_user', to: '/ayuda' },
+    { from: '/calculator', to: '/calculadora' },
+    { from: '/seals', to: '/sellos' },
+    { from: '/norms', to: '/normas' },
+    { from: '/certs', to: '/certificados' },
+    { from: '/zone_use', to: '/uso-suelo' },
+  ];
+
+  legacyRedirects.forEach(({ from, to }) => {
+    test(`Legacy redirect ${from} → ${to} works`, () => {
+      window.history.pushState({}, '', from);
+      const { container } = render(<App />);
+      // App should render without crash (redirect chain resolves)
+      expect(container.firstChild).toBeTruthy();
+    });
+  });
+
+  // Private routes (new Spanish names) redirect to /login without auth
+  const privateRoutes = [
+    '/dashboard', '/licencias', '/licencias/gestion', '/peticiones',
+    '/ventanilla', '/mensajes', '/calendario', '/archivo',
+    '/publicaciones', '/nomenclatura', '/documentos', '/calculadora',
+    '/consecutivos', '/profesionales', '/ayuda', '/sellos',
+    // Former public-site leftovers: same URLs, now behind the session guard.
+    '/normas', '/certificados', '/uso-suelo', '/dev-guide',
+    // The removed /home copy of the citizen website falls through to login.
+    '/home',
+  ];
+
+  privateRoutes.forEach((path) => {
+    test(`Ruta privada ${path} redirige a login sin auth`, () => {
+      window.history.pushState({}, '', path);
+      const { container } = render(<App />);
+      // Should redirect to /login — login form email input should appear
+      const emailInput = container.querySelector('#email');
+      expect(emailInput).toBeTruthy();
+    });
+  });
+
+  test('Ruta desconocida renderiza sin crash', () => {
+    window.history.pushState({}, '', '/ruta-que-no-existe');
+    const { container } = render(<App />);
+    expect(container.firstChild).toBeTruthy();
+  });
+});

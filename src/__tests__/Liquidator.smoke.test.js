@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Liquidador — Smoke', () => {
   test('liquidator.js se importa sin error', async () => {
-    await expect(import('../app/pages/liquidator/liquidator')).resolves.toBeTruthy();
+    await expect(import('../features/liquidator/liquidator')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

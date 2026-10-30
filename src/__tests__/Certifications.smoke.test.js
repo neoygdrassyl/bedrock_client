@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Certificaciones — Smoke', () => {
   test('certification.page.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/certifications/certification.page')).resolves.toBeTruthy();
+    await expect(import('../features/certifications/certification.page')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

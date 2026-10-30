@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { RecordReviewWorkspace } from '../app/pages/user/records/components/RecordReviewWorkspace';
+import { RecordReviewWorkspace } from '../features/expediente/records/components/RecordReviewWorkspace';
 
 describe('RecordReviewWorkspace', () => {
     it('muestra inventario por defecto y cambia a expediente documental al navegar', async () => {

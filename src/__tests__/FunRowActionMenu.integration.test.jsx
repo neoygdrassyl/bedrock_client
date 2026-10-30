@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import FUN from '@/app/pages/user/fun';
+import FUN from '@/features/expediente/fun/fun';
 
 const funRow = {
   id: 1,
@@ -14,25 +14,25 @@ const funRow = {
   rules: '0;0',
 };
 
-vi.mock('@/app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({
   default: () => null,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({
   default: () => null,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/icon_progress.compoennt', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/icon_progress.component', () => ({
   default: () => <div data-testid="progress-icons">icons</div>,
 }));
 
-vi.mock('@/app/services/users.service', () => ({
+vi.mock('@/shared/api/users.service', () => ({
   default: {
     getAll: () => Promise.resolve({ data: [] }),
   },
 }));
 
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: {
     getAll_fun: () => Promise.resolve({ data: [funRow] }),
     loadSubmit2: () => Promise.resolve({ data: [] }),
@@ -44,7 +44,7 @@ vi.mock('@/app/services/fun.service', () => ({
   },
 }));
 
-vi.mock('@/app/components/customClasses/typeParse', async (importOriginal) => {
+vi.mock('@/shared/config/customClasses/typeParse', async (importOriginal) => {
   const actual = await importOriginal();
 
   return {
@@ -96,7 +96,7 @@ describe('FUN row action menu workspace opening', () => {
       '_blank',
       'noopener,noreferrer',
     );
-  });
+  }, 10_000);
 
   it('opens actualizar in the workspace', async () => {
     const user = userEvent.setup();

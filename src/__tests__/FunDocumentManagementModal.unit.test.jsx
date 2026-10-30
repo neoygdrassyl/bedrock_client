@@ -3,27 +3,27 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import FunDocumentManagementModal from '../app/pages/user/fun_forms/components/FunDocumentManagementModal';
+import FunDocumentManagementModal from '../features/expediente/fun/fun_forms/components/FunDocumentManagementModal';
 
-vi.mock('@/components/data-table-bridge', () => ({
+vi.mock('@/shared/components/data-table-bridge', () => ({
   default: ({ data = [] }) => <div data-testid="document-history-table">{data.length}</div>,
 }));
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ isOpen, children, contentLabel }) => (isOpen ? <div aria-label={contentLabel}>{children}</div> : null),
 }));
 
-vi.mock('../app/components/pdfViewer.component', () => ({
-  default: ({ url }) => <div data-testid="document-pdf-viewer">PDF:{url}</div>,
+vi.mock('@/shared/components/ProtectedDocument', () => ({
+  ProtectedDocumentPreview: ({ source }) => <div data-testid="document-pdf-viewer">PDF:{source}</div>,
 }));
 
-vi.mock('../app/services/fun.service', () => ({
+vi.mock('../features/expediente/api/fun.service', () => ({
   default: {
     getAll_fun_6_h: vi.fn(async () => ({ data: [] })),
   },
 }));
 
-vi.mock('../app/utils/swalAdapter', () => ({
+vi.mock('../shared/utils/swalAdapter', () => ({
   swalConfirm: vi.fn(),
   swalError: vi.fn(),
   swalLoading: vi.fn(),

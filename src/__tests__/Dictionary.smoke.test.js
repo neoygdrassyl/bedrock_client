@@ -7,6 +7,6 @@ const IMPORT_TIMEOUT = 60000;
 
 describe('Módulo Diccionario — Smoke', () => {
   test('dictionary.page.js se importa sin error', async () => {
-    await expect(import('../app/pages/user/dictionary.page')).resolves.toBeTruthy();
+    await expect(import('../features/dictionary/dictionary.page')).resolves.toBeTruthy();
   }, IMPORT_TIMEOUT);
 });

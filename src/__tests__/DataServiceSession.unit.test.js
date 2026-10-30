@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import DataService from '@/app/services/data.service';
+import DataService from '@/shared/api/data.service';
+import { __getQueuedEventsForTests, __resetLoggerForTests, logEvent } from '@/shared/observability/logger';
 
 describe('DataService session shape', () => {
   beforeEach(() => {
@@ -31,5 +32,17 @@ describe('DataService session shape', () => {
       name_short: 'Diego Lopez',
       name_full: 'Diego Andres Lopez Perez',
     });
+  });
+
+  it('clears queued client events on logout', () => {
+    __resetLoggerForTests();
+    localStorage.setItem('dovela_token', 'jwt');
+    logEvent('warn', 'pending_before_logout', { message: 'x' });
+
+    DataService.setUserNull();
+
+    expect(__getQueuedEventsForTests()).toEqual([]);
+    expect(localStorage.getItem('dovela_token')).toBeNull();
+    __resetLoggerForTests();
   });
 });

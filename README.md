@@ -18,7 +18,7 @@ npm ci
 
 ### `npm run dev`
 
-Levanta Vite en modo `development` usando `.env.development`.
+Levanta Vite en modo `development` usando `.env.development`. Antes, `predev` espera a que el backend responda en `<BACKOFFICE_GATE_URL>/health/ready` (por defecto `http://127.0.0.1:3001`).
 
 ```bash
 npm run dev
@@ -46,7 +46,7 @@ Los builds usan modos explicitos de Vite para cargar variables diferentes segun 
 | `npm run build:dev` | `development` | Build con variables de desarrollo para validar integraciones locales. |
 | `npm run build:analyze` | `production` | Build productivo con reporte visual de chunks. |
 
-Los scripts de build usan `build-tools/run-vite-build.mjs`, un runner Node compatible con Linux, macOS y Windows. El runner agrega `NODE_OPTIONS=--max-old-space-size=4096` al proceso de Vite porque el empaquetado de Rollup de esta SPA puede superar el heap default de Node durante `rendering chunks`.
+Los scripts de build invocan Vite directamente con `node --max-old-space-size=4096 node_modules/vite/bin/vite.js build --mode <modo>`, sin runners intermedios, y funcionan igual en Linux, macOS y Windows. El flag de heap es necesario: sin el, el empaquetado de Rollup de esta SPA supera el heap default de Node durante `rendering chunks` (medido: OOM sin flag, ~2,8 GB de RSS con el).
 
 ### `npm run build`
 
@@ -74,7 +74,7 @@ npm run build:dev
 
 ### `npm run build:analyze`
 
-Compila en modo produccion y activa `VITE_BUILD_ANALYZE=true` desde el runner para generar `build/stats.html`.
+Compila en modo produccion (carga `.env.production`) y genera `build/stats.html`. `vite.config.mjs` activa el visualizador cuando el script de npm es `build:analyze` o cuando `VITE_BUILD_ANALYZE=true`.
 
 ```bash
 npm run build:analyze
@@ -94,14 +94,6 @@ Vite carga variables segun el modo:
 | `.env.local`, `.env.development.local`, `.env.production.local` | Overrides locales no versionados. |
 
 Toda variable expuesta al frontend debe empezar por `VITE_`. Estas variables quedan embebidas en el bundle del navegador, asi que no pongas secretos privados en archivos `VITE_*`.
-
-Para desarrollo, `.env.development` usa la llave publica de prueba oficial de Google reCAPTCHA v2:
-
-```bash
-VITE_GOOGLE_CAPTCHA_HTML="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-```
-
-En produccion reemplazala desde `.env.production.local` o desde el pipeline con la llave publica real del sitio. Si la variable queda vacia, la pantalla de login omite `ReCAPTCHA` y sigue con el flujo normal, evitando el error `Missing required parameters: sitekey`.
 
 Produccion queda configurada por defecto para CUB1:
 

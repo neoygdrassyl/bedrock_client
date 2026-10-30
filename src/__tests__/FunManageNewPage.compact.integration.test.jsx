@@ -7,38 +7,38 @@ const mockUseDashboard = vi.fn();
 const mockUseAlarmConfig = vi.fn();
 const mockUseBookmarks = vi.fn();
 
-vi.mock('@/app/pages/user/fun_forms/hooks/useDashboard', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/hooks/useDashboard', () => ({
   useDashboard: (...args) => mockUseDashboard(...args),
 }));
 
-vi.mock('@/app/pages/user/fun_forms/hooks/useAlarmConfig', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/hooks/useAlarmConfig', () => ({
   useAlarmConfig: (...args) => mockUseAlarmConfig(...args),
 }));
 
-vi.mock('@/app/pages/user/fun_forms/hooks/useBookmarks', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/hooks/useBookmarks', () => ({
   useBookmarks: (...args) => mockUseBookmarks(...args),
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/FunDashboardKPIs', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/FunDashboardKPIs', () => ({
   FunDashboardKPIs: () => <div data-testid="kpis-stub">KPIs</div>,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/FunmanageScatterChart', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/FunmanageScatterChart', () => ({
   FunmanageScatterChart: () => <div data-testid="scatter-stub">Scatter</div>,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/FunmanagePhaseChart', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/FunmanagePhaseChart', () => ({
   FunmanagePhaseChart: () => <div data-testid="phase-chart-stub">Phase Chart</div>,
 }));
 
-vi.mock('@/app/pages/user/fun_forms/components/FilterPanel', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/FilterPanel', () => ({
   FilterPanel: () => <div data-testid="filter-panel-stub">Filters</div>,
 }));
 
 import FunManageNewPage, {
   buildCompactTableRow,
   normalizeResponsibleActor,
-} from '@/app/pages/user/funmanage_new.page';
+} from '@/features/expediente/fun/funmanage_new.page';
 
 const dashboardRow = {
   id: 77,

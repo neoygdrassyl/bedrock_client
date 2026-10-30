@@ -12,20 +12,10 @@ import { test, expect } from '../fixtures/auth.fixture';
  * instead of logging out.
  *
  * NOTE on scope — real UI login is not exercised here:
- * LoginPage.jsx's handleSubmit calls `recaptchaRef.current.execute().then(...)`,
- * but react-google-recaptcha's `execute()` (see
- * node_modules/react-google-recaptcha/src/recaptcha.js) does NOT return a
- * Promise for invisible reCAPTCHA — it forwards Google's own `execute()`,
- * which returns undefined and resolves asynchronously via a `callback`
- * option instead. Calling `.then()` on that undefined return value throws
- * "Cannot read properties of undefined (reading 'then')" synchronously,
- * so `performLogin()` is never reached. This reproduces on every submit
- * click against the live dev server in this repo (VITE_GOOGLE_CAPTCHA_HTML
- * is set in .env), independent of network/timing — a real bug, not test
- * flakiness. It should use `executeAsync()` instead. Filed as a discovery,
- * not fixed here (out of scope for this e2e task).
+ * this spec targets session expiration, not the login form (which no longer
+ * uses reCAPTCHA and is covered by login.e2e.spec.js).
  *
- * Because real submission is currently unreachable, this spec reaches the
+ * To stay independent of credentials, this spec reaches the
  * authenticated state the same way the rest of the e2e suite does — via
  * the auth fixture's localStorage token injection (equivalent to "a login
  * just completed") — and focuses its assertions on the interceptor
@@ -47,7 +37,7 @@ test.describe('E2E: Login + session expiration', () => {
     // expiry): every subsequent API call now returns 401. Reload to trigger
     // the app's normal data-fetching cycle again — this is the exact
     // "background poll after the session died" scenario the H-08/H-14 fix
-    // targets, per the comment in src/http-common.js.
+    // targets, per the comment in src/shared/api/http-common.js.
     await page.route('**/*', async (route) => {
       const request = route.request();
       const resourceType = request.resourceType();

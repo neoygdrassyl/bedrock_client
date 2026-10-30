@@ -2,7 +2,7 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import FUN_MODULE_NAV from '../app/pages/user/fun_forms/components/fun_moduleNav';
+import FUN_MODULE_NAV from '../features/expediente/fun/fun_forms/components/fun_moduleNav';
 
 describe('FUN_MODULE_NAV', () => {
   const originalGetComputedStyle = window.getComputedStyle;

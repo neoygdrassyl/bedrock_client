@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 function readExpeditionSource() {
     return fs.readFileSync(
-        path.resolve(__dirname, '../app/pages/user/expeditions/exp_1.component.js'),
+        path.resolve(__dirname, '../features/expediente/expeditions/exp_1.component.jsx'),
         'utf8',
     );
 }

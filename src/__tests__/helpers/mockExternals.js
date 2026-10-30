@@ -22,22 +22,9 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// ─── react-google-recaptcha ─────────────────────────────────────────────────
-
-vi.mock('react-google-recaptcha', () => {
-  const ReCAPTCHA = ({ ref, ...props }) => {
-    React.useImperativeHandle(ref, () => ({
-      execute: () => Promise.resolve('mock-token'),
-      reset: vi.fn(),
-    }));
-    return React.createElement('div', { 'data-testid': 'recaptcha-mock' });
-  };
-  return { default: ReCAPTCHA };
-});
-
 // ─── http-common (Axios instance) ───────────────────────────────────────────
 
-vi.mock('../../http-common', () => ({
+vi.mock('../../shared/api/http-common', () => ({
   __esModule: true,
   default: {
     get: vi.fn(() => Promise.resolve({ data: [] })),
@@ -58,24 +45,9 @@ vi.mock('sweetalert2', () => ({
 
 // ─── rsuite ─────────────────────────────────────────────────────────────────
 
-vi.mock('rsuite', () => {
-  const Nav = ({ children, ...props }) =>
-    React.createElement('nav', props, children);
-  Nav.Menu = ({ children, title }) =>
-    React.createElement('div', null, title, children);
-  Nav.Item = ({ children, ...props }) =>
-    React.createElement('div', props, children);
-  const Navbar = ({ children }) => React.createElement('div', null, children);
-  Navbar.Brand = ({ children }) => React.createElement('span', null, children);
-  const Tag = ({ children, color }) =>
-    React.createElement('span', { 'data-testid': 'rsuite-tag', 'data-color': color }, children);
-  const TagGroup = ({ children }) => React.createElement('span', null, children);
-  return { Nav, Navbar, Tag, TagGroup };
-});
-
 // ─── react-modal ────────────────────────────────────────────────────────────
 
-vi.mock('@/components/legacy-modal', () => ({
+vi.mock('@/shared/components/legacy-modal', () => ({
   LegacyModal: ({ children, isOpen, ariaHideApp, contentLabel, ...props }) => {
     if (!isOpen) return null;
     return React.createElement(
@@ -88,7 +60,7 @@ vi.mock('@/components/legacy-modal', () => ({
 
 // ─── vars (datos sensibles) ─────────────────────────────────────────────────
 
-vi.mock('../../app/components/jsons/vars', () => ({
+vi.mock('../../shared/config/jsons/vars', () => ({
   infoCud: {
     name: 'Curaduría Urbana Test',
     city: 'bucaramanga',
@@ -98,10 +70,4 @@ vi.mock('../../app/components/jsons/vars', () => ({
   nomens: 'CUB1',
   cities: [React.createElement('option', { key: 'bga', value: 'Bucaramanga' }, 'Bucaramanga')],
   domains_number: [React.createElement('option', { key: 'cur1', value: 'Curaduria 1' }, 'Curaduria 1')],
-}));
-
-// ─── GlobalStyles ───────────────────────────────────────────────────────────
-
-vi.mock('../../app/components/global', () => ({
-  GlobalStyles: () => React.createElement('style', { 'data-testid': 'global-styles' }),
 }));

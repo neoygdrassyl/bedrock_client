@@ -7,7 +7,7 @@ import { expect } from '@playwright/test';
  * The FUN page is the core module of Dovela. It manages construction license
  * applications through the full legal lifecycle (radicacion -> resolucion).
  *
- * Key DOM elements (from src/app/pages/user/fun.js):
+ * Key DOM elements (from src/features/expediente/fun/fun.jsx):
  * - Heading: "RADICACION DE SOLICITUDES"
  * - Create form: #f_01 (date), #f_02 (id_public), "GENERAR" button, "CREAR" submit
  * - Search form: #search_0 (select), #search_1 (input), "CONSULTAR" submit

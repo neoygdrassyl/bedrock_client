@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import FUN from '@/app/pages/user/fun';
+import FUN from '@/features/expediente/fun/fun';
 
-vi.mock('@/app/pages/user/fun_forms/components/fun_worker_asign.component', () => ({ default: () => null }));
-vi.mock('@/app/pages/user/fun_forms/components/table_components/table.component_expanded', () => ({ default: () => null }));
-vi.mock('@/app/services/fun.service', () => ({
+vi.mock('@/features/expediente/fun/fun_forms/components/fun_worker_asign.component', () => ({ default: () => null }));
+vi.mock('@/features/expediente/fun/fun_forms/components/table_components/table.component_expanded', () => ({ default: () => null }));
+vi.mock('@/features/expediente/api/fun.service', () => ({
   default: new Proxy({}, {
     get: (_target, prop) => {
       if (prop === 'getAll_fun') return () => Promise.resolve({ data: [] });
@@ -15,7 +15,7 @@ vi.mock('@/app/services/fun.service', () => ({
     },
   }),
 }));
-vi.mock('@/app/services/users.service', () => ({
+vi.mock('@/shared/api/users.service', () => ({
   default: new Proxy({}, { get: () => () => Promise.resolve({ data: [] }) }),
 }));
 
