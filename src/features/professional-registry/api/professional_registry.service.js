@@ -21,7 +21,6 @@ class ProfessionalRegistryService {
   create(body) { return http.post(`/${ROUTE}`, body, JSON_REQUEST); }
   update(id, body) { return http.put(`/${ROUTE}/${id}`, body, JSON_REQUEST); }
   setCanonicalName(id, body) { return http.put(`/${ROUTE}/${id}/canonical-name`, body, JSON_REQUEST); }
-  setSpecificExperience(id, roleCode, body) { return http.put(`/${ROUTE}/${id}/roles/${encodeURIComponent(roleCode)}/specific-experience`, body, JSON_REQUEST); }
   remove(id, body) { return http.delete(`/${ROUTE}/${id}`, { ...JSON_REQUEST, data: body }); }
   restore(id, body) { return http.post(`/${ROUTE}/${id}/restore`, body, JSON_REQUEST); }
   merge(id, body) { return http.post(`/${ROUTE}/${id}/merge`, body, JSON_REQUEST); }

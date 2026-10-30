@@ -115,17 +115,6 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
     setRelinkTarget(null);
   }, 'Expediente asignado al otro profesional.');
 
-  // Resolves true when saved, so the role's editor can close; errors are shown by `run`.
-  const saveSpecific = async (role, value) => {
-    let saved = false;
-    await run(async () => {
-      const fields = value || { years: null, months: null, days: null };
-      await ProfessionalRegistryService.setSpecificExperience(id, role.code, { ...fields, expectedVersion: detail.version });
-      saved = true;
-    }, value ? 'Experiencia específica guardada.' : 'Experiencia específica quitada.');
-    return saved;
-  };
-
   const markReviewed = (participationId) => run(
     () => ProfessionalRegistryService.resolve({ type: 'nombres', id: participationId, action: 'reviewed' }),
     'Marcado como revisado.',
@@ -222,7 +211,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
 
             {tab === 'roles' ? (
               detail.roles.length ? (
-                <RegistryRolesTable detail={detail} canWrite={canWrite} busy={busy} onSaveSpecific={saveSpecific} />
+                <RegistryRolesTable detail={detail} />
               ) : <p className="text-sm text-muted-foreground">Este profesional no tiene roles registrados.</p>
             ) : null}
 

@@ -6,8 +6,13 @@
  */
 
 import React from 'react';
-import { render, act, fireEvent, screen } from '@testing-library/react';
+import { render, act, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+
+const { swalFire } = vi.hoisted(() => ({
+  swalFire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+}));
 
 // ─── External mocks ──────────────────────────────────────────────────────────
 
@@ -23,7 +28,7 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('sweetalert2', () => ({
   default: {
-    fire: vi.fn(() => Promise.resolve({ isConfirmed: true })),
+    fire: swalFire,
     close: vi.fn(),
   },
 }));
@@ -82,6 +87,7 @@ vi.mock('../features/professionals/api/profesionals.service', () => ({
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
     get: vi.fn(() => Promise.resolve({ data: {} })),
     getSearch: vi.fn(() => Promise.resolve({ data: [] })),
+    createOrFind: vi.fn(() => Promise.resolve({ data: {} })),
   },
 }));
 
@@ -137,6 +143,7 @@ vi.mock('../shared/components/HTMLDatalist', () => ({
 import FUNN51 from '../features/expediente/fun/fun_forms/fun_n_51';
 import FUNN52 from '../features/expediente/fun/fun_forms/fun_n_52';
 import FUNN53 from '../features/expediente/fun/fun_forms/fun_n_53';
+import FUNService from '../features/expediente/api/fun.service';
 
 // ─── Shared props ────────────────────────────────────────────────────────────
 
@@ -414,4 +421,54 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
     expect(document.querySelector('#f_531').value).toBe('Carlos');
     expect(document.querySelector('#f_535').value).toBe('carlos@test.com');
   }, 60000);
+
+  describe('fun_n_52 5.2.9 as specific experience in the role', () => {
+    const openCreate = async (user) => {
+      FUNService.create_fun52.mockClear();
+      render(<MemoryRouter><FUNN52 {...baseProps} /></MemoryRouter>);
+      await user.click(document.querySelector('#funn_52').parentElement.querySelector('input[type="checkbox"]'));
+    };
+    const typeIn = async (user, id, value) => { await user.clear(document.getElementById(id)); await user.type(document.getElementById(id), value); };
+
+    test('sends 5.2.9 in months marked as specific experience', async () => {
+      const user = userEvent.setup();
+      await openCreate(user);
+      await typeIn(user, 'f_529', '3');
+      await typeIn(user, 'f_529m', '4');
+      await user.click(screen.getByRole('button', { name: /añadir item/i }));
+
+      await waitFor(() => expect(FUNService.create_fun52).toHaveBeenCalledTimes(1));
+      const payload = FUNService.create_fun52.mock.calls[0][0];
+      expect([payload.get('expirience'), payload.get('expirience_specific')]).toEqual(['40', 'true']);
+    }, 60000);
+
+    test('a blank 5.2.9 sends no experience and 5.2.7 no longer fills it', async () => {
+      const user = userEvent.setup();
+      await openCreate(user);
+      fireEvent.change(document.getElementById('f_527'), { target: { value: '2010-05-01' } });
+      expect(document.getElementById('f_529').value).toBe('');
+      expect(document.getElementById('f_529_general').textContent).toMatch(/^Experiencia general \(desde 5\.2\.7\): \d+ años/);
+      await user.click(screen.getByRole('button', { name: /añadir item/i }));
+
+      await waitFor(() => expect(FUNService.create_fun52).toHaveBeenCalledTimes(1));
+      const payload = FUNService.create_fun52.mock.calls[0][0];
+      expect(payload.has('expirience')).toBe(false);
+      expect(payload.has('expirience_specific')).toBe(false);
+    }, 60000);
+
+    test('refuses a specific experience above the general one since 5.2.7', async () => {
+      const user = userEvent.setup();
+      swalFire.mockClear();
+      await openCreate(user);
+      const lastYear = `${new Date().getUTCFullYear() - 1}-01-01`;
+      fireEvent.change(document.getElementById('f_527'), { target: { value: lastYear } });
+      await typeIn(user, 'f_529', '5');
+      await user.click(screen.getByRole('button', { name: /añadir item/i }));
+
+      await waitFor(() => expect(swalFire).toHaveBeenCalledWith(expect.objectContaining({
+        icon: 'error', text: expect.stringMatching(/no puede superar la experiencia general/),
+      })));
+      expect(FUNService.create_fun52).not.toHaveBeenCalled();
+    }, 60000);
+  });
 });

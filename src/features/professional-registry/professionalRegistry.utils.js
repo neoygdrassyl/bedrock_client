@@ -21,21 +21,13 @@ export function formatMonths(months) {
   return [years ? `${years} ${years === 1 ? 'año' : 'años'}` : '', rest ? `${rest} ${rest === 1 ? 'mes' : 'meses'}` : ''].filter(Boolean).join(' ');
 }
 
-// Experience as { years, months, days }. Same rules as the server (professional-registry-experience): each component has a
-// maximum, and two durations compare by years, then months, then days, without converting them to days.
-export const DURATION_LIMITS = { years: 99, months: 11, days: 30 };
+// Experience as { years, months, days }, as the server sends it (professional-registry-experience).
 const DURATION_UNITS = [['years', 'año', 'años'], ['months', 'mes', 'meses'], ['days', 'día', 'días']];
 
 export function formatDuration(duration) {
   if (!duration) return '—';
   const parts = DURATION_UNITS.filter(([key]) => duration[key]).map(([key, one, many]) => `${duration[key]} ${duration[key] === 1 ? one : many}`);
   return parts.length ? parts.join(' ') : '0 días';
-}
-
-export function compareDuration(a, b) {
-  const key = DURATION_UNITS.map(([name]) => name).find((name) => a[name] !== b[name]);
-  if (!key) return 0;
-  return a[key] < b[key] ? -1 : 1;
 }
 
 // Why the server could not compute the general experience (time since the issue date of the principal matrícula).

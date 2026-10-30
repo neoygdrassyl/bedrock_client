@@ -1,16 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { canWriteRegistry, compareDuration, errorCode, errorText, formatCc, formatDate, formatDuration, formatGeneralExperience, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
+import { canWriteRegistry, errorCode, errorText, formatCc, formatDate, formatDuration, formatGeneralExperience, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 describe('professional registry utils', () => {
-  it('formats a duration without its zero parts and compares durations by components', () => {
+  it('formats a duration without its zero parts and the general experience or why it is missing', () => {
     expect(formatDuration({ years: 2, months: 3, days: 10 })).toBe('2 años 3 meses 10 días');
     expect(formatDuration({ years: 1, months: 0, days: 1 })).toBe('1 año 1 día');
     expect(formatDuration({ years: 0, months: 0, days: 0 })).toBe('0 días');
     expect(formatDuration(null)).toBe('—');
-    expect(compareDuration({ years: 0, months: 0, days: 30 }, { years: 0, months: 1, days: 0 })).toBe(-1);
-    expect(compareDuration({ years: 2, months: 0, days: 0 }, { years: 1, months: 11, days: 30 })).toBe(1);
-    expect(compareDuration({ years: 3, months: 4, days: 5 }, { years: 3, months: 4, days: 5 })).toBe(0);
     expect(formatGeneralExperience({ duration: { years: 16, months: 5, days: 29 }, missing: null })).toBe('16 años 5 meses 29 días');
     expect(formatGeneralExperience({ duration: null, missing: 'SIN_FECHA' })).toBe('Matrícula principal sin fecha de expedición');
     expect(formatGeneralExperience(undefined)).toBe('Sin dato');

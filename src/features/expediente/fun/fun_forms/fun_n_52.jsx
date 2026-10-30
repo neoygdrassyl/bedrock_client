@@ -11,9 +11,9 @@ import profesionalsService from '../../../professionals/api/profesionals.service
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-import dayjs from 'dayjs';
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { formatYearsMonths, readSpecificExperience, todayIso, wholeMonthsBetween } from '@/shared/utils/specificExperience';
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);
@@ -34,13 +34,17 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             document.getElementById("f_528_edit").value = _ITEM.supervision;
             document.getElementById("f_5210_edit").value = _ITEM.sanction ? 1 : 0;
 
-            if (_ITEM.expirience) {
-                let experience_m = _ITEM.expirience;
-                let experience_months_left = experience_m % 12;
-                let experience_y = Math.trunc(experience_m / 12);
-                document.getElementById("f_529_edit").value = experience_y;
-                document.getElementById("f_529m_edit").value = experience_months_left;
+            // 5.2.9 is shown only when it was saved as specific experience; an older value was the general one.
+            document.getElementById("f_529_edit").value = '';
+            document.getElementById("f_529m_edit").value = '';
+            document.getElementById("f_529_prev_edit").textContent = '';
+            if (_ITEM.expirience_specific) {
+                document.getElementById("f_529_edit").value = Math.trunc(_ITEM.expirience / 12);
+                document.getElementById("f_529m_edit").value = _ITEM.expirience % 12;
+            } else if (_ITEM.expirience) {
+                document.getElementById("f_529_prev_edit").textContent = `Valor anterior: ${formatYearsMonths(_ITEM.expirience)} (no cuenta como experiencia específica).`;
             }
+            _SHOW_GENERAL_EXPERIENCE('_edit');
 
             let array = _ITEM.role.split(',');
             let select = document.getElementById("f_525_edit");
@@ -154,15 +158,29 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 document.getElementById(e.target.id).value = _value;
             }
         }
-        let _GET_YEARS_EXPERIENCE = (id) => {
-            let idate = document.getElementById('f_527' + id).value;
-            let date = dayjs(idate).format('YYYY-MM-DD');
-            let today = dayjs().format('YYYY-MM-DD');
-            let timePassed = dayjs(today).diff(date, 'months');
-            let years = Math.trunc(timePassed / 12);
-            let months = Math.trunc(timePassed % 12);
-            document.getElementById('f_529' + id).value = years;
-            document.getElementById('f_529m' + id).value = months;
+        // 5.2.9 is no longer filled from 5.2.7: 5.2.7 only tells the general experience, the limit of the specific one.
+        let _SHOW_GENERAL_EXPERIENCE = (id) => {
+            let general = wholeMonthsBetween(document.getElementById('f_527' + id).value, todayIso());
+            document.getElementById('f_529_general' + id).textContent = general === null
+                ? 'Indique 5.2.7 para conocer la experiencia general.'
+                : `Experiencia general (desde 5.2.7): ${formatYearsMonths(general)}. La específica no puede superarla.`;
+        }
+        // Adds 5.2.9 to the request as specific experience, or returns the problem to show. An empty 5.2.9 leaves the
+        // stored value alone and, when it was specific experience, stops counting it as such.
+        let _SET_SPECIFIC_EXPERIENCE = (id, formData, wasSpecific) => {
+            let read = readSpecificExperience(
+                document.getElementById('f_529' + id).value,
+                document.getElementById('f_529m' + id).value,
+                document.getElementById('f_527' + id).value,
+            );
+            if (read.problem) return read.problem;
+            if (read.empty) {
+                if (wasSpecific) formData.set('expirience_specific', 'false');
+                return null;
+            }
+            formData.set('expirience', read.months);
+            formData.set('expirience_specific', 'true');
+            return null;
         }
 
         // COMPONENTS JSX
@@ -213,7 +231,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-12">
-                        <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
+                        <label>5.2.5 Rol que Desempeña</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
@@ -262,7 +280,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _GET_YEARS_EXPERIENCE('')} />
+                            <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _SHOW_GENERAL_EXPERIENCE('')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -281,17 +299,18 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-6">
-                        <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
+                        <label>5.2.9 Experiencia específica en el rol (Años y meses)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529" placeholder="Años" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529" placeholder="Años" className="form-control" />
                             <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529m" placeholder="Meses" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m" placeholder="Meses" className="form-control" />
                         </div>
+                        <small className="text-muted d-block" id="f_529_general">Indique 5.2.7 para conocer la experiencia general.</small>
                     </div>
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
@@ -439,7 +458,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-12">
-                        <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
+                        <label>5.2.5 Rol que Desempeña</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
@@ -488,7 +507,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _GET_YEARS_EXPERIENCE('_edit')} />
+                            <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _SHOW_GENERAL_EXPERIENCE('_edit')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -507,17 +526,19 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-6">
-                        <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
+                        <label>5.2.9 Experiencia específica en el rol (Años y meses)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529_edit" placeholder="Años" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529_edit" placeholder="Años" className="form-control" />
                             <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529m_edit" placeholder="Meses" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m_edit" placeholder="Meses" className="form-control" />
                         </div>
+                        <small className="text-muted d-block" id="f_529_general_edit">Indique 5.2.7 para conocer la experiencia general.</small>
+                        <small className="text-muted d-block" id="f_529_prev_edit"></small>
                     </div>
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
@@ -810,10 +831,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let supervision = document.getElementById("f_528").value; // THIS IS A SELECT
             formData.set('supervision', supervision);
 
-            let expirience_y = document.getElementById("f_529").value;
-            let expirience_m = document.getElementById("f_529m").value;
-            let expirience = parseInt((expirience_y ? expirience_y * 12 : 0) + parseInt(expirience_m ? expirience_m : 0));
-            formData.set('expirience', expirience);
+            let experienceProblem = _SET_SPECIFIC_EXPERIENCE('', formData, false);
+            if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210").value;
             formData.set('sanction', sanction);
 
@@ -833,6 +852,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         document.getElementById('form_fun_52_new').reset();
+                        _SHOW_GENERAL_EXPERIENCE('');
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
@@ -872,10 +892,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let supervision = document.getElementById("f_528_edit").value; // THIS IS A SELECT
             formData.set('supervision', supervision);
 
-            let expirience_y = document.getElementById("f_529_edit").value;
-            let expirience_m = document.getElementById("f_529m_edit").value;
-            let expirience = parseInt((expirience_y ? expirience_y * 12 : 0) + parseInt(expirience_m ? expirience_m : 0));
-            formData.set('expirience', expirience);
+            let experienceProblem = _SET_SPECIFIC_EXPERIENCE('_edit', formData, Boolean(edit.expirience_specific));
+            if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210_edit").value;
             formData.set('sanction', sanction);
 
@@ -1022,9 +1040,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 document.getElementById("f_527" + _scope).value = worker.registration_date;
                 document.getElementById("f_5210" + _scope).value = worker.sanction ? 1 : 0;
 
-                if (worker.registration_date) {
-                    _GET_YEARS_EXPERIENCE(_scope)
-                }
+                _SHOW_GENERAL_EXPERIENCE(_scope)
             }
         }
 

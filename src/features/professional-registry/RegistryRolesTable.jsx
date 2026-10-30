@@ -15,7 +15,7 @@ const roleName = (role) => (
 
 // Columns as the current server sends them. Experience is only the general one (from the principal matrícula) and the
 // specific one per role; what the expedientes declared stays out of this table.
-const columns = ({ detail, canWrite, busy, onSaveSpecific }) => [
+const columns = ({ detail }) => [
   { key: 'rol', header: 'Rol', width: '36%', cell: (role) => role.label },
   { key: 'expedientes', header: 'Expedientes', width: '12%', className: NUMERIC, cell: (role) => role.projects },
   { key: 'general', header: 'Experiencia general', width: '22%', cell: () => formatGeneralExperience(detail.generalExperience) },
@@ -23,7 +23,7 @@ const columns = ({ detail, canWrite, busy, onSaveSpecific }) => [
     key: 'especifica',
     header: 'Experiencia específica',
     width: '30%',
-    cell: (role) => <RoleSpecificExperience role={role} general={detail.generalExperience} canWrite={canWrite && !detail.deleted} busy={busy} onSave={onSaveSpecific} />,
+    cell: (role) => <RoleSpecificExperience role={role} />,
   },
 ];
 
@@ -38,15 +38,15 @@ const LEGACY_COLUMNS = [
 
 // "Roles y experiencia" of one professional. A fixed layout with explicit widths keeps every column apart, whatever
 // the length of a role name or a duration.
-export default function RegistryRolesTable({ detail, canWrite, busy, onSaveSpecific }) {
+export default function RegistryRolesTable({ detail }) {
   const withGeneral = detail.generalExperience !== undefined;
-  const shown = withGeneral ? columns({ detail, canWrite, busy, onSaveSpecific }) : LEGACY_COLUMNS;
+  const shown = withGeneral ? columns({ detail }) : LEGACY_COLUMNS;
 
   return (
     <div className="space-y-2">
       {withGeneral ? (
         <p className="text-xs text-muted-foreground">
-          La experiencia general se cuenta desde la fecha de expedición de la matrícula principal{detail.registration && detail.registrationDate ? ` (${detail.registration}, ${formatDate(detail.registrationDate)})` : ''}.
+          La experiencia general se cuenta desde la fecha de expedición de la matrícula principal{detail.registration && detail.registrationDate ? ` (${detail.registration}, ${formatDate(detail.registrationDate)})` : ''}. La específica es la del ítem 5.2.9 del expediente más reciente en cada rol; se registra en Actualizar.
         </p>
       ) : null}
       <div className="overflow-x-auto rounded-md border border-border/60">
