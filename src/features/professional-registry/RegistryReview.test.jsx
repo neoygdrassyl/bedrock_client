@@ -216,7 +216,7 @@ describe('RegistryReview', () => {
     const onChanged = vi.fn();
     render(<RegistryReview canWrite onChanged={onChanged} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
-    await screen.findByText('Posible error de digitación');
+    await screen.findByText('Cédula casi igual');
     const merge = screen.getByRole('button', { name: 'Fusionar' });
 
     expect(merge).toBeDisabled();
@@ -233,8 +233,10 @@ describe('RegistryReview', () => {
 
   it('asks only for what differs between the two records', async () => {
     const user = userEvent.setup();
+    // The same name with a distant cédula: only the cédula is asked.
     const onlyCc = Object.assign({}, queues.fusionar[0], {
-      b: Object.assign({}, queues.fusionar[0].b, { name: 'JOSE RAMON OROZCO' }),
+      reason: 'MISMO_NOMBRE',
+      b: { id: 11, name: 'JOSE RAMON OROZCO', cc: '91237337', projects: 14 },
       differs: { name: false, cc: true },
     });
     service.review.mockImplementation(({ type }) => Promise.resolve({
@@ -242,7 +244,7 @@ describe('RegistryReview', () => {
     }));
     render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
-    await screen.findByText('Posible error de digitación');
+    await screen.findByText('Mismo nombre con otra cédula');
 
     expect(screen.queryByRole('group', { name: 'Nombre correcto' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('radio', { name: '1.098.612' }));
@@ -257,7 +259,7 @@ describe('RegistryReview', () => {
     const user = userEvent.setup();
     render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
-    await screen.findByText('Posible error de digitación');
+    await screen.findByText('Cédula casi igual');
     await user.click(screen.getByRole('button', { name: 'No son la misma persona' }));
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'fusionar', id: 7, action: 'dismiss' }));
 
@@ -283,7 +285,7 @@ describe('RegistryReview', () => {
     const user = userEvent.setup();
     render(<RegistryReview canWrite={false} onChanged={() => {}} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /^Fusionar/ }));
-    await screen.findByText('Posible error de digitación');
+    await screen.findByText('Cédula casi igual');
 
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Fusionar' })).not.toBeInTheDocument();

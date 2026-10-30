@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Button } from '@/shared/ui/button';
 import { PairPerson } from './RegistryPairCase';
-import { formatCc } from './professionalRegistry.utils';
+import { DUPLICATE_REASONS, formatCc } from './professionalRegistry.utils';
 
 // Which of the two records holds the right value. Only asked for what differs between them.
 function RightValue({ legend, name, options, value, onChange }) {
@@ -25,8 +25,8 @@ function RightValue({ legend, name, options, value, onChange }) {
   );
 }
 
-// Two records of one person told apart by a typing error in the name, the cédula or both. The reviewer picks the right
-// name and the right cédula; one record remains, with those data and every expediente of both.
+// Two records that look like one person: the same name, or a typing error in the name, the cédula or both. The reviewer
+// picks the right name and the right cédula; one record remains, with those data and every expediente of both.
 export default function RegistryMergeCase({ item, canWrite, busy, onResolve, onOpen }) {
   const people = [item.a, item.b];
   const [nameFrom, setNameFrom] = useState(item.differs.name ? null : item.a.id);
@@ -40,7 +40,9 @@ export default function RegistryMergeCase({ item, canWrite, busy, onResolve, onO
 
   return (
     <li className="rounded-lg border border-border bg-card p-3 text-sm">
-      <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Posible error de digitación</p>
+      <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+        {DUPLICATE_REASONS[item.reason] || item.reason}
+      </p>
       <div className="grid gap-2 sm:grid-cols-2">
         {people.map((person) => <PairPerson key={person.id} person={person} onOpen={onOpen} />)}
       </div>
