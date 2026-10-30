@@ -105,27 +105,28 @@ describe('RegistryForm', () => {
     expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 4, cc: '13.439.752' });
   });
 
-  it('shows the single matrícula, sends it only when it changed, and points to Por revisar when there are several', async () => {
+  it('shows the principal matrícula, sends it only when it changed, and points to Por revisar on a tie', async () => {
     const user = userEvent.setup();
     service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
     const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, registration: '68202-158428', registrationConflict: false };
     const { rerender } = render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
 
-    expect(screen.getByLabelText('Matrícula profesional')).toHaveValue('68202-158428');
+    expect(screen.getByLabelText('Matrícula principal')).toHaveValue('68202-158428');
     await user.type(screen.getByLabelText('Correo'), 'a@b.co');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
     expect(service.update.mock.calls[0][1]).not.toHaveProperty('registration');
 
-    await user.clear(screen.getByLabelText('Matrícula profesional'));
-    await user.type(screen.getByLabelText('Matrícula profesional'), '68202-999999');
+    await user.clear(screen.getByLabelText('Matrícula principal'));
+    await user.type(screen.getByLabelText('Matrícula principal'), '68202-999999');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
     expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, registration: '68202-999999' });
 
     rerender(<RegistryForm open mode="edit" registry={{ id: 8, cc: '13439752', email: '', phone: '', version: 1, registration: null, registrationConflict: true }} onClose={() => {}} onSaved={() => {}} />);
-    expect(screen.queryByLabelText('Matrícula profesional')).not.toBeInTheDocument();
-    expect(screen.getByText(/Tiene varias matrículas registradas/)).toBeInTheDocument();
+    expect(screen.queryByLabelText('Matrícula principal')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Fecha de expedición de la matrícula principal')).not.toBeInTheDocument();
+    expect(screen.getByText(/elija la principal en «Por revisar»/)).toBeInTheDocument();
   });
 
   it('edits the matrícula issue date, sends it only when it changed and hints when the expedientes disagree', async () => {
@@ -134,30 +135,30 @@ describe('RegistryForm', () => {
     const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, registration: '68202-158428', registrationDate: '2000-07-19', registrationDates: [{ date: '2000-07-19', projects: 3 }] };
     const { rerender } = render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
 
-    expect(screen.getByLabelText('Fecha de expedición de la matrícula')).toHaveValue('2000-07-19');
+    expect(screen.getByLabelText('Fecha de expedición de la matrícula principal')).toHaveValue('2000-07-19');
     await user.type(screen.getByLabelText('Correo'), 'a@b.co');
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
     expect(service.update.mock.calls[0][1]).not.toHaveProperty('registrationDate');
 
-    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula'), { target: { value: '2999-01-01' } });
+    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula principal'), { target: { value: '2999-01-01' } });
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('entre 1900 y hoy');
     expect(service.update).toHaveBeenCalledTimes(1);
 
-    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula'), { target: { value: '2001-01-25' } });
+    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula principal'), { target: { value: '2001-01-25' } });
     await user.click(screen.getByRole('button', { name: 'Guardar' }));
     await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
     expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, registrationDate: '2001-01-25' });
 
     rerender(<RegistryForm open mode="edit" registry={{ ...registry, id: 8, registrationDate: null, registrationDates: [{ date: '2000-07-19', projects: 3 }, { date: '2021-07-19', projects: 1 }] }} onClose={() => {}} onSaved={() => {}} />);
-    expect(screen.getByLabelText('Fecha de expedición de la matrícula')).toHaveValue('');
+    expect(screen.getByLabelText('Fecha de expedición de la matrícula principal')).toHaveValue('');
     expect(screen.getByText(/Los expedientes traen fechas distintas/)).toBeInTheDocument();
   });
 
   it('does not offer the issue date when creating a professional', () => {
     render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
-    expect(screen.queryByLabelText('Fecha de expedición de la matrícula')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Fecha de expedición de la matrícula principal')).not.toBeInTheDocument();
   });
 
   it('shows a version conflict and lets the user reload', async () => {

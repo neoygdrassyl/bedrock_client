@@ -2,14 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
 import { cn } from '@/shared/lib/utils';
+import RegistryMatriculaCase from './RegistryMatriculaCase';
 import RegistryMergeCase from './RegistryMergeCase';
 import RegistryPairCase from './RegistryPairCase';
-import {
-  DIFF_LABELS, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths,
-} from './professionalRegistry.utils';
+import { DIFF_LABELS, errorText, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
 
 const QUEUES = [
   ['duplicados', 'Posibles duplicados'],
@@ -20,39 +18,6 @@ const QUEUES = [
   ['experiencia', 'Experiencia atípica'],
   ['roles', 'Rol sin clasificar'],
 ];
-
-// Same rule as the server: 4 to 40 letters or digits once separators are removed.
-const registrationLength = (value) => String(value || '').replace(/[^A-Za-z0-9]/g, '').length;
-
-// "None of these is right": the person types the correct matrícula. It goes through the same update as "Editar datos".
-function OtherRegistration({ item, busy, onSave }) {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
-  const [problem, setProblem] = useState('');
-  const id = `other-registration-${item.registryId}`;
-
-  if (!open) return <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>Ninguna es correcta</Button>;
-
-  const submit = (event) => {
-    event.preventDefault();
-    const length = registrationLength(value);
-    if (length < 4 || length > 40) { setProblem('La matrícula debe tener entre 4 y 40 caracteres alfanuméricos.'); return; }
-    setProblem('');
-    onSave(item, value.trim());
-  };
-
-  return (
-    <form onSubmit={submit} className="flex flex-wrap items-start gap-2" noValidate>
-      <div className="space-y-1">
-        <label htmlFor={id} className="sr-only">Matrícula correcta de {item.name}</label>
-        <Input id={id} value={value} onChange={(event) => setValue(event.target.value)} placeholder="Matrícula correcta" aria-invalid={Boolean(problem)} autoFocus />
-        {problem ? <p className="text-xs text-destructive" role="alert">{problem}</p> : null}
-      </div>
-      <Button type="submit" size="sm" disabled={busy}>Guardar matrícula</Button>
-      <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => { setOpen(false); setValue(''); setProblem(''); }}>Cancelar</Button>
-    </form>
-  );
-}
 
 export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   const [type, setType] = useState('duplicados');
@@ -95,7 +60,6 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   };
 
   const resolve = (body) => run(() => ProfessionalRegistryService.resolve(body));
-  const saveRegistrationDate = (item, registrationDate) => run(() => ProfessionalRegistryService.update(item.registryId, { expectedVersion: item.version, registrationDate }));
   const saveRegistration = (item, registration) => run(() => ProfessionalRegistryService.update(item.registryId, { expectedVersion: item.version, registration }));
 
   // The rows of the previous queue must never be drawn with the renderer of the new one while it loads.
@@ -139,50 +103,15 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
         )) : null}
 
         {type === 'matricula' ? rows.map((item) => (
-          <li key={item.registryId} className="rounded-lg border border-border bg-card p-3 text-sm">
-            <p><span className="font-medium">{item.name}</span> <span className="text-muted-foreground">{item.cc ? formatCc(item.cc) : 'Sin cédula'}</span></p>
-            <p className="text-xs text-muted-foreground">Un profesional solo puede tener una matrícula. Indique la correcta; las demás quedan descartadas.</p>
-            <ul className="mt-2 space-y-1" aria-label={`Matrículas de ${item.name}`}>
-              {item.options.map((option) => (
-                <li key={option.valueNorm} className="flex flex-wrap items-center gap-2">
-                  <span className="font-medium tabular-nums">{option.value}</span>
-                  {option.variants.length ? <span className="text-xs text-muted-foreground">(misma matrícula: {option.variants.join(', ')})</span> : null}
-                  <span className="text-xs text-muted-foreground">{option.projects} {option.projects === 1 ? 'expediente' : 'expedientes'}</span>
-                  {canWrite ? <Button type="button" size="sm" disabled={busy} onClick={() => resolve({ type: 'matricula', action: 'choose', registryId: item.registryId, value: option.valueNorm, expectedVersion: item.version })}>Usar esta matrícula</Button> : null}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-2 flex flex-wrap items-start gap-2">
-              {canWrite ? <OtherRegistration item={item} busy={busy} onSave={saveRegistration} /> : null}
-              <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button>
-            </div>
-          </li>
+          <RegistryMatriculaCase
+            key={`${item.kind}-${item.registryId}-${item.valueNorm || ''}`}
+            item={item}
+            onSaveRegistration={saveRegistration}
+            {...caseProps}
+          />
         )) : null}
 
         {type === 'experiencia' ? rows.map((item) => {
-          if (item.kind === 'fecha') {
-            return (
-              <li key={`fecha-${item.registryId}`} className="rounded-lg border border-border bg-card p-3 text-sm">
-                <div className="flex flex-wrap items-center gap-x-1">
-                  <span className="font-medium">{item.name}</span>
-                  <Badge variant="secondary" className="ml-2">Fechas de expedición distintas</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">Un profesional tiene una sola fecha de expedición de la matrícula y de ella depende su experiencia. Indique la correcta.</p>
-                <ul className="mt-2 space-y-1" aria-label={`Fechas de expedición de ${item.name}`}>
-                  {item.dates.map((option) => (
-                    <li key={option.date} className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium tabular-nums">{formatDate(option.date)}</span>
-                      <span className="text-xs text-muted-foreground">{option.projects} {option.projects === 1 ? 'expediente' : 'expedientes'}</span>
-                      {canWrite ? <Button type="button" size="sm" disabled={busy} onClick={() => saveRegistrationDate(item, option.date)}>Usar esta fecha</Button> : null}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-2">
-                  <Button type="button" size="sm" variant="outline" onClick={() => onOpen?.(item.registryId)}>Ver profesional</Button>
-                </div>
-              </li>
-            );
-          }
           const absurd = isImplausibleMonths(item.monthsMax);
           return (
           <li key={`${item.registryId}-${item.roleCode}`} className={cn('rounded-lg border p-3 text-sm', absurd ? 'border-destructive bg-destructive/5' : 'border-border bg-card')} data-implausible={absurd ? 'true' : undefined}>

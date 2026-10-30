@@ -77,6 +77,9 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
     }
   };
 
+  // A tie for the principal matrícula: it is chosen in "Por revisar", and its date only once it is known.
+  const registrationConflict = mode === 'edit' && Boolean(registry?.registrationConflict);
+
   const field = (id, label, extra = {}) => (
     <div className="space-y-1">
       <Label htmlFor={id}>{label}</Label>
@@ -99,10 +102,18 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
         <form onSubmit={submit} className="space-y-3" noValidate>
           {mode === 'create' ? field('registry-name', 'Nombre completo *', { key: 'name' }) : null}
           {field('registry-cc', mode === 'create' ? 'Cédula' : 'Cédula', { key: 'cc' })}
-          {mode === 'edit' && registry?.registrationConflict
-            ? <p className="text-xs text-muted-foreground">Tiene varias matrículas registradas: elija la correcta en «Por revisar».</p>
-            : field('registry-registration', 'Matrícula profesional', { key: 'registration' })}
-          {mode === 'edit' ? field('registry-registration-date', 'Fecha de expedición de la matrícula', { key: 'registrationDate', props: { type: 'date', min: MIN_REGISTRATION_DATE, max: today() } }) : null}
+          {registrationConflict ? (
+            <p className="text-xs text-muted-foreground">
+              Sus matrículas tienen la misma cantidad de expedientes: elija la principal en «Por revisar».
+            </p>
+          ) : field('registry-registration', mode === 'edit' ? 'Matrícula principal' : 'Matrícula profesional', {
+            key: 'registration',
+          })}
+          {mode === 'edit' && !registrationConflict ? field(
+            'registry-registration-date',
+            'Fecha de expedición de la matrícula principal',
+            { key: 'registrationDate', props: { type: 'date', min: MIN_REGISTRATION_DATE, max: today() } },
+          ) : null}
           {mode === 'edit' && !registry?.registrationDate && registry?.registrationDates?.length > 1
             ? <p className="text-xs text-muted-foreground">Los expedientes traen fechas distintas ({registry.registrationDates.map((item) => formatDate(item.date)).join(', ')}): indique la correcta.</p>
             : null}

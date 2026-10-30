@@ -13,7 +13,11 @@ import RegistryDetail from './RegistryDetail';
 const detail = (overrides) => ({
   id: 5, identityType: 'CC', cc: '13439751', name: 'ANA MARIA LOPEZ', nameSource: 'AUTO', email: 'ana@example.com', phone: '3001112233',
   status: 'ACTIVO', version: 2, deleted: false, manualFields: [], unlinked: 0,
-  identifiers: [{ kind: 'CC', value: '13.439.751', source: 'AUTO' }, { kind: 'MATRICULA', value: '68202-158428', source: 'AUTO' }],
+  identifiers: [
+    { kind: 'CC', value: '13.439.751', source: 'AUTO', principal: false },
+    { kind: 'MATRICULA', value: '68202-158428', source: 'AUTO', principal: true },
+    { kind: 'MATRICULA', value: '8875STD', source: 'AUTO', principal: false },
+  ],
   roles: [{ code: 'ARQ_PROY', label: 'ARQUITECTO PROYECTISTA', projects: 2, monthsLatest: 96, monthsMax: 96, monthsOverride: null, outlier: false,
     expedientes: [{ participationId: 11, fun0Id: 1, expediente: '68001-1-26-0001', date: '2026-01-15', name: 'ANA MARIA LOPEZ', months: 96 }, { participationId: 12, fun0Id: 2, expediente: '68001-1-25-0002', date: '2025-02-01', name: 'ANA MARIA LOPES', months: 84 }] }],
   misregistered: [{ participationId: 12, expediente: '68001-1-25-0002', date: '2025-02-01', name: 'ANA MARIA LOPES', diffType: 'ERROR_ORTOGRAFICO', similarity: 0.94, reviewed: false, role: 'ARQ_PROY' }],
@@ -37,6 +41,9 @@ describe('RegistryDetail', () => {
     expect(screen.getByText('Cédula 13.439.751')).toBeInTheDocument();
     expect(screen.getByText('ana@example.com')).toBeInTheDocument();
     expect(screen.getByText('Matrícula: 68202-158428')).toBeInTheDocument();
+    expect(screen.getByText('Matrícula: 8875STD')).toBeInTheDocument();
+    expect(screen.getAllByText('(principal)')).toHaveLength(1);
+    expect(screen.getByText('(principal)').closest('li')).toHaveTextContent('68202-158428');
     const duplicates = screen.getByRole('region', { name: 'Posibles duplicados' });
     expect(duplicates).toHaveTextContent('Mismo nombre con otra cédula');
   });

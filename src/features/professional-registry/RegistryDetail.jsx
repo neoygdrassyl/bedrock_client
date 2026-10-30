@@ -161,7 +161,16 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                   <Field label="Correo">{detail.email}</Field>
                   <Field label="Teléfono">{detail.phone}</Field>
                   <Field label="Identificadores">
-                    <ul>{detail.identifiers.map((item) => <li key={`${item.kind}-${item.value}`} className={item.discarded ? 'text-muted-foreground line-through' : undefined}>{item.kind === 'CC' ? 'Cédula' : 'Matrícula'}: {item.value}{item.discarded ? <span className="ml-1 text-xs no-underline">(descartada)</span> : null}</li>)}</ul>
+                    <ul>
+                      {detail.identifiers.map((item) => (
+                        <li key={`${item.kind}-${item.value}`}>
+                          {item.kind === 'CC' ? 'Cédula' : 'Matrícula'}: {item.value}
+                          {item.principal
+                            ? <span className="ml-1 text-xs text-muted-foreground">(principal)</span>
+                            : null}
+                        </li>
+                      ))}
+                    </ul>
                   </Field>
                   <Field label="Expedientes sin origen">{detail.unlinked ? `${detail.unlinked} (el registro de origen fue eliminado)` : null}</Field>
                 </dl>
