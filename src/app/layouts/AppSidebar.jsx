@@ -1,15 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, LayoutGroup, m } from 'motion/react';
+import { ChevronsUpDown, LogOut, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/shared/components/icon';
 import { infoCud } from '@/shared/config/jsons/vars';
 import { cn } from '@/shared/lib/utils';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   useSidebar,
 } from '@/shared/ui/sidebar';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu';
 import { Anchor as PopoverAnchor } from '@radix-ui/react-popover';
 import { Popover, PopoverContent } from '@/shared/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
@@ -27,6 +37,8 @@ const SUBMENU_TRANSITION = { duration: 0.22, ease: [0.32, 0.72, 0, 1] };
 const SUBMENU_GUIDE_STYLE = { borderLeft: '1px solid rgb(255 255 255 / 0.1)' };
 
 // Labels fade out while the rail narrows; the icon keeps its x position so nothing jumps.
+// Asymmetric by 1px to offset the panel's left border so collapsed icons sit dead center.
+const RAIL_INSET_CLASS = 'pl-[9px] pr-[7px]';
 const LABEL_CLASS = 'truncate transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:opacity-0';
 
 function isRouteActive(pathname, route) {
@@ -42,10 +54,15 @@ function readClosedItems() {
   catch { return new Set(); }
 }
 
-function NavItemSpinner({ className }) {
+// Pending routes keep their icon (swapping it for a spinner made it blink on every click);
+// the icon only pulses while the top progress bar shows the load.
+function NavIcon({ name, size, pending }) {
   return (
-    <span
-      className={`shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent ${className}`}
+    <Icon
+      name={name}
+      size={size}
+      strokeWidth={1.75}
+      className={pending ? 'animate-pulse' : undefined}
       aria-hidden="true"
     />
   );
@@ -100,7 +117,7 @@ function NavRow({ item, active, showPill, pending, collapsedRail, trailing }) {
     >
       {showPill ? <ActivePill /> : null}
       <span className="relative z-10 flex size-[18px] shrink-0 items-center justify-center">
-        {pending ? <NavItemSpinner className="h-4 w-4" /> : <Icon name={item.icon} size={18} strokeWidth={1.75} />}
+        <NavIcon name={item.icon} size={18} pending={pending} />
       </span>
       <span className={cn('relative z-10 flex-1', LABEL_CLASS)}>{item.label}</span>
       {trailing}
@@ -131,9 +148,7 @@ function SubmenuList({ item, location, activeChildId }) {
             >
               {childActive ? <ActivePill /> : null}
               <span className="relative z-10 flex size-3.5 shrink-0 items-center justify-center">
-                {childPending
-                  ? <NavItemSpinner className="h-3.5 w-3.5" />
-                  : (child.icon && <Icon name={child.icon} size={14} strokeWidth={1.75} />)}
+                {child.icon && <NavIcon name={child.icon} size={14} pending={childPending} />}
               </span>
               <span className="relative z-10 truncate">{child.label}</span>
             </Link>
@@ -195,9 +210,7 @@ function CollapsedFlyout({ item, location, active, pending }) {
                   : 'text-sidebar-foreground/70 hover:bg-white/[0.07] hover:text-sidebar-foreground',
               )}
             >
-              {pendingRoute === child.route
-                ? <NavItemSpinner className="h-3.5 w-3.5" />
-                : (child.icon && <Icon name={child.icon} size={14} strokeWidth={1.75} />)}
+              {child.icon && <NavIcon name={child.icon} size={14} pending={pendingRoute === child.route} />}
               <span className="truncate">{child.label}</span>
             </Link>
           );
@@ -288,7 +301,7 @@ function SidebarNavItem({ item, location, closedItems, onToggleItem }) {
 
 function SidebarNavGroup({ label, items, location, closedItems, onToggleItem }) {
   return (
-    <section className="px-2 py-1.5">
+    <section className={cn('py-1.5', RAIL_INSET_CLASS)}>
       <div className="relative flex h-7 items-center px-3">
         <span className={cn('text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40', LABEL_CLASS)}>
           {label}
@@ -313,7 +326,61 @@ function SidebarNavGroup({ label, items, location, closedItems, onToggleItem }) 
   );
 }
 
-export function AppSidebar({ items = [] }) {
+/** Account block pinned to the bottom of the rail (moved here from the header). */
+function SidebarAccount({ user, onLogout }) {
+  const { state, isMobile } = useSidebar();
+  const collapsedRail = state === 'collapsed' && !isMobile;
+  const fullName = [user?.name, user?.surname].filter(Boolean).join(' ');
+  const initials = user ? `${user.name?.[0] || ''}${user.surname?.[0] || ''}` : '?';
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={`Cuenta de ${fullName || 'usuario'}`}
+          className="flex h-12 w-full items-center gap-3 rounded-xl px-[7px] text-left outline-none transition-colors duration-150 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[state=open]:bg-white/[0.08]"
+        >
+          <Avatar className="size-7 shrink-0 ring-1 ring-white/15">
+            <AvatarFallback className="bg-sidebar-accent text-[10px] font-semibold text-sidebar-accent-foreground">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <span className={cn('flex min-w-0 flex-1 flex-col leading-tight', LABEL_CLASS)}>
+            <span className="truncate text-[13px] font-medium text-sidebar-foreground">{fullName || 'Usuario'}</span>
+            <span className="truncate text-[11px] text-sidebar-foreground/45">{user?.role_short || 'Usuario'}</span>
+          </span>
+          <ChevronsUpDown size={14} className={cn('shrink-0 text-sidebar-foreground/40', LABEL_CLASS)} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        side={collapsedRail ? 'right' : 'top'}
+        align={collapsedRail ? 'end' : 'start'}
+        sideOffset={collapsedRail ? 14 : 8}
+        className="w-56 rounded-2xl p-1.5"
+      >
+        <div className="px-2.5 py-1.5">
+          <p className="m-0 truncate text-sm font-medium">{fullName}</p>
+          <p className="m-0 text-xs text-muted-foreground">{user?.role_short || 'Usuario'}</p>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="min-h-11 rounded-xl sm:min-h-8">
+          <Link to="/configuracion?tab=cuenta" className="text-foreground no-underline hover:text-foreground">
+            <UserCircle2 size={16} className="mr-2" />
+            Mi perfil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onLogout} className="min-h-11 rounded-xl text-destructive sm:min-h-8">
+          <LogOut size={16} className="mr-2" />
+          Cerrar sesión
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function AppSidebar({ items = [], user, onLogout }) {
   const location = useLocation();
   const { linkProps } = useNavHandlers();
   const [closedItems, setClosedItems] = useState(readClosedItems);
@@ -332,18 +399,21 @@ export function AppSidebar({ items = [] }) {
   return (
     <div className="app-shell-rail">
       <Sidebar collapsible="icon" variant="floating" data-testid="dovela-sidebar">
-        <SidebarHeader className="h-16 shrink-0 justify-center px-2">
+        <SidebarHeader className={cn('h-16 shrink-0 justify-center py-2', RAIL_INSET_CLASS)}>
           <Link
             {...linkProps('/dashboard')}
             aria-label={infoCud.name}
-            className="flex h-12 items-center gap-3 rounded-xl px-[5px] no-underline outline-none hover:no-underline transition-colors duration-150 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            className="flex h-12 items-center gap-3 rounded-xl px-[6px] no-underline outline-none hover:no-underline transition-colors duration-150 hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-sidebar-ring"
           >
             <span className="flex size-[30px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-0.5 shadow-sm ring-1 ring-white/20">
               <img src={infoCud.icon} alt="" className="size-full object-contain" />
             </span>
             <span className={cn('flex min-w-0 flex-col leading-tight', LABEL_CLASS)}>
               <span className="truncate text-sm font-semibold text-sidebar-foreground">{infoCud.name}</span>
-              <span className="truncate text-[11px] text-sidebar-foreground/45">Dovela</span>
+              <span className="flex items-center gap-1 text-[11px] text-sidebar-foreground/50">
+                <img src="/logo192.png" alt="" className="size-3.5 shrink-0 object-contain" />
+                <span className="truncate">Dovela</span>
+              </span>
             </span>
           </Link>
         </SidebarHeader>
@@ -372,6 +442,11 @@ export function AppSidebar({ items = [] }) {
             </LayoutGroup>
           </nav>
         </SidebarContent>
+
+        <div className="mx-4 h-px bg-white/10" aria-hidden="true" />
+        <SidebarFooter className={cn('py-2', RAIL_INSET_CLASS)}>
+          <SidebarAccount user={user} onLogout={onLogout} />
+        </SidebarFooter>
       </Sidebar>
     </div>
   );

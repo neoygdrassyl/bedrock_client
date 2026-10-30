@@ -214,6 +214,12 @@ import {
   X,
   XCircle,
   Zap,
+  FileStack,
+  FlaskConical,
+  FolderKanban,
+  Landmark,
+  MapPinned,
+  Settings2,
 } from 'lucide-react';
 import { FA_TO_LUCIDE } from '@/shared/lib/icon-map';
 
@@ -433,6 +439,12 @@ const LUCIDE_ICON_REGISTRY = {
   X,
   XCircle,
   Zap,
+  FileStack,
+  FlaskConical,
+  FolderKanban,
+  Landmark,
+  MapPinned,
+  Settings2,
 };
 
 const LEGACY_ICON_ALIASES = {

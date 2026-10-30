@@ -87,15 +87,12 @@ export function AppShell({ user, onLogout, children }) {
         >
           <NavigationPendingProvider>
             <TopProgressBar />
-            <AppSidebar items={navItems} />
+            <AppSidebar items={navItems} user={user} onLogout={onLogout} />
 
             <SidebarInset className="min-h-0 min-w-0">
               <div className="flex min-h-0 flex-1 flex-col">
-                <div className="app-shell-header">
-                  <HeaderBar
-                    user={user}
-                    onLogout={onLogout}
-                  />
+                <div className="app-shell-header px-2 pt-2">
+                  <HeaderBar />
                 </div>
 
                 <ScrollArea type="always" className="flex-1 app-shell-main-scroll">
