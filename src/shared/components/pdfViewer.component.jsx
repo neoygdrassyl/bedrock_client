@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import { Icon } from '@/shared/components/icon';
 import { cn } from '@/shared/lib/utils';
+import { IllustratedState } from '@/shared/components/feedback/IllustratedState';
 import http from '../api/http-common';
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
@@ -231,13 +232,19 @@ function PDF_VIEWER({
     return (
         <div className={cn('pdf-viewer flex min-w-0 flex-col gap-3', className)}>
             {loadError ? (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-foreground">
-                    <p className="mb-2 font-semibold text-destructive">No fue posible abrir este PDF.</p>
-                    <p className="mb-0">{loadError.message}</p>
-                    {loadError.status ? <p className="mt-2 mb-0 text-xs text-muted-foreground">HTTP {loadError.status}</p> : null}
-                    {loadError.requestId ? <p className="mb-0 text-xs text-muted-foreground">Request ID: {loadError.requestId}</p> : null}
-                    {loadError.backendErrorId ? <p className="mb-0 text-xs text-muted-foreground">Backend Error ID: {loadError.backendErrorId}</p> : null}
-                </div>
+                <IllustratedState
+                    size="compact"
+                    variant={loadError.status === 404 ? 'not-found' : 'load-error'}
+                    title="No fue posible abrir este PDF."
+                    description={loadError.message}
+                    detail={loadError.status || loadError.requestId || loadError.backendErrorId ? (
+                        <>
+                            {loadError.status ? <p className="mb-0">HTTP {loadError.status}</p> : null}
+                            {loadError.requestId ? <p className="mb-0">Request ID: {loadError.requestId}</p> : null}
+                            {loadError.backendErrorId ? <p className="mb-0">Backend Error ID: {loadError.backendErrorId}</p> : null}
+                        </>
+                    ) : null}
+                />
             ) : pdf ? (
                 <div
                     ref={viewportRef}

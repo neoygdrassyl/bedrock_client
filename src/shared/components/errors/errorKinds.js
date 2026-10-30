@@ -1,4 +1,3 @@
-import { toast } from 'sonner';
 import { logEvent } from '@/shared/observability/logger';
 
 /**
@@ -91,29 +90,22 @@ export function tryChunkAutoReload({ storage = globalThis.sessionStorage, reload
   }
 }
 
-export const NEW_VERSION_TOAST_ID = 'dovela-new-version';
-
 /**
  * Handles Vite's `vite:preloadError` (a lazy chunk or its CSS failed to load,
- * usually because a deploy replaced the hashed files). It logs the failure and
- * offers "Actualizar" in a toast instead of reloading on the spot: the import
- * may come from a button handler and an instant reload would discard unsaved
- * work. The error still propagates, so a failed lazy route reaches
- * RouteErrorBoundary, which reloads once and then shows the `chunk` screen.
+ * usually because a deploy replaced the hashed files). It only logs a `chunk`
+ * entry: no toast. Reloading on the spot could discard unsaved work when the
+ * import comes from a button handler. The error still propagates, so a failed
+ * lazy route reaches RouteErrorBoundary, which reloads once and then shows the
+ * illustrated "Recargar" state.
  */
 export function installChunkPreloadHandler(target = globalThis.window) {
   if (!target?.addEventListener || target.__dovelaChunkHandler) return;
   target.__dovelaChunkHandler = true;
   target.addEventListener('vite:preloadError', (event) => {
     const reason = event?.payload;
-    logEvent('warn', 'chunk_load_failed', { message: reason?.message || String(reason || 'vite:preloadError') });
-    try {
-      toast.warning('Hay una versión nueva de Dovela', {
-        id: NEW_VERSION_TOAST_ID,
-        description: 'Actualice la página para seguir trabajando con la versión más reciente.',
-        duration: Infinity,
-        action: { label: 'Actualizar', onClick: () => globalThis.location.reload() },
-      });
-    } catch {}
+    logEvent('warn', 'chunk_load_failed', {
+      kind: 'chunk',
+      message: reason?.message || String(reason || 'vite:preloadError'),
+    });
   });
 }
