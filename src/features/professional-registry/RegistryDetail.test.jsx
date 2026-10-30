@@ -106,6 +106,7 @@ describe('RegistryDetail', () => {
 
       expect(within(roles).getByRole('columnheader', { name: 'Experiencia general' })).toBeInTheDocument();
       expect(within(roles).getByRole('columnheader', { name: 'Experiencia específica' })).toBeInTheDocument();
+      expect(within(roles).getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['Rol', 'Expedientes', 'Experiencia general', 'Experiencia específica', 'Máxima declarada']);
       expect(roles).toHaveTextContent('16 años 5 meses 29 días');
       expect(roles).toHaveTextContent('12 años 10 días');
       expect(screen.getByText(/desde la fecha de expedición de la matrícula principal \(68202-158428/)).toBeInTheDocument();

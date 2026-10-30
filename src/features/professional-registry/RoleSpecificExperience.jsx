@@ -34,13 +34,15 @@ export default function RoleSpecificExperience({ role, general, canWrite, busy, 
 
   if (!draft) {
     return (
-      <span className="inline-flex flex-nowrap items-center gap-2 whitespace-nowrap">
-        <span>{formatDuration(value)}</span>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2 whitespace-nowrap">
+          <span>{formatDuration(value)}</span>
+          {canWrite && role.specificEditable ? (
+            <Button type="button" size="sm" variant="outline" className="h-7 px-2.5 text-xs" aria-label={`Editar la experiencia específica de ${role.label}`} onClick={() => setDraft(draftOf(value))}>Editar</Button>
+          ) : null}
+        </div>
         {role.specificExceedsGeneral ? <Badge variant="destructive">Supera la experiencia general</Badge> : null}
-        {canWrite && role.specificEditable ? (
-          <Button type="button" size="sm" variant="outline" aria-label={`Editar la experiencia específica de ${role.label}`} onClick={() => setDraft(draftOf(value))}>Editar</Button>
-        ) : null}
-      </span>
+      </div>
     );
   }
 
