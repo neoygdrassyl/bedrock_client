@@ -21,10 +21,12 @@ import App from './app/App';
 import { purgeLegacyErrorReportStorage } from './app/legacy-storage-cleanup';
 import { installGlobalErrorListeners } from './shared/observability/logger';
 import { installChunkPreloadHandler } from './shared/components/errors/errorKinds';
+import { installBrokenImageFallback } from './shared/observability/imageFallback';
 
 purgeLegacyErrorReportStorage();
 installGlobalErrorListeners();
 installChunkPreloadHandler();
+installBrokenImageFallback();
 
 const root = createRoot(document.getElementById('root'));
 root.render(

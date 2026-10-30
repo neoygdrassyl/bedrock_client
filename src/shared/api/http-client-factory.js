@@ -69,9 +69,13 @@ export function createDovelaHttpClient({ baseURL, headers, attachAuth = true } =
   http.interceptors.response.use(
     (response) => response,
     async (error) => {
+      // Logging only: no toast, banner or modal is raised from here. Callers
+      // still get the rejection and decide what (if anything) to show inline.
+      // `skipErrorLog` requests are handled by their caller, so they are kept in
+      // the local support buffer only (`window.__dovelaLogs`), never sent.
       const isCanceledRequest = axios.isCancel?.(error) || error?.code === 'ERR_CANCELED';
-      if (!isCanceledRequest && !error?.config?.skipErrorLog) {
-        logHttpError(error);
+      if (!isCanceledRequest) {
+        logHttpError(error, error?.config?.skipErrorLog ? { level: 'info', localOnly: true } : undefined);
       }
       if (error?.response?.status === 401) {
         error.response.data = await parseBinaryJson(error.response.data);

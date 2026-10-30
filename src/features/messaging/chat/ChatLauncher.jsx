@@ -23,6 +23,13 @@ export default function ChatLauncher() {
     }
   }, []);
 
+  // Other shell surfaces (e.g. the command palette) open the chat without importing it.
+  useEffect(() => {
+    const handleOpenRequest = () => setOpen(true);
+    window.addEventListener('dovela:open-chat', handleOpenRequest);
+    return () => window.removeEventListener('dovela:open-chat', handleOpenRequest);
+  }, []);
+
   useEffect(() => {
     if (!open) return undefined;
 
@@ -58,7 +65,7 @@ export default function ChatLauncher() {
       <Button
         variant="ghost"
         size="sm"
-        className="relative h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7"
+        className="relative h-8 w-8 shrink-0 rounded-xl p-0 text-muted-foreground touch:h-11 touch:w-11"
         aria-label={unread ? `Chat interno: ${unread} mensajes sin leer` : 'Abrir chat interno'}
         title="Abrir chat interno"
         onClick={() => setOpen(true)}
@@ -80,7 +87,7 @@ export default function ChatLauncher() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="flex h-dvh w-full max-w-none flex-col overflow-hidden rounded-none border-border bg-background shadow-2xl sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:w-[min(72rem,calc(100vw-2rem))] sm:rounded-xl sm:border"
+            className="flex h-dvh w-full max-w-none flex-col overflow-hidden rounded-none border-border bg-background shadow-2xl sm:h-[min(46rem,calc(100dvh-2rem))] sm:w-[min(68rem,calc(100vw-2rem))] sm:rounded-2xl sm:border"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border/60 bg-background px-4 py-3">
@@ -89,20 +96,20 @@ export default function ChatLauncher() {
                   <Icon name="MessageCircle" size={16} />
                 </span>
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold text-foreground">Chat interno</h2>
-                  <p className="text-xs text-muted-foreground">Herramienta rápida de comunicación entre usuarios</p>
+                  <h2 className="m-0 text-sm font-semibold text-foreground">Chat interno</h2>
+                  <p className="m-0 text-xs text-muted-foreground">Mensajes directos entre usuarios activos</p>
                 </div>
-                <Badge variant="secondary" className="hidden rounded-full text-[10px] sm:inline-flex">
-                  {unread} sin leer
-                </Badge>
+                {unread > 0 && (
+                  <Badge variant="secondary" className="hidden rounded-full text-xs sm:inline-flex">
+                    {unread} sin leer
+                  </Badge>
+                )}
               </div>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setOpen(false)} aria-label="Cerrar chat interno">
                 <Icon name="X" size={16} />
               </Button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto p-2 sm:p-3">
-              <InternalChatPanel title="Directorio interno" subtitle="Selecciona un usuario y conversa sin cambiar de módulo" />
-            </div>
+            <InternalChatPanel className="h-auto min-h-0 flex-1 rounded-none border-0" />
           </div>
         </div>,
         document.body

@@ -4,6 +4,7 @@ import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import FUNService from '../../features/expediente/api/fun.service'
 import { Icon } from '@/shared/components/icon';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
+import { IllustratedState } from '@/shared/components/feedback/IllustratedState';
 import { downloadProtectedFile, toProtectedApiPath } from '@/shared/utils/pdfDownload';
 
 function _isValidFileUrl(str) {
@@ -167,11 +168,12 @@ function VIZUALIZER({ url, id, apipath, previewUrl, downloadUrl, icon, color, ic
             </div>
             <hr />
             {loadError ? (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-foreground">
-                    <p className="mb-2 font-semibold text-destructive">No se pudo abrir el documento</p>
-                    <p className="mb-0">{loadError.message}</p>
-                    {loadError.status ? <p className="mt-2 mb-0 text-xs text-muted-foreground">HTTP {loadError.status}</p> : null}
-                </div>
+                <IllustratedState
+                    variant={loadError.status === 404 ? 'not-found' : loadError.reason === 'fetch_error' && !loadError.status ? 'offline' : 'load-error'}
+                    title="No se pudo abrir el documento"
+                    description={loadError.message}
+                    detail={loadError.status ? `HTTP ${loadError.status}` : null}
+                />
             ) : (
                 <ProtectedDocumentPreview
                     source={activeSource || previewSource}

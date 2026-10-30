@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Check, Database, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { Check, Database, Image as ImageIcon, LayoutDashboard, PlugZap, RotateCcw, UserCircle2, Settings as SettingsIcon } from 'lucide-react';
 import DataService from '../../shared/api/data.service.js';
 import CentralConfigurationPanel from './document_requirements/CentralConfigurationPanel.jsx';
+import BrandingPanel from './BrandingPanel.jsx';
 import IntegrationsPanel from './IntegrationsPanel.jsx';
 import { isIntegrationManagerUser } from './developerAccess.js';
 import {
@@ -54,11 +55,15 @@ function formatLastLogin(value) {
 export default function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const user = DataService.getUserData();
-  // Same roles the backend accepts for /api/integration-settings (ADM, CUR, developers).
+  // Same roles the backend accepts for /api/integration-settings and PUT /api/branding/logo
+  // (ADM, CUR, developers).
   const canManageIntegrations = isIntegrationManagerUser(user);
   const navItems = [
     ...NAV_ITEMS,
-    ...(canManageIntegrations ? [{ key: 'integraciones', label: 'Integraciones', icon: PlugZap }] : []),
+    ...(canManageIntegrations ? [
+      { key: 'identidad', label: 'Identidad', icon: ImageIcon },
+      { key: 'integraciones', label: 'Integraciones', icon: PlugZap },
+    ] : []),
   ];
   const requestedTab = searchParams.get('tab') || 'configuracion-documental';
   const activeKey = navItems.some((item) => item.key === requestedTab)
@@ -117,6 +122,7 @@ export default function SettingsPage() {
         <div className="settings-panel">
           {activeKey === 'configuracion-documental' && <CentralConfigurationPanel />}
           {activeKey === 'personalizacion' && <DashboardPersonalizationPanel />}
+          {activeKey === 'identidad' && canManageIntegrations && <BrandingPanel />}
           {activeKey === 'integraciones' && canManageIntegrations && <IntegrationsPanel />}
           {activeKey === 'cuenta' && (
             <AccountPanel fullName={fullName} roleDesc={roleDesc} lastLogin={lastLogin} />
