@@ -7,7 +7,6 @@ import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 
-import FUNService from '../expediente/api/fun.service';
 import PqrsMainService from '../pqrs/api/pqrs_main.service';
 import SubmitService from '../ventanilla/api/submit.service';
 import MailboxService from '../messaging/api/mailbox.service';
@@ -88,17 +87,12 @@ function formatShortDate(value) {
   return new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
 }
 
-function buildTrackedExpedientes(bookmarks, funData) {
-  const universe = new Map();
-  (funData || []).forEach((expediente) => {
-    if (expediente?.id != null) universe.set(String(expediente.id), expediente);
-  });
-
+function buildTrackedExpedientes(bookmarks) {
   const seen = new Set();
   return (bookmarks || [])
     .map((bookmark) => {
       const fun0Id = bookmark.fun0Id ?? bookmark.fun_0_id ?? bookmark.fun_0?.id ?? bookmark.id;
-      const expediente = universe.get(String(fun0Id)) || bookmark.fun_0 || null;
+      const expediente = bookmark.fun_0 || null;
       if (!fun0Id && !expediente) return null;
       const fun1 = getFirstFun1(expediente);
       const radicado = expediente?.id_public || bookmark.radicado || (fun0Id ? `#${fun0Id}` : 'Sin radicado');
@@ -150,7 +144,8 @@ function Dashboard() {
     let cancelled = false;
     let cancelTrackedWork = () => {};
 
-    async function fetchTrackedExpedientes(funData) {
+    // Bookmarks already embed their fun_0 + fun_1 rows, so no FUN list is needed.
+    async function fetchTrackedExpedientes() {
       try {
         const results = await Promise.allSettled([
           BookmarkService.list({ scope: 'personal' }),
@@ -161,8 +156,8 @@ function Dashboard() {
         const personalBookmarks = results[0].status === 'fulfilled' ? normalizeList(results[0].value?.data) : [];
         const teamBookmarks = results[1].status === 'fulfilled' ? normalizeList(results[1].value?.data) : [];
         setTrackedExpedientes({
-          personal: buildTrackedExpedientes(personalBookmarks, funData || []),
-          team: buildTrackedExpedientes(teamBookmarks, funData || []),
+          personal: buildTrackedExpedientes(personalBookmarks),
+          team: buildTrackedExpedientes(teamBookmarks),
         });
         setTrackedError(results[0].status === 'rejected' || results[1].status === 'rejected' ? 'No se pudieron cargar todos los marcados.' : null);
       } catch {
@@ -174,12 +169,10 @@ function Dashboard() {
 
     async function fetchCounts() {
       try {
-        // Only the FUN list is fetched in full: its rows are filtered by state
-        // and reused for the tracked-expedientes panel below. The other four
-        // are pure counters, so they hit `/count` (a few bytes) instead of
-        // downloading ~24.5MB of rows just to read `.length` off them.
+        // Only lightweight `/count` endpoints: the full FUN list used to be
+        // downloaded here just to count states, which dominated dashboard load.
+        // Licencias cards therefore show no counter.
         const results = await Promise.allSettled([
-          FUNService.getAll_fun(),
           PqrsMainService.count(),
           SubmitService.count(),
           MailboxService.count(),
@@ -189,23 +182,14 @@ function Dashboard() {
         const len = (r) => (r.status === 'fulfilled' && Number.isFinite(r.value?.data?.count)
           ? r.value.data.count
           : null);
-        const funData = results[0].status === 'fulfilled' && Array.isArray(results[0].value?.data)
-          ? results[0].value.data
-          : null;
-        const activeFun = Array.isArray(funData) ? funData.filter(f => f.state > 0 && f.state < 100).length : null;
-        const pendingFun = Array.isArray(funData) ? funData.filter(f => Number(f.state) === 1 || Number(f.state) === -1).length : null;
-
         setCounts({
-          '/licencias': pendingFun,
-          '/licencias/gestion': activeFun,
-          '/licencias/gestion-nueva': activeFun,
-          '/peticiones': len(results[1]),
-          '/ventanilla': len(results[2]),
-          '/mensajes': len(results[3]),
-          '/calendario': len(results[4]),
+          '/peticiones': len(results[0]),
+          '/ventanilla': len(results[1]),
+          '/mensajes': len(results[2]),
+          '/calendario': len(results[3]),
         });
 
-        cancelTrackedWork = deferDashboardWork(() => fetchTrackedExpedientes(funData || []));
+        cancelTrackedWork = deferDashboardWork(fetchTrackedExpedientes);
       } catch {
         // Counts are optional enhancement
         if (!cancelled) setLoadingTracked(false);

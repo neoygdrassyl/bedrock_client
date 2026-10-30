@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   {
     id: 'dashboard',
     label: 'Panel de control',
-    icon: 'LayoutDashboard',
+    icon: 'LayoutGrid',
     route: '/dashboard',
     roles: [],
     children: [],
@@ -19,19 +19,19 @@ const NAV_ITEMS = [
   {
     id: 'licencias',
     label: 'Licencias',
-    icon: 'FileText',
+    icon: 'Building2',
     route: '/licencias',
     roles: [],
     children: [
-      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus' },
-      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderOpen' },
-      { id: 'licencias-gestion-nueva', label: 'Gestión nueva', route: '/licencias/gestion-nueva', icon: 'Layers' },
+      { id: 'licencias-radicar', label: 'Radicar', route: '/licencias', icon: 'FilePlus2' },
+      { id: 'licencias-gestion', label: 'Gestión', route: '/licencias/gestion', icon: 'FolderKanban' },
+      { id: 'licencias-gestion-nueva', label: 'Gestión nueva', route: '/licencias/gestion-nueva', icon: 'LayoutList' },
     ],
   },
   {
     id: 'peticiones',
     label: 'Peticiones',
-    icon: 'FileSpreadsheet',
+    icon: 'MessageSquareText',
     route: '/peticiones',
     roles: [],
     children: [],
@@ -39,7 +39,7 @@ const NAV_ITEMS = [
   {
     id: 'ventanilla',
     label: 'Ventanilla',
-    icon: 'FileInput',
+    icon: 'Inbox',
     route: '/ventanilla',
     roles: [],
     children: [],
@@ -55,7 +55,7 @@ const NAV_ITEMS = [
   {
     id: 'calendario',
     label: 'Calendario',
-    icon: 'Calendar',
+    icon: 'CalendarDays',
     route: '/calendario',
     roles: [],
     children: [],
@@ -63,7 +63,7 @@ const NAV_ITEMS = [
   {
     id: 'archivo',
     label: 'Archivo',
-    icon: 'FolderOpen',
+    icon: 'Archive',
     route: '/archivo',
     roles: [],
     children: [],
@@ -71,7 +71,7 @@ const NAV_ITEMS = [
   {
     id: 'publicaciones',
     label: 'Publicaciones',
-    icon: 'Newspaper',
+    icon: 'Megaphone',
     route: '/publicaciones',
     roles: [],
     children: [],
@@ -79,7 +79,7 @@ const NAV_ITEMS = [
   {
     id: 'nomenclatura',
     label: 'Nomenclatura',
-    icon: 'PenLine',
+    icon: 'Signpost',
     route: '/nomenclatura',
     roles: [],
     children: [],
@@ -87,29 +87,29 @@ const NAV_ITEMS = [
   {
     id: 'normas',
     label: 'Normas urbanas',
-    icon: 'Home',
+    icon: 'Landmark',
     route: '/normas',
     roles: [],
     children: [
       { id: 'normas-urbanas', label: 'Normas', route: '/normas', icon: 'Scale' },
-      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPin' },
+      { id: 'uso-suelo', label: 'Uso de suelo', route: '/uso-suelo', icon: 'MapPinned' },
     ],
   },
   {
     id: 'simulador',
     label: 'Simulador',
-    icon: 'SearchCheck',
+    icon: 'FlaskConical',
     route: '/simulador',
     roles: [],
     children: [
-      { id: 'simulador-documentos', label: 'Documentos', route: '/configuracion?tab=configuracion-documental', icon: 'FileText' },
+      { id: 'simulador-documentos', label: 'Documentos', route: '/configuracion?tab=configuracion-documental', icon: 'FileStack' },
       { id: 'simulador-legal', label: 'Legal', route: '/simulador/legal', icon: 'Gavel' },
     ],
   },
   {
     id: 'configuracion',
     label: 'Configuración',
-    icon: 'Settings',
+    icon: 'Settings2',
     route: '/configuracion',
     roles: [],
     children: [],

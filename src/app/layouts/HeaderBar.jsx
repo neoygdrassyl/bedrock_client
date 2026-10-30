@@ -1,17 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/shared/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { Separator } from '@/shared/ui/separator';
 import { useTheme } from '@/shared/components/theme-provider';
-import { Sun, Moon, LogOut, Search, CalendarDays, ChevronRight, UserCircle2 } from 'lucide-react';
+import { Sun, Moon, Search, CalendarDays, ChevronRight } from 'lucide-react';
 import { Icon } from '@/shared/components/icon';
 import { SidebarTrigger, useSidebar } from '@/shared/ui/sidebar';
 import { cn } from '@/shared/lib/utils';
@@ -37,17 +29,17 @@ const LazyGlobalSearchDialog = lazy(() =>
 );
 
 const MODULE_ICONS = {
-  dashboard: 'LayoutDashboard',
-  licencias: 'FileText',
-  peticiones: 'FileSpreadsheet',
-  ventanilla: 'FileInput',
+  dashboard: 'LayoutGrid',
+  licencias: 'Building2',
+  peticiones: 'MessageSquareText',
+  ventanilla: 'Inbox',
   mensajes: 'Mail',
-  calendario: 'Calendar',
-  archivo: 'FolderOpen',
-  publicaciones: 'Newspaper',
-  nomenclatura: 'PenLine',
-  normas: 'Home',
-  simulador: 'SearchCheck',
+  calendario: 'CalendarDays',
+  archivo: 'Archive',
+  publicaciones: 'Megaphone',
+  nomenclatura: 'Signpost',
+  normas: 'Landmark',
+  simulador: 'FlaskConical',
   documentos: 'FileText',
   calculadora: 'Calculator',
   consecutivos: 'Book',
@@ -58,10 +50,10 @@ const MODULE_ICONS = {
 };
 
 /**
- * Top header bar: sidebar toggle + breadcrumb + search + theme toggle + user dropdown.
- * Visual reference: Linear top bar — compact, functional, uncluttered.
+ * Floating top bar: sidebar toggle + breadcrumb on the left; calendar, search,
+ * chat, alarms and theme on the right. The account menu lives in the sidebar footer.
  */
-export function HeaderBar({ user, onLogout }) {
+export function HeaderBar() {
   const { resolvedTheme, setTheme } = useTheme();
   const { isMobile, openMobile, state } = useSidebar();
   const location = useLocation();
@@ -77,10 +69,6 @@ export function HeaderBar({ user, onLogout }) {
     icon: i === 0 ? MODULE_ICONS[seg] : undefined,
   }));
 
-  const initials = user
-    ? (user.name?.[0] || '') + (user.surname?.[0] || '')
-    : '?';
-
   useEffect(() => {
     const handleSearchShortcut = (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -94,7 +82,7 @@ export function HeaderBar({ user, onLogout }) {
   }, []);
 
   return (
-    <header className="flex h-11 min-w-0 items-center gap-1.5 overflow-hidden border-b border-border bg-card px-2.5 backdrop-blur-sm select-none">
+    <header className="flex h-16 min-w-0 items-center gap-1.5 overflow-hidden rounded-2xl border border-border/70 bg-card px-2.5 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.35)] select-none">
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -145,10 +133,10 @@ export function HeaderBar({ user, onLogout }) {
           <TooltipTrigger asChild>
             <Link
               to="/calendario-laboral"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground no-underline transition-colors hover:bg-muted hover:text-foreground"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground no-underline transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Abrir calendario laboral"
             >
-              <CalendarDays className="h-3.5 w-3.5" />
+              <CalendarDays className="h-4 w-4" />
             </Link>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={4} className="text-xs">
@@ -161,12 +149,12 @@ export function HeaderBar({ user, onLogout }) {
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-xs text-foreground/70 transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card lg:h-7 lg:w-auto lg:justify-start lg:gap-1.5 lg:px-2.5"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/60 text-xs text-foreground/60 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card lg:h-8 lg:w-64 lg:justify-start lg:gap-2 lg:px-3"
         aria-label="Buscar expediente"
       >
-        <Search className="h-3 w-3" />
-        <span className="hidden lg:inline">Expediente...</span>
-        <kbd className="ml-3 hidden rounded border border-border bg-background px-1 py-0.5 font-mono text-[9px] xl:inline">{shortcutModifier}K</kbd>
+        <Search className="h-3.5 w-3.5 shrink-0" />
+        <span className="hidden lg:inline">Buscar expediente…</span>
+        <kbd className="ml-auto hidden rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground shadow-none xl:inline">{shortcutModifier} K</kbd>
       </button>
 
       {/* Chat & notifications */}
@@ -183,46 +171,10 @@ export function HeaderBar({ user, onLogout }) {
         size="sm"
         onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         aria-label={resolvedTheme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-        className="h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7"
+        className="h-11 w-11 shrink-0 rounded-xl p-0 text-muted-foreground lg:h-8 lg:w-8"
       >
-        {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+        {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </Button>
-
-      <Separator orientation="vertical" className="h-4 mx-0.5" />
-
-      {/* User menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-11 w-11 shrink-0 gap-1.5 px-2 lg:h-7 lg:w-auto lg:px-1.5">
-            <Avatar className="h-5 w-5">
-              <AvatarFallback className="text-[9px] bg-primary text-primary-foreground font-medium">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="hidden text-xs font-medium text-foreground lg:inline">
-              {user?.name}
-            </span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <div className="px-2 py-1.5">
-            <p className="text-sm font-medium">{user?.name} {user?.surname}</p>
-            <p className="text-xs text-muted-foreground">{user?.role_short || 'Usuario'}</p>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="min-h-11 sm:min-h-8">
-            <Link to="/configuracion?tab=cuenta">
-              <UserCircle2 className="h-4 w-4 mr-2" />
-              Mi perfil
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onLogout} className="min-h-11 text-destructive sm:min-h-8">
-            <LogOut className="h-4 w-4 mr-2" />
-            Cerrar sesión
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
       {searchOpen && (
         <Suspense fallback={null}>

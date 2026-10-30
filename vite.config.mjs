@@ -92,6 +92,12 @@ export default defineConfig(({ mode, command }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
+          // Tiny shared runtime helpers (Vite's dynamic-import preload, Babel helpers, clsx,
+          // the useSyncExternalStore shim). Rollup's CJS interop helper must NOT move here:
+          // splitting it from its CJS consumers breaks their init order in production. Left unassigned, Rollup hoists them into the first manual chunk
+          // that uses them (vendor-pdf), so the entry imported ~465 KB gzip just for them.
+            if (/vite\/preload-helper|@babel\/runtime|node_modules\/(clsx|use-sync-external-store)\//.test(id)) return 'vendor-runtime';
+
             if (!id.includes('node_modules')) return undefined;
 
           // React core runtime — aislado en su propio chunk sin dependencias externas.
