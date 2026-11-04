@@ -18,6 +18,10 @@ class ProfessionalRegistryService {
   catalog() { return http.get(`/${ROUTE}/catalog`, QUIET); }
   list(params) { return http.get(`/${ROUTE}${buildQuery(params)}`, QUIET); }
   get(id) { return http.get(`/${ROUTE}/${id}`, QUIET); }
+  // FUN 5.2 search box. The caller handles failures (an older backend answers 404) and may cancel with `signal`.
+  lookup(q, { limit, signal } = {}) {
+    return http.get(`/${ROUTE}/lookup${buildQuery({ q, limit })}`, { ...QUIET, skipErrorLog: true, signal });
+  }
   create(body) { return http.post(`/${ROUTE}`, body, JSON_REQUEST); }
   update(id, body) { return http.put(`/${ROUTE}/${id}`, body, JSON_REQUEST); }
   setCanonicalName(id, body) { return http.put(`/${ROUTE}/${id}/canonical-name`, body, JSON_REQUEST); }

@@ -37,6 +37,14 @@ describe('professional registry service', () => {
     expect(http.post).toHaveBeenCalledWith('/professional-registry/consolidate', { apply: false }, config);
   });
 
+  it('looks up FUN 5.2 suggestions quietly, cancellable and without logging the failure as an error', () => {
+    const signal = new AbortController().signal;
+    service.lookup('ana maría', { signal });
+    expect(http.get).toHaveBeenCalledWith('/professional-registry/lookup?q=ana+mar%C3%ADa', { skipDovelaErrorCapture: true, skipErrorLog: true, signal });
+    service.lookup('ana', { limit: 5 });
+    expect(http.get).toHaveBeenLastCalledWith('/professional-registry/lookup?q=ana&limit=5', { skipDovelaErrorCapture: true, skipErrorLog: true, signal: undefined });
+  });
+
   it('deletes with the expected version in the body', () => {
     service.remove(7, { expectedVersion: 3 });
     expect(http.delete).toHaveBeenCalledWith('/professional-registry/7', { skipDovelaErrorCapture: true, headers: { 'Content-Type': 'application/json' }, data: { expectedVersion: 3 } });
