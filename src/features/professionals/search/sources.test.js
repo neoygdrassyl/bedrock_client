@@ -7,7 +7,7 @@ vi.mock('../api/profesionals.service', () => ({ default: external }));
 
 import { externalSource, fromExternal } from './externalSource';
 import { fromRegistry, registrySource } from './registrySource';
-import { suggestionLabel } from './professionalSuggestion';
+import { searchTextOf, suggestionLabel, suggestionOptions, withUniqueKeys } from './professionalSuggestion';
 
 describe('professional suggestion mappers', () => {
   it('maps a registry item, with unknown values as empty text and sanction unknown', () => {
@@ -40,6 +40,25 @@ describe('professional suggestion mappers', () => {
     expect(suggestionLabel(base)).toBe('ANA MARIA PEREZ');
     expect(suggestionLabel({ ...base, cc: '123' })).toBe('ANA MARIA PEREZ · CC 123');
     expect(suggestionLabel({ ...base, registration: 'A1' })).toBe('ANA MARIA PEREZ · MAT. A1');
+    expect(suggestionLabel({ ...base, cc: '123', registration: 'A1' })).toBe('ANA MARIA PEREZ · CC 123 · MAT. A1');
+  });
+
+  it('makes repeated keys unique and gives namesakes distinct option texts', () => {
+    const twin = (key) => fromExternal({ id: key, name: 'Ana', surname: 'Pérez' });
+    const unique = withUniqueKeys([twin(1), twin(1), twin(2)]);
+    expect(unique.map((item) => item.key)).toEqual(['external:1', 'external:1#2', 'external:2']);
+    expect(suggestionOptions([...unique, fromExternal({ id: 3, name: 'Luis', id_number: '9' })])).toEqual([
+      { text: 'ANA PEREZ · #1', value: 'external:1' },
+      { text: 'ANA PEREZ · #1#2', value: 'external:1#2' },
+      { text: 'ANA PEREZ · #2', value: 'external:2' },
+      { text: 'LUIS · CC 9', value: 'external:3' },
+    ]);
+  });
+
+  it('searches only the name part of an edited option label', () => {
+    expect(searchTextOf('ANA PEREZ · CC 12')).toBe('ANA PEREZ');
+    expect(searchTextOf('ana pe')).toBe('ana pe');
+    expect(searchTextOf(undefined)).toBe('');
   });
 });
 

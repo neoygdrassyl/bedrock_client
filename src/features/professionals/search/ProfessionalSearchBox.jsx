@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import HTMLDatalist from '@/shared/components/HTMLDatalist';
 import { Icon } from '@/shared/components/icon';
-import { suggestionLabel } from './professionalSuggestion';
+import { createFallbackSearch, professionalSearch } from './fallbackSearch';
+import { searchTextOf, suggestionOptions } from './professionalSuggestion';
 import { useProfessionalSearch } from './useProfessionalSearch';
 
 export const STATUS_TEXT = {
@@ -13,10 +14,15 @@ export const NAME_REVIEW_HINT = 'Revise la separación de nombres y apellidos';
 
 /**
  * The FUN 5.2 professional search box: type at least three characters, pick a suggestion and `onSelect` receives it.
- * `search` replaces the configured search (tests, other sources).
+ * It searches the configured sources (VITE_PROFESSIONAL_SEARCH_SOURCES) unless `sources` (a stable list of
+ * ProfessionalSearchSource, tried in order) or a ready `search` function is given.
  */
-export default function ProfessionalSearchBox({ onSelect, search, name = 'search_52' }) {
-  const { setQuery, status, suggestions } = useProfessionalSearch({ search });
+export default function ProfessionalSearchBox({ onSelect, sources, search, name = 'search_52' }) {
+  const searchToUse = useMemo(
+    () => search ?? (sources ? createFallbackSearch(sources) : professionalSearch),
+    [search, sources],
+  );
+  const { setQuery, status, suggestions } = useProfessionalSearch({ search: searchToUse });
   const [selected, setSelected] = useState(null);
 
   const handleChange = ({ target }) => {
@@ -27,7 +33,7 @@ export default function ProfessionalSearchBox({ onSelect, search, name = 'search
       return;
     }
     setSelected(null);
-    setQuery(target.text);
+    setQuery(searchTextOf(target.text));
   };
 
   return (
@@ -45,7 +51,7 @@ export default function ProfessionalSearchBox({ onSelect, search, name = 'search
             name={name}
             onChange={handleChange}
             classNames="form-control"
-            options={suggestions.map((suggestion) => ({ text: suggestionLabel(suggestion), value: suggestion.key }))}
+            options={suggestionOptions(suggestions)}
           />
         </div>
         {selected?.nameNeedsReview ? <small className="text-warning fw-semibold d-block">{NAME_REVIEW_HINT}</small> : null}

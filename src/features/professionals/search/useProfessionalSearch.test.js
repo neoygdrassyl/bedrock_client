@@ -55,6 +55,7 @@ describe('useProfessionalSearch', () => {
     const { result } = setup(search);
     act(() => { result.current.setQuery('ana'); });
     act(() => { vi.advanceTimersByTime(300); });
+    await flush();
     const firstSignal = search.mock.calls[0][1].signal;
     act(() => { result.current.setQuery('ana maria'); });
     expect(firstSignal.aborted).toBe(true);
@@ -79,11 +80,32 @@ describe('useProfessionalSearch', () => {
     expect(result.current).toMatchObject({ status: 'unavailable', suggestions: [] });
   });
 
-  it('aborts the pending search on unmount', () => {
+  it('settles as unavailable when the search throws synchronously', async () => {
+    const search = vi.fn(() => { throw new Error('boom'); });
+    const { result } = setup(search);
+    act(() => { result.current.setQuery('ana'); });
+    act(() => { vi.advanceTimersByTime(300); });
+    await flush();
+    await flush();
+    expect(result.current).toMatchObject({ status: 'unavailable', suggestions: [] });
+  });
+
+  it('makes repeated suggestion keys unique', async () => {
+    const search = vi.fn().mockResolvedValue([{ key: 'external:1' }, { key: 'external:1' }]);
+    const { result } = setup(search);
+    act(() => { result.current.setQuery('ana'); });
+    act(() => { vi.advanceTimersByTime(300); });
+    await flush();
+    await flush();
+    expect(result.current.suggestions.map((item) => item.key)).toEqual(['external:1', 'external:1#2']);
+  });
+
+  it('aborts the pending search on unmount', async () => {
     const search = vi.fn(() => new Promise(() => {}));
     const { result, unmount } = setup(search);
     act(() => { result.current.setQuery('ana'); });
     act(() => { vi.advanceTimersByTime(300); });
+    await flush();
     unmount();
     expect(search.mock.calls[0][1].signal.aborted).toBe(true);
   });

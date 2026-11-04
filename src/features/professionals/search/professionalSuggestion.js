@@ -4,7 +4,7 @@
  *
  * @typedef {object} ProfessionalSuggestion
  * @property {string} key Unique within one result list.
- * @property {'registry'|'external'} source
+ * @property {'registry'|'external'|'internal'} source
  * @property {string} givenNames
  * @property {string} surnames
  * @property {string} cc
@@ -38,10 +38,40 @@ export const joinNames = (...parts) => parts.map(textOf).filter(Boolean).join(' 
 
 export const withoutAccents = (value) => textOf(value).normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-/** The option text: full name in uppercase without accents, plus the cédula (or matrícula) to tell namesakes apart. */
+/** Separates the name from the details in an option label; a query never needs what follows it. */
+export const LABEL_SEPARATOR = ' · ';
+
+/** The same suggestions with unique keys: a repeated key gets `#2`, `#3`... */
+export function withUniqueKeys(suggestions) {
+  const seen = new Map();
+  return suggestions.map((suggestion) => {
+    const count = (seen.get(suggestion.key) || 0) + 1;
+    seen.set(suggestion.key, count);
+    return count === 1 ? suggestion : { ...suggestion, key: `${suggestion.key}#${count}` };
+  });
+}
+
+/** The option text: full name in uppercase without accents, plus the cédula and matrícula when known. */
 export function suggestionLabel(suggestion) {
   const name = withoutAccents(joinNames(suggestion.givenNames, suggestion.surnames)).toUpperCase();
-  if (suggestion.cc) return `${name} · CC ${suggestion.cc}`;
-  if (suggestion.registration) return `${name} · MAT. ${suggestion.registration}`;
-  return name;
+  const details = [suggestion.cc && `CC ${suggestion.cc}`, suggestion.registration && `MAT. ${suggestion.registration}`];
+  return [name, ...details.filter(Boolean)].join(LABEL_SEPARATOR);
 }
+
+const shortKey = (key) => key.slice(key.indexOf(':') + 1);
+
+/**
+ * One option per suggestion with a unique text, since a datalist identifies the pick by its text: a label shared by
+ * several suggestions (namesakes without cédula or matrícula) gets the suggestion key appended. Keys must be unique.
+ */
+export function suggestionOptions(suggestions) {
+  const labels = suggestions.map(suggestionLabel);
+  const repeated = (label) => labels.indexOf(label) !== labels.lastIndexOf(label);
+  return suggestions.map((suggestion, index) => ({
+    text: repeated(labels[index]) ? `${labels[index]}${LABEL_SEPARATOR}#${shortKey(suggestion.key)}` : labels[index],
+    value: suggestion.key,
+  }));
+}
+
+/** The text worth searching from what the user typed: an edited option label keeps only its name part. */
+export const searchTextOf = (typed) => String(typed ?? '').split(LABEL_SEPARATOR)[0];
