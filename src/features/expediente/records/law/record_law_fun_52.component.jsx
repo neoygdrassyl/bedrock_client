@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
-import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../api/record_law.service';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { ProfessionalSearchBox } from '../../../professionals';
 
 import FUNService from '../../api/fun.service';
 import dayjs from 'dayjs';
@@ -17,8 +17,6 @@ export default function RECORD_LAW_FUN_52(props) {
     var [Fun52, setFun52] = useState([]);
     var [load, setLod] = useState(false)
     var [modal, setModal] = useState(false);
-    var [dataListPrfesionals, setDataP] = useState([]);
-    var [searchingP, setSearchingP] = useState(false);
 
     useEffect(() => {
         _GET_CHILD_52();
@@ -84,42 +82,23 @@ export default function RECORD_LAW_FUN_52(props) {
         return _CHILD;
     }
 
-    let process_dataList = (inputText, dataList, _scope) => {
-        profSearch(inputText);
-        if (dataList) {
-            let worker = JSON.parse(dataList);
-            document.getElementById("f_5211" + _scope).value = worker.name;
-            document.getElementById("f_5212" + _scope).value = worker.surname;
-            document.getElementById("f_522" + _scope).value = worker.id_number;
-            document.getElementById("f_524" + _scope).value = worker.number;
-            document.getElementById("f_523" + _scope).value = worker.email;
-            document.getElementById("f_526" + _scope).value = worker.registration;
-            document.getElementById("f_527" + _scope).value = worker.registration_date;
-            document.getElementById("f_5210" + _scope).value = worker.sanction ? 1 : 0;
+    // Fills 5.2 from a search suggestion; 5.2.10 is left alone when the source does not know the sanction.
+    let fillProfessional = (suggestion, _scope) => {
+        let set = (id, value) => { document.getElementById(id + _scope).value = value; };
+        set("f_5211", suggestion.givenNames);
+        set("f_5212", suggestion.surnames);
+        set("f_522", suggestion.cc);
+        set("f_524", suggestion.phone);
+        set("f_523", suggestion.email);
+        set("f_526", suggestion.registration);
+        set("f_527", suggestion.registrationDate);
+        if (suggestion.sanction !== undefined) set("f_5210", suggestion.sanction ? 1 : 0);
 
-            if (worker.registration_date) {
-                _GET_YEARS_EXPERIENCE(_scope)
-            }
+        if (suggestion.registrationDate) {
+            _GET_YEARS_EXPERIENCE(_scope)
         }
     }
 
-    let profSearch = (val) => {
-        if (val.length) {
-            setSearchingP(true)
-            FUNService.consult_Profesional(val)
-                .then(response => {
-                    if (response.data.length) {
-                        setDataP(response.data)
-                        setSearchingP(false)
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        else setSearchingP(false)
-    }
     // ************************ DATA CONVERTERS ************************ // 
     let _CHILD_6_SELECT = () => {
         let _LIST = _GET_CHILD_6();
@@ -172,28 +151,7 @@ export default function RECORD_LAW_FUN_52(props) {
         document.getElementById('f_529m' + id).value = months;
     }
     let _COMPY_COMPONENT = (_scope) => {
-        return <>
-            <div className="row">
-                <div className="col">
-                    <label>Busqueda de Profesional. {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
-                    <div className="input-group my-1">
-                        <span className="input-group-text bg-success text-white">
-                            <Icon name="search" size={16} />
-                        </span>
-                        <HTMLDatalist
-                            name={"search_52"}
-                            onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
-                            classNames={"form-control"}
-                            options={dataListPrfesionals.map(v => {
-                                let searchTerm = (v.name + ' ' + v.surname).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
-                                return { text: searchTerm, value: JSON.stringify(v) }
-                            })}
-                        />
-                    </div>
-                </div>
-            </div>
-        </>
-
+        return <ProfessionalSearchBox onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
     }
     // ************************** JSX COMPONENTS *********************** // 
     let COMPONENT = () => {
