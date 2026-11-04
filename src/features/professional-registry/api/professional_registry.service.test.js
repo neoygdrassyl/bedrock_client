@@ -45,6 +45,12 @@ describe('professional registry service', () => {
     expect(http.get).toHaveBeenLastCalledWith('/professional-registry/lookup?q=ana&limit=5', { skipDovelaErrorCapture: true, skipErrorLog: true, signal: undefined });
   });
 
+  it('reads the FUN 5.2 role eligibility quietly and cancellable', () => {
+    const signal = new AbortController().signal;
+    service.roleEligibility(7, { signal });
+    expect(http.get).toHaveBeenCalledWith('/professional-registry/7/role-eligibility', { skipDovelaErrorCapture: true, skipErrorLog: true, signal });
+  });
+
   it('deletes with the expected version in the body', () => {
     service.remove(7, { expectedVersion: 3 });
     expect(http.delete).toHaveBeenCalledWith('/professional-registry/7', { skipDovelaErrorCapture: true, headers: { 'Content-Type': 'application/json' }, data: { expectedVersion: 3 } });

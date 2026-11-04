@@ -22,6 +22,10 @@ class ProfessionalRegistryService {
   lookup(q, { limit, signal } = {}) {
     return http.get(`/${ROUTE}/lookup${buildQuery({ q, limit })}`, { ...QUIET, skipErrorLog: true, signal });
   }
+  // FUN 5.2 role picker. The caller falls back to the single-role form on any failure and may cancel with `signal`.
+  roleEligibility(id, { signal } = {}) {
+    return http.get(`/${ROUTE}/${id}/role-eligibility`, { ...QUIET, skipErrorLog: true, signal });
+  }
   create(body) { return http.post(`/${ROUTE}`, body, JSON_REQUEST); }
   update(id, body) { return http.put(`/${ROUTE}/${id}`, body, JSON_REQUEST); }
   setCanonicalName(id, body) { return http.put(`/${ROUTE}/${id}/canonical-name`, body, JSON_REQUEST); }

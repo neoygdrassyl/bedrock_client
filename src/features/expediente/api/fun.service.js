@@ -229,6 +229,12 @@ class UserslDataService {
   create_fun52(data) {
     return http.post(`/${route}/fun52`, data);
   }
+  // One professional in several FUN 5.2 roles: { fun0Id, professional, roles: [{ role, expirience }] }.
+  create_fun52_batch(body) {
+    return http.post(`/${route}/fun52/batch`, body, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   create_fun53(data) {
     return http.post(`/${route}/fun53`, data);
   }
