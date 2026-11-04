@@ -164,7 +164,42 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
     expect(pickerButton()).toBeEnabled();
   }, 60000);
 
-  test('a 404 from the batch endpoint falls back to the single-role form', async () => {
+  test('a bare 404 from the batch endpoint (older backend) falls back to the single-role form until the next pick', async () => {
+    FUNService.create_fun52_batch.mockRejectedValueOnce({ response: { status: 404, data: '<pre>Cannot POST /api/fun/fun52/batch</pre>' } });
+    const user = userEvent.setup();
+    await openNewForm(user);
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+    await user.click(screen.getByRole('checkbox', { name: 'ARQUITECTO PROYECTISTA' }));
+    await user.click(pickerButton());
+
+    await waitFor(() => expect(swalError).toHaveBeenCalledWith(expect.objectContaining({ text: swaMsg.generic_error_text })));
+    await waitFor(() => expect(classicButton()).toBeInTheDocument());
+    expect(pickerButton()).toBeNull();
+    expect(document.getElementById('f_525')).not.toBeNull();
+
+    // Not sticky: a new BD PROFESIONALES pick tries the picker again.
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+  }, 60000);
+
+  test('toggling "Añadir nuevo Profesional" also forgets that the batch endpoint was missing', async () => {
+    FUNService.create_fun52_batch.mockRejectedValueOnce({ response: { status: 404 } });
+    const user = userEvent.setup();
+    await openNewForm(user);
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+    await user.click(screen.getByRole('checkbox', { name: 'ARQUITECTO PROYECTISTA' }));
+    await user.click(pickerButton());
+    await waitFor(() => expect(classicButton()).toBeInTheDocument());
+
+    await user.click(newToggle());
+    await user.click(newToggle());
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+  }, 60000);
+
+  test('a 404 with a server message (the expediente is gone) is shown and keeps the picker', async () => {
     FUNService.create_fun52_batch.mockRejectedValueOnce({ response: { status: 404, data: { message: 'La solicitud no existe.' } } });
     const user = userEvent.setup();
     await openNewForm(user);
@@ -174,9 +209,8 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
     await user.click(pickerButton());
 
     await waitFor(() => expect(swalError).toHaveBeenCalledWith(expect.objectContaining({ text: 'La solicitud no existe.' })));
-    await waitFor(() => expect(classicButton()).toBeInTheDocument());
-    expect(pickerButton()).toBeNull();
-    expect(document.getElementById('f_525')).not.toBeNull();
+    expect(pickerButton()).toBeInTheDocument();
+    expect(classicButton()).toBeNull();
   }, 60000);
 
   test('an eligibility 404 keeps the classic form and create_fun52', async () => {

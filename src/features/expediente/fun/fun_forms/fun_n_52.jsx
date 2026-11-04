@@ -882,8 +882,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     }
                 })
                 .catch(e => {
-                    // An older backend has no batch endpoint: back to the single-role form.
-                    if (e.response?.status === 404) setBatchUnavailable(true);
+                    // An older backend has no batch endpoint (a bare 404, without a server message): back to the
+                    // single-role form. A 404 with a message (the expediente no longer exists) is only shown.
+                    if (e.response?.status === 404 && !e.response?.data?.message) setBatchUnavailable(true);
                     swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 })
                 .finally(() => setBatchBusy(false));
@@ -1060,6 +1061,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             set("f_5210", suggestion.sanction ? 1 : 0);
             _SHOW_GENERAL_EXPERIENCE(_scope)
             if (_scope === '') setPickedRegistryId(suggestion.source === 'registry' ? suggestion.registryId ?? null : null);
+            if (_scope === '' && suggestion.source === 'registry') setBatchUnavailable(false);
         }
 
         return (<>
@@ -1067,7 +1069,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <FunUpdateSectionLegend id="funn_52" step="5.2">Profesionales Responsables</FunUpdateSectionLegend>
 
                 <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => { setIsNew(e.target.checked); setPickedRegistryId(null); }} />
+                    <input className="form-check-input" type="checkbox" onChange={(e) => { setIsNew(e.target.checked); setPickedRegistryId(null); setBatchUnavailable(false); }} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir nuevo Profesional
                     </label>
