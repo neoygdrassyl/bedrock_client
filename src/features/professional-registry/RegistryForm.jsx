@@ -104,14 +104,14 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
           {field('registry-cc', mode === 'create' ? 'Cédula' : 'Cédula', { key: 'cc' })}
           {registrationConflict ? (
             <p className="text-xs text-muted-foreground">
-              Sus matrículas tienen la misma cantidad de expedientes: elija la principal en «Por revisar».
+              Sus matrículas tienen la misma cantidad de expedientes: elija la que está en uso en «Por revisar».
             </p>
-          ) : field('registry-registration', mode === 'edit' ? 'Matrícula principal' : 'Matrícula profesional', {
+          ) : field('registry-registration', mode === 'edit' ? 'Matrícula en uso' : 'Matrícula profesional', {
             key: 'registration',
           })}
           {mode === 'edit' && !registrationConflict ? field(
             'registry-registration-date',
-            'Fecha de expedición de la matrícula principal',
+            'Fecha de expedición de la matrícula en uso',
             { key: 'registrationDate', props: { type: 'date', min: MIN_REGISTRATION_DATE, max: today() } },
           ) : null}
           {mode === 'edit' && !registry?.registrationDate && registry?.registrationDates?.length > 1

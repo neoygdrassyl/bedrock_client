@@ -53,7 +53,7 @@ function OtherRegistration({ item, busy, onSave }) {
 }
 
 const PRINCIPAL_HINT = 'Sus matrículas tienen la misma cantidad de expedientes. '
-  + 'Indique la principal; las demás se conservan.';
+  + 'Indique la que está en uso; las demás se conservan.';
 const DATE_HINT = (registration) => `Los expedientes de la matrícula ${registration} traen fechas de expedición `
   + 'distintas. Indique la correcta.';
 
@@ -83,7 +83,7 @@ export default function RegistryMatriculaCase({ item, canWrite, busy, onResolve,
       <div className="flex flex-wrap items-center gap-x-2">
         <span className="font-medium">{item.name}</span>
         <span className="text-muted-foreground">{item.cc ? formatCc(item.cc) : 'Sin cédula'}</span>
-        <Badge variant="secondary">{isDate ? 'Fechas de expedición distintas' : 'Matrícula principal empatada'}</Badge>
+        <Badge variant="secondary">{isDate ? 'Fechas de expedición distintas' : 'Matrícula en uso empatada'}</Badge>
       </div>
       <p className="text-xs text-muted-foreground">{isDate ? DATE_HINT(item.registration) : PRINCIPAL_HINT}</p>
       <ul className="mt-2 space-y-1" aria-label={listLabel}>
@@ -104,7 +104,7 @@ export default function RegistryMatriculaCase({ item, canWrite, busy, onResolve,
               key={option.valueNorm}
               label={option.value}
               projects={option.projects}
-              action="Usar como principal"
+              action="Marcar como en uso"
               canWrite={canWrite}
               busy={busy}
               onChoose={() => decide({ action: 'choose', value: option.valueNorm })}
