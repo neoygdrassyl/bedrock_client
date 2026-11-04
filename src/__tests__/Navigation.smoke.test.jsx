@@ -148,7 +148,7 @@ describe('Navegación — Post-redesign routes', () => {
     '/dashboard', '/licencias', '/licencias/gestion', '/peticiones',
     '/ventanilla', '/mensajes', '/calendario', '/archivo',
     '/publicaciones', '/nomenclatura', '/documentos', '/calculadora',
-    '/consecutivos', '/profesionales', '/ayuda', '/sellos',
+    '/consecutivos', '/profesionales', '/bd-profesionales', '/ayuda', '/sellos',
     // Former public-site leftovers: same URLs, now behind the session guard.
     '/normas', '/certificados', '/uso-suelo', '/dev-guide',
     // The removed /home copy of the citizen website falls through to login.

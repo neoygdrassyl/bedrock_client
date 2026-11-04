@@ -41,6 +41,7 @@ export const ICON_COLORS = {
   '/mensajes': TINTS.violet,
   '/calculadora': TINTS.accent,
   '/profesionales': TINTS.orange,
+  '/bd-profesionales': TINTS.orange,
   '/certificados': TINTS.muted,
   '/ayuda': TINTS.muted,
   '/sellos': TINTS.primary,
@@ -133,6 +134,7 @@ export const DASHBOARD_GROUPS = [
     items: [
       { title: 'Calculadora de expensas', icon: 'Calculator', desc: 'Liquidación de costos', link: '/calculadora' },
       { title: 'Base de datos profesionales', icon: 'HardHat', desc: 'Profesionales registrados', link: '/profesionales' },
+      { title: 'BD PROFESIONALES', icon: 'Users', desc: 'Roles, experiencia y expedientes por profesional', link: '/bd-profesionales' },
       { title: 'Historial de profesionales', icon: 'Contact', desc: 'Certificaciones emitidas', link: '/certificados' },
       { title: 'Manual de usuario', icon: 'BookOpen', desc: 'Guía de uso del sistema', link: '/ayuda' },
       { title: 'Sellos', icon: 'Stamp', desc: 'Consulta y generación de sellos', link: '/sellos' },
