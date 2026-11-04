@@ -11,6 +11,8 @@ import profesionalsService from '../../../professionals/api/profesionals.service
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
+// Positional order of fun_52.docs (5.2.11). The server owns this list: the edit form only displays it.
+const EDIT_DOC_SELECT_IDS = ['f_52_111_edit', 'f_52_112_edit', 'f_52_113_edit', 'f_52_114_edit', 'f_52_115_edit', 'f_52_116_edit'];
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { formatYearsMonths, readSpecificExperience, todayIso, wholeMonthsBetween } from '@/shared/utils/specificExperience';
@@ -54,15 +56,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 }
             }
 
-            if (_ITEM.docs) {
-                var _array = _ITEM.docs.split(',');
-                document.getElementById("f_52_111_edit").value = _array[0];
-                document.getElementById("f_52_112_edit").value = _array[1];
-                document.getElementById("f_52_113_edit").value = _array[2];
-                document.getElementById("f_52_114_edit").value = _array[3];
-                document.getElementById("f_52_115_edit").value = _array[4];
-                document.getElementById("f_52_116_edit").value = _array[5];
-            }
+            // Read-only display: a missing position stays blank instead of keeping a previous row's value.
+            const _array = (_ITEM.docs || '').split(',');
+            EDIT_DOC_SELECT_IDS.forEach((selectId, index) => {
+                document.getElementById(selectId).value = _array[index] ?? '';
+            });
 
         }
     }, [edit]);
@@ -556,6 +554,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 </div>
 
                 <Divider>DOCUMENTOS</Divider>
+                <p className="text-muted small text-center mb-2">Los documentos relacionados no se pueden modificar desde esta edición.</p>
 
                 <div className="row mb-2">
                     <div className="col-6">
@@ -564,7 +563,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_114_edit">
+                            <select className='form-select' id="f_52_114_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -577,7 +576,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_111_edit">
+                            <select className='form-select' id="f_52_111_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -590,7 +589,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_112_edit">
+                            <select className='form-select' id="f_52_112_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -603,7 +602,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_113_edit">
+                            <select className='form-select' id="f_52_113_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -616,7 +615,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_115_edit">
+                            <select className='form-select' id="f_52_115_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -629,7 +628,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_116_edit">
+                            <select className='form-select' id="f_52_116_edit" disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -896,15 +895,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210_edit").value;
             formData.set('sanction', sanction);
-
-            let docs = [];
-            docs.push(document.getElementById("f_52_111_edit").value);
-            docs.push(document.getElementById("f_52_112_edit").value);
-            docs.push(document.getElementById("f_52_113_edit").value);
-            docs.push(document.getElementById("f_52_114_edit").value);
-            docs.push(document.getElementById("f_52_115_edit").value);
-            docs.push(document.getElementById("f_52_116_edit").value);
-            formData.set('docs', docs.join());
+            // docs (5.2.11) is server-owned and read-only on update: it is not sent.
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_52(edit.id, formData)
@@ -919,7 +910,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 });
         }
         let delete_52 = (id) => {

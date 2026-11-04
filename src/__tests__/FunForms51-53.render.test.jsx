@@ -286,6 +286,76 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
     expect(container).toBeTruthy();
   }, 60000);
 
+  describe('fun_n_52 edit', () => {
+    const professional = {
+      id: 7,
+      name: 'Ana',
+      surname: 'López',
+      id_number: '87654321',
+      email: 'ana@test.com',
+      number: '3109876543',
+      role: 'ARQUITECTO PROYECTISTA',
+      registration: 'ARQ-12345',
+      registration_date: '2020-01-01',
+      supervision: 'NO',
+      sanction: false,
+      expirience: 24,
+      active: 1,
+      docs: '-1,-1,-1,-1,-1',
+    };
+
+    async function openEditForm() {
+      let container;
+      await act(async () => {
+        ({ container } = render(
+          <MemoryRouter>
+            <FUNN52 {...baseProps} currentItem={{ ...minimalCurrentItem, fun_52s: [professional] }} />
+          </MemoryRouter>
+        ));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByTitle('Modificar Item').firstElementChild);
+      });
+      return container;
+    }
+
+    async function submitEditForm(container) {
+      await act(async () => {
+        fireEvent.submit(container.querySelector('#form_fun_52_edit'));
+      });
+    }
+
+    test('shows the 5.2.11 documents read-only and does not send docs', async () => {
+      const { default: FUNService } = await import('../features/expediente/api/fun.service');
+      FUNService.update_52.mockClear();
+      const container = await openEditForm();
+
+      ['f_52_111_edit', 'f_52_112_edit', 'f_52_113_edit', 'f_52_114_edit', 'f_52_115_edit', 'f_52_116_edit']
+        .forEach(id => expect(container.querySelector(`#${id}`).disabled).toBe(true));
+      expect(container.querySelector('#f_52_116_edit').value).toBe('');
+
+      await submitEditForm(container);
+
+      expect(FUNService.update_52).toHaveBeenCalledTimes(1);
+      const [id, formData] = FUNService.update_52.mock.calls[0];
+      expect(id).toBe(7);
+      expect(formData.has('docs')).toBe(false);
+      expect(formData.get('name')).toBe('Ana');
+    }, 60000);
+
+    test('shows the server message when the update is rejected', async () => {
+      const { default: FUNService } = await import('../features/expediente/api/fun.service');
+      const { default: Swal } = await import('sweetalert2');
+      FUNService.update_52.mockRejectedValueOnce({ response: { status: 400, data: { message: 'El campo active no se puede modificar.' } } });
+      const container = await openEditForm();
+      Swal.fire.mockClear();
+
+      await submitEditForm(container);
+
+      expect(Swal.fire).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'El campo active no se puede modificar.' }));
+    }, 60000);
+  });
+
   test('fun_n_53 renders without crashing', async () => {
     let container;
     await act(async () => {

@@ -615,6 +615,7 @@ export default function RECORD_LAW_FUN_52(props) {
                 </div>
 
                 <Divider>DOCUMENTOS</Divider>
+                <p className="text-muted small text-center mb-2">Los documentos relacionados no se pueden modificar desde esta edición.</p>
 
                 <div className="row mb-2">
                     <div className="col-6">
@@ -623,7 +624,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_114" defaultValue={docs[3]}>
+                            <select className='form-select' id="f_52_114" defaultValue={docs[3]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -636,7 +637,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_111" defaultValue={docs[0]}>
+                            <select className='form-select' id="f_52_111" defaultValue={docs[0]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -649,7 +650,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_112" defaultValue={docs[1]}>
+                            <select className='form-select' id="f_52_112" defaultValue={docs[1]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -662,7 +663,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_113" defaultValue={docs[2]}>
+                            <select className='form-select' id="f_52_113" defaultValue={docs[2]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -675,7 +676,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_115" defaultValue={docs[4]}>
+                            <select className='form-select' id="f_52_115" defaultValue={docs[4]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -688,7 +689,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_116" defaultValue={docs[5]}>
+                            <select className='form-select' id="f_52_116" defaultValue={docs[5]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -805,15 +806,7 @@ export default function RECORD_LAW_FUN_52(props) {
         formData.set('expirience', expirience);
         let sanction = document.getElementById("f_5210").value;
         formData.set('sanction', sanction);
-
-        let docs = [];
-        docs.push(document.getElementById("f_52_111").value);
-        docs.push(document.getElementById("f_52_112").value);
-        docs.push(document.getElementById("f_52_113").value);
-        docs.push(document.getElementById("f_52_114").value);
-        docs.push(document.getElementById("f_52_115").value);
-        docs.push(document.getElementById("f_52_116").value);
-        formData.set('docs', docs.join());
+        // docs (5.2.11) is server-owned and read-only on update: it is not sent.
 
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUNService.update_52(item.id, formData)
@@ -827,7 +820,7 @@ export default function RECORD_LAW_FUN_52(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 
