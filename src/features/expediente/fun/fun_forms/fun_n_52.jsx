@@ -9,6 +9,8 @@ const Divider = ({ children }) => <div className="dvl-divider text-center my-2">
 import profesionalsService from '../../../professionals/api/profesionals.service';
 import { ProfessionalSearchBox } from '../../../professionals';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
+import Fun52RolePicker from './components/Fun52RolePicker.jsx';
+import { useRoleEligibility } from './hooks/useRoleEligibility';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 // Positional order of fun_52.docs (5.2.11). The server owns this list: the edit form only displays it.
@@ -20,6 +22,13 @@ import { formatYearsMonths, readSpecificExperience, todayIso, wholeMonthsBetween
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
+    // Multi-role picker of the new form: active only for a BD PROFESIONALES pick whose eligibility loaded, while the
+    // batch endpoint exists. Otherwise the form stays the single-role one.
+    const [pickedRegistryId, setPickedRegistryId] = useState(null);
+    const [batchUnavailable, setBatchUnavailable] = useState(false);
+    const [batchBusy, setBatchBusy] = useState(false);
+    const eligibility = useRoleEligibility(pickedRegistryId);
+    const rolePicker = isNew && !batchUnavailable && eligibility.status === 'ready' ? eligibility.data : null;
 
     useEffect(() => {
         if (edit !== false) {
@@ -225,6 +234,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </div>
                 </div>
 
+                {rolePicker ? <Fun52RolePicker key={rolePicker.registryId} eligibility={rolePicker} busy={batchBusy} onSubmit={newBatch52} /> : (
                 <div className="row mb-3">
                     <div className="col-12">
                         <label>5.2.5 Rol que Desempeña</label>
@@ -247,6 +257,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         </div>
                     </div>
                 </div>
+                )}
 
                 <div className="row mb-3">
                     <div className="col-6">
@@ -295,6 +306,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-6">
+                        {!rolePicker && <>
                         <label>5.2.9 Experiencia específica en el rol (Años y meses)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
@@ -306,6 +318,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             </span>
                             <input type="text" inputMode="numeric" maxLength={2} id="f_529m" placeholder="Meses" className="form-control" />
                         </div>
+                        </>}
                         <small className="text-muted d-block" id="f_529_general">Indique 5.2.7 para conocer la experiencia general.</small>
                     </div>
                     <div className="col-6">
@@ -817,10 +830,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             FUNService.create_fun52(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdate(currentItem.id);
-                        document.getElementById('form_fun_52_new').reset();
-                        _SHOW_GENERAL_EXPERIENCE('');
+                        _NEW_52_CREATED();
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
@@ -829,6 +839,51 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 });
+        }
+        // After a create: the success message, the refreshed list and a clean new form, role picker included.
+        let _NEW_52_CREATED = () => {
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            requestUpdate(currentItem.id);
+            document.getElementById('form_fun_52_new').reset();
+            _SHOW_GENERAL_EXPERIENCE('');
+            setPickedRegistryId(null);
+        }
+        // The role picker's submit: one row per role in a single request. The general data is read from the same
+        // fields new_52 reads, so the user's corrections count; docs (5.2.11) are server-owned and never sent.
+        let newBatch52 = (roles) => {
+            let value = (id) => document.getElementById(id).value;
+            let body = {
+                fun0Id: currentItem.id,
+                professional: {
+                    name: value("f_5211"),
+                    surname: value("f_5212"),
+                    id_number: value("f_522"),
+                    number: value("f_524"),
+                    email: value("f_523"),
+                    registration: value("f_526"),
+                    registration_date: value("f_527"),
+                    supervision: value("f_528"),
+                    sanction: value("f_5210"),
+                },
+                roles,
+            };
+            setBatchBusy(true);
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            FUNService.create_fun52_batch(body)
+                .then(response => {
+                    if (Array.isArray(response.data?.created)) {
+                        response.data.created.forEach((created) => manage_prof(created.role));
+                        _NEW_52_CREATED();
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    }
+                })
+                .catch(e => {
+                    // An older backend has no batch endpoint: back to the single-role form.
+                    if (e.response?.status === 404) setBatchUnavailable(true);
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
+                })
+                .finally(() => setBatchBusy(false));
         }
         let edit_52 = (e) => {
             e.preventDefault();
@@ -929,7 +984,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 });
         }
 
-        let manage_prof = () => {
+        // `selectedRole` comes from the role picker; without it the role is read from 5.2.5.
+        let manage_prof = (selectedRole) => {
             formData = new FormData();
             let _name = document.getElementById("f_5211").value;
             _name = _name.trim();
@@ -957,8 +1013,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let registration_date = document.getElementById("f_527").value; // THIS IS A DATE
             if (registration_date) formData.set('registration_date', registration_date);
 
-            let role = '';
-            let select = document.getElementById("f_525").selectedOptions;
+            let role = selectedRole || '';
+            let select = selectedRole ? [] : document.getElementById("f_525").selectedOptions;
             for (var option of select) {
                 role = option.value;
             }
@@ -1000,6 +1056,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             set("f_527", suggestion.registrationDate);
             set("f_5210", suggestion.sanction ? 1 : 0);
             _SHOW_GENERAL_EXPERIENCE(_scope)
+            if (_scope === '') setPickedRegistryId(suggestion.source === 'registry' ? suggestion.registryId ?? null : null);
         }
 
         return (<>
@@ -1007,20 +1064,22 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <FunUpdateSectionLegend id="funn_52" step="5.2">Profesionales Responsables</FunUpdateSectionLegend>
 
                 <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <input className="form-check-input" type="checkbox" onChange={(e) => { setIsNew(e.target.checked); setPickedRegistryId(null); }} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir nuevo Profesional
                     </label>
                 </div>
                 {isNew
                     ? <>
-                        <form id="form_fun_52_new" onSubmit={new_52}>
+                        <form id="form_fun_52_new" onSubmit={rolePicker ? (e) => e.preventDefault() : new_52}>
                             {_COMPONENT_NEW()}
+                            {!rolePicker && (
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
+                            )}
                         </form>
                     </>
                     : ""}
