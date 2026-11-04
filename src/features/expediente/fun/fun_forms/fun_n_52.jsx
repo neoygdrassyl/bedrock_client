@@ -811,15 +811,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210").value;
             formData.set('sanction', sanction);
-
-            let docs = [];
-            docs.push(document.getElementById("f_52_111").value);
-            docs.push(document.getElementById("f_52_112").value);
-            docs.push(document.getElementById("f_52_113").value);
-            docs.push(document.getElementById("f_52_114").value);
-            docs.push(document.getElementById("f_52_115").value);
-            docs.push(document.getElementById("f_52_116").value);
-            formData.set('docs', docs.join());
+            // docs (5.2.11) is server-owned: the server rejects it on create, so it is not sent.
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun52(formData)
@@ -835,7 +827,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 });
         }
         let edit_52 = (e) => {

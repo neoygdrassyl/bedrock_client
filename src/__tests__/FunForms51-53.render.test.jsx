@@ -582,6 +582,31 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
       expect(payload.has('expirience_specific')).toBe(false);
     }, 60000);
 
+    test('the create sends no docs, whatever the 5.2.11 selects hold', async () => {
+      const user = userEvent.setup();
+      await openCreate(user);
+      await user.click(screen.getByRole('button', { name: /añadir item/i }));
+
+      await waitFor(() => expect(FUNService.create_fun52).toHaveBeenCalledTimes(1));
+      const payload = FUNService.create_fun52.mock.calls[0][0];
+      expect(payload.has('docs')).toBe(false);
+      expect(payload.get('fun0Id')).toBeTruthy();
+    }, 60000);
+
+    test('a rejected create shows the server message', async () => {
+      const user = userEvent.setup();
+      swalFire.mockClear();
+      await openCreate(user);
+      FUNService.create_fun52.mockImplementationOnce(() => Promise.reject({
+        response: { status: 400, data: { message: 'El campo name debe ser texto.' } },
+      }));
+      await user.click(screen.getByRole('button', { name: /añadir item/i }));
+
+      await waitFor(() => expect(swalFire).toHaveBeenCalledWith(expect.objectContaining({
+        icon: 'error', text: 'El campo name debe ser texto.',
+      })));
+    }, 60000);
+
     test('refuses a specific experience above the general one since 5.2.7', async () => {
       const user = userEvent.setup();
       swalFire.mockClear();
