@@ -96,6 +96,7 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
       if (url === '/professional-registry/9/role-eligibility') return eligibilityAnswer();
       return Promise.resolve({ data: [] });
     });
+    profesionals.createOrFind.mockResolvedValue({ data: {} });
     FUNService.create_fun52.mockResolvedValue({ data: 'OK' });
     FUNService.create_fun52_batch.mockResolvedValue({
       status: 201,
@@ -140,11 +141,34 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
     expect(FUNService.create_fun52).not.toHaveBeenCalled();
     await waitFor(() => expect(swalSuccess).toHaveBeenCalledTimes(1));
     expect(requestUpdate).toHaveBeenCalledWith(1);
-    expect(profesionals.createOrFind.mock.calls.map(([data]) => data.get('title'))).toEqual(['arq', 'eng']);
+    await waitFor(() => expect(profesionals.createOrFind.mock.calls.map(([data]) => data.get('title'))).toEqual(['arq', 'eng']));
     // The new form and the picker are reset.
     await waitFor(() => expect(pickerButton()).toBeNull());
     expect(classicButton()).toBeInTheDocument();
     expect(document.getElementById('f_5211').value).toBe('');
+  }, 60000);
+
+  test('registers each created role in the external service one call at a time', async () => {
+    const answers = [];
+    profesionals.createOrFind.mockImplementation(() => new Promise((resolve, reject) => answers.push({ resolve, reject })));
+    const user = userEvent.setup();
+    await openNewForm(user);
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+    await user.click(screen.getByRole('checkbox', { name: 'ARQUITECTO PROYECTISTA' }));
+    await user.click(screen.getByRole('checkbox', { name: 'INGENIERO CIVIL GEOTECNISTA' }));
+    await user.type(screen.getByRole('textbox', { name: 'Años de experiencia específica en INGENIERO CIVIL GEOTECNISTA' }), '2');
+    await user.click(pickerButton());
+
+    // The user is not kept waiting: the success shows while the first call is still pending.
+    await waitFor(() => expect(swalSuccess).toHaveBeenCalledTimes(1));
+    expect(profesionals.createOrFind).toHaveBeenCalledTimes(1);
+    // A failed call is only logged and the next one still goes.
+    answers[0].reject(new Error('external service down'));
+    await waitFor(() => expect(profesionals.createOrFind).toHaveBeenCalledTimes(2));
+    answers[1].resolve({ data: {} });
+    const sent = profesionals.createOrFind.mock.calls.map(([data]) => [data.get('title'), data.get('id_number')]);
+    expect(sent).toEqual([['arq', '1098765432'], ['eng', '1098765432']]);
   }, 60000);
 
   test('a 409 shows the server message listing the held roles and keeps the picker', async () => {

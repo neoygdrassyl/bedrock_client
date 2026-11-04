@@ -875,7 +875,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             FUNService.create_fun52_batch(body)
                 .then(response => {
                     if (Array.isArray(response.data?.created)) {
-                        response.data.created.forEach((created) => manage_prof(created.role));
+                        response.data.created.reduce((previous, created) => manage_prof(created.role, previous), null);
                         _NEW_52_CREATED();
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -988,8 +988,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 });
         }
 
-        // `selectedRole` comes from the role picker; without it the role is read from 5.2.5.
-        let manage_prof = (selectedRole) => {
+        // `selectedRole` comes from the role picker; without it the role is read from 5.2.5. The form is read now; with
+        // `after` (a previous call's promise) the request waits for it, so the picker's calls go one at a time.
+        let manage_prof = (selectedRole, after) => {
             formData = new FormData();
             let _name = document.getElementById("f_5211").value;
             _name = _name.trim();
@@ -1038,7 +1039,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('title', role_type[role]);
             formData.set('active', 1);
 
-            profesionalsService.createOrFind(formData)
+            let profData = formData;
+            return (after ? after.then(() => profesionalsService.createOrFind(profData)) : profesionalsService.createOrFind(profData))
                 .then(data => {
                     return
                 })
