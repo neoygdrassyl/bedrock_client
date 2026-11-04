@@ -210,6 +210,20 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
     expect(classicButton()).toBeInTheDocument();
   }, 60000);
 
+  test('typing another name or cédula after the pick goes back to the classic form', async () => {
+    const user = userEvent.setup();
+    await openNewForm(user);
+    await pick(PICK_LABEL);
+    await waitFor(() => expect(pickerButton()).toBeInTheDocument());
+
+    await user.type(document.getElementById('f_522'), '7');
+
+    expect(pickerButton()).toBeNull();
+    expect(classicButton()).toBeInTheDocument();
+    expect(document.getElementById('f_525')).not.toBeNull();
+    expect(document.getElementById('f_522').value).toBe('10987654327');
+  }, 60000);
+
   test('unchecking "Añadir nuevo Profesional" clears the picker', async () => {
     const user = userEvent.setup();
     await openNewForm(user);

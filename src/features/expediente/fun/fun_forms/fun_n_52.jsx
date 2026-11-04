@@ -199,7 +199,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_5211" />
+                            <input type="text" className="form-control" id="f_5211" onInput={_LEAVE_ROLE_PICKER} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -208,7 +208,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_5212" />
+                            <input type="text" className="form-control" id="f_5212" onInput={_LEAVE_ROLE_PICKER} />
                         </div>
                     </div>
                 </div>
@@ -220,7 +220,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_522" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="f_522" onInput={_LEAVE_ROLE_PICKER} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -782,6 +782,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             />
         }
 
+        // Typing another name or cédula after a BD PROFESIONALES pick: the eligibility shown belongs to the picked
+        // person, so the form goes back to the single-role one. Fills from fillProfessional fire no input event.
+        let _LEAVE_ROLE_PICKER = () => setPickedRegistryId(null);
         let _PROFESIONAL_SEARCHER = (_scope) => {
             return <ProfessionalSearchBox onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
         }
