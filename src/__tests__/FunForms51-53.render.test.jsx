@@ -2,7 +2,7 @@
  * RENDER TESTS — fun_n_51, fun_n_52, fun_n_53
  *
  * Regression render tests: verify each component mounts without crashing.
- * fun_n_52 imports moment, rsuite/Divider, profesionals.service, HTMLDatalist.
+ * fun_n_52 imports moment, rsuite/Divider, profesionals.service and the shared ProfessionalSearchBox.
  */
 
 import React from 'react';
@@ -130,12 +130,6 @@ vi.mock('../shared/config/customClasses/typeParse', () => ({
   dateParser_yearsPassed: (v) => v ?? '',
   dateParser_finalDate: (v) => v ?? '',
   dateParser_dateDiff: () => 0,
-}));
-
-vi.mock('../shared/components/HTMLDatalist', () => ({
-  __esModule: true,
-  default: ({ id, list }) =>
-    React.createElement('div', { 'data-testid': 'html-datalist-stub', id }),
 }));
 
 // ─── Imports under test ──────────────────────────────────────────────────────
@@ -341,6 +335,38 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
       expect(id).toBe(7);
       expect(formData.has('docs')).toBe(false);
       expect(formData.get('name')).toBe('Ana');
+    }, 60000);
+
+    test('fills the edit form from a BD PROFESIONALES suggestion and keeps 5.2.10 when the sanction is unknown', async () => {
+      const { default: http } = await import('../shared/api/http-common');
+      const suggestion = {
+        registryId: 9, givenNames: 'María José', surnames: 'Pérez Gómez', cc: '1098765432', email: 'mj@test.com',
+        phone: '3001112233', registration: 'A123456', registrationDate: '2015-06-01', nameNeedsReview: true,
+      };
+      http.get.mockImplementation((url) => Promise.resolve(
+        String(url).startsWith('/professional-registry/lookup') ? { data: { data: [suggestion] } } : { data: [] },
+      ));
+      try {
+        const container = await openEditForm();
+        const search = container.querySelector('#form_fun_52_edit input[name="search_52"]');
+        fireEvent.change(search, { target: { value: 'maria' } });
+        await waitFor(() => expect(container.querySelectorAll('#form_fun_52_edit datalist option')).toHaveLength(1));
+        const sanctionBefore = container.querySelector('#f_5210_edit').value;
+        fireEvent.change(search, { target: { value: 'MARIA JOSE PEREZ GOMEZ · CC 1098765432' } });
+
+        const value = (id) => container.querySelector(`#${id}`).value;
+        expect(value('f_5211_edit')).toBe('MARÍA JOSÉ');
+        expect(value('f_5212_edit')).toBe('PÉREZ GÓMEZ');
+        expect(value('f_522_edit')).toBe('1098765432');
+        expect(value('f_524_edit')).toBe('3001112233');
+        expect(value('f_523_edit')).toBe('mj@test.com');
+        expect(value('f_526_edit')).toBe('A123456');
+        expect(value('f_527_edit')).toBe('2015-06-01');
+        expect(value('f_5210_edit')).toBe(sanctionBefore);
+        expect(screen.getByText('Revise la separación de nombres y apellidos')).toBeInTheDocument();
+      } finally {
+        http.get.mockImplementation(() => Promise.resolve({ data: [] }));
+      }
     }, 60000);
 
     test('shows the server message when the update is rejected', async () => {
