@@ -22,7 +22,8 @@ const QUEUES = [
 export default function RegistryReview({ canWrite, onChanged, onOpen }) {
   const [type, setType] = useState('duplicados');
   const [page, setPage] = useState(1);
-  const [summary, setSummary] = useState({});
+  // null until the first counts arrive, so no queue is drawn with a provisional 0.
+  const [summary, setSummary] = useState(null);
   const [queue, setQueue] = useState({ type: null, data: [], total: 0, limit: 25 });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -64,23 +65,39 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
 
   // The rows of the previous queue must never be drawn with the renderer of the new one while it loads.
   const rows = queue.type === type ? queue.data : [];
-  // Only the queues this backend reports: an older one does not know "Fusionar" nor "Matrícula compartida".
-  const queues = Object.keys(summary).length ? QUEUES.filter(([key]) => key in summary) : QUEUES;
+  // Only the queues with pending cases. A queue an older backend does not report ("Fusionar", "Matrícula
+  // compartida") counts as empty.
+  const queues = summary ? QUEUES.filter(([key]) => Number(summary[key]) > 0) : [];
+  const firstQueue = queues.length ? queues[0][0] : null;
+  const typeVisible = queues.some(([key]) => key === type);
+  const allClear = summary !== null && !queues.length;
   const caseProps = { canWrite, busy, onResolve: resolve, onOpen };
   const pages = Math.max(Math.ceil(queue.total / queue.limit), 1);
   const selectType = (next) => { setType(next); setPage(1); };
 
+  // The selected queue has no cases (the initial one, or one whose last case was just resolved): open the first
+  // queue that still has some instead of leaving a hidden queue selected.
+  useEffect(() => {
+    if (firstQueue && !typeVisible) {
+      setType(firstQueue);
+      setPage(1);
+    }
+  }, [firstQueue, typeVisible]);
+
   return (
     <section aria-label="Por revisar" className="space-y-3">
-      <nav className="flex flex-wrap gap-2" aria-label="Colas de revisión">
-        {queues.map(([key, label]) => (
-          <Button key={key} type="button" size="sm" variant={type === key ? 'default' : 'outline'} aria-current={type === key ? 'page' : undefined} onClick={() => selectType(key)}>
-            {label} <Badge variant="secondary" className="ml-2">{summary[key] ?? 0}</Badge>
-          </Button>
-        ))}
-      </nav>
+      {queues.length ? (
+        <nav className="flex flex-wrap gap-2" aria-label="Colas de revisión">
+          {queues.map(([key, label]) => (
+            <Button key={key} type="button" size="sm" variant={type === key ? 'default' : 'outline'} aria-current={type === key ? 'page' : undefined} onClick={() => selectType(key)}>
+              {label} <Badge variant="secondary" className="ml-2">{summary[key]}</Badge>
+            </Button>
+          ))}
+        </nav>
+      ) : null}
       {error ? <p className="text-sm text-destructive" role="alert">{error}</p> : null}
-      {queue.type === type && !rows.length && !error ? <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">No hay casos pendientes en esta cola.</p> : null}
+      {allClear && !error ? <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">No hay casos pendientes por revisar.</p> : null}
+      {!allClear && queue.type === type && !rows.length && !error ? <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">No hay casos pendientes en esta cola.</p> : null}
 
       <ul className="space-y-2">
         {type === 'duplicados' || type === 'compartida' ? rows.map((item) => (
@@ -135,13 +152,15 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
         )) : null}
       </ul>
 
-      <nav className="flex items-center justify-between text-sm" aria-label="Paginación de la cola">
-        <span className="text-muted-foreground">{queue.total} casos · página {page} de {pages}</span>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => current - 1)}>Anterior</Button>
-          <Button type="button" variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage((current) => current + 1)}>Siguiente</Button>
-        </div>
-      </nav>
+      {allClear ? null : (
+        <nav className="flex items-center justify-between text-sm" aria-label="Paginación de la cola">
+          <span className="text-muted-foreground">{queue.total} casos · página {page} de {pages}</span>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((current) => current - 1)}>Anterior</Button>
+            <Button type="button" variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage((current) => current + 1)}>Siguiente</Button>
+          </div>
+        </nav>
+      )}
     </section>
   );
 }

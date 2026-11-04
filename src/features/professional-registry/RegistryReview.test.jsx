@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const service = vi.hoisted(() => ({ reviewSummary: vi.fn(), review: vi.fn(), resolve: vi.fn(), update: vi.fn(), list: vi.fn() }));
@@ -109,10 +109,10 @@ describe('RegistryReview', () => {
     await user.click(screen.getByRole('button', { name: /Matrícula múltiple/ }));
 
     expect(await screen.findByText('A68212001-91492000')).toBeInTheDocument();
-    expect(screen.getByText('Matrícula principal empatada')).toBeInTheDocument();
+    expect(screen.getByText('Matrícula en uso empatada')).toBeInTheDocument();
     expect(screen.getAllByText('23 expedientes')).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'Usar como principal' })).toHaveLength(2);
-    await user.click(screen.getAllByRole('button', { name: 'Usar como principal' })[0]);
+    expect(screen.getAllByRole('button', { name: 'Marcar como en uso' })).toHaveLength(2);
+    await user.click(screen.getAllByRole('button', { name: 'Marcar como en uso' })[0]);
 
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({
       type: 'matricula', action: 'choose', registryId: 5, value: '68202158428STD', expectedVersion: 3,
@@ -158,7 +158,7 @@ describe('RegistryReview', () => {
     render(<RegistryReview canWrite={false} onChanged={() => {}} onOpen={() => {}} />);
     await user.click(await screen.findByRole('button', { name: /Matrícula múltiple/ }));
     await screen.findByText('A68212001-91492000');
-    expect(screen.queryByRole('button', { name: 'Usar como principal' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Marcar como en uso' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Usar esta fecha' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Ninguna es correcta' })).not.toBeInTheDocument();
   });
@@ -284,6 +284,43 @@ describe('RegistryReview', () => {
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({
       type: 'compartida', id: 8, action: 'merge', keepId: 21,
     }));
+  });
+
+  it('hides the queues without cases and opens the first one that has some', async () => {
+    service.reviewSummary.mockResolvedValue({ data: { ...SUMMARY, duplicados: 0, roles: 0 } });
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+
+    expect(await screen.findByText('Cédula casi igual')).toBeInTheDocument();
+    const tabs = screen.getByRole('navigation', { name: 'Colas de revisión' });
+    expect(within(tabs).getByRole('button', { name: /^Fusionar/ })).toHaveAttribute('aria-current', 'page');
+    expect(service.review).toHaveBeenLastCalledWith({ type: 'fusionar', page: 1, limit: 25 });
+    expect(screen.queryByRole('button', { name: /Posibles duplicados/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Rol sin clasificar/ })).not.toBeInTheDocument();
+  });
+
+  it('moves to the next queue with cases when the last case of the open one is resolved', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Nombres dudosos/ }));
+    await screen.findByText('JUAN PEREZ');
+
+    service.reviewSummary.mockResolvedValue({ data: { ...SUMMARY, nombres: 0 } });
+    await user.click(screen.getByRole('button', { name: 'Marcar revisado' }));
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: /Nombres dudosos/ })).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: /Posibles duplicados/ })).toHaveAttribute('aria-current', 'page');
+    expect(await screen.findByText('Mismo nombre con otra cédula')).toBeInTheDocument();
+  });
+
+  it('says there is nothing to review when every queue is empty', async () => {
+    service.reviewSummary.mockResolvedValue({ data: Object.fromEntries(Object.keys(SUMMARY).map((key) => [key, 0])) });
+    service.review.mockImplementation(({ type }) => Promise.resolve({ data: { type, data: [], total: 0, page: 1, limit: 25 } }));
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+
+    expect(await screen.findByText('No hay casos pendientes por revisar.')).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Colas de revisión' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Paginación de la cola' })).not.toBeInTheDocument();
+    expect(screen.queryByText('No hay casos pendientes en esta cola.')).not.toBeInTheDocument();
   });
 
   it('shows only the queues the backend reports', async () => {
