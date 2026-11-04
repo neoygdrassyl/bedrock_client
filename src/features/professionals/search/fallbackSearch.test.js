@@ -45,6 +45,14 @@ describe('createFallbackSearch', () => {
     expect(await createFallbackSearch([down(404), source('external', [])])('ana')).toEqual([]);
   });
 
+  it('stops on a 401 (the session ended) instead of asking the next source', async () => {
+    const unauthorized = httpError(401);
+    const registry = source('registry', async () => { throw unauthorized; });
+    const external = source('external', found('external:1'));
+    await expect(createFallbackSearch([registry, external])('ana')).rejects.toBe(unauthorized);
+    expect(external.search).not.toHaveBeenCalled();
+  });
+
   it('stops on abort instead of falling back', async () => {
     const controller = new AbortController();
     const aborted = Object.assign(new Error('canceled'), { name: 'CanceledError', code: 'ERR_CANCELED' });

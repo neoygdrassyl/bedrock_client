@@ -7,11 +7,13 @@ export const DEFAULT_SOURCE_NAMES = ['registry', 'external'];
 
 const isAbort = (error, signal) => Boolean(signal?.aborted)
   || error?.name === 'AbortError' || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED';
+// A 401 from the main API ends the session (the HTTP client logs the user out): no other source is asked.
+const endsSearch = (error, signal) => isAbort(error, signal) || error?.response?.status === 401;
 
 /**
  * Searches each source in order and answers with the first non-empty result. A source that fails (403, 404 on an
  * older backend, network) or finds nobody passes the turn to the next one. When every source failed it rejects with
- * ProfessionalSearchUnavailableError; a cancelled search rejects with the abort error.
+ * ProfessionalSearchUnavailableError; a cancelled search or a 401 rejects with that error at once.
  *
  * @param {import('./professionalSuggestion').ProfessionalSearchSource[]} sources
  */
@@ -24,7 +26,7 @@ export function createFallbackSearch(sources) {
         const suggestions = await source.search(query, { signal });
         if (suggestions.length) return suggestions;
       } catch (error) {
-        if (isAbort(error, signal)) throw error;
+        if (endsSearch(error, signal)) throw error;
         failures += 1;
       }
     }
