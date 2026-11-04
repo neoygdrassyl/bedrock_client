@@ -4,12 +4,15 @@ import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_2
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../api/record_law.service';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
-import { ProfessionalSearchBox } from '../../../professionals';
+import { ProfessionalSearchBox, registrySource } from '../../../professionals';
+import { internalProfessionalSource } from '../../api/internalProfessionalSource';
 
 import FUNService from '../../api/fun.service';
 import dayjs from 'dayjs';
 import { Icon } from '@/shared/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+// The legal review searches BD PROFESIONALES, then the history of this curaduría; never the third-party service.
+const PROFESSIONAL_SOURCES = [registrySource, internalProfessionalSource];
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
@@ -82,7 +85,8 @@ export default function RECORD_LAW_FUN_52(props) {
         return _CHILD;
     }
 
-    // Fills 5.2 from a search suggestion; 5.2.10 is left alone when the source does not know the sanction.
+    // Fills 5.2 from a search suggestion. An unknown sanction resets 5.2.10 to its default (NO), so a previous pick
+    // never leaves its value behind.
     let fillProfessional = (suggestion, _scope) => {
         let set = (id, value) => { document.getElementById(id + _scope).value = value; };
         set("f_5211", suggestion.givenNames);
@@ -92,7 +96,7 @@ export default function RECORD_LAW_FUN_52(props) {
         set("f_523", suggestion.email);
         set("f_526", suggestion.registration);
         set("f_527", suggestion.registrationDate);
-        if (suggestion.sanction !== undefined) set("f_5210", suggestion.sanction ? 1 : 0);
+        set("f_5210", suggestion.sanction ? 1 : 0);
 
         if (suggestion.registrationDate) {
             _GET_YEARS_EXPERIENCE(_scope)
@@ -151,7 +155,7 @@ export default function RECORD_LAW_FUN_52(props) {
         document.getElementById('f_529m' + id).value = months;
     }
     let _COMPY_COMPONENT = (_scope) => {
-        return <ProfessionalSearchBox onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
+        return <ProfessionalSearchBox sources={PROFESSIONAL_SOURCES} onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
     }
     // ************************** JSX COMPONENTS *********************** // 
     let COMPONENT = () => {

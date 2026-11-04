@@ -161,8 +161,8 @@ class UserslDataService {
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
   }
-  consult_Profesional(name) {
-    return http.get(`/${route}/consult/consult_Profesional/${name}`);
+  consult_Profesional(name, config) {
+    return http.get(`/${route}/consult/consult_Profesional/${name}`, config);
   }
   getAll_incDocs() {
     return http.get(`/${route}/getall/incdocs`);
