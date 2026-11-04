@@ -5,6 +5,7 @@
  * @typedef {object} ProfessionalSuggestion
  * @property {string} key Unique within one result list.
  * @property {'registry'|'external'|'internal'} source
+ * @property {number} [registryId] BD PROFESIONALES id; only on registry suggestions.
  * @property {string} givenNames
  * @property {string} surnames
  * @property {string} cc

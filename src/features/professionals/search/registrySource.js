@@ -5,6 +5,7 @@ import { textOf } from './professionalSuggestion';
 export const fromRegistry = (item) => ({
   key: `registry:${item.registryId}`,
   source: 'registry',
+  registryId: item.registryId,
   givenNames: textOf(item.givenNames),
   surnames: textOf(item.surnames),
   cc: textOf(item.cc),

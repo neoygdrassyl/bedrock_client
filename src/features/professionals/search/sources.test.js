@@ -15,7 +15,7 @@ describe('professional suggestion mappers', () => {
       registryId: 7, givenNames: 'Ana María', surnames: 'Pérez', cc: '1098765432', email: null,
       phone: undefined, registration: 'A123', registrationDate: '2010-05-04', nameNeedsReview: 1,
     })).toEqual({
-      key: 'registry:7', source: 'registry', givenNames: 'Ana María', surnames: 'Pérez', cc: '1098765432',
+      key: 'registry:7', source: 'registry', registryId: 7, givenNames: 'Ana María', surnames: 'Pérez', cc: '1098765432',
       email: '', phone: '', registration: 'A123', registrationDate: '2010-05-04', sanction: undefined,
       nameNeedsReview: true,
     });
