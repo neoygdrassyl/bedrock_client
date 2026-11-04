@@ -19,6 +19,7 @@ describe('professional registry service', () => {
     service.create({ name: 'Ana' });
     service.update(7, { expectedVersion: 1 });
     service.setCanonicalName(7, { name: 'Ana' });
+    service.setSpecificExperience(7, 'ARQ_PROY', { expectedVersion: 2, years: 4, months: 6 });
     service.restore(7, { expectedVersion: 2 });
     service.merge(7, { targetId: 8 });
     service.relink(7, 9, { registryId: 8 });
@@ -28,6 +29,7 @@ describe('professional registry service', () => {
     expect(http.post).toHaveBeenCalledWith('/professional-registry', { name: 'Ana' }, config);
     expect(http.put).toHaveBeenCalledWith('/professional-registry/7', { expectedVersion: 1 }, config);
     expect(http.put).toHaveBeenCalledWith('/professional-registry/7/canonical-name', { name: 'Ana' }, config);
+    expect(http.put).toHaveBeenCalledWith('/professional-registry/7/roles/ARQ_PROY/specific-experience', { expectedVersion: 2, years: 4, months: 6 }, config);
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/restore', { expectedVersion: 2 }, config);
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/merge', { targetId: 8 }, config);
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/participations/9/relink', { registryId: 8 }, config);

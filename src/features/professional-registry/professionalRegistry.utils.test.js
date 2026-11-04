@@ -9,7 +9,7 @@ describe('professional registry utils', () => {
     expect(formatDuration({ years: 0, months: 0, days: 0 })).toBe('0 días');
     expect(formatDuration(null)).toBe('—');
     expect(formatGeneralExperience({ duration: { years: 16, months: 5, days: 29 }, missing: null })).toBe('16 años 5 meses 29 días');
-    expect(formatGeneralExperience({ duration: null, missing: 'SIN_FECHA' })).toBe('Matrícula principal sin fecha de expedición');
+    expect(formatGeneralExperience({ duration: null, missing: 'SIN_FECHA' })).toBe('Matrícula en uso sin fecha de expedición');
     expect(formatGeneralExperience(undefined)).toBe('Sin dato');
   });
 

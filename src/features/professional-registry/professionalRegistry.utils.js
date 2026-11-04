@@ -33,8 +33,8 @@ export function formatDuration(duration) {
 // Why the server could not compute the general experience (time since the issue date of the principal matrícula).
 export const GENERAL_MISSING = {
   SIN_MATRICULA: 'Sin matrícula',
-  PRINCIPAL_EMPATADA: 'Defina la matrícula principal',
-  SIN_FECHA: 'Matrícula principal sin fecha de expedición',
+  PRINCIPAL_EMPATADA: 'Defina la matrícula en uso',
+  SIN_FECHA: 'Matrícula en uso sin fecha de expedición',
   FECHA_FUTURA: 'Fecha de expedición posterior a hoy',
 };
 
@@ -60,6 +60,13 @@ export function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return 'Sin fecha';
   return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: 'UTC' }).format(date);
+}
+
+// A moment someone saved something, as dd/mm/aaaa on the local calendar (formatDate shows calendar dates, in UTC).
+export function formatDay(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return 'Sin fecha';
+  return new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
 }
 
 export const DIFF_LABELS = {

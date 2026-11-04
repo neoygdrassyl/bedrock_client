@@ -67,6 +67,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
     load();
   }, [id, load]);
 
+  // Resolves true when the work succeeded.
   const run = async (work, success) => {
     setBusy(true);
     setError('');
@@ -75,9 +76,11 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
       setNotice(success);
       await load();
       onChanged?.();
+      return true;
     } catch (e) {
       if (errorCode(e) === 'VERSION_CONFLICT') await load();
       setError(errorText(e));
+      return false;
     } finally {
       setBusy(false);
     }
@@ -87,6 +90,11 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
     await ProfessionalRegistryService.setCanonicalName(id, { expectedVersion: detail.version, name: nameDraft });
     setNameDraft(null);
   }, 'Nombre actualizado.');
+
+  const saveSpecific = (role, body) => run(
+    () => ProfessionalRegistryService.setSpecificExperience(id, role.code, { expectedVersion: detail.version, ...body }),
+    body.clear ? 'Ajuste de experiencia específica quitado.' : 'Experiencia específica guardada.',
+  );
 
   const removeOrRestore = () => run(async () => {
     if (detail.deleted) await ProfessionalRegistryService.restore(id, { expectedVersion: detail.version });
@@ -167,7 +175,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                         <li key={`${item.kind}-${item.value}`}>
                           {item.kind === 'CC' ? 'Cédula' : 'Matrícula'}: {item.value}
                           {item.principal
-                            ? <span className="ml-1 text-xs text-muted-foreground">(principal)</span>
+                            ? <span className="ml-1 text-xs text-muted-foreground">(en uso)</span>
                             : null}
                         </li>
                       ))}
@@ -211,7 +219,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
 
             {tab === 'roles' ? (
               detail.roles.length ? (
-                <RegistryRolesTable detail={detail} />
+                <RegistryRolesTable detail={detail} canWrite={canWrite} busy={busy} onSaveSpecific={saveSpecific} />
               ) : <p className="text-sm text-muted-foreground">Este profesional no tiene roles registrados.</p>
             ) : null}
 
