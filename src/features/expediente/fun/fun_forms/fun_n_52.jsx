@@ -995,7 +995,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 });;
         }
 
-        // Fills 5.2 from a search suggestion; 5.2.10 is left alone when the source does not know the sanction.
+        // Fills 5.2 from a search suggestion. An unknown sanction resets 5.2.10 to its default (NO), so a previous pick
+        // never leaves its value behind.
         let fillProfessional = (suggestion, _scope) => {
             let set = (id, value) => { document.getElementById(id + _scope).value = value; };
             set("f_5211", suggestion.givenNames.toUpperCase());
@@ -1005,7 +1006,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             set("f_523", suggestion.email);
             set("f_526", suggestion.registration);
             set("f_527", suggestion.registrationDate);
-            if (suggestion.sanction !== undefined) set("f_5210", suggestion.sanction ? 1 : 0);
+            set("f_5210", suggestion.sanction ? 1 : 0);
             _SHOW_GENERAL_EXPERIENCE(_scope)
         }
 

@@ -87,6 +87,7 @@ vi.mock('../features/professionals/api/profesionals.service', () => ({
     getAll: vi.fn(() => Promise.resolve({ data: [] })),
     get: vi.fn(() => Promise.resolve({ data: {} })),
     getSearch: vi.fn(() => Promise.resolve({ data: [] })),
+    getByName: vi.fn(() => Promise.resolve({ data: [] })),
     createOrFind: vi.fn(() => Promise.resolve({ data: {} })),
   },
 }));
@@ -337,7 +338,7 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
       expect(formData.get('name')).toBe('Ana');
     }, 60000);
 
-    test('fills the edit form from a BD PROFESIONALES suggestion and keeps 5.2.10 when the sanction is unknown', async () => {
+    test('fills the edit form from a BD PROFESIONALES suggestion and resets 5.2.10 when the sanction is unknown', async () => {
       const { default: http } = await import('../shared/api/http-common');
       const suggestion = {
         registryId: 9, givenNames: 'María José', surnames: 'Pérez Gómez', cc: '1098765432', email: 'mj@test.com',
@@ -351,8 +352,7 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
         const search = container.querySelector('#form_fun_52_edit input[name="search_52"]');
         fireEvent.change(search, { target: { value: 'maria' } });
         await waitFor(() => expect(container.querySelectorAll('#form_fun_52_edit datalist option')).toHaveLength(1));
-        const sanctionBefore = container.querySelector('#f_5210_edit').value;
-        fireEvent.change(search, { target: { value: 'MARIA JOSE PEREZ GOMEZ · CC 1098765432' } });
+        fireEvent.change(search, { target: { value: 'MARIA JOSE PEREZ GOMEZ · CC 1098765432 · MAT. A123456' } });
 
         const value = (id) => container.querySelector(`#${id}`).value;
         expect(value('f_5211_edit')).toBe('MARÍA JOSÉ');
@@ -362,10 +362,40 @@ describe('FunForms51-53 — Render (fun_n_51, fun_n_52, fun_n_53)', () => {
         expect(value('f_523_edit')).toBe('mj@test.com');
         expect(value('f_526_edit')).toBe('A123456');
         expect(value('f_527_edit')).toBe('2015-06-01');
-        expect(value('f_5210_edit')).toBe(sanctionBefore);
+        expect(value('f_5210_edit')).toBe('0');
         expect(screen.getByText('Revise la separación de nombres y apellidos')).toBeInTheDocument();
       } finally {
         http.get.mockImplementation(() => Promise.resolve({ data: [] }));
+      }
+    }, 60000);
+
+    test('a later pick with an unknown sanction resets 5.2.10 left by an external pick', async () => {
+      const { default: http } = await import('../shared/api/http-common');
+      const { default: profesionals } = await import('../features/professionals/api/profesionals.service');
+      let registryItems = [];
+      http.get.mockImplementation((url) => Promise.resolve(
+        String(url).startsWith('/professional-registry/lookup') ? { data: { data: registryItems } } : { data: [] },
+      ));
+      profesionals.getByName.mockResolvedValue({ data: [{ id: 4, name: 'Pedro', surname: 'Ruiz', id_number: '55', sanction: 1 }] });
+      try {
+        const container = await openEditForm();
+        const search = container.querySelector('#form_fun_52_edit input[name="search_52"]');
+        const options = () => container.querySelectorAll('#form_fun_52_edit datalist option');
+
+        fireEvent.change(search, { target: { value: 'pedro' } });
+        await waitFor(() => expect(options()).toHaveLength(1));
+        fireEvent.change(search, { target: { value: options()[0].value } });
+        expect(container.querySelector('#f_5210_edit').value).toBe('1');
+
+        registryItems = [{ registryId: 9, givenNames: 'Luisa', surnames: 'Mora', cc: '66' }];
+        fireEvent.change(search, { target: { value: 'luisa' } });
+        await waitFor(() => expect(options()[0]?.value).toBe('LUISA MORA · CC 66'));
+        fireEvent.change(search, { target: { value: 'LUISA MORA · CC 66' } });
+        expect(container.querySelector('#f_5211_edit').value).toBe('LUISA');
+        expect(container.querySelector('#f_5210_edit').value).toBe('0');
+      } finally {
+        http.get.mockImplementation(() => Promise.resolve({ data: [] }));
+        profesionals.getByName.mockImplementation(() => Promise.resolve({ data: [] }));
       }
     }, 60000);
 
