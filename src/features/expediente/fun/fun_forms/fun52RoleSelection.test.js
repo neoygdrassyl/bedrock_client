@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ROLE_STATUS, buildBatchRoles, disabledReason, draftOf, roleRowState, selectionProblem,
+  ROLE_STATUS, buildBatchRoles, draftOf, roleRowState, selectionProblem,
 } from './fun52RoleSelection';
 
 const role = (overrides) => ({
@@ -13,7 +13,7 @@ const typed = (years, months = '') => ({ years: String(years), months: String(mo
 describe('roleRowState', () => {
   it.each([
     ['equal to the required years', role(), typed(2, 0), 120, ROLE_STATUS.CUMPLE, '', 24],
-    ['one month short', role(), typed(1, 11), 120, ROLE_STATUS.NO_CUMPLE, /no alcanza los 2 años/, 23],
+    ['one month short', role(), typed(1, 11), 120, ROLE_STATUS.NO_CUMPLE, '', 23],
     ['blank for a role that requires years', role(), typed('', ''), 120, ROLE_STATUS.SIN_REGISTRO, /Indique la experiencia específica/, null],
     ['blank where none is required', NO_EXIGE, typed('', ''), 120, ROLE_STATUS.NO_EXIGE, '', null],
     ['typed where none is required', NO_EXIGE, typed(3), 120, ROLE_STATUS.NO_EXIGE, '', 36],
@@ -39,23 +39,21 @@ describe('roleRowState', () => {
     expect(state.error).toMatch(error);
   });
 
-  it('keeps a role the registry marks NO_CUMPLE not selectable', () => {
-    expect(roleRowState(role({ status: ROLE_STATUS.NO_CUMPLE, selectable: false, specificMonths: 10 }), typed(0, 10), 120).selectable).toBe(false);
+  it('warns, without blocking, when 5.2.9 falls short of the required years', () => {
+    const state = roleRowState(role({ status: ROLE_STATUS.NO_CUMPLE, specificMonths: 10 }), typed(0, 10), 120);
+    expect(state).toMatchObject({ status: ROLE_STATUS.NO_CUMPLE, error: '', months: 10 });
+    expect(state.warning).toMatch(/no alcanza los 2 años que exige el rol\. Se puede añadir; la revisión jurídica lo marcará como RECHAZADO\./);
+    expect(roleRowState(role(), typed(2, 0), 120).warning).toBe('');
   });
 });
 
-describe('draftOf and disabledReason', () => {
+describe('draftOf', () => {
   it('pre-fills 5.2.9 with the registered specific experience', () => {
     expect(draftOf(role({ specificMonths: 40 }))).toEqual({ years: '3', months: '4' });
     expect(draftOf(role({ specificMonths: 0 }))).toEqual({ years: '0', months: '0' });
     expect(draftOf(role())).toEqual({ years: '', months: '' });
   });
 
-  it('tells why a role cannot be ticked', () => {
-    expect(disabledReason(role())).toBe('');
-    expect(disabledReason(role({ status: ROLE_STATUS.NO_CUMPLE, selectable: false, specificMonths: 13 })))
-      .toBe('La experiencia específica registrada (1 año 1 mes) no alcanza los 2 años que exige el rol.');
-  });
 });
 
 describe('selectionProblem and buildBatchRoles', () => {
@@ -69,6 +67,12 @@ describe('selectionProblem and buildBatchRoles', () => {
   it('names the roles to review', () => {
     expect(selectionProblem({ ARQ_PROY: typed(''), GEOTEC: typed(3, 4) }, roles, 120))
       .toBe('Revise la experiencia específica de: ARQUITECTO PROYECTISTA.');
+  });
+
+  it('lets a role that falls short of the required years be submitted', () => {
+    const selection = { ARQ_PROY: typed(1, 0) };
+    expect(selectionProblem(selection, roles, 120)).toBe('');
+    expect(buildBatchRoles(selection, roles)).toEqual([{ role: 'ARQUITECTO PROYECTISTA', expirience: 12 }]);
   });
 
   it('accepts a valid selection and builds the batch roles in catalog order', () => {

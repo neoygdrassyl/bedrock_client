@@ -3,13 +3,13 @@ import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
 import { formatYearsMonths } from '@/shared/utils/specificExperience';
 import {
-  ROLE_STATUS, STATUS_TEXT, buildBatchRoles, disabledReason, draftOf, requiredYearsText, roleRowState, selectionProblem,
+  ROLE_STATUS, STATUS_TEXT, buildBatchRoles, draftOf, requiredYearsText, roleRowState, selectionProblem,
 } from '../fun52RoleSelection';
 
 const SOURCE_TEXT = { manual: 'Registrada en BD Profesionales', expediente: 'Tomada del 5.2.9 de un expediente' };
 const STATUS_CLASS = {
   [ROLE_STATUS.CUMPLE]: 'text-success',
-  [ROLE_STATUS.NO_CUMPLE]: 'text-danger',
+  [ROLE_STATUS.NO_CUMPLE]: 'text-warning',
   [ROLE_STATUS.SIN_REGISTRO]: 'text-warning',
   [ROLE_STATUS.NO_EXIGE]: 'text-muted',
 };
@@ -63,8 +63,8 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
               const isChecked = Boolean(checked[code]);
               const state = roleRowState(role, drafts[code], generalMonths);
               const status = isChecked ? state.status : role.status;
-              const reason = disabledReason(role);
-              const describedBy = reason || (isChecked && state.error) ? `f_525_picker_note_${code}` : undefined;
+              const note = isChecked ? state.error || state.warning : '';
+              const describedBy = note ? `f_525_picker_note_${code}` : undefined;
               return (
                 <tr key={code}>
                   <td>
@@ -73,7 +73,7 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
                       className="form-check-input"
                       id={`f_525_picker_${code}`}
                       checked={isChecked}
-                      disabled={!role.selectable || busy}
+                      disabled={busy}
                       aria-describedby={describedBy}
                       onChange={() => toggle(code)}
                     />
@@ -108,8 +108,8 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
                       </div>
                     ) : null}
                     {describedBy ? (
-                      <small id={`f_525_picker_note_${code}`} className={`d-block ${reason ? 'text-muted' : 'text-danger'}`}>
-                        {reason || state.error}
+                      <small id={`f_525_picker_note_${code}`} className={`d-block ${state.error ? 'text-danger' : 'text-warning'}`}>
+                        {note}
                       </small>
                     ) : null}
                   </td>

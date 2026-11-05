@@ -1,6 +1,7 @@
 // FUN 5.2 multi-role picker rules (no React). A professional picked from BD PROFESIONALES comes with one eligibility
 // entry per catalog role (GET /professional-registry/:id/role-eligibility). The server checks only that 5.2.9 does
-// not exceed the general experience, so these rules decide what the form lets the user submit.
+// not exceed the general experience, so these rules decide what the form lets the user submit. Falling short of the
+// required years never blocks a role: it is a warning, and the legal review (Inf. Jurídico) marks it RECHAZADO.
 import { formatYearsMonths, readSpecificExperience } from '@/shared/utils/specificExperience';
 
 export const ROLE_STATUS = {
@@ -28,13 +29,6 @@ export function draftOf(role) {
 // The years a role requires, as the picker shows them.
 export const requiredYearsText = (years) => (years === null || years === undefined ? 'No exige' : `${years} ${years === 1 ? 'año' : 'años'}`);
 
-// Why a role cannot be ticked.
-export function disabledReason(role) {
-  if (role.selectable) return '';
-  if (role.specificMonths === null || role.specificMonths === undefined) return 'No cumple la experiencia exigida.';
-  return `La experiencia específica registrada (${formatYearsMonths(role.specificMonths)}) no alcanza los ${requiredYearsText(role.requiredYears)} que exige el rol.`;
-}
-
 function statusFor(requiredYears, months) {
   if (requiredYears === null || requiredYears === undefined) return ROLE_STATUS.NO_EXIGE;
   if (months === null) return ROLE_STATUS.SIN_REGISTRO;
@@ -43,25 +37,26 @@ function statusFor(requiredYears, months) {
 
 /**
  * The state of one role row given the 5.2.9 typed for it (`typed`: { years, months } as text).
- * `status` is recomputed from the typed value; `error` blocks submitting the role; `months` is what 5.2.9 sends
- * (null when left blank).
- * @returns {{ status: string, selectable: boolean, error: string, months: number|null }}
+ * `status` is recomputed from the typed value; `error` blocks submitting the role; `warning` (falling short of the
+ * required years) does not; `months` is what 5.2.9 sends (null when left blank).
+ * @returns {{ status: string, error: string, warning: string, months: number|null }}
  */
 export function roleRowState(role, typed, generalMonths) {
-  const selectable = Boolean(role.selectable);
   const read = readSpecificExperience(typed?.years, typed?.months, null);
-  if (read.problem) return { status: role.status, selectable, error: read.problem, months: null };
+  if (read.problem) return { status: role.status, error: read.problem, warning: '', months: null };
   const months = read.empty ? null : read.months;
   const status = statusFor(role.requiredYears, months);
   let error = '';
+  let warning = '';
   if (status === ROLE_STATUS.SIN_REGISTRO) {
     error = 'Indique la experiencia específica (5.2.9) en este rol.';
   } else if (months !== null && generalMonths !== null && generalMonths !== undefined && months > generalMonths) {
     error = `La experiencia específica (${formatYearsMonths(months)}) no puede superar la experiencia general (${formatYearsMonths(generalMonths)}).`;
   } else if (status === ROLE_STATUS.NO_CUMPLE) {
-    error = `La experiencia específica (${formatYearsMonths(months)}) no alcanza los ${requiredYearsText(role.requiredYears)} que exige el rol.`;
+    warning = `La experiencia específica (${formatYearsMonths(months)}) no alcanza los ${requiredYearsText(role.requiredYears)} `
+      + 'que exige el rol. Se puede añadir; la revisión jurídica lo marcará como RECHAZADO.';
   }
-  return { status, selectable, error, months };
+  return { status, error, warning, months };
 }
 
 /**
@@ -70,10 +65,7 @@ export function roleRowState(role, typed, generalMonths) {
 export function selectionProblem(selection, roles, generalMonths) {
   const picked = roles.filter((role) => selection[role.roleCode]);
   if (!picked.length) return 'Seleccione al menos un rol.';
-  const invalid = picked.filter((role) => {
-    const state = roleRowState(role, selection[role.roleCode], generalMonths);
-    return !state.selectable || state.error;
-  });
+  const invalid = picked.filter((role) => roleRowState(role, selection[role.roleCode], generalMonths).error);
   return invalid.length ? `Revise la experiencia específica de: ${invalid.map((role) => role.label).join(', ')}.` : '';
 }
 

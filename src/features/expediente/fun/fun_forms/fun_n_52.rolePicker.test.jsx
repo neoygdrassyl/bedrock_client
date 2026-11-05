@@ -54,7 +54,7 @@ const ELIGIBILITY = {
   generalMonths: 180,
   roles: [
     { roleCode: 'ARQ_PROY', label: 'ARQUITECTO PROYECTISTA', requiredYears: 2, specificMonths: 40, specificSource: 'manual', specificExceedsGeneral: false, status: 'CUMPLE', selectable: true },
-    { roleCode: 'DIR_CONSTR', label: 'DIRECTOR DE LA CONSTRUCCION', requiredYears: 3, specificMonths: 13, specificSource: 'expediente', specificExceedsGeneral: false, status: 'NO_CUMPLE', selectable: false },
+    { roleCode: 'DIR_CONSTR', label: 'DIRECTOR DE LA CONSTRUCCION', requiredYears: 3, specificMonths: 13, specificSource: 'expediente', specificExceedsGeneral: false, status: 'NO_CUMPLE', selectable: true },
     { roleCode: 'GEOTEC', label: 'INGENIERO CIVIL GEOTECNISTA', requiredYears: 2, specificMonths: null, specificSource: null, specificExceedsGeneral: false, status: 'SIN_REGISTRO', selectable: true },
   ],
 };
@@ -115,7 +115,8 @@ describe('fun_n_52 new professional with the multi-role picker', () => {
     expect(document.getElementById('f_525')).toBeNull();
     expect(document.getElementById('f_529')).toBeNull();
     expect(classicButton()).toBeNull();
-    expect(screen.getByRole('checkbox', { name: 'DIRECTOR DE LA CONSTRUCCION' })).toBeDisabled();
+    // Falling short of the required years never blocks a role (the legal review flags it).
+    expect(screen.getByRole('checkbox', { name: 'DIRECTOR DE LA CONSTRUCCION' })).toBeEnabled();
 
     // The general data comes from BD PROFESIONALES and the user may still correct it.
     await user.clear(document.getElementById('f_524'));

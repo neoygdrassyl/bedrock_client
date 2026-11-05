@@ -35,11 +35,17 @@ describe('Fun52RolePicker', () => {
     expect(submitButton()).toBeDisabled();
   });
 
-  it('disables a NO_CUMPLE role and tells why', () => {
-    renderPicker();
+  it('lets a NO_CUMPLE role be ticked and warns that the legal review will reject it', async () => {
+    const { onSubmit, user } = renderPicker();
     const checkbox = screen.getByRole('checkbox', { name: 'DIRECTOR DE LA CONSTRUCCION' });
-    expect(checkbox).toBeDisabled();
-    expect(checkbox).toHaveAccessibleDescription('La experiencia específica registrada (1 año 1 mes) no alcanza los 3 años que exige el rol.');
+    expect(checkbox).toBeEnabled();
+    await user.click(checkbox);
+    expect(checkbox).toHaveAccessibleDescription(
+      'La experiencia específica (1 año 1 mes) no alcanza los 3 años que exige el rol. '
+      + 'Se puede añadir; la revisión jurídica lo marcará como RECHAZADO.',
+    );
+    await user.click(submitButton());
+    expect(onSubmit).toHaveBeenCalledWith([{ role: 'DIRECTOR DE LA CONSTRUCCION', expirience: 13 }]);
   });
 
   it('requires 5.2.9 for a SIN_REGISTRO role before submitting', async () => {
@@ -62,7 +68,7 @@ describe('Fun52RolePicker', () => {
     expect(within(row('INGENIERO CIVIL GEOTECNISTA')).getByText('No cumple')).toBeInTheDocument();
     expect(within(row('INGENIERO CIVIL GEOTECNISTA')).getByText(/no alcanza los 2 años/)).toBeInTheDocument();
     await user.click(submitButton());
-    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalledWith([{ role: 'INGENIERO CIVIL GEOTECNISTA', expirience: 12 }]);
 
     await user.clear(years);
     await user.type(years, '2');
