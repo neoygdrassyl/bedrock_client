@@ -25,6 +25,7 @@ export default function RegistryConsolidate({ open, onClose, onApplied }) {
   const run = async (apply) => {
     setBusy(true);
     setError('');
+    if (!apply) { setSummary(null); setApplied(false); }
     try {
       const response = await ProfessionalRegistryService.consolidate({ apply });
       setSummary(response?.data || null);
@@ -36,12 +37,13 @@ export default function RegistryConsolidate({ open, onClose, onApplied }) {
     }
   };
 
+  // Opening the dialog computes nothing: the dry run reads the whole base, so it runs only when asked for.
   useEffect(() => {
     if (!open) return;
     setSummary(null);
     setApplied(false);
-    run(false);
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+    setError('');
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose?.(); }}>
@@ -51,6 +53,7 @@ export default function RegistryConsolidate({ open, onClose, onApplied }) {
           <DialogDescription>Compara la base con los profesionales registrados en los expedientes. Las ediciones manuales no se modifican.</DialogDescription>
         </DialogHeader>
         {error ? <p className="text-sm text-destructive" role="alert">{error}</p> : null}
+        {!busy && !summary && !error ? <p className="text-sm text-muted-foreground">Calcule los cambios para ver qué modificaría la reconciliación.</p> : null}
         {busy && !summary ? <p className="text-sm text-muted-foreground">Calculando…</p> : null}
         {summary ? (
           <dl className="space-y-1 text-sm" aria-label="Resultado de la reconciliación">
@@ -62,6 +65,7 @@ export default function RegistryConsolidate({ open, onClose, onApplied }) {
         {applied ? <p className="text-sm text-emerald-700" role="status">Cambios aplicados.</p> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onClose?.()}>Cerrar</Button>
+          <Button type="button" variant="secondary" disabled={busy} onClick={() => run(false)}>Calcular cambios</Button>
           <Button type="button" disabled={busy || !summary || applied || !summary.plannedWrites} onClick={() => run(true)}>
             {summary && !summary.plannedWrites ? 'Sin cambios pendientes' : 'Aplicar cambios'}
           </Button>

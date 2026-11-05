@@ -84,7 +84,7 @@ describe('ProfessionalRegistryPage', () => {
     expect(service.list).toHaveBeenCalled();
   });
 
-  it('shows what a reconciliation would change and applies it on confirmation', async () => {
+  it('opens the reconciliation without computing; the dry run starts from its button and applies on confirmation', async () => {
     const user = userEvent.setup();
     service.consolidate
       .mockResolvedValueOnce({ data: { sourceRows: 5934, participationsNew: 3, participationsUpdated: 1, registriesNew: 1, duplicateCandidatesNew: 0, unidentified: 10, plannedWrites: 9 } })
@@ -94,12 +94,39 @@ describe('ProfessionalRegistryPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Reconciliar' }));
     const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByRole('button', { name: 'Calcular cambios' })).toBeEnabled();
+    expect(within(dialog).getByRole('button', { name: 'Aplicar cambios' })).toBeDisabled();
+    expect(service.consolidate).not.toHaveBeenCalled();
+
+    await user.click(within(dialog).getByRole('button', { name: 'Calcular cambios' }));
     expect(await within(dialog).findByText('Cambios a escribir')).toBeInTheDocument();
+    expect(service.consolidate).toHaveBeenCalledTimes(1);
     expect(service.consolidate).toHaveBeenCalledWith({ apply: false });
 
     await user.click(within(dialog).getByRole('button', { name: 'Aplicar cambios' }));
     await waitFor(() => expect(service.consolidate).toHaveBeenLastCalledWith({ apply: true }));
     expect(await within(dialog).findByText('Cambios aplicados.')).toBeInTheDocument();
+  });
+
+  it('disables the compute button while the dry run is running', async () => {
+    const user = userEvent.setup();
+    let finish;
+    service.consolidate.mockReturnValueOnce(new Promise((resolve) => { finish = resolve; }));
+    render(<ProfessionalRegistryPage />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    await user.click(screen.getByRole('button', { name: 'Reconciliar' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: 'Calcular cambios' }));
+
+    expect(within(dialog).getByRole('button', { name: 'Calcular cambios' })).toBeDisabled();
+    expect(within(dialog).getByText('Calculando…')).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: 'Calcular cambios' }));
+    expect(service.consolidate).toHaveBeenCalledTimes(1);
+
+    finish({ data: { sourceRows: 5934, plannedWrites: 2 } });
+    expect(await within(dialog).findByText('Cambios a escribir')).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Calcular cambios' })).toBeEnabled();
   });
 
   it('does not offer to apply when there is nothing to change, and explains a refusal', async () => {
@@ -110,11 +137,28 @@ describe('ProfessionalRegistryPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Reconciliar' }));
     const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: 'Calcular cambios' }));
     expect(await within(dialog).findByRole('button', { name: 'Sin cambios pendientes' })).toBeDisabled();
     await user.click(within(dialog).getByRole('button', { name: 'Cerrar' }));
 
     service.consolidate.mockRejectedValueOnce({ response: { status: 403, data: {} } });
     await user.click(screen.getByRole('button', { name: 'Reconciliar' }));
+    const reopened = await screen.findByRole('dialog');
+    await user.click(within(reopened).getByRole('button', { name: 'Calcular cambios' }));
     expect(await screen.findByText('No tiene permisos para realizar esta acción.')).toBeInTheDocument();
+  });
+
+  it('explains that another consolidation is running', async () => {
+    const user = userEvent.setup();
+    const message = 'Hay otra consolidación en curso. Intente de nuevo en unos minutos.';
+    service.consolidate.mockRejectedValueOnce({ response: { status: 409, data: { code: 'CONSOLIDATION_RUNNING', message } } });
+    render(<ProfessionalRegistryPage />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    await user.click(screen.getByRole('button', { name: 'Reconciliar' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: 'Calcular cambios' }));
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(message);
+    expect(within(dialog).getByRole('button', { name: 'Calcular cambios' })).toBeEnabled();
   });
 });
