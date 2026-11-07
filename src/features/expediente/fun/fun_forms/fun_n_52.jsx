@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { Button } from '@/shared/ui/button';
 import FUNService from '../../api/fun.service'
 import DataTable from '@/shared/components/data-table-bridge';
@@ -14,11 +14,32 @@ import { useRoleEligibility } from './hooks/useRoleEligibility';
 import { MANUAL_529_HINT, certifiedForLabel, certifiedHint, registryIdByCc } from './fun529Source';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-// Positional order of fun_52.docs (5.2.11). The server owns this list: the edit form only displays it.
-const EDIT_DOC_SELECT_IDS = ['f_52_111_edit', 'f_52_112_edit', 'f_52_113_edit', 'f_52_114_edit', 'f_52_115_edit', 'f_52_116_edit'];
+// Positional order of fun_52.docs (5.2.11): "-1" provided on paper, "0" no document, otherwise a fun_6 id. The order
+// is not the numbering of the labels (position 0 is 5.2.11.2, position 3 is 5.2.11.1).
+const NEW_DOC_SELECT_IDS = ['f_52_111', 'f_52_112', 'f_52_113', 'f_52_114', 'f_52_115', 'f_52_116'];
+const EDIT_DOC_SELECT_IDS = NEW_DOC_SELECT_IDS.map(id => `${id}_edit`);
+// An older backend refuses 5.2.11 on creation with this message; the create is then retried without it.
+const DOCS_READ_ONLY_MESSAGE = 'El campo docs es de solo lectura.';
+const readDocs = (selectIds) => selectIds.map(id => document.getElementById(id).value);
+// Positions as the server compares them: trimmed, without trailing empty positions.
+const canonicalDocs = (value) => {
+    const items = (Array.isArray(value) ? value : String(value ?? '').split(',')).map(item => String(item ?? '').trim());
+    while (items.length && items[items.length - 1] === '') items.pop();
+    return items.join(',');
+};
+// The server's own message for a refused request (4xx); anything else gets the generic text.
+const refusalMessage = (e, fallback) => {
+    const status = e?.response?.status;
+    const message = e?.response?.data?.message;
+    return status >= 400 && status < 500 && typeof message === 'string' && message ? message : fallback;
+};
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { formatYearsMonths, readSpecificExperience, todayIso, wholeMonthsBetween } from '@/shared/utils/specificExperience';
+
+// Only an explicit 0 deactivates a 5.2 row: NULL (rows created without the field) counts as active, as BD PROFESIONALES
+// (isSourceActive) and the legal records grid read it.
+export const isFun52Active = (active) => !(active === 0 || active === '0' || active === false || active === 'false');
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);
@@ -38,6 +59,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
     const editRegistryId = edit && editRegistry.rowId === edit.id ? editRegistry.registryId : null;
     const editEligibility = useRoleEligibility(editRegistryId);
     const edit529 = edit && editEligibility.status === 'ready' ? certifiedForLabel(editEligibility.data, editRole) : null;
+    // 5.2.11 of the edited row: the stored positions and what the selects could show of them (a stored id that is not
+    // among the expediente's documents shows blank).
+    const editDocs = useRef({ stored: [], shown: [] });
 
     useEffect(() => {
         if (edit !== false) {
@@ -64,11 +88,12 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             }
             setEditRole(select.value);
 
-            // Read-only display: a missing position stays blank instead of keeping a previous row's value.
+            // A missing position stays blank instead of keeping a previous row's value.
             const _array = (_ITEM.docs || '').split(',');
             EDIT_DOC_SELECT_IDS.forEach((selectId, index) => {
                 document.getElementById(selectId).value = _array[index] ?? '';
             });
+            editDocs.current = { stored: _array, shown: readDocs(EDIT_DOC_SELECT_IDS) };
 
         }
     }, [edit]);
@@ -606,7 +631,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 </div>
 
                 <Divider>DOCUMENTOS</Divider>
-                <p className="text-muted small text-center mb-2">Los documentos relacionados no se pueden modificar desde esta edición.</p>
 
                 <div className="row mb-2">
                     <div className="col-6">
@@ -615,7 +639,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_114_edit" disabled>
+                            <select className='form-select' id="f_52_114_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -628,7 +652,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_111_edit" disabled>
+                            <select className='form-select' id="f_52_111_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -641,7 +665,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_112_edit" disabled>
+                            <select className='form-select' id="f_52_112_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -654,7 +678,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_113_edit" disabled>
+                            <select className='form-select' id="f_52_113_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -667,7 +691,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_115_edit" disabled>
+                            <select className='form-select' id="f_52_115_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -680,7 +704,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_116_edit" disabled>
+                            <select className='form-select' id="f_52_116_edit">
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -780,7 +804,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     compact: true,
                     cell: row =>
                         <div className="form-check form-switch">
-                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_52(row)} />
+                            <input className="form-check-input" type="checkbox" aria-label="Profesional activo" checked={isFun52Active(row.active)} onChange={() => setActive_52(row)} />
                         </div>
                 },
                 {
@@ -868,10 +892,15 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210").value;
             formData.set('sanction', sanction);
-            // docs (5.2.11) is server-owned: the server rejects it on create, so it is not sent.
+            formData.set('docs', readDocs(NEW_DOC_SELECT_IDS).join(','));
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun52(formData)
+                .catch(e => {
+                    if (e.response?.status !== 400 || e.response?.data?.message !== DOCS_READ_ONLY_MESSAGE) throw e;
+                    formData.delete('docs');
+                    return FUNService.create_fun52(formData);
+                })
                 .then(response => {
                     if (response.data === 'OK') {
                         _NEW_52_CREATED();
@@ -893,7 +922,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             setPickedRegistryId(null);
         }
         // The role picker's submit: one row per role in a single request. The general data is read from the same
-        // fields new_52 reads, so the user's corrections count; docs (5.2.11) are server-owned and never sent.
+        // fields new_52 reads, so the user's corrections count; the batch endpoint takes no docs (5.2.11).
         let newBatch52 = (roles) => {
             let value = (id) => document.getElementById(id).value;
             let body = {
@@ -964,7 +993,13 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210_edit").value;
             formData.set('sanction', sanction);
-            // docs (5.2.11) is server-owned and read-only on update: it is not sent.
+            // 5.2.11 is sent only when the user changed a select, as the six positions; a select left as shown keeps
+            // its stored value, even one it could not show.
+            let shownDocs = editDocs.current.shown;
+            let docs = readDocs(EDIT_DOC_SELECT_IDS).map((value, index) => (
+                value === shownDocs[index] ? String(editDocs.current.stored[index] ?? '').trim() : value
+            ));
+            if (canonicalDocs(docs) !== canonicalDocs(edit.docs)) formData.set('docs', docs.join(','));
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_52(edit.id, formData)
@@ -1008,11 +1043,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 }
             });
         }
+        // The switch is controlled by the stored value: it changes only when the refreshed row says so.
         let setActive_52 = (item) => {
             formData = new FormData();
             let id = item.id
-            let active = item.active;
-            active = active == 1 ? 0 : 1;
+            let active = isFun52Active(item.active) ? 0 : 1;
             formData.set('active', active);
             FUNService.update_52(id, formData)
                 .then(response => {
@@ -1025,7 +1060,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: refusalMessage(e, swaMsg.generic_error_text) });
                 });
         }
 
