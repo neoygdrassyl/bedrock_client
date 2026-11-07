@@ -33,9 +33,13 @@ export default function RegistryReview({ canWrite, onChanged, onOpen }) {
     const request = latestRequest.current + 1;
     latestRequest.current = request;
     try {
-      const [counts, items] = await Promise.all([ProfessionalRegistryService.reviewSummary(), ProfessionalRegistryService.review({ type, page, limit: 25 })]);
+      // One request answers the page and the counts. An older backend ignores withSummary and answers no `summary`:
+      // the counts then come from /review/summary, as before.
+      const items = await ProfessionalRegistryService.review({ type, page, limit: 25, withSummary: 1 });
       if (request !== latestRequest.current) return;
-      setSummary(counts?.data || {});
+      const counts = items?.data?.summary || (await ProfessionalRegistryService.reviewSummary())?.data;
+      if (request !== latestRequest.current) return;
+      setSummary(counts || {});
       setQueue({ type, data: items?.data?.data || [], total: items?.data?.total || 0, limit: items?.data?.limit || 25 });
       setError('');
     } catch (e) {

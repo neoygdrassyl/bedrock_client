@@ -7,15 +7,18 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
-import { SORT_OPTIONS, errorText, formatCc, formatMonths } from './professionalRegistry.utils';
+import {
+  NO_PROFESSION, PROFESSION_OPTIONS, SORT_OPTIONS, errorText, formatCc, formatMonths,
+} from './professionalRegistry.utils';
+import { useRegistryCatalog } from './useRegistryCatalog';
 
-const EMPTY_FILTERS = { q: '', role: '', status: '', expediente: '', minYears: '', maxYears: '', nameFlag: false, includeDeleted: false, sort: 'name' };
+const EMPTY_FILTERS = { q: '', role: '', profession: '', expediente: '', minYears: '', maxYears: '', nameFlag: false, includeDeleted: false, sort: 'name' };
 const SELECT_CLASS = 'h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground';
 
 function toQuery(filters, page) {
   const years = (value) => (value === '' ? '' : Math.round(Number(value) * 12));
   return {
-    q: filters.q.trim(), role: filters.role, status: filters.status, expediente: filters.expediente.trim(),
+    q: filters.q.trim(), role: filters.role, profession: filters.profession, expediente: filters.expediente.trim(),
     minMonths: years(filters.minYears), maxMonths: years(filters.maxYears),
     nameFlag: filters.nameFlag ? '1' : '', includeDeleted: filters.includeDeleted ? '1' : '', sort: filters.sort, page, limit: 25,
   };
@@ -28,16 +31,14 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(25);
-  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const latestRequest = useRef(0);
 
-  useEffect(() => {
-    let active = true;
-    ProfessionalRegistryService.catalog().then((response) => { if (active) setRoles(response?.data?.data || []); }).catch(() => {});
-    return () => { active = false; };
-  }, []);
+  const catalog = useRegistryCatalog();
+  const roles = catalog.roles;
+  // An older backend does not send `professions`, so the filter keeps the frontend's own catalog.
+  const professions = catalog.professions || PROFESSION_OPTIONS;
 
   // Only the most recent request may update the screen: a slow earlier answer must not overwrite a newer one.
   const load = useCallback(async () => {
@@ -83,11 +84,11 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
           </select>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="registry-filter-status">Estado</Label>
-          <select id="registry-filter-status" className={SELECT_CLASS} value={draft.status} onChange={set('status')}>
-            <option value="">Todos</option>
-            <option value="ACTIVO">Activo</option>
-            <option value="PENDIENTE_REVISION">Pendiente de revisión</option>
+          <Label htmlFor="registry-filter-profession">Profesión</Label>
+          <select id="registry-filter-profession" className={SELECT_CLASS} value={draft.profession} onChange={set('profession')}>
+            <option value="">Todas</option>
+            {professions.map((name) => <option key={name} value={name}>{name}</option>)}
+            <option value={NO_PROFESSION}>Sin profesión</option>
           </select>
         </div>
         <div className="space-y-1">
@@ -125,14 +126,15 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
             <TableRow>
               <TableHead>Cédula</TableHead>
               <TableHead>Nombre</TableHead>
+              <TableHead>Profesión</TableHead>
               <TableHead>Expedientes</TableHead>
               <TableHead>Roles y experiencia</TableHead>
               <TableHead className="w-24"><span className="sr-only">Acciones</span></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Cargando…</TableCell></TableRow> : null}
-            {!loading && !rows.length && !error ? <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">No hay profesionales con esos filtros.</TableCell></TableRow> : null}
+            {loading ? <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">Cargando…</TableCell></TableRow> : null}
+            {!loading && !rows.length && !error ? <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">No hay profesionales con esos filtros.</TableCell></TableRow> : null}
             {!loading ? rows.map((row) => (
               <TableRow key={row.id}>
                 <TableCell className="whitespace-nowrap tabular-nums">{formatCc(row.cc)}</TableCell>
@@ -141,6 +143,13 @@ export default function RegistryList({ onOpen, refreshToken = 0 }) {
                   {row.status === 'PENDIENTE_REVISION' ? <Badge variant="secondary" className="ml-2">Pendiente de revisión</Badge> : null}
                   {row.deleted ? <Badge variant="outline" className="ml-2">Eliminado</Badge> : null}
                   {row.flagged ? <Badge variant="destructive" className="ml-2" title="Expedientes con el nombre mal registrado">{row.flagged} nombre(s) mal registrado(s)</Badge> : null}
+                </TableCell>
+                <TableCell>
+                  {row.professions?.length ? (
+                    <ul className="flex flex-wrap gap-1" aria-label={`Profesiones de ${row.name}`}>
+                      {row.professions.map((name) => <li key={name}><Badge variant="outline">{name}</Badge></li>)}
+                    </ul>
+                  ) : <span className="text-muted-foreground">—</span>}
                 </TableCell>
                 <TableCell className="tabular-nums">{row.projects}</TableCell>
                 <TableCell>

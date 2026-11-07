@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { canWriteRegistry, errorCode, errorText, formatCc, formatDate, formatDuration, formatGeneralExperience, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
+import { canWriteRegistry, errorCode, errorText, formatCc, formatDate, formatDuration, formatGeneralExperience, formatMonths, formatProfessions, isImplausibleMonths, normalizeProfession, professionKey } from './professionalRegistry.utils';
 
 describe('professional registry utils', () => {
   it('formats a duration without its zero parts and the general experience or why it is missing', () => {
@@ -67,5 +67,22 @@ describe('isImplausibleMonths', () => {
     expect(isImplausibleMonths(154)).toBe(false);
     expect(isImplausibleMonths(null)).toBe(false);
     expect(isImplausibleMonths(undefined)).toBe(false);
+  });
+});
+
+describe('professions', () => {
+  it('maps a typed profession to the catalog ignoring case and accents, and keeps other names uppercase', () => {
+    expect(normalizeProfession('  ing civil ')).toBe('ING CIVIL');
+    expect(normalizeProfession('Árquitecto')).toBe('ARQUITECTO');
+    expect(normalizeProfession('topógrafo   de campo')).toBe('TOPÓGRAFO DE CAMPO');
+    expect(normalizeProfession('A')).toBeNull();
+    expect(normalizeProfession('Ingeniero 2')).toBeNull();
+    expect(professionKey('Topógrafo')).toBe(professionKey('TOPOGRAFO'));
+  });
+
+  it('joins the names of a detail or a list row', () => {
+    expect(formatProfessions([{ name: 'ARQUITECTO', source: 'CATALOGO' }, { name: 'TOPÓGRAFO', source: 'MANUAL' }])).toBe('ARQUITECTO, TOPÓGRAFO');
+    expect(formatProfessions(['ING MECANICO'])).toBe('ING MECANICO');
+    expect(formatProfessions(undefined)).toBe('');
   });
 });

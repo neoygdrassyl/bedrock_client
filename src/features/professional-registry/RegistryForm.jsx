@@ -5,9 +5,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import ProfessionalRegistryService from '@/features/professional-registry/api/professional_registry.service';
-import { DIALOG_CLOSE_CLASS, errorCode, errorText, formatDate } from './professionalRegistry.utils';
+import RegistryProfessionsField from './RegistryProfessionsField';
+import {
+  DIALOG_CLOSE_CLASS, MAX_PROFESSIONS, PROFESSION_ERROR, PROFESSION_OPTIONS, errorCode, errorText, formatDate, normalizeProfession, professionKey,
+} from './professionalRegistry.utils';
+import { useRegistryCatalog } from './useRegistryCatalog';
 
-const EMPTY = { name: '', cc: '', registration: '', registrationDate: '', email: '', phone: '' };
+const EMPTY = { name: '', cc: '', registration: '', registrationDate: '', email: '', phone: '', professions: [] };
+const professionNames = (registry) => (registry?.professions || []).map((item) => item?.name || item).filter(Boolean);
+const sameProfessions = (a, b) => a.map(professionKey).sort().join('|') === b.map(professionKey).sort().join('|');
 const MIN_REGISTRATION_DATE = '1900-01-01';
 const today = () => new Date().toLocaleDateString('en-CA');
 const squash = (value) => String(value || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -29,6 +35,9 @@ export function validateRegistryForm(values, mode) {
   if (email && (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) errors.email = 'El correo no tiene un formato válido.';
   const phone = values.phone.trim();
   if (phone && (!/\d/.test(phone) || !/^[\d+()\- ]+$/.test(phone) || phone.length > 64)) errors.phone = 'El teléfono solo puede tener dígitos, espacios, +, - y paréntesis.';
+  const professions = values.professions || [];
+  if (professions.some((item) => !normalizeProfession(item))) errors.professions = PROFESSION_ERROR;
+  else if (new Set(professions.map(professionKey)).size > MAX_PROFESSIONS) errors.professions = `Un profesional puede tener máximo ${MAX_PROFESSIONS} profesiones.`;
   return errors;
 }
 
@@ -37,13 +46,20 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [professionOptions, setProfessionOptions] = useState(PROFESSION_OPTIONS);
+
+  // The catalog's professions; an older backend does not send them, so the form keeps the same three options.
+  const catalog = useRegistryCatalog(open);
+  useEffect(() => {
+    if (catalog.professions) setProfessionOptions(catalog.professions);
+  }, [catalog.professions]);
 
   useEffect(() => {
     if (!open) return;
     setErrors({});
     setServerError(null);
     setValues(mode === 'edit' && registry
-      ? { ...EMPTY, cc: registry.cc || '', email: registry.email || '', phone: registry.phone || '', registration: registry.registration || '', registrationDate: registry.registrationDate || '' }
+      ? { ...EMPTY, cc: registry.cc || '', email: registry.email || '', phone: registry.phone || '', registration: registry.registration || '', registrationDate: registry.registrationDate || '', professions: professionNames(registry) }
       : EMPTY);
   }, [open, mode, registry]);
 
@@ -58,9 +74,14 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
     setServerError(null);
     const registrationChanged = mode === 'edit' && values.registration.trim() && squash(values.registration) !== squash(registry.registration);
     const registrationDateChanged = mode === 'edit' && values.registrationDate && values.registrationDate !== (registry.registrationDate || '');
+    // Sent when chosen (create) or changed (edit); an older backend ignores the field.
+    const professionsChanged = mode === 'edit' && !sameProfessions(values.professions, professionNames(registry));
     try {
       const response = mode === 'create'
-        ? await ProfessionalRegistryService.create({ name: values.name, cc: values.cc, registration: values.registration, email: values.email, phone: values.phone })
+        ? await ProfessionalRegistryService.create({
+          name: values.name, cc: values.cc, registration: values.registration, email: values.email, phone: values.phone,
+          ...(values.professions.length ? { professions: values.professions } : {}),
+        })
         : await ProfessionalRegistryService.update(registry.id, {
           expectedVersion: registry.version,
           email: values.email,
@@ -68,6 +89,7 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
           ...(values.cc.replace(/\D/g, '') !== String(registry.cc || '') ? { cc: values.cc } : {}),
           ...(registrationChanged ? { registration: values.registration } : {}),
           ...(registrationDateChanged ? { registrationDate: values.registrationDate } : {}),
+          ...(professionsChanged ? { professions: values.professions } : {}),
         });
       onSaved?.(response?.data);
     } catch (e) {
@@ -101,6 +123,12 @@ export default function RegistryForm({ open, mode, registry, onClose, onSaved, o
         </DialogHeader>
         <form onSubmit={submit} className="space-y-3" noValidate>
           {mode === 'create' ? field('registry-name', 'Nombre completo *', { key: 'name' }) : null}
+          <RegistryProfessionsField
+            options={professionOptions}
+            value={values.professions}
+            onChange={(professions) => setValues((current) => ({ ...current, professions }))}
+            error={errors.professions}
+          />
           {field('registry-cc', mode === 'create' ? 'Cédula' : 'Cédula', { key: 'cc' })}
           {registrationConflict ? (
             <p className="text-xs text-muted-foreground">

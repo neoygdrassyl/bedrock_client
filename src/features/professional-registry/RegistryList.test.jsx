@@ -30,6 +30,24 @@ describe('RegistryList', () => {
     expect(service.list).toHaveBeenCalledWith(expect.objectContaining({ page: 1, limit: 25, sort: 'name' }));
   });
 
+  it('shows the professions in their own column between Nombre and Expedientes, or a dash without any', async () => {
+    service.list.mockResolvedValue(page([
+      row({ professions: ['ARQUITECTO', 'TOPÓGRAFO'] }),
+      row({ id: 2, name: 'LUIS PEREZ', cc: '1098765', professions: [] }),
+      row({ id: 3, name: 'OLD BACKEND', cc: '1098766' }),
+    ]));
+    render(<RegistryList onOpen={() => {}} />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    const headers = screen.getAllByRole('columnheader').map((cell) => cell.textContent);
+    expect(headers.slice(0, 5)).toEqual(['Cédula', 'Nombre', 'Profesión', 'Expedientes', 'Roles y experiencia']);
+    const [, first, second, third] = screen.getAllByRole('row');
+    expect(within(first).getAllByRole('cell')[2]).toHaveTextContent('ARQUITECTOTOPÓGRAFO');
+    expect(within(within(first).getByRole('list', { name: 'Profesiones de ANA MARIA LOPEZ' })).getAllByRole('listitem')).toHaveLength(2);
+    expect(within(second).getAllByRole('cell')[2]).toHaveTextContent('—');
+    expect(within(third).getAllByRole('cell')[2]).toHaveTextContent('—');
+  });
+
   it('marks pending, deleted and misregistered people', async () => {
     service.list.mockResolvedValue(page([row({ status: 'PENDIENTE_REVISION', deleted: true, flagged: 3, cc: null })]));
     render(<RegistryList onOpen={() => {}} />);
@@ -48,7 +66,7 @@ describe('RegistryList', () => {
 
     await user.type(screen.getByLabelText('Nombre, cédula o matrícula'), ' 13439751 ');
     await user.selectOptions(screen.getByLabelText('Rol'), 'GEOTEC');
-    await user.selectOptions(screen.getByLabelText('Estado'), 'PENDIENTE_REVISION');
+    await user.selectOptions(screen.getByLabelText('Profesión'), 'ING CIVIL');
     await user.type(screen.getByLabelText('Expediente'), '26-0166');
     await user.type(screen.getByLabelText('Experiencia mínima (años)'), '5');
     await user.type(screen.getByLabelText('Experiencia máxima (años)'), '10');
@@ -61,7 +79,7 @@ describe('RegistryList', () => {
 
     await waitFor(() => expect(service.list).toHaveBeenCalledTimes(1));
     expect(service.list).toHaveBeenCalledWith({
-      q: '13439751', role: 'GEOTEC', status: 'PENDIENTE_REVISION', expediente: '26-0166', minMonths: 60, maxMonths: 120,
+      q: '13439751', role: 'GEOTEC', profession: 'ING CIVIL', expediente: '26-0166', minMonths: 60, maxMonths: 120,
       nameFlag: '1', includeDeleted: '1', sort: 'projects', page: 1, limit: 25,
     });
   });
@@ -77,6 +95,46 @@ describe('RegistryList', () => {
     await user.click(screen.getByRole('button', { name: 'Limpiar' }));
 
     await waitFor(() => expect(service.list).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1, q: '', role: '' })));
+  });
+
+  it('offers Todas, the catalog professions and Sin profesión instead of an Estado filter', async () => {
+    service.catalog.mockResolvedValue({ data: { data: [], professions: ['ARQUITECTO', 'ING CIVIL', 'TOPOGRAFO'] } });
+    render(<RegistryList onOpen={() => {}} />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    const select = screen.getByLabelText('Profesión');
+    await waitFor(() => expect(within(select).getByRole('option', { name: 'TOPOGRAFO' })).toBeInTheDocument());
+    expect(within(select).getAllByRole('option').map((option) => [option.textContent, option.value])).toEqual([
+      ['Todas', ''], ['ARQUITECTO', 'ARQUITECTO'], ['ING CIVIL', 'ING CIVIL'], ['TOPOGRAFO', 'TOPOGRAFO'], ['Sin profesión', 'SIN_PROFESION'],
+    ]);
+    expect(select).toHaveValue('');
+    expect(screen.queryByLabelText('Estado')).not.toBeInTheDocument();
+    expect(service.list).toHaveBeenCalledWith(expect.objectContaining({ profession: '' }));
+    expect(service.list.mock.calls[0][0]).not.toHaveProperty('status');
+  });
+
+  it('falls back to the frontend professions when the catalog does not send them', async () => {
+    render(<RegistryList onOpen={() => {}} />);
+    await screen.findByText('ANA MARIA LOPEZ');
+
+    const names = within(screen.getByLabelText('Profesión')).getAllByRole('option').map((option) => option.textContent);
+    expect(names).toEqual(['Todas', 'ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA', 'Sin profesión']);
+  });
+
+  it('sends Sin profesión only on Buscar and resets the profession on Limpiar', async () => {
+    const user = userEvent.setup();
+    render(<RegistryList onOpen={() => {}} />);
+    await screen.findByText('ANA MARIA LOPEZ');
+    service.list.mockClear();
+
+    await user.selectOptions(screen.getByLabelText('Profesión'), 'SIN_PROFESION');
+    expect(service.list).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+    await waitFor(() => expect(service.list).toHaveBeenLastCalledWith(expect.objectContaining({ profession: 'SIN_PROFESION', page: 1 })));
+
+    await user.click(screen.getByRole('button', { name: 'Limpiar' }));
+    await waitFor(() => expect(service.list).toHaveBeenLastCalledWith(expect.objectContaining({ profession: '' })));
+    expect(screen.getByLabelText('Profesión')).toHaveValue('');
   });
 
   it('paginates on the server and disables the buttons at the edges', async () => {

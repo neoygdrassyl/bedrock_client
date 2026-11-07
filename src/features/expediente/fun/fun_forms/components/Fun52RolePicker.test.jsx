@@ -105,4 +105,51 @@ describe('Fun52RolePicker', () => {
     expect(screen.getByRole('checkbox', { name: 'ARQUITECTO PROYECTISTA' })).toBeDisabled();
     expect(submitButton()).toBeDisabled();
   });
+
+  describe('5.2.9 from the certified experiences of BD PROFESIONALES', () => {
+    const CERTIFIED = {
+      registryId: 9,
+      generalMonths: 120,
+      roles: [
+        { roleCode: 'GEOTEC', label: 'INGENIERO CIVIL GEOTECNISTA', requiredYears: 5, specificMonths: 78, specificSource: 'certificados', specificExperience: { years: 6, months: 6, days: 15 }, certificateCount: 3, specificExceedsGeneral: false, status: 'CUMPLE', selectable: true },
+        { roleCode: 'ING_ESTR', label: 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL', requiredYears: 5, specificMonths: null, specificSource: null, specificExperience: null, certificateCount: 0, specificExceedsGeneral: false, status: 'SIN_REGISTRO', selectable: true },
+      ],
+    };
+    const yearsBox = (label) => screen.getByRole('textbox', { name: `Años de experiencia específica en ${label}` });
+    const monthsBox = (label) => screen.getByRole('textbox', { name: `Meses de experiencia específica en ${label}` });
+
+    it('fills 5.2.9 with the certified sum, read only, and says where it comes from', async () => {
+      const { onSubmit, user } = renderPicker({ eligibility: CERTIFIED });
+      expect(within(row('INGENIERO CIVIL GEOTECNISTA')).getByText('Según 3 certificaciones')).toBeInTheDocument();
+      await user.click(screen.getByRole('checkbox', { name: 'INGENIERO CIVIL GEOTECNISTA' }));
+
+      expect([yearsBox('INGENIERO CIVIL GEOTECNISTA').value, monthsBox('INGENIERO CIVIL GEOTECNISTA').value]).toEqual(['6', '6']);
+      expect(yearsBox('INGENIERO CIVIL GEOTECNISTA')).toHaveAttribute('readonly');
+      expect(monthsBox('INGENIERO CIVIL GEOTECNISTA')).toHaveAttribute('readonly');
+      expect(screen.getByTestId('f_529_source_GEOTEC')).toHaveTextContent('Tomada de BD Profesionales (3 certificaciones).');
+      await user.type(yearsBox('INGENIERO CIVIL GEOTECNISTA'), '9');
+      expect(yearsBox('INGENIERO CIVIL GEOTECNISTA').value).toBe('6');
+
+      await user.click(submitButton());
+      expect(onSubmit).toHaveBeenCalledWith([{ role: 'INGENIERO CIVIL GEOTECNISTA', expirience: 78 }]);
+    });
+
+    it('keeps 5.2.9 typed for a role without certificates and says it does not go to BD PROFESIONALES', async () => {
+      const { onSubmit, user } = renderPicker({ eligibility: CERTIFIED });
+      await user.click(screen.getByRole('checkbox', { name: 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL' }));
+
+      expect(yearsBox('INGENIERO CIVIL DISEÑADOR ESTRUCTURAL')).not.toHaveAttribute('readonly');
+      expect(screen.getByTestId('f_529_source_ING_ESTR')).toHaveTextContent('solo se usa para continuar la radicación; no se registra en BD Profesionales');
+      await user.type(yearsBox('INGENIERO CIVIL DISEÑADOR ESTRUCTURAL'), '5');
+      await user.click(submitButton());
+      expect(onSubmit).toHaveBeenCalledWith([{ role: 'INGENIERO CIVIL DISEÑADOR ESTRUCTURAL', expirience: 60 }]);
+    });
+
+    it('a value from an older server (manual or expediente) stays editable as before', async () => {
+      const { user } = renderPicker();
+      await user.click(screen.getByRole('checkbox', { name: 'ARQUITECTO PROYECTISTA' }));
+      expect(yearsBox('ARQUITECTO PROYECTISTA')).not.toHaveAttribute('readonly');
+      expect(yearsBox('ARQUITECTO PROYECTISTA').value).toBe('3');
+    });
+  });
 });

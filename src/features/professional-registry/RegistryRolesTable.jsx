@@ -13,33 +13,24 @@ const roleName = (role) => (
   </>
 );
 
-// A server that sends the origin of the specific experience also accepts it typed here; an older one keeps it read only.
-const UNCLASSIFIED_ROLE = 'SIN_CLASIFICAR';
-const acceptsTypedSpecific = (detail) => detail.roles.some((role) => role.specificSource !== undefined);
-const canEditSpecific = (role, { detail, canWrite }) => Boolean(canWrite) && !detail.deleted
-  && role.specificSource !== undefined && role.code !== UNCLASSIFIED_ROLE;
-
 // Columns as the current server sends them. Experience is only the general one (from the principal matrícula) and the
 // specific one per role; what the expedientes declared stays out of this table.
-const columns = ({ detail, canWrite, busy, onSaveSpecific }) => [
+const columns = (detail) => [
   { key: 'rol', header: 'Rol', width: '36%', cell: (role) => role.label },
   { key: 'expedientes', header: 'Expedientes', width: '12%', className: NUMERIC, cell: (role) => role.projects },
   { key: 'general', header: 'Experiencia general', width: '22%', cell: () => formatGeneralExperience(detail.generalExperience) },
-  {
-    key: 'especifica',
-    header: 'Experiencia específica',
-    width: '30%',
-    cell: (role) => (
-      <RoleSpecificExperience
-        role={role}
-        general={detail.generalExperience?.duration || null}
-        editable={canEditSpecific(role, { detail, canWrite })}
-        busy={busy}
-        onSave={onSaveSpecific}
-      />
-    ),
-  },
+  { key: 'especifica', header: 'Experiencia específica', width: '30%', cell: (role) => <RoleSpecificExperience role={role} /> },
 ];
+
+// A server that sends the certificate count computes the specific experience from the "Experiencia" tab.
+const fromCertificates = (detail) => detail.roles.some((role) => role.specificCertificates !== undefined);
+const specificNoteOf = (detail) => {
+  if (fromCertificates(detail)) {
+    return 'La específica de cada rol es la suma de las experiencias certificadas en la pestaña Experiencia; '
+      + 'el tiempo que se traslapa se cuenta una sola vez.';
+  }
+  return 'La específica es la del ítem 5.2.9 del expediente más reciente en cada rol; se registra en Actualizar.';
+};
 
 // An older server sends no general experience: the columns it had, with the experience declared in the expedientes.
 const LEGACY_COLUMNS = [
@@ -52,12 +43,10 @@ const LEGACY_COLUMNS = [
 
 // "Roles y experiencia" of one professional. A fixed layout with explicit widths keeps every column apart, whatever
 // the length of a role name or a duration.
-export default function RegistryRolesTable({ detail, canWrite, busy, onSaveSpecific }) {
+export default function RegistryRolesTable({ detail }) {
   const withGeneral = detail.generalExperience !== undefined;
-  const shown = withGeneral ? columns({ detail, canWrite, busy, onSaveSpecific }) : LEGACY_COLUMNS;
-  const specificNote = acceptsTypedSpecific(detail)
-    ? 'La específica de cada rol es la registrada más recientemente, ya sea en el ítem 5.2.9 de un expediente o aquí.'
-    : 'La específica es la del ítem 5.2.9 del expediente más reciente en cada rol; se registra en Actualizar.';
+  const shown = withGeneral ? columns(detail) : LEGACY_COLUMNS;
+  const specificNote = specificNoteOf(detail);
 
   return (
     <div className="space-y-2">
@@ -67,7 +56,7 @@ export default function RegistryRolesTable({ detail, canWrite, busy, onSaveSpeci
         </p>
       ) : null}
       <div className="overflow-x-auto rounded-md border border-border/60">
-        <table className="w-full min-w-[560px] table-fixed border-collapse text-sm" aria-label="Roles y experiencia">
+        <table className="w-full min-w-[560px] table-fixed border-collapse text-sm" aria-label="Roles">
           <colgroup>
             {shown.map((column) => <col key={column.key} style={{ width: column.width }} />)}
           </colgroup>

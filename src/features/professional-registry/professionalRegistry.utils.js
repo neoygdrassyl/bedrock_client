@@ -1,3 +1,5 @@
+import { formatDuration } from '@/shared/utils/durationText';
+
 // Role codes as the login stores them (role_short: "Admin.", "Curador", "Prog."; role: "Administrador"...), reduced to the
 // codes the server authorizes with (ADM, CUR, AUX). The server decides who can write; this only hides controls it would refuse.
 const ROLE_ALIASES = { ADMIN: 'ADM', ADMINISTRADOR: 'ADM', CURADOR: 'CUR', PROG: 'AUX', PROGRAMADOR: 'AUX', AUXILIAR: 'AUX' };
@@ -21,14 +23,9 @@ export function formatMonths(months) {
   return [years ? `${years} ${years === 1 ? 'año' : 'años'}` : '', rest ? `${rest} ${rest === 1 ? 'mes' : 'meses'}` : ''].filter(Boolean).join(' ');
 }
 
-// Experience as { years, months, days }, as the server sends it (professional-registry-experience).
-const DURATION_UNITS = [['years', 'año', 'años'], ['months', 'mes', 'meses'], ['days', 'día', 'días']];
-
-export function formatDuration(duration) {
-  if (!duration) return '—';
-  const parts = DURATION_UNITS.filter(([key]) => duration[key]).map(([key, one, many]) => `${duration[key]} ${duration[key] === 1 ? one : many}`);
-  return parts.length ? parts.join(' ') : '0 días';
-}
+// Experience as { years, months, days }, as the server sends it (professional-registry-experience): "2 años 3 meses",
+// zeros left out ("0 días" when all are).
+export { formatDuration };
 
 // Why the server could not compute the general experience (time since the issue date of the principal matrícula).
 export const GENERAL_MISSING = {
@@ -92,7 +89,7 @@ export const SORT_OPTIONS = [
 
 const SAFE_CODES = new Set([
   'VALIDATION', 'VERSION_CONFLICT', 'CC_EXISTS', 'REGISTRATION_EXISTS', 'DELETED', 'MERGED', 'NOT_FOUND',
-  'CONSOLIDATION_RUNNING', 'REGISTRY_FAILED',
+  'CONSOLIDATION_RUNNING', 'REGISTRY_FAILED', 'CERTIFICATE_EXISTS',
 ]);
 
 export function errorCode(error) {
@@ -108,3 +105,33 @@ export function errorText(error, fallback = 'No fue posible completar la operaci
 
 // The shared dialog's close button inherits a near-white color here; this makes the "X" dark on the light dialog.
 export const DIALOG_CLOSE_CLASS = '[&>button.absolute]:text-foreground';
+
+// Professions: the closed catalog the server offers (GET /catalog → professions) and, for an older backend that does
+// not send it, the same three options. Anything else is typed as "Otra". Same rules as the server
+// (professional-registry-professions): shown uppercase with accents, compared without accents or case.
+export const PROFESSION_OPTIONS = ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA'];
+// The list filter value the server reads as "people with no profession".
+export const NO_PROFESSION = 'SIN_PROFESION';
+export const MAX_PROFESSIONS = 10;
+const PROFESSION_PATTERN = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ .,'-]+$/;
+const collapse = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+
+export function professionKey(value) {
+  const stripped = collapse(value).normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+  return collapse(stripped.replace(/[^A-Z ]/g, ' '));
+}
+
+// The display value of a typed profession (a catalog option keeps its catalog spelling), or null when it is not valid.
+export function normalizeProfession(value, options = PROFESSION_OPTIONS) {
+  const name = collapse(value).toUpperCase();
+  if (name.length < 2 || name.length > 100 || !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(name) || !PROFESSION_PATTERN.test(name)) return null;
+  const key = professionKey(name);
+  return options.find((option) => professionKey(option) === key) || name;
+}
+
+export const PROFESSION_ERROR = "Cada profesión debe tener entre 2 y 100 caracteres: letras, espacios y . , - '";
+
+// The names of a detail's or list row's professions joined for display, or '' when there are none.
+export function formatProfessions(professions) {
+  return (professions || []).map((item) => (typeof item === 'string' ? item : item?.name)).filter(Boolean).join(', ');
+}

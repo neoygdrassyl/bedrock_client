@@ -11,6 +11,7 @@ import { ProfessionalSearchBox } from '../../../professionals';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 import Fun52RolePicker from './components/Fun52RolePicker.jsx';
 import { useRoleEligibility } from './hooks/useRoleEligibility';
+import { MANUAL_529_HINT, certifiedForLabel, certifiedHint, registryIdByCc } from './fun529Source';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 // Positional order of fun_52.docs (5.2.11). The server owns this list: the edit form only displays it.
@@ -29,6 +30,14 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
     const [batchBusy, setBatchBusy] = useState(false);
     const eligibility = useRoleEligibility(pickedRegistryId);
     const rolePicker = isNew && !batchUnavailable && eligibility.status === 'ready' ? eligibility.data : null;
+    // "Actualizar Profesional": the BD PROFESIONALES person of the row being edited (found by its cédula, or picked
+    // again in the search box) and the role chosen in 5.2.5. With certified experience in that role, 5.2.9 is taken
+    // from BD PROFESIONALES and read only; otherwise it is typed (transitional, see fun529Source).
+    const [editRegistry, setEditRegistry] = useState({ rowId: null, registryId: null });
+    const [editRole, setEditRole] = useState(null);
+    const editRegistryId = edit && editRegistry.rowId === edit.id ? editRegistry.registryId : null;
+    const editEligibility = useRoleEligibility(editRegistryId);
+    const edit529 = edit && editEligibility.status === 'ready' ? certifiedForLabel(editEligibility.data, editRole) : null;
 
     useEffect(() => {
         if (edit !== false) {
@@ -43,25 +52,17 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             document.getElementById("f_528_edit").value = _ITEM.supervision;
             document.getElementById("f_5210_edit").value = _ITEM.sanction ? 1 : 0;
 
-            // 5.2.9 is shown only when it was saved as specific experience; an older value was the general one.
-            document.getElementById("f_529_edit").value = '';
-            document.getElementById("f_529m_edit").value = '';
-            document.getElementById("f_529_prev_edit").textContent = '';
-            if (_ITEM.expirience_specific) {
-                document.getElementById("f_529_edit").value = Math.trunc(_ITEM.expirience / 12);
-                document.getElementById("f_529m_edit").value = _ITEM.expirience % 12;
-            } else if (_ITEM.expirience) {
-                document.getElementById("f_529_prev_edit").textContent = `Valor anterior: ${formatYearsMonths(_ITEM.expirience)} (no cuenta como experiencia específica).`;
-            }
+            _FILL_529_FROM_ROW(_ITEM);
             _SHOW_GENERAL_EXPERIENCE('_edit');
 
-            let array = _ITEM.role.split(',');
+            let array = (_ITEM.role || '').split(',');
             let select = document.getElementById("f_525_edit");
             for (var options of select) {
                 if (array.includes(options.value)) {
                     options.selected = true;
                 }
             }
+            setEditRole(select.value);
 
             // Read-only display: a missing position stays blank instead of keeping a previous row's value.
             const _array = (_ITEM.docs || '').split(',');
@@ -71,6 +72,29 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         }
     }, [edit]);
+
+    // The BD PROFESIONALES person of the edited row, by its cédula. Any failure leaves 5.2.9 manual.
+    useEffect(() => {
+        if (edit === false) return undefined;
+        const controller = new AbortController();
+        registryIdByCc(edit.id_number, { signal: controller.signal }).then((registryId) => {
+            if (!controller.signal.aborted) setEditRegistry({ rowId: edit.id, registryId });
+        });
+        return () => controller.abort();
+    }, [edit]);
+
+    // Certified 5.2.9 for the chosen role: filled from BD PROFESIONALES (whole months; days are dropped). When the
+    // role or the person changes to one without certificates, the row's own value comes back.
+    useEffect(() => {
+        if (edit === false) return;
+        if (edit529) {
+            document.getElementById("f_529_edit").value = Math.trunc(edit529.months / 12);
+            document.getElementById("f_529m_edit").value = edit529.months % 12;
+            document.getElementById("f_529_prev_edit").textContent = '';
+        } else {
+            _FILL_529_FROM_ROW(edit);
+        }
+    }, [edit, edit529?.months, edit529?.count]);
 
         var formData = new FormData();
 
@@ -161,6 +185,19 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 var _value = Number(text).toLocaleString();
                 _value = _value.replaceAll(',', '.');
                 document.getElementById(e.target.id).value = _value;
+            }
+        }
+        // 5.2.9 of the edited row as stored: shown only when it was saved as specific experience; an older value was
+        // the general one.
+        function _FILL_529_FROM_ROW(_ITEM) {
+            document.getElementById("f_529_edit").value = '';
+            document.getElementById("f_529m_edit").value = '';
+            document.getElementById("f_529_prev_edit").textContent = '';
+            if (_ITEM.expirience_specific) {
+                document.getElementById("f_529_edit").value = Math.trunc(_ITEM.expirience / 12);
+                document.getElementById("f_529m_edit").value = _ITEM.expirience % 12;
+            } else if (_ITEM.expirience) {
+                document.getElementById("f_529_prev_edit").textContent = `Valor anterior: ${formatYearsMonths(_ITEM.expirience)} (no cuenta como experiencia específica).`;
             }
         }
         // 5.2.9 is no longer filled from 5.2.7: 5.2.7 only tells the general experience, the limit of the specific one.
@@ -318,6 +355,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             </span>
                             <input type="text" inputMode="numeric" maxLength={2} id="f_529m" placeholder="Meses" className="form-control" />
                         </div>
+                        <small className="text-muted d-block" id="f_529_source">{MANUAL_529_HINT}</small>
                         </>}
                         <small className="text-muted d-block" id="f_529_general">Indique 5.2.7 para conocer la experiencia general.</small>
                     </div>
@@ -472,7 +510,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
                             </span>
-                            <select className="form-select" id="f_525_edit">
+                            <select className="form-select" id="f_525_edit" onChange={(e) => setEditRole(e.target.value)}>
                                 <option>URBANIZADOR/PARCELADOR</option>
                                 <option value={'URBANIZADOR O CONSTRUCTOR RESPONSABLE'}>(2021) URBANIZADOR O CONSTRUCTOR RESPONSABLE</option>
                                 <option value={'DIRECTOR DE LA CONSTRUCCION'}>(2022) DIRECTOR DE LA CONSTRUCCION</option>
@@ -540,12 +578,15 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
-                            <input type="text" inputMode="numeric" maxLength={2} id="f_529_edit" placeholder="Años" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529_edit" placeholder="Años" className="form-control" readOnly={Boolean(edit529)} />
                             <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
-                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m_edit" placeholder="Meses" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m_edit" placeholder="Meses" className="form-control" readOnly={Boolean(edit529)} />
                         </div>
+                        <small className={`d-block ${edit529 ? 'text-success' : 'text-muted'}`} id="f_529_source_edit">
+                            {edit529 ? certifiedHint(edit529.count) : MANUAL_529_HINT}
+                        </small>
                         <small className="text-muted d-block" id="f_529_general_edit">Indique 5.2.7 para conocer la experiencia general.</small>
                         <small className="text-muted d-block" id="f_529_prev_edit"></small>
                     </div>
@@ -1064,6 +1105,9 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             _SHOW_GENERAL_EXPERIENCE(_scope)
             if (_scope === '') setPickedRegistryId(suggestion.source === 'registry' ? suggestion.registryId ?? null : null);
             if (_scope === '' && suggestion.source === 'registry') setBatchUnavailable(false);
+            if (_scope === '_edit' && edit) {
+                setEditRegistry({ rowId: edit.id, registryId: suggestion.source === 'registry' ? suggestion.registryId ?? null : null });
+            }
         }
 
         return (<>

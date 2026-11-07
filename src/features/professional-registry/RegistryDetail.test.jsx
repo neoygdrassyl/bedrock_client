@@ -5,6 +5,10 @@ import userEvent from '@testing-library/user-event';
 const service = vi.hoisted(() => ({
   get: vi.fn(), setCanonicalName: vi.fn(), remove: vi.fn(), restore: vi.fn(), merge: vi.fn(), relink: vi.fn(), resolve: vi.fn(),
   list: vi.fn(), update: vi.fn(), create: vi.fn(), setSpecificExperience: vi.fn(),
+  catalog: vi.fn(), listExperienceCertificates: vi.fn(), createExperienceCertificate: vi.fn(), deleteExperienceCertificate: vi.fn(),
+  downloadExperienceCertificateFile: vi.fn(),
+  listValidityCertificates: vi.fn(), createValidityCertificate: vi.fn(), deleteValidityCertificate: vi.fn(),
+  downloadValidityCertificateFile: vi.fn(),
 }));
 vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
 
@@ -31,6 +35,9 @@ describe('RegistryDetail', () => {
   beforeEach(() => {
     Object.values(service).forEach((fn) => fn.mockReset());
     service.get.mockResolvedValue({ data: detail() });
+    service.catalog.mockResolvedValue({ data: { data: [{ code: 'ARQ_PROY', label: 'ARQUITECTO PROYECTISTA' }] } });
+    service.listExperienceCertificates.mockResolvedValue({ data: { data: [] } });
+    service.listValidityCertificates.mockResolvedValue({ data: { data: [], latest: null } });
     [service.setCanonicalName, service.remove, service.restore, service.merge, service.relink, service.resolve, service.update, service.setSpecificExperience].forEach((fn) => fn.mockResolvedValue({ data: {} }));
   });
 
@@ -48,22 +55,37 @@ describe('RegistryDetail', () => {
     expect(duplicates).toHaveTextContent('Mismo nombre con otra cédula');
   });
 
-  it('shows roles with experience, expedientes per role, misregistered names and history', async () => {
+  it('shows the professions in the Datos tab instead of the name origin', async () => {
+    service.get.mockResolvedValue({ data: detail({ nameSource: 'MANUAL', professions: [{ name: 'ARQUITECTO', source: 'CATALOGO' }, { name: 'TOPÓGRAFO', source: 'MANUAL' }] }) });
+    const { unmount } = open();
+    await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
+
+    expect(screen.queryByText('Origen del nombre')).not.toBeInTheDocument();
+    const card = screen.getByText('Profesión').closest('div');
+    expect(card).toHaveTextContent('ARQUITECTO, TOPÓGRAFO');
+    expect(screen.getByText('Nombre').closest('div')).toHaveTextContent('Corregido manualmente');
+    unmount();
+
+    service.get.mockResolvedValue({ data: detail() });
+    open();
+    await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
+    expect(screen.getByText('Profesión').closest('div')).toHaveTextContent('Sin registro');
+    expect(screen.queryByText('Corregido manualmente')).not.toBeInTheDocument();
+  });
+
+  it('shows roles, misregistered names and history', async () => {
     const user = userEvent.setup();
     open();
     await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
 
-    await user.click(screen.getByRole('button', { name: 'Roles y experiencia' }));
-    const roles = screen.getByRole('table', { name: 'Roles y experiencia' });
+    await user.click(screen.getByRole('button', { name: 'Roles' }));
+    const roles = screen.getByRole('table', { name: 'Roles' });
     expect(roles).toHaveTextContent('ARQUITECTO PROYECTISTA');
     expect(roles).toHaveTextContent('8 años');
     expect(within(roles).getByRole('columnheader', { name: 'Experiencia (último)' })).toBeInTheDocument();
     expect(within(roles).queryByRole('columnheader', { name: 'Experiencia específica' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Expedientes' }));
-    expect(screen.getByRole('region', { name: 'ARQUITECTO PROYECTISTA' })).toHaveTextContent('68001-1-25-0002');
-
-    await user.click(screen.getByRole('button', { name: /Nombres mal registrados/ }));
+    await user.click(screen.getByRole('button', { name: /Incidencias/ }));
     const names = screen.getByRole('table', { name: 'Nombres mal registrados' });
     expect(names).toHaveTextContent('ANA MARIA LOPES');
     expect(names).toHaveTextContent('Error de escritura');
@@ -87,8 +109,8 @@ describe('RegistryDetail', () => {
       service.get.mockResolvedValue({ data });
       open();
       await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
-      await user.click(screen.getByRole('button', { name: 'Roles y experiencia' }));
-      return screen.getByRole('table', { name: 'Roles y experiencia' });
+      await user.click(screen.getByRole('button', { name: 'Roles' }));
+      return screen.getByRole('table', { name: 'Roles' });
     };
 
     it('shows the general experience and, from an older server without the origin, the specific one read only', async () => {
@@ -112,138 +134,76 @@ describe('RegistryDetail', () => {
       expect(within(roles).getAllByRole('cell')[3]).toHaveTextContent('—');
     });
 
-    describe('typed in the module (current server)', () => {
-      const FROM_EXPEDIENTE = { specificExperience: { years: 4, months: 0, days: 0 }, specificSource: 'expediente', specificSourceExpediente: '68001-1-26-0001', specificUpdatedAt: '2026-01-15T10:00:00Z', specificManual: null };
-      const TYPED = { specificExperience: { years: 3, months: 6, days: 0 }, specificSource: 'manual', specificSourceExpediente: null, specificUpdatedAt: '2026-11-04T15:00:00Z', specificManual: { years: 3, months: 6, days: 0 } };
-      const NONE = { specificExperience: null, specificSource: null, specificSourceExpediente: null, specificUpdatedAt: null, specificManual: null };
-      const fill = async (user, form, years, months) => {
-        const [yearsInput, monthsInput] = within(form).getAllByRole('textbox');
-        await user.clear(yearsInput);
-        if (years !== '') await user.type(yearsInput, years);
-        await user.clear(monthsInput);
-        if (months !== '') await user.type(monthsInput, months);
+    describe('from the certified experiences (current server)', () => {
+      const CERTIFIED = {
+        specificExperience: { years: 6, months: 6, days: 15 }, specificSource: 'certificados', specificCertificates: 3,
+        specificSourceExpediente: null, specificUpdatedAt: null, specificManual: null,
       };
+      const NONE = { ...CERTIFIED, specificExperience: null, specificSource: null, specificCertificates: 0 };
 
-      it('shows where the value comes from and explains that the most recent one wins', async () => {
-        const roles = await openRoles(withExperience(FROM_EXPEDIENTE));
-        expect(roles).toHaveTextContent('Expediente 68001-1-26-0001');
-        expect(screen.getByText(/registrada más recientemente, ya sea en el ítem 5\.2\.9 de un expediente o aquí/)).toBeInTheDocument();
+      it('shows the summed value, how many certifications it comes from and how it is computed', async () => {
+        const roles = await openRoles(withExperience(CERTIFIED));
+        expect(roles).toHaveTextContent('6 años 6 meses 15 días');
+        expect(roles).toHaveTextContent('Según 3 certificaciones');
+        expect(roles).not.toHaveTextContent('Registrada en BD Profesionales');
+        expect(roles).not.toHaveTextContent('Ítem 5.2.9');
+        expect(screen.getByText(/suma de las experiencias certificadas en la pestaña Experiencia; el tiempo que se traslapa se cuenta una sola vez/)).toBeInTheDocument();
+        expect(screen.getByText(/desde la fecha de expedición de la matrícula en uso/)).toBeInTheDocument();
       });
 
-      it('shows the date of a value typed here', async () => {
-        const roles = await openRoles(withExperience(TYPED));
-        expect(roles).toHaveTextContent('3 años 6 meses');
-        expect(roles).toHaveTextContent('Registrada en BD Profesionales · 04/11/2026');
+      it('says certificación for a single one', async () => {
+        const one = await openRoles(withExperience({ ...CERTIFIED, specificCertificates: 1 }));
+        expect(one).toHaveTextContent('Según 1 certificación');
       });
 
-      it('adds a specific experience and reloads the professional', async () => {
-        const user = userEvent.setup();
+      it('shows a dash and no source without certificates', async () => {
         const roles = await openRoles(withExperience(NONE));
-        await user.click(within(roles).getByRole('button', { name: 'Añadir la experiencia específica de ARQUITECTO PROYECTISTA' }));
-        const form = screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' });
-        expect(within(form).queryByRole('spinbutton')).not.toBeInTheDocument();
-        await fill(user, form, '4', '6');
-        await user.click(within(form).getByRole('button', { name: 'Guardar' }));
-
-        await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { expectedVersion: 2, years: 4, months: 6 }));
-        expect(await screen.findByText('Experiencia específica guardada.')).toBeInTheDocument();
-        expect(service.get).toHaveBeenCalledTimes(2);
-        expect(screen.queryByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' })).not.toBeInTheDocument();
+        expect(within(roles).getAllByRole('cell')[3]).toHaveTextContent(/^—$/);
       });
 
-      it('edits the value coming from an expediente, starting from it', async () => {
-        const user = userEvent.setup();
-        const roles = await openRoles(withExperience(FROM_EXPEDIENTE));
-        await user.click(within(roles).getByRole('button', { name: 'Editar la experiencia específica de ARQUITECTO PROYECTISTA' }));
-        const form = screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' });
-        expect(within(form).getAllByRole('textbox').map((input) => input.value)).toEqual(['4', '0']);
-        expect(within(form).queryByRole('button', { name: 'Quitar ajuste' })).not.toBeInTheDocument();
-        await fill(user, form, '5', '');
-        await user.click(within(form).getByRole('button', { name: 'Guardar' }));
-
-        await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { expectedVersion: 2, years: 5, months: 0 }));
-      });
-
-      it('removes a value typed here', async () => {
-        const user = userEvent.setup();
-        const roles = await openRoles(withExperience(TYPED));
-        await user.click(within(roles).getByRole('button', { name: 'Editar la experiencia específica de ARQUITECTO PROYECTISTA' }));
-        await user.click(screen.getByRole('button', { name: 'Quitar ajuste' }));
-
-        await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { expectedVersion: 2, clear: true }));
-        expect(await screen.findByText('Ajuste de experiencia específica quitado.')).toBeInTheDocument();
-      });
-
-      it('checks the value before saving, against the general experience too', async () => {
-        const user = userEvent.setup();
+      it('offers no way to type the specific experience, whoever writes', async () => {
         const roles = await openRoles(withExperience(NONE));
-        await user.click(within(roles).getByRole('button', { name: /Añadir la experiencia específica/ }));
-        const form = screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' });
-        const attempt = async (years, months, message) => {
-          await fill(user, form, years, months);
-          await user.click(within(form).getByRole('button', { name: 'Guardar' }));
-          expect(within(form).getByRole('alert')).toHaveTextContent(message);
-        };
-
-        await attempt('', '', 'Indique los años o los meses.');
-        await attempt('2', '12', 'Los meses deben ser un número entero entre 0 y 11.');
-        await attempt('1a', '0', 'Los años deben ser un número entero entre 0 y 99.');
-        await attempt('16', '6', 'no puede superar la experiencia general (16 años 5 meses 29 días)');
-        expect(service.setSpecificExperience).not.toHaveBeenCalled();
-
-        await fill(user, form, '16', '5');
-        await user.click(within(form).getByRole('button', { name: 'Guardar' }));
-        await waitFor(() => expect(service.setSpecificExperience).toHaveBeenCalledWith(5, 'ARQ_PROY', { expectedVersion: 2, years: 16, months: 5 }));
-      });
-
-      it('keeps the form open and shows the server message when the save is refused', async () => {
-        const user = userEvent.setup();
-        service.setSpecificExperience.mockRejectedValue({ response: { status: 400, data: { code: 'VALIDATION', message: 'La experiencia específica no puede superar la experiencia general.' } } });
-        const roles = await openRoles(withExperience(NONE));
-        await user.click(within(roles).getByRole('button', { name: /Añadir la experiencia específica/ }));
-        const form = screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' });
-        await fill(user, form, '1', '0');
-        await user.click(within(form).getByRole('button', { name: 'Guardar' }));
-
-        expect(await screen.findByText('La experiencia específica no puede superar la experiencia general.')).toBeInTheDocument();
-        expect(screen.getByRole('form', { name: 'Experiencia específica de ARQUITECTO PROYECTISTA' })).toBeInTheDocument();
-      });
-
-      it('is read only for a person who cannot write and for a deleted professional', async () => {
-        service.get.mockResolvedValue({ data: withExperience(TYPED) });
-        const { unmount } = open({ canWrite: false });
-        await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
-        await userEvent.setup().click(screen.getByRole('button', { name: 'Roles y experiencia' }));
-        expect(within(screen.getByRole('table', { name: 'Roles y experiencia' })).queryByRole('button')).not.toBeInTheDocument();
-        unmount();
-
-        const roles = await openRoles({ ...withExperience(TYPED), deleted: true });
         expect(within(roles).queryByRole('button')).not.toBeInTheDocument();
+        expect(screen.queryByRole('form', { name: /Experiencia específica de/ })).not.toBeInTheDocument();
+        expect(service.setSpecificExperience).not.toHaveBeenCalled();
+      });
+
+      it('still flags a certified sum above the general experience', async () => {
+        const roles = await openRoles(withExperience({ ...CERTIFIED, specificExceedsGeneral: true }));
+        expect(roles).toHaveTextContent('Supera la experiencia general');
       });
     });
   });
 
-  it('shows the registered matrícula per expediente and flags the ones that belong to another professional', async () => {
+  it('lists the sections in order, with the validity certificates in Cert. Vigencia', async () => {
     const user = userEvent.setup();
-    const onOpen = vi.fn();
-    const base = detail();
-    const [role] = base.roles;
-    service.get.mockResolvedValue({ data: detail({ roles: [{ ...role, expedientes: [
-      { ...role.expedientes[0], registration: '68202-158428', registrationOwner: null },
-      { ...role.expedientes[1], registration: 'A68041999-91490031', registrationOwner: { id: 77, name: 'ANGELO QUINTERO' } },
-    ] }] }) });
-    open({ onOpen });
+    open();
     await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
 
-    await user.click(screen.getByRole('button', { name: 'Expedientes' }));
-    const region = screen.getByRole('region', { name: 'ARQUITECTO PROYECTISTA' });
-    expect(region).toHaveTextContent('Matrícula: 68202-158428');
-    expect(region).toHaveTextContent('Matrícula: A68041999-91490031');
-    expect(region).toHaveTextContent('Esta matrícula pertenece a ANGELO QUINTERO');
-    expect(region).not.toHaveTextContent('pertenece a ANA');
+    const names = ['Datos', 'Roles', 'Experiencia', 'Cert. Vigencia', 'Incidencias', 'Historial'];
+    const tabs = screen.getAllByRole('button').filter((button) => names.some((name) => button.textContent.startsWith(name)));
+    expect(tabs.map((button) => button.textContent.replace(/\s*\(\d+\)$/, ''))).toEqual(names);
+    expect(screen.queryByRole('button', { name: 'Expedientes' })).not.toBeInTheDocument();
 
-    await user.click(within(region).getByRole('button', { name: 'Abrir' }));
-    expect(onOpen).toHaveBeenCalledWith(77);
+    await user.click(screen.getByRole('button', { name: 'Cert. Vigencia' }));
+    const section = screen.getByRole('region', { name: 'Cert. Vigencia' });
+    expect(await within(section).findByText('Aún no hay certificados de vigencia registrados.')).toBeInTheDocument();
+    expect(within(section).getByRole('form', { name: 'Registrar certificado de vigencia' })).toBeInTheDocument();
+    expect(service.listValidityCertificates).toHaveBeenCalledWith(5);
+  });
+
+  it('shows the certified experiences of the person in the Experiencia section', async () => {
+    const user = userEvent.setup();
+    open();
+    await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
+
+    await user.click(screen.getByRole('button', { name: 'Experiencia' }));
+    const section = screen.getByRole('region', { name: 'Experiencia' });
+    expect(within(section).getByLabelText('Rol')).toBeInTheDocument();
+    expect(await within(section).findByText('Aún no hay experiencias registradas.')).toBeInTheDocument();
+    expect(within(section).getByText(/Rol activo para agregar experiencia:/)).toHaveTextContent('ARQUITECTO PROYECTISTA');
+    expect(within(section).getByRole('button', { name: '+ Añadir experiencia' })).toBeInTheDocument();
+    expect(service.listExperienceCertificates).toHaveBeenCalledWith(5);
   });
 
   it('is read-only when the user cannot write', async () => {
@@ -252,7 +212,7 @@ describe('RegistryDetail', () => {
     await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
 
     ['Editar datos', 'Corregir nombre', 'Fusionar con otro…', 'Eliminar'].forEach((name) => expect(screen.queryByRole('button', { name })).not.toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: /Nombres mal registrados/ }));
+    await user.click(screen.getByRole('button', { name: /Incidencias/ }));
     expect(screen.queryByRole('button', { name: 'Marcar revisado' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Asignar a otro' })).not.toBeInTheDocument();
   });
@@ -325,7 +285,7 @@ describe('RegistryDetail', () => {
     service.list.mockResolvedValue({ data: { data: [{ id: 8, name: 'OTRA PERSONA', cc: '99999999', projects: 1 }] } });
     open();
     await screen.findByRole('heading', { name: 'ANA MARIA LOPEZ' });
-    await user.click(screen.getByRole('button', { name: /Nombres mal registrados/ }));
+    await user.click(screen.getByRole('button', { name: /Incidencias/ }));
 
     await user.click(screen.getByRole('button', { name: 'Marcar revisado' }));
     await waitFor(() => expect(service.resolve).toHaveBeenCalledWith({ type: 'nombres', id: 12, action: 'reviewed' }));

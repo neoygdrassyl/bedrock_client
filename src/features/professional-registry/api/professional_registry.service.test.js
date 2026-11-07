@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const http = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }));
 vi.mock('../../../shared/api/http-common', () => ({ default: http }));
+const download = vi.hoisted(() => ({ downloadProtectedFile: vi.fn() }));
+vi.mock('../../../shared/utils/pdfDownload', () => download);
 
 import service from './professional_registry.service';
 
@@ -19,7 +21,6 @@ describe('professional registry service', () => {
     service.create({ name: 'Ana' });
     service.update(7, { expectedVersion: 1 });
     service.setCanonicalName(7, { name: 'Ana' });
-    service.setSpecificExperience(7, 'ARQ_PROY', { expectedVersion: 2, years: 4, months: 6 });
     service.restore(7, { expectedVersion: 2 });
     service.merge(7, { targetId: 8 });
     service.relink(7, 9, { registryId: 8 });
@@ -29,7 +30,7 @@ describe('professional registry service', () => {
     expect(http.post).toHaveBeenCalledWith('/professional-registry', { name: 'Ana' }, config);
     expect(http.put).toHaveBeenCalledWith('/professional-registry/7', { expectedVersion: 1 }, config);
     expect(http.put).toHaveBeenCalledWith('/professional-registry/7/canonical-name', { name: 'Ana' }, config);
-    expect(http.put).toHaveBeenCalledWith('/professional-registry/7/roles/ARQ_PROY/specific-experience', { expectedVersion: 2, years: 4, months: 6 }, config);
+    expect(service.setSpecificExperience).toBeUndefined();
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/restore', { expectedVersion: 2 }, config);
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/merge', { targetId: 8 }, config);
     expect(http.post).toHaveBeenCalledWith('/professional-registry/7/participations/9/relink', { registryId: 8 }, config);
@@ -65,5 +66,31 @@ describe('professional registry service', () => {
     expect(http.get).toHaveBeenCalledWith('/professional-registry/catalog', { skipDovelaErrorCapture: true });
     expect(http.get).toHaveBeenCalledWith('/professional-registry/review/summary', { skipDovelaErrorCapture: true });
     expect(http.get).toHaveBeenCalledWith('/professional-registry/review?type=nombres&page=1', { skipDovelaErrorCapture: true });
+  });
+
+  it('lists, creates (as FormData), deletes and downloads certified experiences', () => {
+    const form = new FormData();
+    service.listExperienceCertificates(7);
+    service.createExperienceCertificate(7, form);
+    service.deleteExperienceCertificate(7, 4, { expectedVersion: 3 });
+    service.downloadExperienceCertificateFile(7, 4, 'cert.pdf');
+    expect(http.get).toHaveBeenCalledWith('/professional-registry/7/experience-certificates', { skipDovelaErrorCapture: true });
+    expect(http.post).toHaveBeenCalledWith('/professional-registry/7/experience-certificates', form, { skipDovelaErrorCapture: true });
+    expect(http.delete).toHaveBeenCalledWith('/professional-registry/7/experience-certificates/4', { skipDovelaErrorCapture: true, headers: { 'Content-Type': 'application/json' }, data: { expectedVersion: 3 } });
+    expect(download.downloadProtectedFile).toHaveBeenCalledWith('/professional-registry/7/experience-certificates/4/file', 'cert.pdf', { skipDovelaErrorCapture: true });
+  });
+
+  it('lists, creates (as FormData), deletes and downloads validity certificates', () => {
+    const form = new FormData();
+    service.listValidityCertificates(7);
+    service.createValidityCertificate(7, form);
+    service.deleteValidityCertificate(7, 4, { expectedVersion: 3 });
+    service.downloadValidityCertificateFile(7, 4, 'vigencia.pdf');
+    service.downloadValidityCertificateFile(7, 5);
+    expect(http.get).toHaveBeenCalledWith('/professional-registry/7/validity-certificates', { skipDovelaErrorCapture: true });
+    expect(http.post).toHaveBeenCalledWith('/professional-registry/7/validity-certificates', form, { skipDovelaErrorCapture: true });
+    expect(http.delete).toHaveBeenCalledWith('/professional-registry/7/validity-certificates/4', { skipDovelaErrorCapture: true, headers: { 'Content-Type': 'application/json' }, data: { expectedVersion: 3 } });
+    expect(download.downloadProtectedFile).toHaveBeenCalledWith('/professional-registry/7/validity-certificates/4/file', 'vigencia.pdf', { skipDovelaErrorCapture: true });
+    expect(download.downloadProtectedFile).toHaveBeenCalledWith('/professional-registry/7/validity-certificates/5/file', 'certificado-vigencia.pdf', { skipDovelaErrorCapture: true });
   });
 });

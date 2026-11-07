@@ -43,6 +43,15 @@ const queues = {
   }],
 };
 const SUMMARY = { duplicados: 1, fusionar: 1, compartida: 1, nombres: 1, matricula: 1, experiencia: 1, roles: 1 };
+const deferred = () => {
+  let resolve;
+  const promise = new Promise((done) => { resolve = done; });
+  return { promise, resolve };
+};
+// A backend that answers the counts with the page (withSummary); the default mocks are an older one that does not.
+const withSummary = (summary) => ({ type }) => Promise.resolve({
+  data: { type, data: queues[type], total: queues[type].length, page: 1, limit: 25, summary },
+});
 
 function mockQueues() {
   service.reviewSummary.mockResolvedValue({ data: SUMMARY });
@@ -57,7 +66,7 @@ describe('RegistryReview', () => {
     render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
 
     expect(await screen.findByText('Mismo nombre con otra cédula')).toBeInTheDocument();
-    expect(service.review).toHaveBeenCalledWith({ type: 'duplicados', page: 1, limit: 25 });
+    expect(service.review).toHaveBeenCalledWith({ type: 'duplicados', page: 1, limit: 25, withSummary: 1 });
     expect(screen.queryByRole('button', { name: /Identidad pendiente/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Experiencia atípica/ })).toHaveTextContent('1');
     expect(screen.getByRole('button', { name: /Posibles duplicados/ })).toHaveAttribute('aria-current', 'page');
@@ -293,7 +302,7 @@ describe('RegistryReview', () => {
     expect(await screen.findByText('Cédula casi igual')).toBeInTheDocument();
     const tabs = screen.getByRole('navigation', { name: 'Colas de revisión' });
     expect(within(tabs).getByRole('button', { name: /^Fusionar/ })).toHaveAttribute('aria-current', 'page');
-    expect(service.review).toHaveBeenLastCalledWith({ type: 'fusionar', page: 1, limit: 25 });
+    expect(service.review).toHaveBeenLastCalledWith({ type: 'fusionar', page: 1, limit: 25, withSummary: 1 });
     expect(screen.queryByRole('button', { name: /Posibles duplicados/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Rol sin clasificar/ })).not.toBeInTheDocument();
   });
@@ -331,6 +340,81 @@ describe('RegistryReview', () => {
     await waitFor(() => expect(screen.queryByRole('button', { name: /^Fusionar/ })).not.toBeInTheDocument());
     expect(screen.queryByRole('button', { name: /Matrícula compartida/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Posibles duplicados/ })).toBeInTheDocument();
+  });
+
+  it('loads the page and the counts in one request when the backend answers the summary with the page', async () => {
+    service.review.mockImplementation(withSummary({ ...SUMMARY, duplicados: 0, experiencia: 4 }));
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+
+    expect(await screen.findByText('Cédula casi igual')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Experiencia atípica/ })).toHaveTextContent('4');
+    expect(screen.queryByRole('button', { name: /Posibles duplicados/ })).not.toBeInTheDocument();
+    expect(service.review).toHaveBeenCalledWith({ type: 'duplicados', page: 1, limit: 25, withSummary: 1 });
+    expect(service.reviewSummary).not.toHaveBeenCalled();
+  });
+
+  it('refreshes the counts from the same request after resolving a case', async () => {
+    const user = userEvent.setup();
+    service.review.mockImplementation(withSummary(SUMMARY));
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await user.click(await screen.findByRole('button', { name: /Nombres dudosos/ }));
+    await screen.findByText('JUAN PEREZ');
+
+    service.review.mockImplementation(withSummary({ ...SUMMARY, nombres: 0 }));
+    await user.click(screen.getByRole('button', { name: 'Marcar revisado' }));
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: /Nombres dudosos/ })).not.toBeInTheDocument());
+    expect(await screen.findByText('Mismo nombre con otra cédula')).toBeInTheDocument();
+    expect(service.reviewSummary).not.toHaveBeenCalled();
+  });
+
+  it('asks the summary endpoint only when an older backend answers the page without counts', async () => {
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+
+    expect(await screen.findByText('Mismo nombre con otra cédula')).toBeInTheDocument();
+    expect(service.review).toHaveBeenCalledTimes(1);
+    expect(service.reviewSummary).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: /Rol sin clasificar/ })).toHaveTextContent('1');
+  });
+
+  it('never draws a page that arrives after the queue changed', async () => {
+    const user = userEvent.setup();
+    service.review.mockImplementation(withSummary(SUMMARY));
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await screen.findByText('Mismo nombre con otra cédula');
+
+    const late = deferred();
+    service.review.mockImplementationOnce(() => late.promise);
+    await user.click(screen.getByRole('button', { name: /Nombres dudosos/ }));
+    await user.click(screen.getByRole('button', { name: /Rol sin clasificar/ }));
+    expect(await screen.findByText('PLOMERO')).toBeInTheDocument();
+
+    // A stale answer without counts is dropped before asking /review/summary for them.
+    late.resolve({ data: { type: 'nombres', data: queues.nombres, total: 1, page: 1, limit: 25 } });
+    await late.promise;
+    await new Promise((done) => setTimeout(done, 0));
+    expect(screen.getByText('PLOMERO')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rol sin clasificar/ })).toHaveAttribute('aria-current', 'page');
+    expect(service.reviewSummary).not.toHaveBeenCalled();
+  });
+
+  it('never draws counts of an older backend that arrive after the queue changed', async () => {
+    const user = userEvent.setup();
+    render(<RegistryReview canWrite onChanged={() => {}} onOpen={() => {}} />);
+    await screen.findByText('Mismo nombre con otra cédula');
+
+    const late = deferred();
+    service.reviewSummary.mockImplementationOnce(() => late.promise);
+    await user.click(screen.getByRole('button', { name: /Nombres dudosos/ }));
+    await waitFor(() => expect(service.reviewSummary).toHaveBeenCalledTimes(2));
+    await user.click(screen.getByRole('button', { name: /Rol sin clasificar/ }));
+    expect(await screen.findByText('PLOMERO')).toBeInTheDocument();
+
+    late.resolve({ data: Object.fromEntries(Object.keys(SUMMARY).map((key) => [key, 0])) });
+    await late.promise;
+    await new Promise((done) => setTimeout(done, 0));
+    expect(screen.getByText('PLOMERO')).toBeInTheDocument();
+    expect(screen.queryByText('No hay casos pendientes por revisar.')).not.toBeInTheDocument();
   });
 
   it('shows the typing-error pair without choices to a user who cannot write', async () => {

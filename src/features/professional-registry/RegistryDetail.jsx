@@ -9,14 +9,17 @@ import ProfessionalRegistryService from '@/features/professional-registry/api/pr
 import { cn } from '@/shared/lib/utils';
 import RegistryForm from './RegistryForm';
 import RegistryPicker from './RegistryPicker';
+import RegistryExperienceTab from './RegistryExperienceTab';
+import RegistryValidityTab from './RegistryValidityTab';
 import RegistryRolesTable from './RegistryRolesTable';
-import { DIALOG_CLOSE_CLASS, DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatMonths, isImplausibleMonths } from './professionalRegistry.utils';
+import { DIALOG_CLOSE_CLASS, DIFF_LABELS, DUPLICATE_REASONS, errorCode, errorText, formatCc, formatDate, formatProfessions } from './professionalRegistry.utils';
 
 const TABS = [
   ['datos', 'Datos'],
-  ['roles', 'Roles y experiencia'],
-  ['expedientes', 'Expedientes'],
-  ['nombres', 'Nombres mal registrados'],
+  ['roles', 'Roles'],
+  ['experiencia', 'Experiencia'],
+  ['vigencia', 'Cert. Vigencia'],
+  ['nombres', 'Incidencias'],
   ['historial', 'Historial'],
 ];
 
@@ -91,11 +94,6 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
     setNameDraft(null);
   }, 'Nombre actualizado.');
 
-  const saveSpecific = (role, body) => run(
-    () => ProfessionalRegistryService.setSpecificExperience(id, role.code, { expectedVersion: detail.version, ...body }),
-    body.clear ? 'Ajuste de experiencia específica quitado.' : 'Experiencia específica guardada.',
-  );
-
   const removeOrRestore = () => run(async () => {
     if (detail.deleted) await ProfessionalRegistryService.restore(id, { expectedVersion: detail.version });
     else await ProfessionalRegistryService.remove(id, { expectedVersion: detail.version });
@@ -153,7 +151,12 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
               <div className="space-y-4">
                 <dl className="grid gap-2 sm:grid-cols-2">
                   <Field label="Nombre">
-                    {nameDraft === null ? detail.name : (
+                    {nameDraft === null ? (
+                      <>
+                        {detail.name}
+                        {detail.nameSource === 'MANUAL' ? <span className="mt-0.5 block text-xs text-muted-foreground">Corregido manualmente</span> : null}
+                      </>
+                    ) : (
                       <span className="flex gap-2">
                         <Label htmlFor="registry-canonical-name" className="sr-only">Nombre canónico</Label>
                         <Input id="registry-canonical-name" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} />
@@ -162,7 +165,7 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
                       </span>
                     )}
                   </Field>
-                  <Field label="Origen del nombre">{detail.nameSource === 'MANUAL' ? 'Corregido manualmente' : 'Más frecuente en los expedientes'}</Field>
+                  <Field label="Profesión">{formatProfessions(detail.professions)}</Field>
                   <Field label="Cédula">{detail.cc ? formatCc(detail.cc) : null}</Field>
                   <Field label="Estado">
                     {detail.deleted ? 'Eliminado' : detail.status === 'PENDIENTE_REVISION' ? 'Pendiente de revisión' : 'Activo'}
@@ -219,34 +222,26 @@ export default function RegistryDetail({ id, canWrite, onClose, onChanged, onOpe
 
             {tab === 'roles' ? (
               detail.roles.length ? (
-                <RegistryRolesTable detail={detail} canWrite={canWrite} busy={busy} onSaveSpecific={saveSpecific} />
+                <RegistryRolesTable detail={detail} />
               ) : <p className="text-sm text-muted-foreground">Este profesional no tiene roles registrados.</p>
             ) : null}
 
-            {tab === 'expedientes' ? (
-              detail.roles.length ? detail.roles.map((role) => (
-                <section key={role.code} className="space-y-1" aria-label={role.label}>
-                  <h4 className="text-sm font-semibold">{role.label} <span className="font-normal text-muted-foreground">({role.projects})</span></h4>
-                  <ul className="space-y-0.5 text-sm">
-                    {role.expedientes.map((item) => (
-                      <li key={item.participationId} className={cn('flex flex-wrap gap-x-3 rounded-md px-2 py-0.5', isImplausibleMonths(item.months) && 'border border-destructive bg-destructive/5')} data-implausible={isImplausibleMonths(item.months) ? 'true' : undefined}>
-                        <span className="font-medium tabular-nums">{item.expediente}</span>
-                        <span className="text-muted-foreground">{formatDate(item.date)}</span>
-                        <span className="text-muted-foreground">{item.name}</span>
-                        <span className={isImplausibleMonths(item.months) ? 'font-semibold text-destructive' : 'text-muted-foreground'}>{formatMonths(item.months)}</span>
-                        {isImplausibleMonths(item.months) ? <Badge variant="destructive">Experiencia improbable: revisar este expediente</Badge> : null}
-                        {item.registration ? <span className="text-muted-foreground">Matrícula: {item.registration}</span> : null}
-                        {item.registrationOwner ? (
-                          <span className="inline-flex items-center gap-2 rounded-md bg-amber-100 px-2 text-xs font-medium text-amber-900">
-                            Esta matrícula pertenece a {item.registrationOwner.name}
-                            <button type="button" className="underline text-amber-900" onClick={() => onOpen?.(item.registrationOwner.id)}>Abrir</button>
-                          </span>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )) : <p className="text-sm text-muted-foreground">Este profesional no tiene expedientes.</p>
+            {tab === 'experiencia' ? (
+              <RegistryExperienceTab
+                detail={detail}
+                canWrite={canWrite}
+                onChanged={async (text) => { setError(''); setNotice(text); await load(); onChanged?.(); }}
+                onConflict={load}
+              />
+            ) : null}
+
+            {tab === 'vigencia' ? (
+              <RegistryValidityTab
+                detail={detail}
+                canWrite={canWrite}
+                onChanged={async (text) => { setError(''); setNotice(text); await load(); onChanged?.(); }}
+                onConflict={load}
+              />
             ) : null}
 
             {tab === 'nombres' ? (

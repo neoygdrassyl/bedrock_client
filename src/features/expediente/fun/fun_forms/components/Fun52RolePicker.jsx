@@ -5,8 +5,15 @@ import { formatYearsMonths } from '@/shared/utils/specificExperience';
 import {
   ROLE_STATUS, STATUS_TEXT, buildBatchRoles, draftOf, requiredYearsText, roleRowState, selectionProblem,
 } from '../fun52RoleSelection';
+import { MANUAL_529_HINT, certifiedExperience, certifiedHint } from '../fun529Source';
 
+// The origin of the registered value. The current server sends only 'certificados'; the others come from older ones.
 const SOURCE_TEXT = { manual: 'Registrada en BD Profesionales', expediente: 'Tomada del 5.2.9 de un expediente' };
+const sourceText = (role) => {
+  const certified = certifiedExperience(role);
+  if (certified) return `Según ${certified.count} ${certified.count === 1 ? 'certificación' : 'certificaciones'}`;
+  return SOURCE_TEXT[role.specificSource] || '';
+};
 const STATUS_CLASS = {
   [ROLE_STATUS.CUMPLE]: 'text-success',
   [ROLE_STATUS.NO_CUMPLE]: 'text-warning',
@@ -17,8 +24,9 @@ const FIELDS = [['years', 'Años'], ['months', 'Meses']];
 
 /**
  * FUN 5.2.5 and 5.2.9 for a professional picked from BD PROFESIONALES: every role with its required years, the
- * registered specific experience and its status. The user ticks the roles to add, types 5.2.9 where needed and
- * `onSubmit(roles)` receives the batch roles ([{ role, expirience }]). `eligibility` is the role-eligibility answer.
+ * registered specific experience and its status. The user ticks the roles to add and `onSubmit(roles)` receives the
+ * batch roles ([{ role, expirience }]). `eligibility` is the role-eligibility answer. A role with certified experience
+ * takes 5.2.9 from it, read only; any other role is typed (transitional: see fun529Source).
  */
 export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
   const { roles, generalMonths } = eligibility;
@@ -30,7 +38,11 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
   const count = Object.keys(selection).length;
 
   const toggle = (code) => setChecked({ ...checked, [code]: !checked[code] });
-  const type = (code, key, value) => setDrafts({ ...drafts, [code]: { ...drafts[code], [key]: value } });
+  const certifiedByCode = Object.fromEntries(roles.map((role) => [role.roleCode, certifiedExperience(role)]));
+  const type = (code, key, value) => {
+    if (certifiedByCode[code]) return;
+    setDrafts({ ...drafts, [code]: { ...drafts[code], [key]: value } });
+  };
   const submit = () => {
     const found = selectionProblem(selection, roles, generalMonths);
     setProblem(found);
@@ -65,6 +77,7 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
               const status = isChecked ? state.status : role.status;
               const note = isChecked ? state.error || state.warning : '';
               const describedBy = note ? `f_525_picker_note_${code}` : undefined;
+              const certified = certifiedByCode[code];
               return (
                 <tr key={code}>
                   <td>
@@ -82,7 +95,7 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
                   <td>{requiredYearsText(role.requiredYears)}</td>
                   <td>
                     {role.specificMonths === null || role.specificMonths === undefined ? 'Sin registro' : formatYearsMonths(role.specificMonths)}
-                    {SOURCE_TEXT[role.specificSource] ? <small className="text-muted d-block">{SOURCE_TEXT[role.specificSource]}</small> : null}
+                    {sourceText(role) ? <small className="text-muted d-block">{sourceText(role)}</small> : null}
                     {role.specificExceedsGeneral ? <small className="text-danger d-block">Supera la experiencia general</small> : null}
                   </td>
                   <td className={`fw-bold ${STATUS_CLASS[status] || ''}`}>{STATUS_TEXT[status] || status}</td>
@@ -101,11 +114,17 @@ export default function Fun52RolePicker({ eligibility, busy, onSubmit }) {
                             aria-label={`${label} de experiencia específica en ${role.label}`}
                             aria-invalid={Boolean(state.error)}
                             value={drafts[code][key]}
+                            readOnly={Boolean(certified)}
                             disabled={busy}
                             onChange={(event) => type(code, key, event.target.value)}
                           />
                         ))}
                       </div>
+                    ) : null}
+                    {isChecked ? (
+                      <small className={`d-block ${certified ? 'text-success' : 'text-muted'}`} data-testid={`f_529_source_${code}`}>
+                        {certified ? certifiedHint(certified.count) : MANUAL_529_HINT}
+                      </small>
                     ) : null}
                     {describedBy ? (
                       <small id={`f_525_picker_note_${code}`} className={`d-block ${state.error ? 'text-danger' : 'text-warning'}`}>

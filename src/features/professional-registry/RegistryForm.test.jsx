@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-const service = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn() }));
+const service = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn(), catalog: vi.fn() }));
 vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
 
 import RegistryForm, { validateRegistryForm } from './RegistryForm';
@@ -41,7 +41,11 @@ describe('validateRegistryForm', () => {
 });
 
 describe('RegistryForm', () => {
-  beforeEach(() => { service.create.mockReset(); service.update.mockReset(); });
+  beforeEach(() => {
+    service.create.mockReset();
+    service.update.mockReset();
+    service.catalog.mockReset().mockResolvedValue({ data: { data: [], professions: ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA'] } });
+  });
 
   it('shows the errors and does not call the API when the form is invalid', async () => {
     const user = userEvent.setup();
@@ -173,5 +177,86 @@ describe('RegistryForm', () => {
     expect(await screen.findByText('Otra persona modificó este registro.')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Recargar datos' }));
     expect(onConflict).toHaveBeenCalled();
+  });
+
+  describe('professions', () => {
+    it('offers the catalog options and an Otra input that adds and removes chips, then sends them on create', async () => {
+      const user = userEvent.setup();
+      service.create.mockResolvedValue({ data: { id: 41, version: 0 } });
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+
+      const group = screen.getByRole('group', { name: 'Profesión' });
+      ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA'].forEach((name) => expect(within(group).getByRole('checkbox', { name })).not.toBeChecked());
+      await user.click(within(group).getByRole('checkbox', { name: 'ING CIVIL' }));
+      await user.type(screen.getByLabelText('Otra profesión'), '  topógrafo ');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+      await user.type(screen.getByLabelText('Otra profesión'), 'ing. mecánico{Enter}');
+      expect(within(group).getByRole('checkbox', { name: 'ING MECANICO' })).toBeChecked();
+      await user.type(screen.getByLabelText('Otra profesión'), 'Ing Civil');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+      const chips = () => within(screen.getByRole('list', { name: 'Profesiones seleccionadas' })).getAllByRole('listitem').map((item) => item.textContent);
+      expect(chips()).toEqual(['ING CIVIL', 'TOPÓGRAFO', 'ING MECANICO']);
+
+      await user.click(screen.getByRole('button', { name: 'Quitar ING MECANICO' }));
+      expect(within(group).getByRole('checkbox', { name: 'ING MECANICO' })).not.toBeChecked();
+      expect(chips()).toEqual(['ING CIVIL', 'TOPÓGRAFO']);
+
+      await user.type(screen.getByLabelText('Nombre completo *'), 'Ana María Pérez');
+      await user.type(screen.getByLabelText('Cédula'), '13439751');
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.create).toHaveBeenCalled());
+      expect(service.create.mock.calls[0][0]).toMatchObject({ professions: ['ING CIVIL', 'TOPÓGRAFO'] });
+    });
+
+    it('refuses an invalid Otra profession and does not add it', async () => {
+      const user = userEvent.setup();
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+
+      await user.type(screen.getByLabelText('Otra profesión'), 'Ingeniero 2');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+
+      expect(screen.getByRole('alert')).toHaveTextContent('entre 2 y 100 caracteres');
+      expect(screen.queryByRole('list', { name: 'Profesiones seleccionadas' })).not.toBeInTheDocument();
+    });
+
+    it('starts from the stored professions when editing and sends them only when they changed', async () => {
+      const user = userEvent.setup();
+      service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
+      const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, professions: [{ name: 'ARQUITECTO', source: 'CATALOGO' }, { name: 'TOPÓGRAFO', source: 'MANUAL' }] };
+      render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
+
+      expect(screen.getByRole('checkbox', { name: 'ARQUITECTO' })).toBeChecked();
+      expect(screen.getByRole('button', { name: 'Quitar TOPÓGRAFO' })).toBeInTheDocument();
+      await user.type(screen.getByLabelText('Teléfono'), '3001112233');
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
+      expect(service.update.mock.calls[0][1]).not.toHaveProperty('professions');
+
+      await user.click(screen.getByRole('button', { name: 'Quitar TOPÓGRAFO' }));
+      await user.click(screen.getByRole('checkbox', { name: 'ING MECANICO' }));
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
+      expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, professions: ['ARQUITECTO', 'ING MECANICO'] });
+    });
+
+    it('uses the catalog professions sent by the server and falls back to the three options with an older one', async () => {
+      service.catalog.mockResolvedValue({ data: { data: [], professions: ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONTADOR'] } });
+      const { unmount } = render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+      expect(await screen.findByRole('checkbox', { name: 'CONTADOR' })).toBeInTheDocument();
+      unmount();
+
+      service.catalog.mockResolvedValue({ data: { data: [] } });
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+      await waitFor(() => expect(service.catalog).toHaveBeenCalledTimes(2));
+      const options = within(screen.getByRole('group', { name: 'Profesión' })).getAllByRole('checkbox').map((box) => box.closest('label').textContent);
+      expect(options).toEqual(['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA']);
+    });
+  });
+
+  it('validates the professions like the server', () => {
+    expect(validateRegistryForm({ ...base, professions: ['ARQUITECTO', 'Topógrafo'] }, 'create')).toEqual({});
+    expect(validateRegistryForm({ ...base, professions: ['A'] }, 'create').professions).toMatch(/entre 2 y 100/);
+    const eleven = 'ABCDEFGHIJK'.split('').map((letter) => `OFICIO ${letter}`);
+    expect(validateRegistryForm({ ...base, professions: eleven }, 'create').professions).toMatch(/máximo 10/);
   });
 });
