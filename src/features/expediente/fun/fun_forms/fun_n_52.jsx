@@ -1,6 +1,5 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { Button } from '@/shared/ui/button';
-import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
 import FUNService from '../../api/fun.service'
 import DataTable from '@/shared/components/data-table-bridge';
 
@@ -8,18 +7,61 @@ import { dateParser, dateParser_timePassed, dateParser_yearsPassed } from '../..
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;
 import profesionalsService from '../../../professionals/api/profesionals.service';
+import { ProfessionalSearchBox } from '../../../professionals';
 import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
+import Fun52RolePicker from './components/Fun52RolePicker.jsx';
+import { useRoleEligibility } from './hooks/useRoleEligibility';
+import { MANUAL_529_HINT, certifiedForLabel, certifiedHint, registryIdByCc } from './fun529Source';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-import dayjs from 'dayjs';
+// Positional order of fun_52.docs (5.2.11): "-1" provided on paper, "0" no document, otherwise a fun_6 id. The order
+// is not the numbering of the labels (position 0 is 5.2.11.2, position 3 is 5.2.11.1).
+const NEW_DOC_SELECT_IDS = ['f_52_111', 'f_52_112', 'f_52_113', 'f_52_114', 'f_52_115', 'f_52_116'];
+const EDIT_DOC_SELECT_IDS = NEW_DOC_SELECT_IDS.map(id => `${id}_edit`);
+// An older backend refuses 5.2.11 on creation with this message; the create is then retried without it.
+const DOCS_READ_ONLY_MESSAGE = 'El campo docs es de solo lectura.';
+const readDocs = (selectIds) => selectIds.map(id => document.getElementById(id).value);
+// Positions as the server compares them: trimmed, without trailing empty positions.
+const canonicalDocs = (value) => {
+    const items = (Array.isArray(value) ? value : String(value ?? '').split(',')).map(item => String(item ?? '').trim());
+    while (items.length && items[items.length - 1] === '') items.pop();
+    return items.join(',');
+};
+// The server's own message for a refused request (4xx); anything else gets the generic text.
+const refusalMessage = (e, fallback) => {
+    const status = e?.response?.status;
+    const message = e?.response?.data?.message;
+    return status >= 400 && status < 500 && typeof message === 'string' && message ? message : fallback;
+};
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { formatYearsMonths, readSpecificExperience, todayIso, wholeMonthsBetween } from '@/shared/utils/specificExperience';
+
+// Only an explicit 0 deactivates a 5.2 row: NULL (rows created without the field) counts as active, as BD PROFESIONALES
+// (isSourceActive) and the legal records grid read it.
+export const isFun52Active = (active) => !(active === 0 || active === '0' || active === false || active === 'false');
 
 function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
-    const [dataListPrfesionals, setDataListPrfesionals] = useState([]);
-    const [searchingP, setSearchingP] = useState(false);
+    // Multi-role picker of the new form: active only for a BD PROFESIONALES pick whose eligibility loaded, while the
+    // batch endpoint exists. Otherwise the form stays the single-role one.
+    const [pickedRegistryId, setPickedRegistryId] = useState(null);
+    const [batchUnavailable, setBatchUnavailable] = useState(false);
+    const [batchBusy, setBatchBusy] = useState(false);
+    const eligibility = useRoleEligibility(pickedRegistryId);
+    const rolePicker = isNew && !batchUnavailable && eligibility.status === 'ready' ? eligibility.data : null;
+    // "Actualizar Profesional": the BD PROFESIONALES person of the row being edited (found by its cédula, or picked
+    // again in the search box) and the role chosen in 5.2.5. With certified experience in that role, 5.2.9 is taken
+    // from BD PROFESIONALES and read only; otherwise it is typed (transitional, see fun529Source).
+    const [editRegistry, setEditRegistry] = useState({ rowId: null, registryId: null });
+    const [editRole, setEditRole] = useState(null);
+    const editRegistryId = edit && editRegistry.rowId === edit.id ? editRegistry.registryId : null;
+    const editEligibility = useRoleEligibility(editRegistryId);
+    const edit529 = edit && editEligibility.status === 'ready' ? certifiedForLabel(editEligibility.data, editRole) : null;
+    // 5.2.11 of the edited row: the stored positions and what the selects could show of them (a stored id that is not
+    // among the expediente's documents shows blank).
+    const editDocs = useRef({ stored: [], shown: [] });
 
     useEffect(() => {
         if (edit !== false) {
@@ -34,34 +76,50 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             document.getElementById("f_528_edit").value = _ITEM.supervision;
             document.getElementById("f_5210_edit").value = _ITEM.sanction ? 1 : 0;
 
-            if (_ITEM.expirience) {
-                let experience_m = _ITEM.expirience;
-                let experience_months_left = experience_m % 12;
-                let experience_y = Math.trunc(experience_m / 12);
-                document.getElementById("f_529_edit").value = experience_y;
-                document.getElementById("f_529m_edit").value = experience_months_left;
-            }
+            _FILL_529_FROM_ROW(_ITEM);
+            _SHOW_GENERAL_EXPERIENCE('_edit');
 
-            let array = _ITEM.role.split(',');
+            let array = (_ITEM.role || '').split(',');
             let select = document.getElementById("f_525_edit");
             for (var options of select) {
                 if (array.includes(options.value)) {
                     options.selected = true;
                 }
             }
+            setEditRole(select.value);
 
-            if (_ITEM.docs) {
-                var _array = _ITEM.docs.split(',');
-                document.getElementById("f_52_111_edit").value = _array[0];
-                document.getElementById("f_52_112_edit").value = _array[1];
-                document.getElementById("f_52_113_edit").value = _array[2];
-                document.getElementById("f_52_114_edit").value = _array[3];
-                document.getElementById("f_52_115_edit").value = _array[4];
-                document.getElementById("f_52_116_edit").value = _array[5];
-            }
+            // A missing position stays blank instead of keeping a previous row's value.
+            const _array = (_ITEM.docs || '').split(',');
+            EDIT_DOC_SELECT_IDS.forEach((selectId, index) => {
+                document.getElementById(selectId).value = _array[index] ?? '';
+            });
+            editDocs.current = { stored: _array, shown: readDocs(EDIT_DOC_SELECT_IDS) };
 
         }
     }, [edit]);
+
+    // The BD PROFESIONALES person of the edited row, by its cédula. Any failure leaves 5.2.9 manual.
+    useEffect(() => {
+        if (edit === false) return undefined;
+        const controller = new AbortController();
+        registryIdByCc(edit.id_number, { signal: controller.signal }).then((registryId) => {
+            if (!controller.signal.aborted) setEditRegistry({ rowId: edit.id, registryId });
+        });
+        return () => controller.abort();
+    }, [edit]);
+
+    // Certified 5.2.9 for the chosen role: filled from BD PROFESIONALES (whole months; days are dropped). When the
+    // role or the person changes to one without certificates, the row's own value comes back.
+    useEffect(() => {
+        if (edit === false) return;
+        if (edit529) {
+            document.getElementById("f_529_edit").value = Math.trunc(edit529.months / 12);
+            document.getElementById("f_529m_edit").value = edit529.months % 12;
+            document.getElementById("f_529_prev_edit").textContent = '';
+        } else {
+            _FILL_529_FROM_ROW(edit);
+        }
+    }, [edit, edit529?.months, edit529?.count]);
 
         var formData = new FormData();
 
@@ -154,15 +212,42 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 document.getElementById(e.target.id).value = _value;
             }
         }
-        let _GET_YEARS_EXPERIENCE = (id) => {
-            let idate = document.getElementById('f_527' + id).value;
-            let date = dayjs(idate).format('YYYY-MM-DD');
-            let today = dayjs().format('YYYY-MM-DD');
-            let timePassed = dayjs(today).diff(date, 'months');
-            let years = Math.trunc(timePassed / 12);
-            let months = Math.trunc(timePassed % 12);
-            document.getElementById('f_529' + id).value = years;
-            document.getElementById('f_529m' + id).value = months;
+        // 5.2.9 of the edited row as stored: shown only when it was saved as specific experience; an older value was
+        // the general one.
+        function _FILL_529_FROM_ROW(_ITEM) {
+            document.getElementById("f_529_edit").value = '';
+            document.getElementById("f_529m_edit").value = '';
+            document.getElementById("f_529_prev_edit").textContent = '';
+            if (_ITEM.expirience_specific) {
+                document.getElementById("f_529_edit").value = Math.trunc(_ITEM.expirience / 12);
+                document.getElementById("f_529m_edit").value = _ITEM.expirience % 12;
+            } else if (_ITEM.expirience) {
+                document.getElementById("f_529_prev_edit").textContent = `Valor anterior: ${formatYearsMonths(_ITEM.expirience)} (no cuenta como experiencia específica).`;
+            }
+        }
+        // 5.2.9 is no longer filled from 5.2.7: 5.2.7 only tells the general experience, the limit of the specific one.
+        let _SHOW_GENERAL_EXPERIENCE = (id) => {
+            let general = wholeMonthsBetween(document.getElementById('f_527' + id).value, todayIso());
+            document.getElementById('f_529_general' + id).textContent = general === null
+                ? 'Indique 5.2.7 para conocer la experiencia general.'
+                : `Experiencia general (desde 5.2.7): ${formatYearsMonths(general)}. La específica no puede superarla.`;
+        }
+        // Adds 5.2.9 to the request as specific experience, or returns the problem to show. An empty 5.2.9 leaves the
+        // stored value alone and, when it was specific experience, stops counting it as such.
+        let _SET_SPECIFIC_EXPERIENCE = (id, formData, wasSpecific) => {
+            let read = readSpecificExperience(
+                document.getElementById('f_529' + id).value,
+                document.getElementById('f_529m' + id).value,
+                document.getElementById('f_527' + id).value,
+            );
+            if (read.problem) return read.problem;
+            if (read.empty) {
+                if (wasSpecific) formData.set('expirience_specific', 'false');
+                return null;
+            }
+            formData.set('expirience', read.months);
+            formData.set('expirience_specific', 'true');
+            return null;
         }
 
         // COMPONENTS JSX
@@ -176,7 +261,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_5211" />
+                            <input type="text" className="form-control" id="f_5211" onInput={_LEAVE_ROLE_PICKER} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -185,7 +270,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_5212" />
+                            <input type="text" className="form-control" id="f_5212" onInput={_LEAVE_ROLE_PICKER} />
                         </div>
                     </div>
                 </div>
@@ -197,7 +282,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="id-card" size={16} />
                             </span>
-                            <input type="text" className="form-control" id="f_522" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
+                            <input type="text" className="form-control" id="f_522" onInput={_LEAVE_ROLE_PICKER} onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -211,9 +296,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </div>
                 </div>
 
+                {rolePicker ? <Fun52RolePicker key={rolePicker.registryId} eligibility={rolePicker} busy={batchBusy} onSubmit={newBatch52} /> : (
                 <div className="row mb-3">
                     <div className="col-12">
-                        <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
+                        <label>5.2.5 Rol que Desempeña</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
@@ -233,6 +319,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                         </div>
                     </div>
                 </div>
+                )}
 
                 <div className="row mb-3">
                     <div className="col-6">
@@ -262,7 +349,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _GET_YEARS_EXPERIENCE('')} />
+                            <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _SHOW_GENERAL_EXPERIENCE('')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -281,17 +368,21 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-6">
-                        <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
+                        {!rolePicker && <>
+                        <label>5.2.9 Experiencia específica en el rol (Años y meses)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529" placeholder="Años" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529" placeholder="Años" className="form-control" />
                             <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529m" placeholder="Meses" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m" placeholder="Meses" className="form-control" />
                         </div>
+                        <small className="text-muted d-block" id="f_529_source">{MANUAL_529_HINT}</small>
+                        </>}
+                        <small className="text-muted d-block" id="f_529_general">Indique 5.2.7 para conocer la experiencia general.</small>
                     </div>
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
@@ -439,12 +530,12 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-12">
-                        <label>5.2.5 Rol que Desempeña (Puede seleccionar multiples usando la tecla ctrl)</label>
+                        <label>5.2.5 Rol que Desempeña</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="user-graduate" size={16} />
                             </span>
-                            <select className="form-select" id="f_525_edit">
+                            <select className="form-select" id="f_525_edit" onChange={(e) => setEditRole(e.target.value)}>
                                 <option>URBANIZADOR/PARCELADOR</option>
                                 <option value={'URBANIZADOR O CONSTRUCTOR RESPONSABLE'}>(2021) URBANIZADOR O CONSTRUCTOR RESPONSABLE</option>
                                 <option value={'DIRECTOR DE LA CONSTRUCCION'}>(2022) DIRECTOR DE LA CONSTRUCCION</option>
@@ -488,7 +579,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _GET_YEARS_EXPERIENCE('_edit')} />
+                            <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _SHOW_GENERAL_EXPERIENCE('_edit')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -507,17 +598,22 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 <div className="row mb-3">
                     <div className="col-6">
-                        <label>5.2.9 Tiempo de Experiencia (Años y meses)</label>
+                        <label>5.2.9 Experiencia específica en el rol (Años y meses)</label>
                         <div className="input-group my-1">
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 Años:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529_edit" placeholder="Años" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529_edit" placeholder="Años" className="form-control" readOnly={Boolean(edit529)} />
                             <span className="input-group-text bg-primary text-primary-foreground ms-1">
                                 Meses:
                             </span>
-                            <input type="number" step="1" min="0" id="f_529m_edit" placeholder="Meses" className="form-control" />
+                            <input type="text" inputMode="numeric" maxLength={2} id="f_529m_edit" placeholder="Meses" className="form-control" readOnly={Boolean(edit529)} />
                         </div>
+                        <small className={`d-block ${edit529 ? 'text-success' : 'text-muted'}`} id="f_529_source_edit">
+                            {edit529 ? certifiedHint(edit529.count) : MANUAL_529_HINT}
+                        </small>
+                        <small className="text-muted d-block" id="f_529_general_edit">Indique 5.2.7 para conocer la experiencia general.</small>
+                        <small className="text-muted d-block" id="f_529_prev_edit"></small>
                     </div>
                     <div className="col-6">
                         <label>5.2.10 Supervisión técnica</label>
@@ -708,7 +804,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     compact: true,
                     cell: row =>
                         <div className="form-check form-switch">
-                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_52(row)} />
+                            <input className="form-check-input" type="checkbox" aria-label="Profesional activo" checked={isFun52Active(row.active)} onChange={() => setActive_52(row)} />
                         </div>
                 },
                 {
@@ -751,29 +847,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             />
         }
 
+        // Typing another name or cédula after a BD PROFESIONALES pick: the eligibility shown belongs to the picked
+        // person, so the form goes back to the single-role one. Fills from fillProfessional fire no input event.
+        let _LEAVE_ROLE_PICKER = () => setPickedRegistryId(null);
         let _PROFESIONAL_SEARCHER = (_scope) => {
-
-            return <>
-                <div className="row">
-                    <div className="col">
-                        <label>Busqueda de Profesional. {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-success text-white">
-                                <Icon name="search" size={16} />
-                            </span>
-                            <HTMLDatalist
-                                name={"search_52"}
-                                onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
-                                classNames={"form-control"}
-                                options={dataListPrfesionals.map((v, i) => {
-                                    let searchTerm = (v.name + ' ' + v.name_2 + ' ' + v.surname + ' ' + v.surname_2).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
-                                    return { text: searchTerm, value: JSON.stringify(v) }
-                                })}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </>
+            return <ProfessionalSearchBox onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
         }
         // FUNCTIONS AND APIS
         let new_52 = (e) => {
@@ -810,37 +888,76 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let supervision = document.getElementById("f_528").value; // THIS IS A SELECT
             formData.set('supervision', supervision);
 
-            let expirience_y = document.getElementById("f_529").value;
-            let expirience_m = document.getElementById("f_529m").value;
-            let expirience = parseInt((expirience_y ? expirience_y * 12 : 0) + parseInt(expirience_m ? expirience_m : 0));
-            formData.set('expirience', expirience);
+            let experienceProblem = _SET_SPECIFIC_EXPERIENCE('', formData, false);
+            if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210").value;
             formData.set('sanction', sanction);
-
-            let docs = [];
-            docs.push(document.getElementById("f_52_111").value);
-            docs.push(document.getElementById("f_52_112").value);
-            docs.push(document.getElementById("f_52_113").value);
-            docs.push(document.getElementById("f_52_114").value);
-            docs.push(document.getElementById("f_52_115").value);
-            docs.push(document.getElementById("f_52_116").value);
-            formData.set('docs', docs.join());
+            formData.set('docs', readDocs(NEW_DOC_SELECT_IDS).join(','));
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun52(formData)
+                .catch(e => {
+                    if (e.response?.status !== 400 || e.response?.data?.message !== DOCS_READ_ONLY_MESSAGE) throw e;
+                    formData.delete('docs');
+                    return FUNService.create_fun52(formData);
+                })
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
-                        requestUpdate(currentItem.id);
-                        document.getElementById('form_fun_52_new').reset();
+                        _NEW_52_CREATED();
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
                     }
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 });
+        }
+        // After a create: the success message, the refreshed list and a clean new form, role picker included.
+        let _NEW_52_CREATED = () => {
+            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            requestUpdate(currentItem.id);
+            document.getElementById('form_fun_52_new').reset();
+            _SHOW_GENERAL_EXPERIENCE('');
+            setPickedRegistryId(null);
+        }
+        // The role picker's submit: one row per role in a single request. The general data is read from the same
+        // fields new_52 reads, so the user's corrections count; the batch endpoint takes no docs (5.2.11).
+        let newBatch52 = (roles) => {
+            let value = (id) => document.getElementById(id).value;
+            let body = {
+                fun0Id: currentItem.id,
+                professional: {
+                    name: value("f_5211"),
+                    surname: value("f_5212"),
+                    id_number: value("f_522"),
+                    number: value("f_524"),
+                    email: value("f_523"),
+                    registration: value("f_526"),
+                    registration_date: value("f_527"),
+                    supervision: value("f_528"),
+                    sanction: value("f_5210"),
+                },
+                roles,
+            };
+            setBatchBusy(true);
+            swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
+            FUNService.create_fun52_batch(body)
+                .then(response => {
+                    if (Array.isArray(response.data?.created)) {
+                        response.data.created.reduce((previous, created) => manage_prof(created.role, previous), null);
+                        _NEW_52_CREATED();
+                    } else {
+                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    }
+                })
+                .catch(e => {
+                    // An older backend has no batch endpoint (a bare 404, without a server message): back to the
+                    // single-role form. A 404 with a message (the expediente no longer exists) is only shown.
+                    if (e.response?.status === 404 && !e.response?.data?.message) setBatchUnavailable(true);
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
+                })
+                .finally(() => setBatchBusy(false));
         }
         let edit_52 = (e) => {
             e.preventDefault();
@@ -872,21 +989,17 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let supervision = document.getElementById("f_528_edit").value; // THIS IS A SELECT
             formData.set('supervision', supervision);
 
-            let expirience_y = document.getElementById("f_529_edit").value;
-            let expirience_m = document.getElementById("f_529m_edit").value;
-            let expirience = parseInt((expirience_y ? expirience_y * 12 : 0) + parseInt(expirience_m ? expirience_m : 0));
-            formData.set('expirience', expirience);
+            let experienceProblem = _SET_SPECIFIC_EXPERIENCE('_edit', formData, Boolean(edit.expirience_specific));
+            if (experienceProblem) return swalError({ title: '5.2.9 Experiencia específica', text: experienceProblem });
             let sanction = document.getElementById("f_5210_edit").value;
             formData.set('sanction', sanction);
-
-            let docs = [];
-            docs.push(document.getElementById("f_52_111_edit").value);
-            docs.push(document.getElementById("f_52_112_edit").value);
-            docs.push(document.getElementById("f_52_113_edit").value);
-            docs.push(document.getElementById("f_52_114_edit").value);
-            docs.push(document.getElementById("f_52_115_edit").value);
-            docs.push(document.getElementById("f_52_116_edit").value);
-            formData.set('docs', docs.join());
+            // 5.2.11 is sent only when the user changed a select, as the six positions; a select left as shown keeps
+            // its stored value, even one it could not show.
+            let shownDocs = editDocs.current.shown;
+            let docs = readDocs(EDIT_DOC_SELECT_IDS).map((value, index) => (
+                value === shownDocs[index] ? String(editDocs.current.stored[index] ?? '').trim() : value
+            ));
+            if (canonicalDocs(docs) !== canonicalDocs(edit.docs)) formData.set('docs', docs.join(','));
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_52(edit.id, formData)
@@ -901,7 +1014,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text });
                 });
         }
         let delete_52 = (id) => {
@@ -930,11 +1043,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 }
             });
         }
+        // The switch is controlled by the stored value: it changes only when the refreshed row says so.
         let setActive_52 = (item) => {
             formData = new FormData();
             let id = item.id
-            let active = item.active;
-            active = active == 1 ? 0 : 1;
+            let active = isFun52Active(item.active) ? 0 : 1;
             formData.set('active', active);
             FUNService.update_52(id, formData)
                 .then(response => {
@@ -947,11 +1060,13 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 })
                 .catch(e => {
                     console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
+                    swalError({ title: swaMsg.generic_eror_title, text: refusalMessage(e, swaMsg.generic_error_text) });
                 });
         }
 
-        let manage_prof = () => {
+        // `selectedRole` comes from the role picker; without it the role is read from 5.2.5. The form is read now; with
+        // `after` (a previous call's promise) the request waits for it, so the picker's calls go one at a time.
+        let manage_prof = (selectedRole, after) => {
             formData = new FormData();
             let _name = document.getElementById("f_5211").value;
             _name = _name.trim();
@@ -979,8 +1094,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let registration_date = document.getElementById("f_527").value; // THIS IS A DATE
             if (registration_date) formData.set('registration_date', registration_date);
 
-            let role = '';
-            let select = document.getElementById("f_525").selectedOptions;
+            let role = selectedRole || '';
+            let select = selectedRole ? [] : document.getElementById("f_525").selectedOptions;
             for (var option of select) {
                 role = option.value;
             }
@@ -1000,7 +1115,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('title', role_type[role]);
             formData.set('active', 1);
 
-            profesionalsService.createOrFind(formData)
+            let profData = formData;
+            return (after ? after.then(() => profesionalsService.createOrFind(profData)) : profesionalsService.createOrFind(profData))
                 .then(data => {
                     return
                 })
@@ -1009,43 +1125,24 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 });;
         }
 
-        let process_dataList = (inputText, dataList, _scope) => {
-            profSearch(inputText);
-            if (dataList) {
-                let worker = JSON.parse(dataList);
-                document.getElementById("f_5211" + _scope).value = worker.name.toUpperCase() + ' ' + worker.name_2.toUpperCase();
-                document.getElementById("f_5212" + _scope).value = worker.surname.toUpperCase() + ' ' + worker.surname_2.toUpperCase();
-                document.getElementById("f_522" + _scope).value = worker.id_number;
-                document.getElementById("f_524" + _scope).value = worker.number;
-                document.getElementById("f_523" + _scope).value = worker.email;
-                document.getElementById("f_526" + _scope).value = worker.registration;
-                document.getElementById("f_527" + _scope).value = worker.registration_date;
-                document.getElementById("f_5210" + _scope).value = worker.sanction ? 1 : 0;
-
-                if (worker.registration_date) {
-                    _GET_YEARS_EXPERIENCE(_scope)
-                }
+        // Fills 5.2 from a search suggestion. An unknown sanction resets 5.2.10 to its default (NO), so a previous pick
+        // never leaves its value behind.
+        let fillProfessional = (suggestion, _scope) => {
+            let set = (id, value) => { document.getElementById(id + _scope).value = value; };
+            set("f_5211", suggestion.givenNames.toUpperCase());
+            set("f_5212", suggestion.surnames.toUpperCase());
+            set("f_522", suggestion.cc);
+            set("f_524", suggestion.phone);
+            set("f_523", suggestion.email);
+            set("f_526", suggestion.registration);
+            set("f_527", suggestion.registrationDate);
+            set("f_5210", suggestion.sanction ? 1 : 0);
+            _SHOW_GENERAL_EXPERIENCE(_scope)
+            if (_scope === '') setPickedRegistryId(suggestion.source === 'registry' ? suggestion.registryId ?? null : null);
+            if (_scope === '' && suggestion.source === 'registry') setBatchUnavailable(false);
+            if (_scope === '_edit' && edit) {
+                setEditRegistry({ rowId: edit.id, registryId: suggestion.source === 'registry' ? suggestion.registryId ?? null : null });
             }
-        }
-
-        let profSearch = (val) => {
-            if (val.length) {
-                let _val = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                setSearchingP(true)
-
-                profesionalsService.getByName(_val)
-                    .then(response => {
-                        if (response.data.length) {
-                            setDataListPrfesionals(response.data);
-                            setSearchingP(false);
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
-            }
-            else { setDataListPrfesionals([]); setSearchingP(false); }
         }
 
         return (<>
@@ -1053,20 +1150,22 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 <FunUpdateSectionLegend id="funn_52" step="5.2">Profesionales Responsables</FunUpdateSectionLegend>
 
                 <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
+                    <input className="form-check-input" type="checkbox" onChange={(e) => { setIsNew(e.target.checked); setPickedRegistryId(null); setBatchUnavailable(false); }} />
                     <label className="form-check-label" htmlFor="flexCheckDefault">
                         Añadir nuevo Profesional
                     </label>
                 </div>
                 {isNew
                     ? <>
-                        <form id="form_fun_52_new" onSubmit={new_52}>
+                        <form id="form_fun_52_new" onSubmit={rolePicker ? (e) => e.preventDefault() : new_52}>
                             {_COMPONENT_NEW()}
+                            {!rolePicker && (
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
                                     <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
                                 </div>
                             </div>
+                            )}
                         </form>
                     </>
                     : ""}

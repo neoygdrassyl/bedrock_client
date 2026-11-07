@@ -1,0 +1,262 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+const service = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn(), catalog: vi.fn() }));
+vi.mock('@/features/professional-registry/api/professional_registry.service', () => ({ default: service }));
+
+import RegistryForm, { validateRegistryForm } from './RegistryForm';
+
+const base = { name: 'Ana María Pérez', cc: '13.439.751', registration: '', email: '', phone: '' };
+
+describe('validateRegistryForm', () => {
+  it('accepts a complete create form', () => {
+    expect(validateRegistryForm(base, 'create')).toEqual({});
+  });
+
+  it('requires a valid name and a cédula or matrícula when creating', () => {
+    expect(validateRegistryForm({ ...base, name: 'Al' }, 'create').name).toMatch(/nombre/);
+    expect(validateRegistryForm({ ...base, name: 'Ana 2' }, 'create').name).toMatch(/nombre/);
+    expect(validateRegistryForm({ ...base, cc: '', registration: '' }, 'create').cc).toMatch(/cédula o/);
+    expect(validateRegistryForm({ ...base, cc: '', registration: 'M-12345' }, 'create')).toEqual({});
+    expect(validateRegistryForm({ ...base, cc: '', registration: 'A-1' }, 'create').registration).toMatch(/matrícula/);
+  });
+
+  it('rejects malformed cédula, email and phone', () => {
+    expect(validateRegistryForm({ ...base, cc: '12345' }, 'create').cc).toMatch(/6 y 10/);
+    expect(validateRegistryForm({ ...base, cc: 'A30592012-1098660047' }, 'create').cc).toMatch(/6 y 10/);
+    expect(validateRegistryForm({ ...base, cc: '10988672028' }, 'create').cc).toMatch(/6 y 10/);
+    expect(validateRegistryForm({ ...base, email: 'sin arroba' }, 'create').email).toMatch(/correo/);
+    expect(validateRegistryForm({ ...base, phone: 'llamar' }, 'create').phone).toMatch(/teléfono/);
+  });
+
+  it('validates the matrícula when editing, but allows leaving it as it is', () => {
+    expect(validateRegistryForm({ name: '', cc: '', registration: 'A-1', email: '', phone: '' }, 'edit').registration).toMatch(/matrícula/);
+    expect(validateRegistryForm({ name: '', cc: '', registration: '68202-158428', email: '', phone: '' }, 'edit')).toEqual({});
+  });
+
+  it('does not ask for a name or identity when editing', () => {
+    expect(validateRegistryForm({ name: '', cc: '', registration: '', email: 'a@b.co', phone: '3001112233' }, 'edit')).toEqual({});
+  });
+});
+
+describe('RegistryForm', () => {
+  beforeEach(() => {
+    service.create.mockReset();
+    service.update.mockReset();
+    service.catalog.mockReset().mockResolvedValue({ data: { data: [], professions: ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA'] } });
+  });
+
+  it('shows the errors and does not call the API when the form is invalid', async () => {
+    const user = userEvent.setup();
+    render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(service.create).not.toHaveBeenCalled();
+    expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
+  });
+
+  it('creates a professional and reports the saved id', async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    service.create.mockResolvedValue({ data: { id: 41, version: 0 } });
+    render(<RegistryForm open mode="create" onClose={() => {}} onSaved={onSaved} />);
+
+    await user.type(screen.getByLabelText('Nombre completo *'), 'Ana María Pérez');
+    await user.type(screen.getByLabelText('Cédula'), '13.439.751');
+    await user.type(screen.getByLabelText('Correo'), 'ana@example.com');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    await waitFor(() => expect(onSaved).toHaveBeenCalledWith({ id: 41, version: 0 }));
+    expect(service.create).toHaveBeenCalledWith({ name: 'Ana María Pérez', cc: '13.439.751', registration: '', email: 'ana@example.com', phone: '' });
+  });
+
+  it('offers to open the existing professional when the cédula is taken', async () => {
+    const user = userEvent.setup();
+    const onOpenExisting = vi.fn();
+    service.create.mockRejectedValue({ response: { status: 409, data: { code: 'CC_EXISTS', message: 'Ya existe un profesional con esa cédula.', id: 77 } } });
+    render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} onOpenExisting={onOpenExisting} />);
+
+    await user.type(screen.getByLabelText('Nombre completo *'), 'Ana María Pérez');
+    await user.type(screen.getByLabelText('Cédula'), '13439751');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(await screen.findByText('Ya existe un profesional con esa cédula.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Abrir el profesional existente' }));
+    expect(onOpenExisting).toHaveBeenCalledWith(77);
+  });
+
+  it('edits with the expected version and sends the cédula only when it changed', async () => {
+    const user = userEvent.setup();
+    const onSaved = vi.fn();
+    service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
+    const registry = { id: 7, cc: '13439751', email: 'viejo@example.com', phone: '', version: 3 };
+    const { rerender } = render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={onSaved} />);
+
+    expect(screen.getByLabelText('Cédula')).toHaveValue('13439751');
+    await user.clear(screen.getByLabelText('Correo'));
+    await user.type(screen.getByLabelText('Correo'), 'nuevo@example.com');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(onSaved).toHaveBeenCalled());
+    expect(service.update).toHaveBeenCalledWith(7, { expectedVersion: 3, email: 'nuevo@example.com', phone: '' });
+
+    rerender(<RegistryForm open mode="edit" registry={{ ...registry, version: 4 }} onClose={() => {}} onSaved={onSaved} />);
+    await user.clear(screen.getByLabelText('Cédula'));
+    await user.type(screen.getByLabelText('Cédula'), '13.439.752');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
+    expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 4, cc: '13.439.752' });
+  });
+
+  it('shows the principal matrícula, sends it only when it changed, and points to Por revisar on a tie', async () => {
+    const user = userEvent.setup();
+    service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
+    const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, registration: '68202-158428', registrationConflict: false };
+    const { rerender } = render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
+
+    expect(screen.getByLabelText('Matrícula en uso')).toHaveValue('68202-158428');
+    await user.type(screen.getByLabelText('Correo'), 'a@b.co');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
+    expect(service.update.mock.calls[0][1]).not.toHaveProperty('registration');
+
+    await user.clear(screen.getByLabelText('Matrícula en uso'));
+    await user.type(screen.getByLabelText('Matrícula en uso'), '68202-999999');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
+    expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, registration: '68202-999999' });
+
+    rerender(<RegistryForm open mode="edit" registry={{ id: 8, cc: '13439752', email: '', phone: '', version: 1, registration: null, registrationConflict: true }} onClose={() => {}} onSaved={() => {}} />);
+    expect(screen.queryByLabelText('Matrícula en uso')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Fecha de expedición de la matrícula en uso')).not.toBeInTheDocument();
+    expect(screen.getByText(/elija la que está en uso en «Por revisar»/)).toBeInTheDocument();
+  });
+
+  it('edits the matrícula issue date, sends it only when it changed and hints when the expedientes disagree', async () => {
+    const user = userEvent.setup();
+    service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
+    const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, registration: '68202-158428', registrationDate: '2000-07-19', registrationDates: [{ date: '2000-07-19', projects: 3 }] };
+    const { rerender } = render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
+
+    expect(screen.getByLabelText('Fecha de expedición de la matrícula en uso')).toHaveValue('2000-07-19');
+    await user.type(screen.getByLabelText('Correo'), 'a@b.co');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
+    expect(service.update.mock.calls[0][1]).not.toHaveProperty('registrationDate');
+
+    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula en uso'), { target: { value: '2999-01-01' } });
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('entre 1900 y hoy');
+    expect(service.update).toHaveBeenCalledTimes(1);
+
+    fireEvent.change(screen.getByLabelText('Fecha de expedición de la matrícula en uso'), { target: { value: '2001-01-25' } });
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
+    expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, registrationDate: '2001-01-25' });
+
+    rerender(<RegistryForm open mode="edit" registry={{ ...registry, id: 8, registrationDate: null, registrationDates: [{ date: '2000-07-19', projects: 3 }, { date: '2021-07-19', projects: 1 }] }} onClose={() => {}} onSaved={() => {}} />);
+    expect(screen.getByLabelText('Fecha de expedición de la matrícula en uso')).toHaveValue('');
+    expect(screen.getByText(/Los expedientes traen fechas distintas/)).toBeInTheDocument();
+  });
+
+  it('does not offer the issue date when creating a professional', () => {
+    render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+    expect(screen.queryByLabelText('Fecha de expedición de la matrícula en uso')).not.toBeInTheDocument();
+  });
+
+  it('shows a version conflict and lets the user reload', async () => {
+    const user = userEvent.setup();
+    const onConflict = vi.fn();
+    service.update.mockRejectedValue({ response: { status: 409, data: { code: 'VERSION_CONFLICT', message: 'Otra persona modificó este registro.' } } });
+    render(<RegistryForm open mode="edit" registry={{ id: 7, cc: '13439751', email: '', phone: '', version: 3 }} onClose={() => {}} onSaved={() => {}} onConflict={onConflict} />);
+
+    await user.type(screen.getByLabelText('Teléfono'), '3001112233');
+    await user.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(await screen.findByText('Otra persona modificó este registro.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Recargar datos' }));
+    expect(onConflict).toHaveBeenCalled();
+  });
+
+  describe('professions', () => {
+    it('offers the catalog options and an Otra input that adds and removes chips, then sends them on create', async () => {
+      const user = userEvent.setup();
+      service.create.mockResolvedValue({ data: { id: 41, version: 0 } });
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+
+      const group = screen.getByRole('group', { name: 'Profesión' });
+      ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA'].forEach((name) => expect(within(group).getByRole('checkbox', { name })).not.toBeChecked());
+      await user.click(within(group).getByRole('checkbox', { name: 'ING CIVIL' }));
+      await user.type(screen.getByLabelText('Otra profesión'), '  topógrafo ');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+      await user.type(screen.getByLabelText('Otra profesión'), 'ing. mecánico{Enter}');
+      expect(within(group).getByRole('checkbox', { name: 'ING MECANICO' })).toBeChecked();
+      await user.type(screen.getByLabelText('Otra profesión'), 'Ing Civil');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+      const chips = () => within(screen.getByRole('list', { name: 'Profesiones seleccionadas' })).getAllByRole('listitem').map((item) => item.textContent);
+      expect(chips()).toEqual(['ING CIVIL', 'TOPÓGRAFO', 'ING MECANICO']);
+
+      await user.click(screen.getByRole('button', { name: 'Quitar ING MECANICO' }));
+      expect(within(group).getByRole('checkbox', { name: 'ING MECANICO' })).not.toBeChecked();
+      expect(chips()).toEqual(['ING CIVIL', 'TOPÓGRAFO']);
+
+      await user.type(screen.getByLabelText('Nombre completo *'), 'Ana María Pérez');
+      await user.type(screen.getByLabelText('Cédula'), '13439751');
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.create).toHaveBeenCalled());
+      expect(service.create.mock.calls[0][0]).toMatchObject({ professions: ['ING CIVIL', 'TOPÓGRAFO'] });
+    });
+
+    it('refuses an invalid Otra profession and does not add it', async () => {
+      const user = userEvent.setup();
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+
+      await user.type(screen.getByLabelText('Otra profesión'), 'Ingeniero 2');
+      await user.click(screen.getByRole('button', { name: 'Agregar' }));
+
+      expect(screen.getByRole('alert')).toHaveTextContent('entre 2 y 100 caracteres');
+      expect(screen.queryByRole('list', { name: 'Profesiones seleccionadas' })).not.toBeInTheDocument();
+    });
+
+    it('starts from the stored professions when editing and sends them only when they changed', async () => {
+      const user = userEvent.setup();
+      service.update.mockResolvedValue({ data: { id: 7, version: 4 } });
+      const registry = { id: 7, cc: '13439751', email: '', phone: '', version: 3, professions: [{ name: 'ARQUITECTO', source: 'CATALOGO' }, { name: 'TOPÓGRAFO', source: 'MANUAL' }] };
+      render(<RegistryForm open mode="edit" registry={registry} onClose={() => {}} onSaved={() => {}} />);
+
+      expect(screen.getByRole('checkbox', { name: 'ARQUITECTO' })).toBeChecked();
+      expect(screen.getByRole('button', { name: 'Quitar TOPÓGRAFO' })).toBeInTheDocument();
+      await user.type(screen.getByLabelText('Teléfono'), '3001112233');
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.update).toHaveBeenCalledTimes(1));
+      expect(service.update.mock.calls[0][1]).not.toHaveProperty('professions');
+
+      await user.click(screen.getByRole('button', { name: 'Quitar TOPÓGRAFO' }));
+      await user.click(screen.getByRole('checkbox', { name: 'ING MECANICO' }));
+      await user.click(screen.getByRole('button', { name: 'Guardar' }));
+      await waitFor(() => expect(service.update).toHaveBeenCalledTimes(2));
+      expect(service.update.mock.calls[1][1]).toMatchObject({ expectedVersion: 3, professions: ['ARQUITECTO', 'ING MECANICO'] });
+    });
+
+    it('uses the catalog professions sent by the server and falls back to the three options with an older one', async () => {
+      service.catalog.mockResolvedValue({ data: { data: [], professions: ['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONTADOR'] } });
+      const { unmount } = render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+      expect(await screen.findByRole('checkbox', { name: 'CONTADOR' })).toBeInTheDocument();
+      unmount();
+
+      service.catalog.mockResolvedValue({ data: { data: [] } });
+      render(<RegistryForm open mode="create" onClose={() => {}} onSaved={() => {}} />);
+      await waitFor(() => expect(service.catalog).toHaveBeenCalledTimes(2));
+      const options = within(screen.getByRole('group', { name: 'Profesión' })).getAllByRole('checkbox').map((box) => box.closest('label').textContent);
+      expect(options).toEqual(['ARQUITECTO', 'ING CIVIL', 'ING MECANICO', 'CONSTRUCTOR EN ARQUITECTURA E INGENIERIA']);
+    });
+  });
+
+  it('validates the professions like the server', () => {
+    expect(validateRegistryForm({ ...base, professions: ['ARQUITECTO', 'Topógrafo'] }, 'create')).toEqual({});
+    expect(validateRegistryForm({ ...base, professions: ['A'] }, 'create').professions).toMatch(/entre 2 y 100/);
+    const eleven = 'ABCDEFGHIJK'.split('').map((letter) => `OFICIO ${letter}`);
+    expect(validateRegistryForm({ ...base, professions: eleven }, 'create').professions).toMatch(/máximo 10/);
+  });
+});

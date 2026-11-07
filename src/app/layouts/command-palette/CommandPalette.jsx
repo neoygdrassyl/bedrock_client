@@ -48,6 +48,7 @@ const EXTRA_DESTINATIONS = [
   { id: 'calculadora', label: 'Calculadora de expensas', route: '/calculadora', icon: 'Calculator', keywords: ['liquidador', 'expensas', 'cobro'] },
   { id: 'consecutivos', label: 'Consecutivos', route: '/consecutivos', icon: 'Book', keywords: ['diccionario', 'numeracion'] },
   { id: 'profesionales', label: 'Profesionales', route: '/profesionales', icon: 'HardHat', keywords: ['arquitectos', 'ingenieros'] },
+  { id: 'bd-profesionales', label: 'BD Profesionales', route: '/bd-profesionales', icon: 'Users', keywords: ['registro', 'matricula', 'experiencia', 'roles'] },
   { id: 'certificados', label: 'Certificados', route: '/certificados', icon: 'Contact', keywords: ['certificacion'] },
   { id: 'sellos', label: 'Sellos', route: '/sellos', icon: Stamp, keywords: ['firmas'] },
   { id: 'calendario-laboral', label: 'Calendario laboral', route: '/calendario-laboral', icon: 'CalendarDays', keywords: ['dias habiles', 'festivos'] },

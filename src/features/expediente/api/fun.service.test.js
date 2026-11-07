@@ -68,3 +68,14 @@ describe('FUNService request dedupe', () => {
     expect(getMock).toHaveBeenCalledWith('/fun/getsearch/4&Calle%2012%20%23%2034%2F56%20%26%20local');
   });
 });
+
+describe('FUNService FUN 5.2 batch create', () => {
+  it('posts the batch body as JSON', async () => {
+    const { default: http } = await import('../../../shared/api/http-common');
+    const body = { fun0Id: 1, professional: { name: 'Ana' }, roles: [{ role: 'ARQUITECTO PROYECTISTA', expirience: null }] };
+
+    FUNService.create_fun52_batch(body);
+
+    expect(http.post).toHaveBeenCalledWith('/fun/fun52/batch', body, { headers: { 'Content-Type': 'application/json' } });
+  });
+});

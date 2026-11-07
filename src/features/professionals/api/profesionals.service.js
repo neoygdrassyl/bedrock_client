@@ -15,8 +15,8 @@ class ProfesionalsService {
     return http.get(`/${route}/${id}`);
   }
   
-  getByName(name) {
-    return http.get(`/${route}/other/${name}`);
+  getByName(name, config) {
+    return http.get(`/${route}/other/${name}`, config);
   }
 
   getByDoc(id, reg) {

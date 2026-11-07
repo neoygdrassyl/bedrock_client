@@ -21,6 +21,7 @@ const DICTIONARY = lazy(() => import('../../features/dictionary/dictionary.page'
 const FUN_MANAGE = lazy(() => import('../../features/expediente/fun/funmanage.page'));
 const FUN_MANAGE_NEW = lazy(() => import('../../features/expediente/fun/funmanage_new.page'));
 const PROFESIONALS = lazy(() => import('../../features/professionals/profesionals.page'));
+const PROFESSIONAL_REGISTRY = lazy(() => import('../../features/professional-registry/ProfessionalRegistryPage'));
 const GUIDE_USER = lazy(() => import('../../features/help/guide_user/guide_user.page'));
 const DEV_GUIDE = lazy(() => import('../../features/help/dev_guide/dev_guide.page'));
 const NORMS = lazy(() => import('../../features/norms/norms.page'));
@@ -102,6 +103,7 @@ export default function AppRoutes({ titleT, loginT, globalsT, swaMsg, breadCrums
         <Route path="/profesionales" element={
           <PROFESIONALS globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
         } />
+        <Route path="/bd-profesionales" element={<PROFESSIONAL_REGISTRY />} />
         <Route path="/ayuda" element={
           <GUIDE_USER globals={globalsT} swaMsg={swaMsg} breadCrums={breadCrums} translation={liquidatorT} />
         } />

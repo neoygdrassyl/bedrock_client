@@ -136,6 +136,7 @@ describe('Dashboard — Integración del panel principal', () => {
     // Cards de utilidades presentes
     expect(screen.getByText('Calculadora de expensas')).toBeInTheDocument();
     expect(screen.getByText('Base de datos profesionales')).toBeInTheDocument();
+    expect(screen.getByText('BD PROFESIONALES')).toBeInTheDocument();
     expect(screen.getByText('Historial de profesionales')).toBeInTheDocument();
     expect(screen.getByText('Manual de usuario')).toBeInTheDocument();
     expect(screen.getByText('Sellos')).toBeInTheDocument();
@@ -195,5 +196,22 @@ describe('Dashboard — Integración del panel principal', () => {
 
     await waitFor(() => expect(funServiceMock.getAll_fun).toHaveBeenCalledTimes(1));
     expect(funServiceMock.getAll).not.toHaveBeenCalled();
+  });
+});
+
+describe('Dashboard — BD PROFESIONALES', () => {
+  beforeEach(() => { setWindowUser(); });
+  afterEach(() => { clearWindowUser(); });
+
+  it('enlaza el módulo nuevo justo debajo de la base de datos de profesionales existente', () => {
+    render(
+      <MemoryRouter>
+        <Dashboard {...defaultProps} />
+      </MemoryRouter>
+    );
+
+    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+    expect(hrefs).toContain('/bd-profesionales');
+    expect(hrefs.indexOf('/bd-profesionales')).toBe(hrefs.indexOf('/profesionales') + 1);
   });
 });

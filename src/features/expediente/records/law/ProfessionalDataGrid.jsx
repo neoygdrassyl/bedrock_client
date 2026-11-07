@@ -5,6 +5,13 @@ import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import FUNService from '../../api/fun.service';
 import ProfessionalVerificationGrid from './ProfessionalVerificationGrid';
 
+// The server's own message for a refused request (4xx); anything else gets the generic text.
+const refusalMessage = (e, fallback) => {
+    const status = e?.response?.status;
+    const message = e?.response?.data?.message;
+    return status >= 400 && status < 500 && typeof message === 'string' && message ? message : fallback;
+};
+
 const DOCUMENTS = ['Cédula', 'Matrícula', 'Certificado matricula', 'Hoja de vida', 'Postgrado', 'Certificados'];
 const TOGGLE_FIELDS = ['signature_original_fun', 'signature_original_plans', 'signature_matches_plans', 'registration_validity', 'postgraduate_applicable'];
 const CERTIFICATE_STATUS_FIELD = 'registration_certificate_status';
@@ -226,8 +233,8 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
             }
             await requestUpdate?.(currentItem.id);
             setEditing(null);
-        } catch {
-            setError('No fue posible guardar el profesional. Verifique los datos e intente nuevamente.');
+        } catch (e) {
+            setError(refusalMessage(e, 'No fue posible guardar el profesional. Verifique los datos e intente nuevamente.'));
         } finally {
             setSaving(false);
         }

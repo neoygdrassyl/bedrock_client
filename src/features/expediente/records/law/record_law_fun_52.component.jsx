@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
-import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import Record_lawService from '../../api/record_law.service';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
+import { ProfessionalSearchBox, registrySource } from '../../../professionals';
+import { internalProfessionalSource } from '../../api/internalProfessionalSource';
 
 import FUNService from '../../api/fun.service';
 import dayjs from 'dayjs';
 import { Icon } from '@/shared/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+// The legal review searches BD PROFESIONALES, then the history of this curaduría; never the third-party service.
+const PROFESSIONAL_SOURCES = [registrySource, internalProfessionalSource];
 const Divider = ({ children }) => <div className="dvl-divider text-center my-2"><span className="text-muted small">{children}</span></div>;;
 
 export default function RECORD_LAW_FUN_52(props) {
@@ -17,8 +20,6 @@ export default function RECORD_LAW_FUN_52(props) {
     var [Fun52, setFun52] = useState([]);
     var [load, setLod] = useState(false)
     var [modal, setModal] = useState(false);
-    var [dataListPrfesionals, setDataP] = useState([]);
-    var [searchingP, setSearchingP] = useState(false);
 
     useEffect(() => {
         _GET_CHILD_52();
@@ -84,42 +85,24 @@ export default function RECORD_LAW_FUN_52(props) {
         return _CHILD;
     }
 
-    let process_dataList = (inputText, dataList, _scope) => {
-        profSearch(inputText);
-        if (dataList) {
-            let worker = JSON.parse(dataList);
-            document.getElementById("f_5211" + _scope).value = worker.name;
-            document.getElementById("f_5212" + _scope).value = worker.surname;
-            document.getElementById("f_522" + _scope).value = worker.id_number;
-            document.getElementById("f_524" + _scope).value = worker.number;
-            document.getElementById("f_523" + _scope).value = worker.email;
-            document.getElementById("f_526" + _scope).value = worker.registration;
-            document.getElementById("f_527" + _scope).value = worker.registration_date;
-            document.getElementById("f_5210" + _scope).value = worker.sanction ? 1 : 0;
+    // Fills 5.2 from a search suggestion. An unknown sanction resets 5.2.10 to its default (NO), so a previous pick
+    // never leaves its value behind.
+    let fillProfessional = (suggestion, _scope) => {
+        let set = (id, value) => { document.getElementById(id + _scope).value = value; };
+        set("f_5211", suggestion.givenNames);
+        set("f_5212", suggestion.surnames);
+        set("f_522", suggestion.cc);
+        set("f_524", suggestion.phone);
+        set("f_523", suggestion.email);
+        set("f_526", suggestion.registration);
+        set("f_527", suggestion.registrationDate);
+        set("f_5210", suggestion.sanction ? 1 : 0);
 
-            if (worker.registration_date) {
-                _GET_YEARS_EXPERIENCE(_scope)
-            }
+        if (suggestion.registrationDate) {
+            _GET_YEARS_EXPERIENCE(_scope)
         }
     }
 
-    let profSearch = (val) => {
-        if (val.length) {
-            setSearchingP(true)
-            FUNService.consult_Profesional(val)
-                .then(response => {
-                    if (response.data.length) {
-                        setDataP(response.data)
-                        setSearchingP(false)
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                    swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
-                });
-        }
-        else setSearchingP(false)
-    }
     // ************************ DATA CONVERTERS ************************ // 
     let _CHILD_6_SELECT = () => {
         let _LIST = _GET_CHILD_6();
@@ -172,28 +155,7 @@ export default function RECORD_LAW_FUN_52(props) {
         document.getElementById('f_529m' + id).value = months;
     }
     let _COMPY_COMPONENT = (_scope) => {
-        return <>
-            <div className="row">
-                <div className="col">
-                    <label>Busqueda de Profesional. {searchingP ? <label className='fw-bold'>Buscando...</label> : ''}</label>
-                    <div className="input-group my-1">
-                        <span className="input-group-text bg-success text-white">
-                            <Icon name="search" size={16} />
-                        </span>
-                        <HTMLDatalist
-                            name={"search_52"}
-                            onChange={(e) => process_dataList(e.target.text, e.target.value, _scope)}
-                            classNames={"form-control"}
-                            options={dataListPrfesionals.map(v => {
-                                let searchTerm = (v.name + ' ' + v.surname).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
-                                return { text: searchTerm, value: JSON.stringify(v) }
-                            })}
-                        />
-                    </div>
-                </div>
-            </div>
-        </>
-
+        return <ProfessionalSearchBox sources={PROFESSIONAL_SOURCES} onSelect={(suggestion) => fillProfessional(suggestion, _scope)} />
     }
     // ************************** JSX COMPONENTS *********************** // 
     let COMPONENT = () => {
@@ -615,6 +577,7 @@ export default function RECORD_LAW_FUN_52(props) {
                 </div>
 
                 <Divider>DOCUMENTOS</Divider>
+                <p className="text-muted small text-center mb-2">Los documentos relacionados no se pueden modificar desde esta edición.</p>
 
                 <div className="row mb-2">
                     <div className="col-6">
@@ -623,7 +586,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_114" defaultValue={docs[3]}>
+                            <select className='form-select' id="f_52_114" defaultValue={docs[3]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -636,7 +599,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_111" defaultValue={docs[0]}>
+                            <select className='form-select' id="f_52_111" defaultValue={docs[0]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -649,7 +612,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_112" defaultValue={docs[1]}>
+                            <select className='form-select' id="f_52_112" defaultValue={docs[1]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -662,7 +625,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_113" defaultValue={docs[2]}>
+                            <select className='form-select' id="f_52_113" defaultValue={docs[2]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -675,7 +638,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_115" defaultValue={docs[4]}>
+                            <select className='form-select' id="f_52_115" defaultValue={docs[4]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -688,7 +651,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="file" size={16} />
                             </span>
-                            <select className='form-select' id="f_52_116" defaultValue={docs[5]}>
+                            <select className='form-select' id="f_52_116" defaultValue={docs[5]} disabled>
                                 <option value="-1">APORTADO FISICAMENTE</option>
                                 <option value="0">SIN DOCUMENTO</option>
                                 {_CHILD_6_SELECT()}
@@ -805,15 +768,7 @@ export default function RECORD_LAW_FUN_52(props) {
         formData.set('expirience', expirience);
         let sanction = document.getElementById("f_5210").value;
         formData.set('sanction', sanction);
-
-        let docs = [];
-        docs.push(document.getElementById("f_52_111").value);
-        docs.push(document.getElementById("f_52_112").value);
-        docs.push(document.getElementById("f_52_113").value);
-        docs.push(document.getElementById("f_52_114").value);
-        docs.push(document.getElementById("f_52_115").value);
-        docs.push(document.getElementById("f_52_116").value);
-        formData.set('docs', docs.join());
+        // docs (5.2.11) is server-owned and read-only on update: it is not sent.
 
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         FUNService.update_52(item.id, formData)
@@ -827,7 +782,7 @@ export default function RECORD_LAW_FUN_52(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
+                swalError({ title: swaMsg.generic_eror_title, text: e.response?.data?.message || swaMsg.generic_error_text, icon: 'warning' });
             });
     }
 

@@ -42,6 +42,7 @@ const MODULE_ICONS = {
   calculadora: 'Calculator',
   consecutivos: 'Book',
   profesionales: 'HardHat',
+  'bd-profesionales': 'Users',
   certificados: 'Contact',
   ayuda: 'BookOpen',
   sellos: 'Stamp',

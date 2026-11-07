@@ -161,8 +161,8 @@ class UserslDataService {
   reportsPublicData(id_start, id_end) {
     return http.get(`/${route}/reports_public/${id_start}&${id_end}`);
   }
-  consult_Profesional(name) {
-    return http.get(`/${route}/consult/consult_Profesional/${name}`);
+  consult_Profesional(name, config) {
+    return http.get(`/${route}/consult/consult_Profesional/${name}`, config);
   }
   getAll_incDocs() {
     return http.get(`/${route}/getall/incdocs`);
@@ -228,6 +228,12 @@ class UserslDataService {
   }
   create_fun52(data) {
     return http.post(`/${route}/fun52`, data);
+  }
+  // One professional in several FUN 5.2 roles: { fun0Id, professional, roles: [{ role, expirience }] }.
+  create_fun52_batch(body) {
+    return http.post(`/${route}/fun52/batch`, body, {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
   create_fun53(data) {
     return http.post(`/${route}/fun53`, data);
