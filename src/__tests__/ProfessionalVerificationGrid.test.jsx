@@ -134,7 +134,11 @@ describe('ProfessionalVerificationGrid', () => {
     expect(getProfessionalActiveStatus({ active: '1' })).toBe('ACTIVO');
     expect(getProfessionalActiveStatus({ active: 0 })).toBe('INACTIVO');
     expect(getProfessionalActiveStatus({ active: 'false' })).toBe('INACTIVO');
-    expect(getProfessionalActiveStatus({})).toBe('INACTIVO');
+    expect(getProfessionalActiveStatus({ active: '0' })).toBe('INACTIVO');
+    // No stored state (NULL or absent) is active, as in the FUN 5.2 switch.
+    expect(getProfessionalActiveStatus({ active: null })).toBe('ACTIVO');
+    expect(getProfessionalActiveStatus({})).toBe('ACTIVO');
+    expect(getProfessionalActiveStatus(undefined)).toBe('INACTIVO');
   });
 
   test('recognizes professional action only with recognized quality and the original FUN signature', () => {

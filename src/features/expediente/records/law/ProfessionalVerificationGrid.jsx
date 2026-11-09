@@ -60,8 +60,12 @@ export function getProfessionalQualityStatus(professional) {
   return professional?.registration_certificate_status === 'HABILITADO' && getExperienceStatus(professional) === 'ACEPTADO' ? 'SI' : 'NO';
 }
 
+// Same rule as the FUN 5.2 switch (isFun52Active): only an explicit 0/false is inactive. Rows created between
+// 2026-10-16 and 2026-11-09 have no stored state (NULL) and are active.
 export function getProfessionalActiveStatus(professional) {
-  return professional?.active === true || professional?.active === 1 || professional?.active === '1' ? 'ACTIVO' : 'INACTIVO';
+  if (!professional) return 'INACTIVO';
+  const { active } = professional;
+  return active === 0 || active === '0' || active === false || active === 'false' ? 'INACTIVO' : 'ACTIVO';
 }
 
 export function getProfessionalActionRecognitionStatus(professional) {
