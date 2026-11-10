@@ -38,6 +38,13 @@ const viewOf = (rows = [viewRow()]) => ({ readOnly: false, capabilities: { creat
 const version = (id, sequence, evaluation, extra) => ({ ...receipt(id, { vrLabel: `VR-${sequence}` }), versionSequence: sequence, evaluation, ...extra });
 const approved = { status: 'approved', source: 'review', verdict: 'complies', reviewRevision: 3, reviewedBy: 4, reviewedByName: 'Marta Ruiz', reviewedAt: '2026-10-14T15:00:00.000Z' };
 
+// The documents table of Radicación (deliveries, VR in use, versions) lives in the collapsed "Entregas y versiones" block.
+async function renderWithDeliveries(ui) {
+  const result = render(ui);
+  fireEvent.click(await screen.findByRole('button', { name: /Entregas y versiones/ }));
+  return result;
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   operations.getCanonicalDocuments.mockResolvedValue(viewOf());
@@ -45,70 +52,79 @@ beforeEach(() => {
 });
 
 describe('LegalFormPanel', () => {
-  it('shows a not-ready expediente with blockers, the requirements still to deliver and the declare action disabled', async () => {
+  it('lists every requirement in one checklist with its state, an unsatisfied alternative group as one row, and the declare action disabled', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
-      requirements: [requirement(), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null })],
+      requirements: [requirement(), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null,
+        blockers: [{ code: 'NOT_DELIVERED', message: 'y', documentCode: '600' }] })],
       blockers: [
         { code: 'VERDICT_PENDING', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' },
         { code: 'NOT_DELIVERED', message: 'y', documentCode: '600', groupCode: null, documentKey: null },
         { code: 'GROUP_NOT_SATISFIED', message: 'z', documentCode: null, groupCode: 'G1', documentKey: null },
       ],
+      groups: [{ code: 'G1', mode: 'at_least_one', status: 'missing', satisfied: false, documentCodes: ['700', '701'], typologyName: 'Vivienda', optionLabel: 'Nueva' }],
     }));
     render(<LegalFormPanel origin={origin} canManage />);
     expect(await screen.findByTestId('legal-form-state')).toHaveTextContent('No lista');
     expect(screen.getByRole('button', { name: 'Declarar legal y debida forma' })).toBeDisabled();
-    const pending = screen.getByTestId('legal-form-pending');
-    expect(within(pending).getByText('Pendientes para declarar')).toBeInTheDocument();
-    expect(within(pending).getByTestId('legal-form-pending-not_delivered')).toHaveTextContent('600 · Plano');
-    expect(within(pending).getByTestId('legal-form-pending-not_delivered')).toHaveTextContent('Grupo G1: falta al menos una alternativa');
-    expect(within(pending).getByTestId('legal-form-pending-pending_review')).toHaveTextContent('511 · Formulario único · VR-1');
-    expect(screen.queryByTestId('legal-form-missing')).not.toBeInTheDocument();
+    const checklist = screen.getByTestId('ldf-checklist');
+    const group = within(checklist).getByTestId('ldf-group-request');
+    expect(within(group).getByRole('button', { name: /^511 Formulario único: Sin evaluar/ })).toBeInTheDocument();
+    expect(within(group).getByRole('button', { name: /^600 Plano: Sin entregar/ })).toBeInTheDocument();
+    expect(within(group).getByRole('button', { name: /^700 \/ 701 Uno de: 700 · 701: Falta al menos uno/ })).toBeInTheDocument();
+    expect(within(group).getByTestId('ldf-group-progress-request')).toHaveTextContent('1/3 entregados');
+    expect(screen.queryByTestId('legal-form-pending')).not.toBeInTheDocument();
+    // The documents table of Radicación stays available, collapsed.
+    expect(screen.getByRole('button', { name: /Entregas y versiones/ })).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('orders the pending panel by group and opens the evaluation of an item with a delivery', async () => {
+  it('shows evaluation-level problems on top of the checklist and opens a delivered row in the evaluation sheet with why it is required', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       blockers: [
         { code: 'SELECTION_INVALID', message: 'v', documentCode: '511', groupCode: null, documentKey: 'k-1' },
         { code: 'REQUIREMENTS_STALE', message: 'La evaluación cambió', documentCode: null, groupCode: null, documentKey: null },
-        { code: 'NOT_DELIVERED', message: 'y', documentCode: '600', groupCode: null, documentKey: null },
       ],
-      requirements: [requirement({ instances: [instance({ selection: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1 } })] }), requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null })],
+      requirements: [requirement({ blockers: [{ code: 'SELECTION_INVALID', documentCode: '511', documentKey: 'k-1' }], instances: [instance({ selection: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1 } })] }),
+        requirement({ documentCode: '600', documentId: 'd-600', title: 'Plano', delivered: false, instances: [], currentRowId: null, vrLabel: null, controls: controls(3), blockers: [{ code: 'NOT_DELIVERED', documentCode: '600' }] })],
     }));
     render(<LegalFormPanel origin={origin} canManage />);
-    const pending = await screen.findByTestId('legal-form-pending');
-    const sections = within(pending).getAllByTestId(/^legal-form-pending-/).map((node) => node.getAttribute('data-testid'));
-    expect(sections).toEqual(['legal-form-pending-alert', 'legal-form-pending-not_delivered', 'legal-form-pending-selection_invalid']);
-    expect(within(pending).getByTestId('legal-form-pending-selection_invalid')).toHaveTextContent('Elección de VR inválida');
-    expect(pending).not.toHaveTextContent('Falta elegir el VR');
-    expect(within(pending).getByTestId('legal-form-pending-alert')).toHaveTextContent('Evaluación desactualizada');
-    fireEvent.click(within(pending).getByRole('button', { name: '511 · Formulario único · VR-1' }));
-    expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
-    expect(within(pending).queryByRole('button', { name: /^600/ })).not.toBeInTheDocument();
+    expect(await screen.findByTestId('ldf-checklist-alert')).toHaveTextContent('Evaluación desactualizada');
+    fireEvent.click(screen.getByRole('button', { name: /^600 Plano: Sin entregar/ }));
+    const detail = await screen.findByRole('dialog');
+    expect(within(detail).getByText('Documento requerido')).toBeInTheDocument();
+    expect(within(detail).getByTestId('ldf-requirement-context')).toHaveTextContent('Requisito general de la solicitud.');
+    expect(within(detail).getByTestId('ldf-requirement-controls')).toHaveTextContent('Al recibirlo se verifican 3 controles de Central.');
+    fireEvent.click(within(detail).getByRole('button', { name: 'Cerrar' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /^511 Formulario único: Elección de VR inválida/ }));
+    const sheet = await screen.findByRole('dialog');
+    expect(await within(sheet).findByText('Evaluar documento')).toBeInTheDocument();
+    expect(within(sheet).getByTestId('ldf-requirement-context')).toHaveTextContent('Requisito general de la solicitud.');
   });
 
   it('explains why a verdict or a typology option is pending', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       sections: [{ typologyCode: 'T1', typologyName: 'Vivienda', state: 'selection_required', requirementCodes: [] }],
+      requirements: [requirement({ blockers: [{ code: 'VERDICT_PENDING', reason: 'no_decision', documentCode: '511', documentKey: 'k-1' }] })],
       blockers: [
         { code: 'VERDICT_PENDING', reason: 'no_decision', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' },
         { code: 'TYPOLOGY_SELECTION_REQUIRED', reason: 'unknown_option', message: 'x', typologyCode: 'T1', documentCode: null, groupCode: null, documentKey: null },
       ],
     }));
     render(<LegalFormPanel origin={origin} canManage />);
-    const pending = await screen.findByTestId('legal-form-pending');
-    expect(within(pending).getByTestId('legal-form-pending-pending_review')).toHaveTextContent('Controles decididos sin aprobación');
-    expect(within(pending).getByTestId('legal-form-pending-typology')).toHaveTextContent('La opción elegida en el portal no existe en esta versión de Central');
+    const group = await screen.findByTestId('ldf-group-request');
+    expect(within(group).getByRole('button', { name: /^511 Formulario único: Sin evaluar \(Controles decididos sin aprobación\)/ })).toBeInTheDocument();
+    expect(within(group).getByRole('button', { name: /^Elegir la opción de «Vivienda»: Falta elegir opción \(La opción elegida en el portal no existe en esta versión de Central\)/ })).toBeInTheDocument();
   });
 
-  it('opens the evaluation of a pending item whose document is not on the loaded page by asking for its row', async () => {
+  it('opens the evaluation of a checklist row whose document is not on the loaded page by asking for its row', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({
       blockers: [{ code: 'VERDICT_PENDING', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' }],
     }));
     operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ rowKey: 'canonical:k-9', documentKey: 'k-9', documentCode: '519', catalogueDisplay: { code: '519', name: 'Otro' }, receivedDocumentRowId: 19, receipt: receipt(19) })]));
     operations.getCanonicalDocumentRow.mockResolvedValue(viewRow());
-    render(<LegalFormPanel origin={origin} canManage />);
-    const pending = await screen.findByTestId('legal-form-pending');
-    fireEvent.click(within(pending).getByRole('button', { name: '511 · Formulario único · VR-1' }));
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
+    await screen.findByText('Otro');
+    fireEvent.click(screen.getByRole('button', { name: /^511 Formulario único:/ }));
     expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
     expect(operations.getCanonicalDocumentRow).toHaveBeenCalledWith(origin, 'k-1');
     expect(screen.getByText(/Formulario único · VR-1 · Versión 1/)).toBeInTheDocument();
@@ -117,8 +133,10 @@ describe('LegalFormPanel', () => {
 
   it('does not ask for the row when the document is on the loaded page', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({ blockers: [{ code: 'VERDICT_PENDING', message: 'x', documentCode: '511', groupCode: null, documentKey: 'k-1' }] }));
-    render(<LegalFormPanel origin={origin} canManage />);
-    fireEvent.click(await within(await screen.findByTestId('legal-form-pending')).findByRole('button', { name: '511 · Formulario único · VR-1' }));
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
+    await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    await screen.findAllByText('Formulario único');
+    fireEvent.click(screen.getByRole('button', { name: /^511 Formulario único:/ }));
     expect(await screen.findByText('Evaluar documento')).toBeInTheDocument();
     expect(operations.getCanonicalDocumentRow).not.toHaveBeenCalled();
   });
@@ -129,7 +147,7 @@ describe('LegalFormPanel', () => {
     operations.getCanonicalDocuments
       .mockResolvedValueOnce({ ...viewOf([viewRow({ evaluation: approved })]), pagination: { nextAfterId: 77 }, counts: { canonicalDocuments: 2 } })
       .mockResolvedValueOnce(viewOf([second]));
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
     await within(table).findByText('Plano');
     expect(operations.getCanonicalDocuments).toHaveBeenCalledTimes(2);
@@ -148,7 +166,7 @@ describe('LegalFormPanel', () => {
       viewRow({ evaluation: approved }),
       viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11), evaluation: { status: 'rejected', source: 'review', reviewedByName: 'Luis Gómez' } }),
     ]));
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
     await within(table).findByText('Aprobado');
     expect(operations.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
@@ -165,9 +183,9 @@ describe('LegalFormPanel', () => {
 
   it('shows the table without Evaluar actions when the expediente cannot be reviewed (declared)', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7 }, actions: { review: false, declare: false, revoke: true, sheet: true } }));
-    render(<LegalFormPanel origin={origin} canManage />);
-    await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
-    await screen.findByText('Formulario único');
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
+    const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
+    await within(table).findByText('Formulario único');
     expect(screen.queryByRole('button', { name: /^Evaluar 511/ })).not.toBeInTheDocument();
   });
 
@@ -272,7 +290,7 @@ describe('LegalFormPanel', () => {
   it('evaluates a delivery without controls with the reviewer verdict and reloads the table and the legal-form state', async () => {
     api.getLegalForm.mockResolvedValue(legalForm());
     operations.saveCanonicalReview.mockResolvedValue({ unchanged: false });
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const sheet = await openSheet();
     expect(within(sheet).getByText(/Formulario único · VR-1 · Versión 1/)).toBeInTheDocument();
     const save = within(sheet).getByRole('button', { name: 'Guardar evaluación' });
@@ -295,7 +313,7 @@ describe('LegalFormPanel', () => {
   it('reuses the idempotent command after a network failure and reloads on a revision conflict', async () => {
     api.getLegalForm.mockResolvedValue(legalForm());
     operations.saveCanonicalReview.mockRejectedValueOnce({ message: 'Fallo de red' });
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const sheet = await openSheet();
     fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'complies' } });
     fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
@@ -311,7 +329,7 @@ describe('LegalFormPanel', () => {
   it('explains rule errors of the review instead of treating them as a conflict', async () => {
     api.getLegalForm.mockResolvedValue(legalForm());
     operations.saveCanonicalReview.mockRejectedValue({ response: { status: 409, data: { error: { code: 'DOCUMENT_HAS_CONTROLS' } } } });
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const sheet = await openSheet();
     fireEvent.change(within(sheet).getByLabelText('Veredicto'), { target: { value: 'complies' } });
     fireEvent.click(within(sheet).getByRole('button', { name: 'Guardar evaluación' }));
@@ -324,7 +342,7 @@ describe('LegalFormPanel', () => {
     operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ receivedDocumentRowId: 11, versionSequence: 2, versionCount: 2, receipt: receipt(11, { vrLabel: 'VR-2' }) })]));
     operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, approved), version(11, 2, pendingEvaluation)], nextAfterId: null });
     operations.saveCanonicalReview.mockResolvedValue({ unchanged: false });
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const sheet = await openSheet();
     expect(within(sheet).getByText(/Formulario único · VR-2 · Versión 2/)).toBeInTheDocument();
     expect(within(sheet).getByLabelText('Veredicto')).toHaveValue('');
@@ -352,7 +370,7 @@ describe('LegalFormPanel', () => {
   const openControls = async (list) => {
     api.getLegalForm.mockResolvedValue(legalForm());
     operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ controls: list, actions: { review: true }, evaluation: { status: 'pending', source: 'controls' } })]));
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     return openSheet();
   };
 
@@ -437,7 +455,7 @@ describe('LegalFormPanel', () => {
     operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ receivedDocumentRowId: 11, versionSequence: 2, versionCount: 2, receipt: receipt(11, { evidenceRevision: 2 }), controls: [control('c-1', 'Firma del titular', current)], actions: { review: true }, evaluation: { status: 'approved', source: 'controls' } })]));
     operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, { status: 'pending', source: 'controls' }, { evidenceRevision: 5 }), version(11, 2, { status: 'approved', source: 'controls' }, { evidenceRevision: 2 })], nextAfterId: null });
     saveCanonicalControl.mockResolvedValue({});
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const sheet = await openSheet();
     expect(within(sheet).getByLabelText('Resultado')).toHaveValue('c-1-ok');
     const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
@@ -506,7 +524,7 @@ describe('LegalFormPanel', () => {
       state: 'ready', actions: { review: true, declare: true, revoke: false, sheet: true, checklist: true },
       warnings: [{ code: 'REQUIREMENTS_INCOMPLETE', message: 'm', sourceKeys: ['usosAny', 'desconocidaAny'] }], evaluation: { cacheState: 'current', status: 'incomplete', missingFacts: ['usosAny', 'areaAny'] },
     }));
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     const warning = await screen.findByTestId('legal-form-warning');
     expect(within(warning).getByText('Evaluación incompleta')).toBeInTheDocument();
     expect(warning).toHaveTextContent('Faltan datos del FUN');
@@ -517,7 +535,7 @@ describe('LegalFormPanel', () => {
   it('names who declared and who reviewed when the server provides it', async () => {
     api.getLegalForm.mockResolvedValue(legalForm({ state: 'declared', declaration: { at: '2026-10-15T15:00:00.000Z', by: 7, byName: 'Luis Gómez' }, actions: { review: true, declare: false, revoke: true, sheet: true } }));
     operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow({ evaluation: approved })]));
-    render(<LegalFormPanel origin={origin} canManage />);
+    await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
     expect(await screen.findByTestId('legal-form-declaration')).toHaveTextContent('por Luis Gómez');
     const sheet = await openSheet();
     expect(within(sheet).getByText(/Revisado por Marta Ruiz · /)).toBeInTheDocument();
@@ -693,7 +711,7 @@ describe('LegalFormPanel', () => {
       api.getLegalForm.mockResolvedValue(form());
       twoVersions();
       api.selectLegalFormVr.mockResolvedValue({ unchanged: false, selection: chosen });
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
       expect(within(previous).getByTestId('effective-vr-line')).toHaveTextContent('Se usa: VR-2 (último)');
@@ -715,7 +733,7 @@ describe('LegalFormPanel', () => {
       api.getLegalForm.mockResolvedValue(form({ effective: { rowId: 10, vrLabel: 'VR-1', versionSequence: 1, source: 'latest' } }));
       operations.getCanonicalDocuments.mockResolvedValue(viewOf([viewRow()]));
       operations.getCanonicalVersions.mockResolvedValue({ rows: [version(10, 1, approved), version(11, 2, pendingEvaluation)], nextAfterId: null });
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
       const [newest] = within(previous).getAllByRole('listitem');
@@ -727,7 +745,7 @@ describe('LegalFormPanel', () => {
       api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectionRevision: 4, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }));
       twoVersions();
       api.clearLegalFormVr.mockResolvedValue({ unchanged: false, selection: null, selectionRevision: 5, documentKey: 'k-1' });
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
       expect(within(previous).getByTestId('effective-vr-line')).toHaveTextContent('Se usa: VR-1 (elegido por Marta Ruiz)');
@@ -743,7 +761,7 @@ describe('LegalFormPanel', () => {
     it('offers neither choosing nor going back once the expediente is declared', async () => {
       api.getLegalForm.mockResolvedValue(form({ selection: chosen, selectionRevision: 4, selectedEvaluation: approved, effective: { ...chosen, source: 'selected' } }, { declaration: { at: '2026-10-15T15:00:00.000Z', by: 7 }, state: 'declared' }));
       twoVersions();
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       const previous = await within(sheet).findByRole('region', { name: 'Evaluaciones anteriores' });
       expect(within(previous).queryByRole('button', { name: 'Volver al último' })).not.toBeInTheDocument();
@@ -755,7 +773,7 @@ describe('LegalFormPanel', () => {
       api.getLegalForm.mockResolvedValue(form());
       twoVersions();
       api.selectLegalFormVr.mockRejectedValue({ response: { status: 409, data: { error: { code: 'SELECTION_NOT_APPROVED' } } } });
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const sheet = await openSheet();
       fireEvent.click(await within(sheet).findByRole('button', { name: /^Usar VR-1/ }));
       expect(await within(sheet).findByText(/Solo se puede elegir una entrega aprobada/)).toBeInTheDocument();
@@ -772,7 +790,7 @@ describe('LegalFormPanel', () => {
         viewRow({ evaluation: approved }),
         viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11, { vrLabel: 'VR-2' }), evaluation: pendingEvaluation }),
       ]));
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
       await within(table).findByText('En uso');
       const rows = within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
@@ -789,7 +807,7 @@ describe('LegalFormPanel', () => {
         viewRow({ evaluation: pendingEvaluation }),
         viewRow({ rowKey: 'canonical:k-2', documentKey: 'k-2', documentCode: '512', catalogueDisplay: { code: '512', name: 'Plano' }, receivedDocumentRowId: 11, receipt: receipt(11), evaluation: pendingEvaluation }),
       ]));
-      render(<LegalFormPanel origin={origin} canManage />);
+      await renderWithDeliveries(<LegalFormPanel origin={origin} canManage />);
       const table = await screen.findByRole('grid', { name: 'Documentos de legal y debida forma' });
       await within(table).findByText('Plano');
       const keys = () => within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key')).map((row) => row.getAttribute('data-row-key'));
