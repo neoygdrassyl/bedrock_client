@@ -1,10 +1,12 @@
 import { createDovelaHttpClient } from "@/shared/api/http-client-factory";
+import { professionalsApiUrl } from "./professionalsRegistry";
 
-// Third-party host (server.prof.curaduria1bucaramanga.com) — different
-// origin from the main API (VITE_API_URL). The app JWT must not be
-// attached here; only the shared error/401 handling applies.
+// Third-party host (professionals registry) — different origin from the main
+// API (VITE_API_URL). The app JWT must not be attached here; only the shared
+// error/401 handling applies. The base URL is empty (registry disabled) unless
+// configured: see professionalsRegistry.js.
 export default createDovelaHttpClient({
-  baseURL: import.meta.env.VITE_API_PROF_URL,
+  baseURL: professionalsApiUrl() || undefined,
   headers: {
     "Content-type": 'multipart/form-data;boundary=----WebKitFormBoundaryyrV7KO0BoCBuDbT'
   },

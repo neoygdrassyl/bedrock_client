@@ -817,14 +817,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let sanction = document.getElementById("f_5210").value;
             formData.set('sanction', sanction);
 
-            let docs = [];
-            docs.push(document.getElementById("f_52_111").value);
-            docs.push(document.getElementById("f_52_112").value);
-            docs.push(document.getElementById("f_52_113").value);
-            docs.push(document.getElementById("f_52_114").value);
-            docs.push(document.getElementById("f_52_115").value);
-            docs.push(document.getElementById("f_52_116").value);
-            formData.set('docs', docs.join());
+            // `docs` is read-only in the backend (create rejects it): it is not sent.
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.create_fun52(formData)
@@ -879,14 +872,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             let sanction = document.getElementById("f_5210_edit").value;
             formData.set('sanction', sanction);
 
-            let docs = [];
-            docs.push(document.getElementById("f_52_111_edit").value);
-            docs.push(document.getElementById("f_52_112_edit").value);
-            docs.push(document.getElementById("f_52_113_edit").value);
-            docs.push(document.getElementById("f_52_114_edit").value);
-            docs.push(document.getElementById("f_52_115_edit").value);
-            docs.push(document.getElementById("f_52_116_edit").value);
-            formData.set('docs', docs.join());
+            // `docs` is read-only in the backend (create rejects it): it is not sent.
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             FUNService.update_52(edit.id, formData)
@@ -1000,6 +986,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('title', role_type[role]);
             formData.set('active', 1);
 
+            // Skipped (no request) when the external registry is not configured; the expediente save goes on.
             profesionalsService.createOrFind(formData)
                 .then(data => {
                     return
@@ -1035,10 +1022,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
                 profesionalsService.getByName(_val)
                     .then(response => {
-                        if (response.data.length) {
-                            setDataListPrfesionals(response.data);
-                            setSearchingP(false);
-                        }
+                        if (response.data?.length) setDataListPrfesionals(response.data);
+                        setSearchingP(false);
                     })
                     .catch(e => {
                         console.log(e);

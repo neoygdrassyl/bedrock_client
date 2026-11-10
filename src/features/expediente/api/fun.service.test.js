@@ -68,3 +68,19 @@ describe('FUNService request dedupe', () => {
     expect(getMock).toHaveBeenCalledWith('/fun/getsearch/4&Calle%2012%20%23%2034%2F56%20%26%20local');
   });
 });
+
+describe('FUN 5.2 read-only fields', () => {
+  it('never sends docs, active and the other backend-owned fields on create or update', async () => {
+    const { default: http } = await import('../../../shared/api/http-common');
+    const { FUN52_READ_ONLY_FIELDS } = await import('./fun.service');
+    const data = new FormData();
+    data.set('fun0Id', '7'); data.set('name', 'Eva'); data.set('docs', '-1,-1,-1,-1,-1,-1'); data.set('active', '1'); data.set('registration_validity', '1');
+    await FUNService.create_fun52(data);
+    const created = http.post.mock.calls.at(-1);
+    expect(created[0]).toBe('/fun/fun52');
+    expect(Array.from(created[1].keys())).toEqual(['fun0Id', 'name']);
+    await FUNService.update_52(3, { name: 'Eva', docs: '0,0,0,0,0,0', postgraduate: 1 });
+    expect(http.put.mock.calls.at(-1)).toEqual(['/fun/fun52A/3', { name: 'Eva' }]);
+    expect(FUN52_READ_ONLY_FIELDS).toContain('docs');
+  });
+});
