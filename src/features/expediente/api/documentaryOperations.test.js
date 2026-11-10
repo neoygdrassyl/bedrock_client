@@ -150,3 +150,12 @@ it('reads the current row of one document by documentKey and returns null when t
   http.get.mockResolvedValue({data:{...view(),project:{fun0Id:9}}});
   await expect(api.getCanonicalDocumentRow(origin,key)).rejects.toThrow();
 });
+it('explains person-scoped receipt errors whatever their status and keeps the 409 rules',()=>{
+  const failure=(status,code,message='x')=>({response:{status,data:{error:{code,message}}}});
+  expect(api.documentaryReceiptRuleError(failure(503,'SUBJECT_STORAGE_UNAVAILABLE'))).toMatch(/entregas por persona aún no están habilitadas/);
+  expect(api.documentaryReceiptRuleError(failure(422,'SUBJECT_SCOPE_MISMATCH'))).toMatch(/ya no hace parte del FUN vigente/);
+  expect(api.documentaryReceiptRuleError(failure(400,'INVALID_INPUT','Invalid subjectId.'))).toMatch(/persona elegida no es válida/);
+  expect(api.documentaryReceiptRuleError(failure(400,'INVALID_INPUT','Invalid documentKey.'))).toBeNull();
+  expect(api.documentaryReceiptRuleError(failure(409,'MULTIPLICITY_CONFLICT'))).toMatch(/Ya existe este documento/);
+  expect(api.documentaryReceiptRuleError(failure(422,'MULTIPLICITY_CONFLICT'))).toBeNull();
+});
