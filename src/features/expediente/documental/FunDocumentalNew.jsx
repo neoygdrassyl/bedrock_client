@@ -93,12 +93,13 @@ const TAB_GENERATORS = 'generar';
 const TAB_CONFIGURATION = 'configuracion';
 const CONFLICT_NOTICE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 // Segmented control with the same rhythm as the expediente module navigation (h-8, text-xs, icon 14px).
-const TRIGGER_CLASS = 'group h-8 gap-1.5 rounded-md border-[1px] border-solid border-transparent px-3 py-0 text-xs font-medium text-muted-foreground hover:bg-background/60 hover:text-foreground data-[state=active]:border-[hsl(var(--primary)/0.3)] data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:text-[hsl(var(--primary))] data-[state=active]:shadow-sm [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:shrink-0';
+// Underline tabs: the active section is marked by a 2px primary rule sitting on the bar's bottom border.
+const TRIGGER_CLASS = "group relative h-10 flex-none gap-1.5 rounded-none border-0 bg-transparent px-2.5 py-0 text-[13px] font-medium text-muted-foreground shadow-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring focus-visible:ring-offset-0 after:pointer-events-none after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:content-[''] after:transition-colors data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:after:bg-[hsl(var(--primary))] [&>svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0 data-[state=active]:[&>svg]:text-[hsl(var(--primary))]";
 
 function TabCount({ value, label }) {
   if (!Number.isFinite(value)) return null;
   return (
-    <Tag pill className="group-data-[state=active]:border-blue-200 group-data-[state=active]:bg-blue-50 group-data-[state=active]:text-blue-700" aria-label={`${value} ${label}`}>
+    <Tag pill className="tabular-nums group-data-[state=active]:border-transparent group-data-[state=active]:bg-[hsl(var(--primary)/0.12)] group-data-[state=active]:text-[hsl(var(--primary))]" aria-label={`${value} ${label}`}>
       {value}
     </Tag>
   );
@@ -174,8 +175,8 @@ function ProjectDocumentaryWorkspace(props) {
 
   return (
     <Tabs value={currentTab} onValueChange={selectTab} className={cn(DOCUMENTAL_SCOPE, 'flex min-w-0 flex-col gap-[0.75rem]')}>
-      <div className="flex min-w-0 flex-wrap items-center gap-x-[1rem] gap-y-2">
-        <TabsList aria-label="Secciones del módulo documental" className="h-auto max-w-full justify-start gap-1 self-start overflow-x-auto rounded-xl border bg-muted/50 p-1 shadow-sm">
+      <div className="flex min-w-0 items-end gap-x-[1rem] border-b border-border">
+        <TabsList aria-label="Secciones del módulo documental" className="h-auto min-w-0 flex-1 justify-start gap-1 overflow-x-auto rounded-none border-0 bg-transparent p-0 shadow-none [scrollbar-width:none]">
           <TabsTrigger value={TAB_INPUT} className={TRIGGER_CLASS}>
             <Inbox aria-hidden="true" />
             Radicación
@@ -205,7 +206,7 @@ function ProjectDocumentaryWorkspace(props) {
             </TabsTrigger>
           ) : null}
         </TabsList>
-        <OriginCaption origin={source.origin} error={source.error} currentPublic={props.currentPublic} className="min-w-0 flex-1" />
+        <OriginCaption origin={source.origin} error={source.error} className="hidden h-10 shrink-0 md:inline-flex" />
       </div>
       <OriginNotices origin={source.origin} error={source.error} refresh={source.refresh} />
 

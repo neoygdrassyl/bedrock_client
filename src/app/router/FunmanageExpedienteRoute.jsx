@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useState, lazy } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState, lazy } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FUNService from '../../features/expediente/api/fun.service';
 import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 import LoadingFallback from './LoadingFallback';
 import { IllustratedState } from '../../shared/components/feedback/IllustratedState';
+import { buildSectionSearchParams } from '../../features/expediente/workspace/expedienteNavConfig';
 
 const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('../../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 
 export default function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,12 +23,31 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
     [location.search]
   );
 
+  // Mirrors the active workspace module in `?section=` (and `report` for reports)
+  // without adding history entries, so the browser back button still leaves the workspace.
+  const syncSectionToUrl = useCallback((sectionId) => {
+    const next = buildSectionSearchParams(location.search, sectionId);
+    if (!next) return;
+    const query = next.toString();
+    navigate(
+      { pathname: location.pathname, search: query ? `?${query}` : '', hash: location.hash },
+      { replace: true, state: location.state }
+    );
+  }, [location.hash, location.pathname, location.search, location.state, navigate]);
+
+  // Going back can land on another entry of this same expediente (e.g. it was opened twice);
+  // in that case leave the workspace for the dashboard instead of reopening it.
   const closeExpedienteWindow = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.assign('/dashboard');
+    const workspacePath = location.pathname;
+    const hasInAppHistory = (window.history.state?.idx ?? 0) > 0;
+    if (!hasInAppHistory) {
+      navigate('/dashboard', { replace: true });
+      return;
     }
+    window.addEventListener('popstate', () => {
+      if (window.location.pathname === workspacePath) navigate('/dashboard', { replace: true });
+    }, { once: true });
+    window.history.back();
   };
 
   useEffect(() => {
@@ -105,6 +126,7 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
       initialReport={workspaceTarget.report}
       defaultRightPanelOpen={workspaceTarget.rightPanel}
       onClose={closeExpedienteWindow}
+      onSectionChange={syncSectionToUrl}
     />
   );
 }

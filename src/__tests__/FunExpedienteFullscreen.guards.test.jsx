@@ -113,6 +113,7 @@ vi.mock('../features/expediente/records/records_binnacles.component', () => ({
 }));
 
 import { FunExpedienteFullscreen } from '../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen';
+import { __resetDockStoreForTests, addToDock, getDockSnapshot } from '../features/expediente/dock/expedienteDockStore';
 
 const expediente = {
   id: 123,
@@ -203,13 +204,11 @@ describe('FunExpedienteFullscreen runtime guards', () => {
     expect(screen.getByTestId('module-law')).toHaveAttribute('data-hide-inline-binnacles', 'true');
     expect(screen.queryAllByTestId('records-binnacle-inline')).toHaveLength(0);
     const panel = screen.getByRole('complementary', { name: /bitácoras profesionales/i });
-    const toolbar = panel.firstElementChild;
     const toggle = screen.getByRole('button', { name: /ocultar panel de bitácoras/i });
     expect(panel).toHaveClass('w-[26rem]', 'max-w-[38vw]');
-    expect(toolbar).toHaveClass('h-14');
-    expect(toolbar).toContainElement(toggle);
-    expect(toggle).toHaveClass('static');
-    expect(toggle).not.toHaveClass('absolute', '-left-4', 'left-2', 'top-3');
+    // The single panel toggle lives in the workspace top bar, not inside the panel.
+    expect(panel).not.toContainElement(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
     expect(screen.queryByText(/Estado y términos/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Bitácora operativa/i)).not.toBeInTheDocument();
@@ -236,10 +235,9 @@ describe('FunExpedienteFullscreen runtime guards', () => {
     });
 
     expect(screen.queryAllByTestId('records-binnacle')).toHaveLength(0);
-    expect(screen.getByRole('button', { name: /mostrar panel de bitácoras/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /mostrar panel de bitácoras/i })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByRole('button', { name: /ocultar panel de bitácoras/i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('icon-ChevronLeft')).toBeInTheDocument();
-    expect(screen.queryByTestId('icon-ChevronRight')).not.toBeInTheDocument();
+    expect(screen.queryByRole('complementary', { name: /bitácoras profesionales/i })).not.toBeInTheDocument();
   });
 
   it('abre el panel lateral al navegar desde un modulo cerrado hacia Inf. Jur', async () => {
@@ -269,8 +267,46 @@ describe('FunExpedienteFullscreen runtime guards', () => {
       expect(screen.getAllByTestId('records-binnacle')).toHaveLength(3);
     });
 
-    expect(screen.getByRole('button', { name: /ocultar panel de bitácoras/i })).toBeInTheDocument();
-    expect(screen.getByTestId('icon-ChevronRight')).toBeInTheDocument();
-    expect(screen.queryByTestId('icon-ChevronLeft')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /ocultar panel de bitácoras/i })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.queryByRole('button', { name: /mostrar panel de bitácoras/i })).not.toBeInTheDocument();
+  });
+
+  it('reports section changes so the route can sync the URL', async () => {
+    const user = userEvent.setup();
+    const onSectionChange = vi.fn();
+    render(
+      <FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} onSectionChange={onSectionChange} />
+    );
+
+    expect(onSectionChange).toHaveBeenLastCalledWith('detalles');
+    await user.click(screen.getByRole('button', { name: 'Tiempos' }));
+    expect(onSectionChange).toHaveBeenLastCalledWith('tiempos');
+    expect(screen.getByRole('heading', { level: 1, name: 'Tiempos' })).toBeInTheDocument();
+  });
+
+  it('minimiza el expediente a una ventana del dock y cierra el workspace', async () => {
+    const user = userEvent.setup();
+    window.localStorage.clear();
+    __resetDockStoreForTests();
+    const onClose = vi.fn();
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={onClose} />);
+
+    expect(getDockSnapshot().activeWorkspace).toBe('2026-00123');
+    await user.click(screen.getByRole('button', { name: 'Minimizar a ventana' }));
+
+    expect(getDockSnapshot().items).toEqual([expect.objectContaining({ radicado: '2026-00123', open: true })]);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('minimiza la ventana rápida del mismo expediente al abrir el workspace', () => {
+    window.localStorage.clear();
+    __resetDockStoreForTests();
+    addToDock('2026-00123', { open: true });
+
+    const { unmount } = render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} />);
+    expect(getDockSnapshot().items[0].open).toBe(false);
+
+    unmount();
+    expect(getDockSnapshot().activeWorkspace).toBeNull();
   });
 });

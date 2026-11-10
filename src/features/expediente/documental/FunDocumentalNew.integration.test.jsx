@@ -110,10 +110,10 @@ describe('documentary tabs', () => {
     vi.stubEnv('VITE_DOCUMENTARY_CONFIGURATION_ACCESS', 'managers');
     mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
     render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
-    // No module banner: the radicado and the documentary origin are a single caption next to the tabs.
+    // No module banner: the documentary origin is a compact chip at the end of the tab bar (the radicado lives in the expediente header).
     expect(screen.queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
-    expect(screen.getByText('FUN-1')).toBeInTheDocument();
-    expect(screen.getByText('Documentación según el catálogo documental (versión 1)')).toBeInTheDocument();
+    expect(screen.queryByText('FUN-1')).not.toBeInTheDocument();
+    expect(screen.getByText('Catálogo v1')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Radicación/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: /Expedidos/ })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByRole('tab', { name: /Configuración documental/ })).not.toBeInTheDocument();

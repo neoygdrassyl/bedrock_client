@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 describe('layer scale', () => {
   it('keeps the Tailwind classes in sync with the numeric scale', () => {
     expect(Z_CLASS.workspace).toBe(`z-[${Z_INDEX.workspace}]`);
+    expect(Z_CLASS.dock).toBe(`z-[${Z_INDEX.dock}]`);
     expect(Z_CLASS.modal).toBe(`z-[${Z_INDEX.modal}]`);
     expect(Z_CLASS.floating).toBe(`z-[${Z_INDEX.floating}]`);
   });
@@ -18,7 +19,8 @@ describe('layer scale', () => {
   it('stacks portaled surfaces above the expediente workspace and below SweetAlert', () => {
     expect(Z_INDEX.pageModal).toBeLessThan(Z_INDEX.workspace);
     expect(Z_INDEX.launcher).toBeLessThan(Z_INDEX.workspace);
-    expect(Z_INDEX.workspace).toBeLessThan(Z_INDEX.modal);
+    expect(Z_INDEX.workspace).toBeLessThan(Z_INDEX.dock);
+    expect(Z_INDEX.dock).toBeLessThan(Z_INDEX.modal);
     expect(Z_INDEX.modal).toBeLessThan(Z_INDEX.floating);
     expect(Z_INDEX.floating).toBeLessThan(Z_INDEX.systemAlert);
   });
