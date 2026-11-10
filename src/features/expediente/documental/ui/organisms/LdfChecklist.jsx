@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
-import { ChevronDown, Circle, CircleCheck, CircleDashed, CircleX, Lock, TriangleAlert } from 'lucide-react';
+import { ChevronDown, Circle, CircleCheck, CircleDashed, CircleX, Info, Lock, TriangleAlert } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { cn } from '@/shared/lib/utils';
 import { Tag } from '../atoms/Tag';
@@ -33,6 +34,25 @@ function ChecklistRow({ row, onOpen }) {
   );
 }
 
+/** Discreet note of the request documents that are now asked of each person (they left the Solicitud group). */
+function SupersededHint({ codes }) {
+  if (!codes?.length) return null;
+  const text = `Se piden a cada persona: ${codes.join(', ')}`;
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" aria-label={text} data-testid="ldf-superseded-hint"
+            className="inline-grid h-4 w-4 shrink-0 cursor-help place-items-center rounded-full bg-transparent p-0 text-muted-foreground/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Info className="h-3 w-3" aria-hidden="true" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[18rem] text-xs leading-4">{text}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 /** One group of the checklist (Solicitud or a person) with its progress and its rows, collapsible. */
 function ChecklistGroup({ group, onOpen, gated }) {
   const bodyId = useId();
@@ -47,6 +67,7 @@ function ChecklistGroup({ group, onOpen, gated }) {
           <span className="truncate">{group.title}</span>
           {group.kind !== 'request' && group.subtitle ? <span className="truncate text-xs font-normal text-muted-foreground">· {group.subtitle}</span> : null}
         </button>
+        {group.kind === 'request' ? <SupersededHint codes={group.superseded} /> : null}
         <span className="font-mono text-xs tabular-nums text-muted-foreground" data-testid={`ldf-group-progress-${group.key}`} title="Documentos requeridos entregados">
           {group.deliveredCount}/{group.requiredCount} entregados
         </span>

@@ -205,9 +205,11 @@ export function buildLdfChecklist(data) {
   const finish = (rows) => sortRows(rows.map((row) => (row.placeholder ? alternativesRow(row.group, row.members, row.subjectId) : row)));
   const subjects = data?.subjects || [];
   const order = ['', ...subjects.map((subject) => subject.subjectId), ...Array.from(rowsBySubject.keys()).filter((key) => key && !subjects.some((subject) => subject.subjectId === key))];
+  // Request-level documents now asked of each person (backend supersededBySubjectDocumentCodes): not listed, only explained.
+  const superseded = Array.from(new Set((data?.supersededBySubjectDocumentCodes || []).filter((code) => code != null && code !== '').map(String)));
   const groups = Array.from(new Set(order)).map((key) => {
     const rows = finish(rowsBySubject.get(key) || []);
-    if (!key) return rows.length ? { key: 'request', kind: 'request', subjectId: null, title: 'Solicitud', subtitle: 'Documentos de la solicitud', party: null, subject: null, rows, ...rowsProgress(rows) } : null;
+    if (!key) return rows.length || superseded.length ? { key: 'request', kind: 'request', subjectId: null, title: 'Solicitud', subtitle: 'Documentos de la solicitud', party: null, subject: null, rows, superseded, ...rowsProgress(rows) } : null;
     const subject = subjects.find((item) => item.subjectId === key) || null;
     const party = partyById(data, key);
     const sample = rows.find((row) => row.requirement)?.requirement || rows.find((row) => row.members.length)?.members[0] || null;
