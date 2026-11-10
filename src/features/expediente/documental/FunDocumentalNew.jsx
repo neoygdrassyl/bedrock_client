@@ -127,6 +127,10 @@ function ProjectDocumentaryWorkspace(props) {
   // fetch on their own (governance, Legal y debida forma, generators) without touching Radicación.
   const [syncRevision, setSyncRevision] = useState(0);
   const [notice, setNotice] = useState('');
+  // Bumped when Legal y debida forma changed documentary data (typology selection, receipt, evaluation, refresh). The
+  // Radicación table (kept mounted) applies it only when its tab is shown, so several saves cost one reload.
+  const [dataRevision, setDataRevision] = useState(0);
+  const [inputRevision, setInputRevision] = useState(0);
   const [inputCount, setInputCount] = useState(null);
   // Expedidos of the new model (view scope=issued); the CUB registry count is added to it.
   const [issuedCount, setIssuedCount] = useState(null);
@@ -138,6 +142,8 @@ function ProjectDocumentaryWorkspace(props) {
   if (origin && origin !== lastOrigin) setLastOrigin(origin);
   const stableOrigin = origin || lastOrigin;
   const currentTab = activeTab === TAB_CONFIGURATION && !canConfigure ? TAB_INPUT : activeTab;
+  if (currentTab === TAB_INPUT && inputRevision !== dataRevision) setInputRevision(dataRevision);
+  const handleDataChanged = useCallback(() => setDataRevision((value) => value + 1), []);
 
   function selectTab(key) {
     setNotice('');
@@ -206,7 +212,7 @@ function ProjectDocumentaryWorkspace(props) {
       {/* Kept mounted so filters, pagination and open forms survive tab switches. */}
       <TabsContent value={TAB_INPUT} forceMount className="mt-0 flex min-w-0 flex-col gap-[0.75rem] data-[state=inactive]:hidden">
         {!origin && !source.error ? <WorkspaceSkeleton /> : null}
-        {isCanonicalMode(mode) ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} onRequirementsRefreshed={handleRequirementsRefreshed} embedded /> : null}
+        {isCanonicalMode(mode) ? <CanonicalDocumentaryWorkspace key={`${origin.publication.configurationId}:${revision}`} origin={origin} canManage={props.canManage} onCountChange={setInputCount} onRequirementsRefreshed={handleRequirementsRefreshed} reloadKey={inputRevision} embedded /> : null}
         {mode === EXPEDIENTE_MODE.traditional ? <LegacyDocumentalWorkspace {...props} onCountChange={setInputCount} /> : null}
       </TabsContent>
 
@@ -225,7 +231,7 @@ function ProjectDocumentaryWorkspace(props) {
       <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
         {stableOrigin ? (
           <Suspense fallback={<WorkspaceSkeleton />}>
-            <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} onOpenFunForm={openFunForm} />
+            <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} onOpenFunForm={openFunForm} onDataChanged={handleDataChanged} />
           </Suspense>
         ) : <WorkspaceSkeleton />}
       </TabsContent>
