@@ -70,8 +70,11 @@ export function LdfRequirementContext({ data, row, optionState, onChoose, onOpen
   );
 }
 
-/** Alternatives of an at_least_one row, each with its state and, when delivered, its evaluation. */
-function Alternatives({ row, onOpenInstance }) {
+/**
+ * Alternatives of an at_least_one row, each with its state: a delivered one opens its evaluation, a missing one offers
+ * "Recibir" (receipt preselected with that document and the person of the group).
+ */
+function Alternatives({ row, onOpenInstance, onReceive }) {
   const satisfied = row.group?.satisfied === true;
   return (
     <div className="flex flex-col gap-2">
@@ -87,6 +90,10 @@ function Alternatives({ row, onOpenInstance }) {
               <span className="min-w-0 flex-1 text-foreground">{member.title || 'Documento sin nombre'}</span>
               <Tag tone={status.tone}>{status.label}</Tag>
               {instance && onOpenInstance ? <Button type="button" variant="outline" size="sm" className="h-6 px-2 text-xs" onClick={() => onOpenInstance(instance.documentKey)}>Evaluar</Button> : null}
+              {!member.delivered && onReceive && member.documentId ? (
+                <Button type="button" variant="outline" size="sm" className="h-6 px-2 text-xs" aria-label={`Recibir ${member.documentCode || member.title || 'documento'}`}
+                  onClick={() => onReceive({ type: 'document', requirement: member, members: [member], subjectId: row.subjectId || member.subjectId || null })}>Recibir</Button>
+              ) : null}
             </li>
           );
         })}
@@ -160,7 +167,7 @@ export function LdfRequirementSheet({ target, data, optionState, onChoose, onOpe
             </SheetHeader>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
               <LdfRequirementContext data={data} row={row} optionState={optionState} onChoose={onChoose} onOpenInstance={onOpenInstance} />
-              {row.type === 'alternatives' ? <Alternatives row={row} onOpenInstance={onOpenInstance} /> : null}
+              {row.type === 'alternatives' ? <Alternatives row={row} onOpenInstance={onOpenInstance} onReceive={onReceive} /> : null}
               {row.type === 'document' ? (row.delivered ? <Delivered row={row} /> : <Undelivered row={row} receiveText={receiveLabel(data, row)} onReceive={onReceive && row.requirement?.documentId ? onReceive : undefined} />) : null}
               {row.type === 'selection' ? (
                 <p className="mb-0 text-xs leading-5 text-foreground">Debe elegirse la opción de esta tipología para conocer los documentos que se exigen{row.subjectId ? ' a esta persona' : ''}.</p>

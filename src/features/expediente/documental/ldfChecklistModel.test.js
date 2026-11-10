@@ -139,4 +139,10 @@ describe('row helpers', () => {
     expect(primaryInstance(target).documentKey).toBe('b');
     expect(primaryInstance(requirement('2'))).toBeNull();
   });
+
+  it('keeps request documents now asked of each person out of the list and names them on the Solicitud group', () => {
+    const { groups } = buildLdfChecklist({ requirements: [], blockers: [], supersededBySubjectDocumentCodes: ['519', 520, '519'] });
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({ key: 'request', rows: [], superseded: ['519', '520'] });
+  });
 });
