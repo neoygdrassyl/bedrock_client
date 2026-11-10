@@ -20,6 +20,7 @@ import { IssuedDocumentsPanel } from './ui/organisms/IssuedDocumentsPanel';
 import { useIssuedDocuments } from './hooks/useIssuedDocuments';
 import { EXPEDIENTE_MODE, isCanonicalMode, useExpedienteMode } from './expedienteMode';
 import { DOCUMENTAL_SCOPE } from './ui/documentalScope';
+import { focusFunAnchor } from './funFormAnchor';
 
 // The generators pull PDF tooling; load them only when the tab is opened.
 const DocumentGeneratorsPanel = lazy(() => import('./ui/organisms/DocumentGeneratorsPanel'));
@@ -113,6 +114,8 @@ function WorkspaceSkeleton() {
 }
 
 function ProjectDocumentaryWorkspace(props) {
+  // "Completar en 5.x" of a party in Legal y debida forma: the FUN edit section ("Actualizar"), focused on that form.
+  const openFunForm = props.NAVIGATION ? (form) => { props.NAVIGATION(null, 'edit'); focusFunAnchor(form?.anchor); } : undefined;
   const source = useDocumentaryOrigin({ fun0Id: props.currentId });
   const { origin } = source;
   const mode = useExpedienteMode(null, origin);
@@ -222,7 +225,7 @@ function ProjectDocumentaryWorkspace(props) {
       <TabsContent value={TAB_LEGAL_FORM} className="mt-0 min-w-0">
         {stableOrigin ? (
           <Suspense fallback={<WorkspaceSkeleton />}>
-            <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} />
+            <LegalFormPanel key={`legal:${syncRevision}`} origin={stableOrigin} canManage={Boolean(props.canManage)} onDeclarationChanged={handleDeclarationChanged} currentVersion={props.currentVersion} swaMsg={props.swaMsg} onOpenFunForm={openFunForm} />
           </Suspense>
         ) : <WorkspaceSkeleton />}
       </TabsContent>
