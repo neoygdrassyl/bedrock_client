@@ -125,6 +125,14 @@ export function groupBlockers(blockers = []) {
 // Blockers about the evaluation as a whole (shown as an alert on top of the pending panel).
 const EVALUATION_BLOCKERS = ['REQUIREMENTS_NOT_EVALUATED', 'REQUIREMENTS_STALE', 'REQUIREMENTS_INCOMPLETE', 'REQUIREMENTS_UNSUPPORTED'];
 
+// Explicación en español de los avisos de evaluación; el texto del backend viene en inglés.
+const EVALUATION_BLOCKER_HINTS = {
+  REQUIREMENTS_NOT_EVALUATED: 'Los requisitos del expediente aún no se han evaluado.',
+  REQUIREMENTS_STALE: 'Cambiaron los datos del expediente o sus partes. Use «Actualizar requisitos» en Configuración documental antes de declarar.',
+  REQUIREMENTS_INCOMPLETE: 'La evaluación tiene diagnósticos que impiden declarar.',
+  REQUIREMENTS_UNSUPPORTED: 'La versión de Central que gobierna el expediente no es compatible.',
+};
+
 // Fixed order of the pending groups: what the user must resolve first comes first.
 export const PENDING_GROUPS = [
   { key: 'not_delivered', title: 'Sin entregar', hint: 'Reciba estos documentos en Radicación.', codes: ['NOT_DELIVERED', 'GROUP_NOT_SATISFIED'] },
@@ -179,7 +187,7 @@ function pendingItem(blocker, data, lookup) {
 export function pendingGroups(data) {
   const blockers = data?.blockers || [];
   const lookup = instancesByKey(data);
-  const alerts = blockers.filter((blocker) => EVALUATION_BLOCKERS.includes(blocker.code)).map((blocker) => ({ code: blocker.code, label: BLOCKER_LABELS[blocker.code], message: blocker.message || null }));
+  const alerts = blockers.filter((blocker) => EVALUATION_BLOCKERS.includes(blocker.code)).map((blocker) => ({ code: blocker.code, label: BLOCKER_LABELS[blocker.code], message: EVALUATION_BLOCKER_HINTS[blocker.code] || null }));
   const groups = PENDING_GROUPS.map((group) => ({ key: group.key, title: group.title, hint: group.hint,
     items: blockers.filter((blocker) => group.codes.includes(blocker.code)).sort((a, b) => group.codes.indexOf(a.code) - group.codes.indexOf(b.code)).map((blocker) => pendingItem(blocker, data, lookup)) }));
   const others = blockers.filter((blocker) => !KNOWN_PENDING_CODES.has(blocker.code));
