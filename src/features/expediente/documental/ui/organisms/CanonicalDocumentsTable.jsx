@@ -42,13 +42,21 @@ export const ISSUED_COLUMNS = ['delivery', 'versions'];
 /** Row action predicate of the technical layer: the server flags it per row (older backends never do). */
 export const canEvaluateTechnicalRow = (row) => Boolean(row?.actions?.reviewTechnical);
 
+// Día y mes de la entrega (el año y la hora quedan en el título): cabe junto a la VR sin cortarse.
+function compactDeliveryDate(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return '—';
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${date.getDate()} ${months[date.getMonth()]}`;
+}
+
 const COLUMN_DEFS = {
   delivery: {
     head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[18%] px-[0.75rem]',
     cell: (row) => (
       <span className={LINE}>
         <VrBadge value={row.receipt.vrLabel} />
-        <span className={MUTED} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt, { withTime: false })}</span>
+        <span className={`${MUTED} whitespace-nowrap`} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{compactDeliveryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
       </span>
     ),
   },

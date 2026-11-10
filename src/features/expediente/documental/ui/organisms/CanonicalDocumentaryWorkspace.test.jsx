@@ -330,8 +330,9 @@ describe('recepción según el catálogo y el expediente', () => {
     expect(technical).toHaveTextContent('Lista técnica (1)');
     const [, documentRow] = within(technical).getAllByRole('row');
     expect(documentRow).toHaveTextContent('Requisito');
-    // Single-line cells: the date of the last delivery (full date and time on hover).
-    expect(documentRow).toHaveTextContent('28 sep 2026');
+    // Una sola línea: día y mes de la última entrega (fecha completa y hora en el título).
+    expect(documentRow).toHaveTextContent('28 sep');
+
     expect(within(documentRow).getByTitle('28 sep 2026, 00:48')).toBeInTheDocument();
     expect(documentRow).toHaveTextContent('2 folios');
     expect(documentRow).toHaveTextContent(/3$/);
