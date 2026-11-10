@@ -11,6 +11,8 @@ import { CheckboxField, fieldClass, fileFieldClass, FormField, FormFieldset, For
 import { Tag } from '../atoms/Tag';
 import { CHANNEL_LABELS, CLASS_LABELS, CONTRIBUTOR_LABELS, documentClassOf, formatDocumentaryDate } from '../../canonicalDocumentaryModel';
 import { reviewedByLine, VERDICT_META } from '../../legalFormModel';
+import { partiesById, receiptSubjectsOf, REQUEST_SUBJECT, rowsOfSubject, subjectOptionLabel } from '../../receiptSubjectsModel';
+import { useLegalForm } from '../../hooks/useLegalForm';
 
 export { fieldClass };
 
@@ -209,11 +211,18 @@ function InstanceChoice({ ids, instances, multiple, choice, onChoice, versionKey
 }
 
 /** Receives a new document or a new version (`previous`) of an existing one. */
-export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSubmit = false, onSubmitCreated, onSaved, onCancel, onConflict, onReceiveVersion }) {
+/**
+ * Receipt of a document (or of a new version of `previous`). `initial` ({ documentId, subjectId }) preselects the
+ * document and the person (e.g. "Recibir a nombre de …" from Legal y debida forma). A document required of persons
+ * asks for the person it is received for and sends `subjectId`; `parties` (legal-form `parties`) names them, else
+ * they are loaded from the legal form when needed.
+ */
+export function ReceiptForm({ origin, view, fixedSubmitId, previous, initial = null, parties = null, canCreateSubmit = false, onSubmitCreated, onSaved, onCancel, onConflict, onReceiveVersion }) {
   const ids = useId();
   const previousClass = previous ? documentClassOf(previous) : null;
   const [documentClass, setDocumentClass] = useState(previousClass || 'requirement');
-  const [documentId, setDocumentId] = useState(previous?.documentId || '');
+  const [documentId, setDocumentId] = useState(previous?.documentId || initial?.documentId || '');
+  const [subjectChoice, setSubjectChoice] = useState(initial?.subjectId || '');
   const [submitId, setSubmitId] = useState(String(fixedSubmitId || ''));
   const [createdLabel, setCreatedLabel] = useState('');
   const [creatingVr, setCreatingVr] = useState(false);
@@ -243,7 +252,15 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
   const createdSubmit = createdLabel ? view.submits.find((submit) => submit.idPublic === createdLabel) : null;
   const chosenSubmitId = submitId || (createdSubmit ? String(createdSubmit.id) : '');
   const submitUsed = Boolean(previous) && usedSubmits.has(Number(chosenSubmitId));
-  const instances = previous || isAnnex ? [] : existingInstancesOf(view, selected?.documentId);
+  // Person-scoped requirement: the same document of two persons is two documents, so the person comes first.
+  const subjects = previous || isAnnex ? { subjectIds: [], requestLevel: false } : receiptSubjectsOf(view, selected?.documentId);
+  const needsPerson = subjects.subjectIds.length > 0;
+  const subjectValid = subjects.subjectIds.includes(subjectChoice) || (subjects.requestLevel && subjectChoice === REQUEST_SUBJECT);
+  const subjectId = needsPerson && subjectValid && subjectChoice !== REQUEST_SUBJECT ? subjectChoice : null;
+  const loadedParties = useLegalForm((needsPerson || previous?.subjectId) && !parties ? origin.project.fun0Id : null);
+  const people = partiesById(parties || loadedParties?.data?.parties);
+  const allInstances = previous || isAnnex ? [] : existingInstancesOf(view, selected?.documentId);
+  const instances = needsPerson && !subjectValid ? [] : rowsOfSubject(allInstances, subjectId);
   const multipleInstances = instances.some((row) => row.allowsMultipleInstances === true);
   // A received single-instance document only accepts new versions; a new instance needs its own label.
   const newInstance = instances.length > 0 && multipleInstances && instanceChoice === INSTANCE_CHOICE.instance;
@@ -258,6 +275,7 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
   const pages = Number(draft.pages);
   const missing = [
     !hasTitle && (isAnnex ? 'Indique el título del anexo.' : 'Seleccione un documento del catálogo.'),
+    needsPerson && !subjectValid && 'Seleccione la persona a cuyo nombre se recibe el documento.',
     !hasSubmit && 'Seleccione la VR de recepción.',
     physical && !(Number.isInteger(pages) && pages >= 1) && 'Indique los folios físicos (número entero mayor que cero).',
     physical && !draft.location.trim() && 'Indique la ubicación o referencia física.',
@@ -277,12 +295,13 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
     const title = isAnnex ? String(previous?.title || data.get('title') || '').trim() : selected?.name;
     if ((isAnnex ? !title : !selected) || !view.submits.some((submit) => submit.id === Number(chosenSubmitId))) { setError(isAnnex ? 'Indique el título del anexo y una VR del expediente.' : 'Seleccione un documento del catálogo y una VR del expediente.'); return; }
     if (submitUsed) { setError('Este documento ya tiene una versión en esa VR. Seleccione una VR diferente a las de las versiones anteriores.'); return; }
+    if (needsPerson && !subjectValid) { setError('Seleccione la persona a cuyo nombre se recibe el documento.'); return; }
     if (newInstance && (!instanceLabel.trim() || labelTaken)) { setError('Indique una identificación nueva para la instancia.'); return; }
     if (!physical && !digital?.size) { setError('Registre el soporte físico o adjunte un archivo digital.'); return; }
     if ([digital, scan].some((file) => file?.size > MAX_FILE_BYTES)) { setError('Cada archivo debe pesar como máximo 50 MB.'); return; }
     setBusy(true); setError('');
     try {
-      command.current ||= { documentClass, ...(isAnnex ? {} : { documentId: selected.documentId }), submitId: Number(chosenSubmitId), title,
+      command.current ||= { documentClass, ...(isAnnex ? {} : { documentId: selected.documentId }), ...(subjectId ? { subjectId } : {}), submitId: Number(chosenSubmitId), title,
         instanceLabel: previous ? previous.instanceLabel || null : instanceLabel.trim() || null, documentKey: previous?.documentKey || null,
         previousVersionId: previous?.receivedDocumentRowId || null, expectedRowVersion: previous?.receipt.rowVersion || null,
         contributor: String(data.get('contributor') || '') || null, channel: String(data.get('channel') || 'counter'),
@@ -327,7 +346,18 @@ export function ReceiptForm({ origin, view, fixedSubmitId, previous, canCreateSu
             )}
             {previous ? null : isAnnex
               ? <FormField id={`${ids}-title`} label="Título del anexo"><Input id={`${ids}-title`} className="text-sm" name="title" maxLength={255} required /></FormField>
-              : <CatalogueDocumentPicker id={`${ids}-catalogue`} documents={documents} value={documentId} onChange={setDocumentId} applicableIds={applicableIds} />}
+              : <CatalogueDocumentPicker id={`${ids}-catalogue`} documents={documents} value={documentId} onChange={(value) => { command.current = null; setDocumentId(value); }} applicableIds={applicableIds} />}
+            {needsPerson ? (
+              <FormField id={`${ids}-subject`} label="Persona" hint="Este documento se exige a cada persona: indique a nombre de quién se recibe.">
+                <select id={`${ids}-subject`} name="subjectId" className={fieldClass} required value={subjectValid ? subjectChoice : ''} aria-describedby={`${ids}-subject-hint`}
+                  onChange={(event) => { command.current = null; setSubjectChoice(event.target.value); }}>
+                  <option value="">Seleccione la persona</option>
+                  {subjects.subjectIds.map((id) => <option key={id} value={id}>{subjectOptionLabel(id, people)}</option>)}
+                  {subjects.requestLevel ? <option value={REQUEST_SUBJECT}>Solicitud (sin persona)</option> : null}
+                </select>
+              </FormField>
+            ) : null}
+            {previous?.subjectId ? <p className={hintClass}>A nombre de {subjectOptionLabel(previous.subjectId, people)}.</p> : null}
             {instances.length ? (
               <InstanceChoice ids={ids} instances={instances} multiple={multipleInstances} choice={instanceChoice} onChoice={setInstanceChoice}
                 versionKey={versionKey} onVersionKey={setVersionKey} onReceiveVersion={onReceiveVersion} />

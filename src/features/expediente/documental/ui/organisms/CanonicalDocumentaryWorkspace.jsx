@@ -130,8 +130,12 @@ function InfoNotice({ children }) {
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  * `tagFilter` (technical variant) keeps only the rows with a technical control tagged with one of the given tags.
  * `evaluationContext(row)` (optional) renders a node above the evaluation form of a row (Legal y debida forma: why it is required).
+ * `receiveRequest` ({ documentId, subjectId, nonce }) asks to open the receipt form preselected, also in variants without
+ * their own receive action when `receiveOnRequest` is set; `parties` names the persons of per-person receipts and
+ * `onReceived(message)` follows a saved receipt.
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest, tagFilter, evaluationContext }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest, tagFilter, evaluationContext,
+  receiveRequest, receiveOnRequest = false, parties = null, onReceived }) {
   const ids = useId();
   const config = WORKSPACE_VARIANTS[variant] || WORKSPACE_VARIANTS.input;
   const layer = config.layer || 'checking';
@@ -140,7 +144,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const [revision, setRevision] = useState(0);
   const [cursors, setCursors] = useState([0]);
   const [result, setResult] = useState(null);
-  const [sheet, setSheet] = useState(null); // { kind: 'receive' | 'evidence', row, nonce }
+  const [sheet, setSheet] = useState(null); // { kind: 'receive' | 'evidence', row, nonce, initial?, requested? }
   const [notice, setNotice] = useState('');
   const [fileError, setFileError] = useState('');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
@@ -173,6 +177,9 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
 
   const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
   const canReceive = Boolean(config.receive && canManage && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
+  // A receipt asked by the host (e.g. "Recibir a nombre de …" in Legal y debida forma).
+  const requestReceivable = Boolean((config.receive || receiveOnRequest) && view && !view.readOnly && view.capabilities.createDocument && submitMatches);
+  const receiptAllowed = canReceive || Boolean(sheet?.requested && requestReceivable);
   const canReview = Boolean(canManage && view && !view.readOnly && (technical ? view.capabilities.reviewTechnical : view.capabilities.review));
   // The technical layer only lists rows with technical controls (of the chosen tags when a filter is active).
   const rows = technical ? filterRowsByTechnicalTags(view?.rows, tagFilter) : (view?.rows || []);
@@ -207,6 +214,15 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   // Changing the chosen VR does not close the sheet: the table reloads behind it.
   function selectionChanged() { reload(); }
   function openSheet(kind, row = null) { setNotice(''); setSheet({ kind, row, nonce: Date.now() }); }
+
+  const handledReceive = useRef(null);
+  useEffect(() => {
+    if (!receiveRequest || !view || handledReceive.current === receiveRequest.nonce) return;
+    handledReceive.current = receiveRequest.nonce;
+    if (!requestReceivable) { setNotice('No es posible recibir documentos en este expediente en este momento.'); return; }
+    setNotice('');
+    setSheet({ kind: 'receive', row: null, nonce: Date.now(), requested: true, initial: { documentId: receiveRequest.documentId || '', subjectId: receiveRequest.subjectId || '' } });
+  }, [receiveRequest, view, requestReceivable]);
 
   // A host asks to open the evaluation of a document (e.g. a pending item of Legal y debida forma).
   const handledRequest = useRef(null);
@@ -380,7 +396,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
         onConflict={evaluationConflict}
       />
 
-      <Sheet open={Boolean(sheet && view && canReceive)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
+      <Sheet open={Boolean(sheet && view && receiptAllowed)} onOpenChange={(open) => { if (!open) setSheet(null); }}>
         <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>
           {sheet && view ? (
             <>
@@ -397,10 +413,12 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                   view={view}
                   fixedSubmitId={fixedSubmitId}
                   previous={sheet.row}
-                  canCreateSubmit={canReceive && !fixedSubmitId}
+                  initial={sheet.initial || null}
+                  parties={parties}
+                  canCreateSubmit={receiptAllowed && !fixedSubmitId}
                   onSubmitCreated={(label) => reload(`VR ${label} creada.`)}
-                  onReceiveVersion={(row) => openSheet('receive', row)}
-                  onSaved={(message) => { setCursors([0]); refresh(message); }}
+                  onReceiveVersion={(row) => { setNotice(''); setSheet({ kind: 'receive', row, nonce: Date.now(), requested: sheet.requested }); }}
+                  onSaved={(message) => { setCursors([0]); if (onReceived) { refresh(); onReceived(message); } else refresh(message); }}
                   onCancel={() => setSheet(null)}
                   onConflict={conflict}
                 />
