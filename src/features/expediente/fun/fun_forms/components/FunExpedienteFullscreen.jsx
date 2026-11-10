@@ -1,5 +1,15 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  AppWindow,
+  BellRing,
+  ChevronDown,
+  ClipboardList,
+  Menu,
+  PanelRightClose,
+  PanelRightOpen,
+  Plus,
+} from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import {
@@ -10,6 +20,8 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/shared/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { Icon } from '@/shared/components/icon';
 import { Z_CLASS } from '@/shared/lib/layers';
 import { cn } from '@/shared/lib/utils';
@@ -23,6 +35,17 @@ import { formsParser1, regexChecker_isOA_2 } from '../../../../../shared/config/
 import RecordsBinnacleStack from '../../../records/RecordsBinnacleStack';
 import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
 import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';
+import {
+  EXPEDIENTE_NAV_GROUPS,
+  EXPEDIENTE_SECTION_IDS,
+  NAV_TONE_CLASSES,
+  findNavSection,
+  getExpedienteNavGroups,
+} from '../../../workspace/expedienteNavConfig';
+import { getExpedienteStatusMeta } from '../../../workspace/expedienteStatus';
+import { ExpedienteSideNav } from '../../../workspace/ExpedienteSideNav';
+import { useExpedienteNavCollapsed, useIsWideViewport } from '../../../workspace/useExpedienteNavLayout';
+import { addToDock, minimize as minimizeDockWindow, setActiveWorkspace, setDockSearchOpen } from '../../../dock';
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
@@ -39,75 +62,8 @@ const RECORD_REVIEW = React.lazy(() => import('../../../records/record_review'))
 const RECORD_PH = React.lazy(() => import('../../../records/record_ph'));
 const EXPEDITION = React.lazy(() => import('../../../expeditions/expedition.page'));
 
-const SECTION_GROUPS = [
-  {
-    id: 'principal',
-    tone: 'sky',
-    items: [
-      { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
-      { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', requiresEdit: true },
-      { id: 'documentos-new', label: 'Documentos (new)', icon: 'Files' },
-      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
-      { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
-      { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', requiresPublicidad: true },
-    ],
-  },
-  {
-    id: 'informes',
-    tone: 'violet',
-    items: [
-      { id: 'tiempos', label: 'Tiempos', icon: 'Clock' },
-      { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
-      { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
-      { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
-    ],
-  },
-  {
-    id: 'cierre',
-    tone: 'amber',
-    items: [
-      { id: 'acta', label: 'Acta', icon: 'FileCheck' },
-      { id: 'expedicion', label: 'Expedición', icon: 'FileOutput' },
-    ],
-  },
-];
-
-const SECTION_ITEMS = SECTION_GROUPS.flatMap((group) => group.items);
-
-const STANDARD_REPORT_ITEMS = [
-  { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
-  { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
-  { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
-];
-
-const PH_REPORT_ITEM = { id: 'ph', label: 'Informe P.H.', icon: 'PenTool' };
-
-const REPORT_ITEMS = [...STANDARD_REPORT_ITEMS, PH_REPORT_ITEM];
-
-const STATUS_META = {
-  EN_TERMINO: {
-    label: 'En término',
-    badgeClass: 'border-accent/30 bg-accent/10 text-accent',
-    barClass: 'bg-accent',
-  },
-  PRONTO_A_VENCER: {
-    label: 'Pronto a vencer',
-    badgeClass: 'border-warning/30 bg-warning/10 text-warning',
-    barClass: 'bg-warning',
-  },
-  ALERTA_VENCIMIENTO: {
-    label: 'Alerta de vencimiento',
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    barClass: 'bg-destructive',
-  },
-  VENCIDO: {
-    label: 'Vencido',
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    barClass: 'bg-destructive',
-  },
-};
-
-const STATUS_FALLBACK = STATUS_META.EN_TERMINO;
+const REPORT_ITEMS = EXPEDIENTE_NAV_GROUPS.find((group) => group.id === 'informes').items;
+const STANDARD_REPORT_ITEMS = REPORT_ITEMS.filter((item) => item.standardReport);
 
 function ModuleLoadingFallback() {
   return (
@@ -297,9 +253,7 @@ function mergeLegalSummary(base, liveSummary) {
   };
 }
 
-function getSummaryStatusMeta(status) {
-  return STATUS_META[status] || STATUS_FALLBACK;
-}
+const getSummaryStatusMeta = getExpedienteStatusMeta;
 
 function getTermMeta({ summary, usedDays, limitDays, remainingDays }) {
   if (summary?.status === 'VENCIDO' || usedDays > limitDays && limitDays > 0) {
@@ -543,11 +497,6 @@ function isPropertyHorizontalExpediente(expediente, version) {
   return matchesLegacyPropertyHorizontal(getPropertyHorizontalClassifierText(expediente, version));
 }
 
-function getReportItemsForExpediente(expediente, version, tone) {
-  const items = isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
-  return items.map((item) => ({ ...item, accent: tone || item.accent }));
-}
-
 function isEditableLegacyExpediente(expediente) {
   if (typeof expediente?.state !== 'number') {
     return false;
@@ -572,48 +521,11 @@ function canShowLegacyPublicidad(expediente, version) {
 }
 
 function getVisibleSectionGroups(expediente, version) {
-  const showActualizar = isEditableLegacyExpediente(expediente);
-  const showPublicidad = canShowLegacyPublicidad(expediente, version);
-  const isPH = isPropertyHorizontalExpediente(expediente, version);
-
-  return SECTION_GROUPS
-    .map((group) => {
-      if (group.id === 'principal') {
-        return {
-          ...group,
-          items: group.items
-            .filter((item) => {
-              if (item.requiresPublicidad) return showPublicidad;
-              if (item.requiresEdit) return showActualizar;
-              return true;
-            })
-            .map((item) => ({ ...item, accent: group.tone })),
-        };
-      }
-
-      if (group.id === 'informes') {
-        const [tiemposItem] = group.items;
-        return {
-          ...group,
-          items: [
-            { ...tiemposItem, accent: group.tone },
-            ...getReportItemsForExpediente(expediente, version, group.tone),
-          ],
-        };
-      }
-
-      return {
-        ...group,
-        items: group.items
-          .filter((item) => !(isPH && item.id === 'acta'))
-          .map((item) => ({
-            ...item,
-            label: isPH && item.id === 'expedicion' ? 'Expedición P.H.' : item.label,
-            accent: group.tone,
-          })),
-      };
-    })
-    .filter((group) => group.items.length > 0);
+  return getExpedienteNavGroups({
+    canEdit: isEditableLegacyExpediente(expediente),
+    canShowPublicidad: canShowLegacyPublicidad(expediente, version),
+    isPropertyHorizontal: isPropertyHorizontalExpediente(expediente, version),
+  });
 }
 
 function normalizeBitacoraEntries(expediente) {
@@ -675,38 +587,6 @@ function SummaryItem({ icon, label, value }) {
   );
 }
 
-function SectionButton({ item, active, onClick, tone = 'sky' }) {
-  const isLongLabel = item.label.length > 10;
-  const toneClass = {
-    sky: active
-      ? 'border-sky-400 bg-sky-200/95 text-sky-950 shadow-sm shadow-sky-950/10'
-      : 'border-sky-100/80 bg-white/80 text-slate-900 hover:border-sky-300 hover:bg-sky-100 hover:text-sky-950',
-    violet: active
-      ? 'border-violet-400 bg-violet-200/95 text-violet-950 shadow-sm shadow-violet-950/10'
-      : 'border-violet-100/80 bg-white/80 text-slate-900 hover:border-violet-300 hover:bg-violet-100 hover:text-violet-950',
-    amber: active
-      ? 'border-amber-400 bg-amber-200/95 text-amber-950 shadow-sm shadow-amber-950/10'
-      : 'border-amber-100/80 bg-white/80 text-slate-900 hover:border-amber-300 hover:bg-amber-100 hover:text-amber-950',
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={() => onClick(item.id)}
-      aria-label={item.ariaLabel || item.label}
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        isLongLabel ? 'w-[clamp(9rem,10vw,11rem)]' : 'w-[clamp(7rem,7.5vw,8.75rem)]',
-        toneClass[tone] || toneClass.sky
-      )}
-    >
-      <Icon name={item.icon} size={12} className="shrink-0" />
-      <span className="min-w-0 truncate">{item.label}</span>
-    </button>
-  );
-}
-
 function SupportCard({ title, children, action }) {
   return (
     <section className="rounded-xl border border-border bg-card/80 p-3 shadow-sm">
@@ -719,24 +599,30 @@ function SupportCard({ title, children, action }) {
   );
 }
 
-function PanelToggleButton({ open, onToggle, docked = false }) {
+function TopBarIconButton({ label, onClick, children, active = false, disabled = false, className, ...props }) {
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon"
-      onClick={onToggle}
-      className={cn(
-        'h-10 w-10 rounded-full border-border bg-background/95 text-muted-foreground shadow-lg transition-all duration-150 hover:bg-card hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        docked ? 'static shrink-0' : 'absolute z-20',
-        !docked && (open ? 'left-2 top-3' : '-left-10 top-4')
-      )}
-      aria-label={open ? 'Ocultar panel de bitácoras' : 'Mostrar panel de bitácoras'}
-      aria-expanded={open}
-      title={open ? 'Ocultar bitácoras' : 'Mostrar bitácoras'}
-    >
-      <Icon name={open ? 'ChevronRight' : 'ChevronLeft'} size={16} strokeWidth={2.25} aria-hidden="true" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          aria-label={label}
+          className={cn(
+            'relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-0 bg-transparent text-muted-foreground outline-none transition-colors duration-150',
+            'hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+            active && 'bg-muted text-foreground',
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6} className="rounded-lg px-2.5 py-1 text-xs">
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -961,7 +847,7 @@ function RecentActivityCard({ events }) {
 function AlertsDialog({ open, onOpenChange, alarms, currentPublic }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent overlayClassName="!z-[10000]" className="!z-[10010] max-h-[82vh] max-w-2xl overflow-hidden p-0">
+      <DialogContent overlayClassName="!z-[10060]" className="!z-[10070] max-h-[82vh] max-w-2xl overflow-hidden p-0">
         <DialogHeader className="border-b border-border px-6 py-5 pr-12">
           <DialogTitle className="flex items-center gap-2 text-base">
             <Icon name="BellRing" size={18} className="text-primary" />
@@ -1017,7 +903,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent overlayClassName="!z-[10000]" className="!z-[10010] max-h-[82vh] max-w-3xl overflow-hidden p-0">
+      <DialogContent overlayClassName="!z-[10060]" className="!z-[10070] max-h-[82vh] max-w-3xl overflow-hidden p-0">
         <DialogHeader className="border-b border-border px-6 py-5 pr-12">
           <DialogTitle className="flex items-center gap-2 text-base">
             <Icon name="ClipboardList" size={18} className="text-primary" />
@@ -1131,7 +1017,7 @@ function normalizeInitialSection(section, report, isPropertyHorizontal = false) 
     return 'juridico';
   }
 
-  return SECTION_ITEMS.some((item) => item.id === section) ? section : 'detalles';
+  return EXPEDIENTE_SECTION_IDS.includes(section) ? section : 'detalles';
 }
 
 function normalizeInitialReport(report) {
@@ -1148,6 +1034,7 @@ export function FunExpedienteFullscreen({
   initialSection = 'detalles',
   initialReport = 'juridico',
   defaultRightPanelOpen,
+  onSectionChange,
 }) {
   const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente));
   const normalizedInitialSection = useMemo(
@@ -1162,6 +1049,9 @@ export function FunExpedienteFullscreen({
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [headerExpanded, setHeaderExpanded] = useState(false);
+  const [navSheetOpen, setNavSheetOpen] = useState(false);
+  const { collapsed: navCollapsed, toggleCollapsed: toggleNavCollapsed } = useExpedienteNavCollapsed();
+  const isWideViewport = useIsWideViewport();
   const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
   const [alertsDialogOpen, setAlertsDialogOpen] = useState(false);
   const [bitacoraDialogOpen, setBitacoraDialogOpen] = useState(false);
@@ -1550,213 +1440,284 @@ export function FunExpedienteFullscreen({
     return () => window.clearTimeout(timeout);
   }, [activeSection, isPropertyHorizontal]);
 
+  // Keep `?section=` in sync with the active module (replace: no extra history entries).
+  const onSectionChangeRef = useRef(onSectionChange);
+  onSectionChangeRef.current = onSectionChange;
+  useEffect(() => {
+    onSectionChangeRef.current?.(activeSection);
+  }, [activeSection]);
+
+  // Dock integration: the workspace owns its radicado while open; a quick window of
+  // the same expediente is minimized so the two views never overlap.
+  const hasDockableRadicado = Boolean(currentPublic && currentPublic !== 'Sin radicado');
+  useEffect(() => {
+    if (!hasDockableRadicado) return undefined;
+    setActiveWorkspace(currentPublic);
+    minimizeDockWindow(currentPublic);
+    return () => setActiveWorkspace(null);
+  }, [currentPublic, hasDockableRadicado]);
+
+  useEffect(() => {
+    if (isWideViewport) setNavSheetOpen(false);
+  }, [isWideViewport]);
+
+  const handleMinimizeToWindow = useCallback(() => {
+    if (hasDockableRadicado) addToDock(currentPublic, { open: true });
+    onClose?.();
+  }, [currentPublic, hasDockableRadicado, onClose]);
+
+  const handleNavSelect = useCallback((nextSection) => {
+    handleSectionChange(nextSection);
+    setNavSheetOpen(false);
+  }, [handleSectionChange]);
+
+  const activeNavEntry = findNavSection(visibleSectionGroups, activeSection);
+  const activeTone = NAV_TONE_CLASSES[activeNavEntry?.group.tone] || NAV_TONE_CLASSES.sky;
+  const navIdentity = {
+    radicado: currentPublic,
+    version: currentVersion,
+    typeLabel: isPropertyHorizontal
+      ? 'Propiedad horizontal'
+      : legalSummary?.categoria ? `Categoría ${legalSummary.categoria}` : null,
+    statusLabel: summaryStatus.label,
+    statusClass: summaryStatus.badgeClass,
+    barClass: summaryStatus.barClass,
+    remainingDays,
+    progressPercent,
+  };
+
   const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem });
 
   const content = (
     <div
-      className={cn('expediente-fullscreen fixed inset-0 bg-background text-foreground flex flex-col overflow-hidden', Z_CLASS.workspace)}
+      className={cn('expediente-fullscreen fixed inset-0 flex overflow-hidden bg-background text-foreground', Z_CLASS.workspace)}
       role="dialog"
       aria-modal="true"
       aria-label="Detalle del expediente"
     >
-      {/* ── Header compacto ──────────────────────────────────────────── */}
-      <header className="shrink-0 border-b border-border bg-background/98 backdrop-blur">
-        {/* Fila principal compacta */}
-        <div className="w-full flex flex-wrap items-center gap-2 px-3 py-2 sm:px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            onClick={onClose}
-            aria-label="Volver"
-          >
-            <Icon name="ArrowLeft" size={15} />
-          </Button>
-
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
-            <span className="font-mono text-sm font-semibold truncate max-w-[160px] sm:max-w-xs">
-              {currentPublic}
-            </span>
-            <Badge className={cn('border text-[10px] font-semibold shrink-0', summaryStatus.badgeClass)}>
-              {summaryStatus.label}
-            </Badge>
-            {remainingDays != null ? (
-              <Badge variant="outline" className="font-mono text-[10px] shrink-0">
-                {remainingDays}d restantes
-              </Badge>
-            ) : null}
-            <Badge variant="secondary" className="font-mono text-[10px] shrink-0">
-              v{currentVersion}
-            </Badge>
-          </div>
-
-          {/* Acciones + toggle detalle + cerrar */}
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-            <BookmarkQuickMenu
-              rowId={currentId || currentPublic || 'actual'}
-              bookmarkState={bookmarkState}
-              triggerClassName="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-              triggerTestIdPrefix="fullscreen-bookmark-menu-trigger"
-              menuTestIdPrefix="fullscreen-bookmark-menu"
-              align="end"
-              disabled={!currentId}
-              onToggleScope={handleToggleBookmarkScope}
-            />
-            {bookmarkError ? (
-              <span title="No se pudieron sincronizar los marcajes" className="inline-flex h-7 w-7 items-center justify-center rounded-md text-warning">
-                <Icon name="AlertCircle" size={13} />
-              </span>
-            ) : null}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden h-7 text-xs sm:flex"
-              onClick={() => refreshSummary()}
-              disabled={isRefreshing}
-            >
-              <Icon name="RefreshCw" size={12} className={cn(isRefreshing && 'animate-spin')} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setHeaderExpanded(p => !p)}
-              aria-label={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
-              title={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
-            >
-              <Icon name={headerExpanded ? 'ChevronUp' : 'ChevronDown'} size={14} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={onClose}
-              aria-label="Cerrar"
-            >
-              <Icon name="X" size={15} />
-            </Button>
-          </div>
-        </div>
-
-        {/* Franja de progreso siempre visible (fina) */}
-        <div className="w-full h-0.5 bg-muted">
-          <div
-            className={cn('h-full transition-all duration-300', summaryStatus.barClass)}
-            style={{ width: `${progressPercent}%` }}
+      <TooltipProvider delayDuration={200}>
+        {isWideViewport ? (
+          <ExpedienteSideNav
+            groups={visibleSectionGroups}
+            activeSection={activeSection}
+            onSelect={handleNavSelect}
+            identity={navIdentity}
+            collapsed={navCollapsed}
+            onToggleCollapsed={toggleNavCollapsed}
           />
-        </div>
+        ) : null}
 
-        {/* Detalle expandible */}
-        {headerExpanded && (
-          <div className="border-t border-border/60">
-            <div className="w-full px-3 py-3 sm:px-4">
-              <p className="mb-2 text-xs text-muted-foreground">
-                {legalSummary?.fase_label || 'Fase por confirmar'} &nbsp;·&nbsp;
-                <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
-              </p>
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
-                <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
-                <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
-                <SummaryItem icon="CalendarDays" label="Fecha límite" value={legalSummary?.fecha_limite || 'Sin fecha límite'} />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          {/* ── Top bar: breadcrumb + actions ───────────────────────────── */}
+          <header className="shrink-0 border-b border-border bg-background/95 backdrop-blur">
+            <div className="flex h-14 items-center gap-2 px-2 sm:px-3">
+              {!isWideViewport ? (
+                <TopBarIconButton label="Abrir menú del expediente" onClick={() => setNavSheetOpen(true)} aria-expanded={navSheetOpen}>
+                  <Menu className="h-[18px] w-[18px]" aria-hidden="true" />
+                </TopBarIconButton>
+              ) : null}
+              <TopBarIconButton label="Volver" onClick={onClose}>
+                <Icon name="ArrowLeft" size={16} />
+              </TopBarIconButton>
+
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <span className={cn('size-2 shrink-0 rounded-full', activeTone.dot)} aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="m-0 flex min-w-0 items-center gap-1.5 text-[11px] leading-tight text-muted-foreground">
+                    {/* On wide screens the side nav already shows the radicado; the breadcrumb keeps only the group. */}
+                    {!isWideViewport ? <span className="truncate font-mono">{currentPublic}</span> : null}
+                    {activeNavEntry ? (
+                      <>
+                        {!isWideViewport ? <span aria-hidden="true">/</span> : null}
+                        <span className="truncate">{activeNavEntry.group.label}</span>
+                      </>
+                    ) : null}
+                  </p>
+                  <h1 className="m-0 truncate text-[15px] font-semibold leading-tight tracking-tight text-foreground">
+                    {activeNavEntry?.item.ariaLabel || activeNavEntry?.item.label || 'Expediente'}
+                  </h1>
+                </div>
+                {!isWideViewport ? (
+                  <Badge className={cn('hidden shrink-0 border text-[10px] font-semibold sm:inline-flex', summaryStatus.badgeClass)}>
+                    {summaryStatus.label}
+                  </Badge>
+                ) : null}
               </div>
-            </div>
-          </div>
-        )}
-      </header>
 
-        {/* ── Navegación de submódulos ─────────────────────────────────── */}
-      <div className="shrink-0 border-b border-border bg-muted/50">
-        <div className="w-full px-2 sm:px-4">
-          <nav aria-label="Módulos del expediente" className="py-2">
-            <div className="flex min-w-0 flex-wrap items-center justify-center gap-2 overflow-x-hidden max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto">
-              {visibleSectionGroups.map((group) => (
-                <fieldset
-                  key={group.id}
-                  aria-label={`Grupo ${group.id} del expediente`}
-                  className={cn(
-                    'grid min-w-max grid-flow-col auto-cols-max items-center gap-1 rounded-xl border p-1 shadow-sm',
-                    group.tone === 'sky' && 'border-sky-300 bg-sky-100/85 shadow-sky-950/5',
-                    group.tone === 'violet' && 'border-violet-300 bg-violet-100/85 shadow-violet-950/5',
-                    group.tone === 'amber' && 'border-amber-300 bg-amber-100/85 shadow-amber-950/5'
-                  )}
-                >
-                  {group.items.map((item) => (
-                    <SectionButton
-                      key={item.id}
-                      item={item}
-                      active={activeSection === item.id}
-                      onClick={handleSectionChange}
-                      tone={group.tone}
-                    />
-                  ))}
-                </fieldset>
-              ))}
-            </div>
-          </nav>
-        </div>
-      </div>
-
-      {/* ── Área de trabajo ──────────────────────────────────────────── */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Contenido principal */}
-        <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
-          <ScrollArea className="min-w-0 flex-1">
-            <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
-              <div
-                className={cn(
-                  'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
-                  activeSection === 'tiempos'
-                    ? 'p-1 sm:p-2'
-                    : activeSection === 'actualizar' || activeSection === 'publicidad'
-                      ? 'p-2 sm:p-4'
-                      : 'p-3 sm:p-5'
-                )}
-              >
-                <Suspense fallback={<ModuleLoadingFallback />}>
-                  {moduleContent}
-                </Suspense>
-              </div>
-            </div>
-          </ScrollArea>
-        </div>
-
-        {/* ── Panel derecho colapsable ─────────────────────────────── */}
-        <div className="relative flex shrink-0">
-          {!rightPanelOpen && (
-            <PanelToggleButton
-              open={rightPanelOpen}
-              onToggle={() => setRightPanelOpen(p => !p)}
-            />
-          )}
-
-          {rightPanelOpen && (
-            <aside aria-label="Bitácoras profesionales" className="w-[26rem] max-w-[38vw] shrink-0 overflow-hidden border-l border-border bg-card/50 shadow-xl flex flex-col">
-              <div className="flex h-14 shrink-0 items-center border-b border-border/60 bg-background/70 px-2">
-                <PanelToggleButton
-                  open={rightPanelOpen}
-                  onToggle={() => setRightPanelOpen(p => !p)}
-                  docked
+              <div className="flex shrink-0 items-center gap-0.5">
+                <TopBarIconButton label="Abrir otro expediente en ventana" onClick={() => setDockSearchOpen(true)} className="hidden sm:inline-flex">
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                </TopBarIconButton>
+                <TopBarIconButton label="Minimizar a ventana" onClick={handleMinimizeToWindow} disabled={!hasDockableRadicado} className="hidden sm:inline-flex">
+                  <AppWindow className="h-4 w-4" aria-hidden="true" />
+                </TopBarIconButton>
+                <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true" />
+                <BookmarkQuickMenu
+                  rowId={currentId || currentPublic || 'actual'}
+                  bookmarkState={bookmarkState}
+                  triggerClassName="hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent bg-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                  triggerTestIdPrefix="fullscreen-bookmark-menu-trigger"
+                  menuTestIdPrefix="fullscreen-bookmark-menu"
+                  align="end"
+                  disabled={!currentId}
+                  onToggleScope={handleToggleBookmarkScope}
                 />
+                {bookmarkError ? (
+                  <span title="No se pudieron sincronizar los marcajes" className="inline-flex h-8 w-6 items-center justify-center text-warning">
+                    <Icon name="AlertCircle" size={13} />
+                  </span>
+                ) : null}
+                <TopBarIconButton label="Recargar expediente" onClick={() => refreshSummary()} disabled={isRefreshing} className="hidden sm:inline-flex">
+                  <Icon name="RefreshCw" size={15} className={cn(isRefreshing && 'animate-spin')} />
+                </TopBarIconButton>
+                <TopBarIconButton label="Alertas del expediente" onClick={() => setAlertsDialogOpen(true)}>
+                  <BellRing className="h-4 w-4" aria-hidden="true" />
+                  {currentAlarms.length ? (
+                    <span className="absolute right-1 top-1 inline-flex min-w-[14px] items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-semibold leading-[14px] text-destructive-foreground">
+                      {currentAlarms.length}
+                    </span>
+                  ) : null}
+                </TopBarIconButton>
+                <TopBarIconButton label="Bitácora del expediente" onClick={() => setBitacoraDialogOpen(true)} className="hidden sm:inline-flex">
+                  <ClipboardList className="h-4 w-4" aria-hidden="true" />
+                </TopBarIconButton>
+                <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true" />
+                <TopBarIconButton
+                  label={headerExpanded ? 'Ocultar resumen del expediente' : 'Ver resumen del expediente'}
+                  onClick={() => setHeaderExpanded((value) => !value)}
+                  aria-expanded={headerExpanded}
+                  active={headerExpanded}
+                >
+                  <ChevronDown className={cn('h-4 w-4 transition-transform duration-200 motion-reduce:transition-none', headerExpanded && 'rotate-180')} aria-hidden="true" />
+                </TopBarIconButton>
+                <TopBarIconButton
+                  label={rightPanelOpen ? 'Ocultar panel de bitácoras' : 'Mostrar panel de bitácoras'}
+                  onClick={() => setRightPanelOpen((value) => !value)}
+                  aria-expanded={rightPanelOpen}
+                  active={rightPanelOpen}
+                  className="hidden sm:inline-flex"
+                >
+                  {rightPanelOpen
+                    ? <PanelRightClose className="h-4 w-4" aria-hidden="true" />
+                    : <PanelRightOpen className="h-4 w-4" aria-hidden="true" />}
+                </TopBarIconButton>
+                <TopBarIconButton label="Cerrar" onClick={onClose}>
+                  <Icon name="X" size={16} />
+                </TopBarIconButton>
               </div>
-              <ScrollArea className="min-h-0 flex-1">
-                <div className="p-2.5">
-                  <RecordsBinnacleStack
-                    translation={translation}
-                    swaMsg={swaMsg}
-                    globals={globals}
-                    currentItem={binnaclePanelItem}
-                    currentVersion={currentVersion}
-                    activeSection={activeSection}
-                    requestUpdateRecord={requestUpdate}
-                    compact
-                  />
+            </div>
+            {/* Thin legal-term progress line when the side nav (which carries the term bar) is off-canvas */}
+            <div className={cn('h-0.5 w-full bg-muted', isWideViewport && 'hidden')}>
+              <div
+                className={cn('h-full transition-[width] duration-300 motion-reduce:transition-none', summaryStatus.barClass)}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </header>
+
+          {/* ── Work area ───────────────────────────────────────────────── */}
+          <div className="flex min-h-0 flex-1 overflow-hidden">
+            <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden bg-muted/30 transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
+              <ScrollArea className="min-w-0 flex-1">
+                <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
+                  {headerExpanded ? (
+                    <section
+                      aria-label="Resumen del expediente"
+                      className="grid gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4 xl:grid-cols-[minmax(0,1fr)_20rem]"
+                    >
+                      <div className="min-w-0">
+                        <p className="m-0 mb-2 text-xs text-muted-foreground">
+                          {legalSummary?.fase_label || 'Fase por confirmar'} ·{' '}
+                          <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
+                        </p>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
+                          <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
+                          <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
+                          <SummaryItem icon="CalendarDays" label="Fecha límite" value={legalSummary?.fecha_limite || 'Sin fecha límite'} />
+                        </div>
+                      </div>
+                      <LegalStatusCard
+                        summary={legalSummary}
+                        legalGuide={legalGuide}
+                        legalGuideLoading={legalGuideLoading}
+                        summaryStatus={summaryStatus}
+                        termMeta={termMeta}
+                        usedDays={usedDays}
+                        limitDays={limitDays}
+                        progressPercent={progressPercent}
+                        remainingDays={remainingDays}
+                      />
+                    </section>
+                  ) : null}
+
+                  <div
+                    className={cn(
+                      'w-full min-w-0',
+                      // The new documentary module brings its own surfaces (tab bar, notices, table card): no outer card.
+                      activeSection === 'documentos-new'
+                        ? null
+                        : 'overflow-hidden rounded-2xl border border-border bg-card shadow-sm',
+                      activeSection === 'documentos-new'
+                        ? 'p-0'
+                        : activeSection === 'tiempos'
+                        ? 'p-1 sm:p-2'
+                        : activeSection === 'actualizar' || activeSection === 'publicidad'
+                          ? 'p-2 sm:p-4'
+                          : 'p-3 sm:p-5'
+                    )}
+                  >
+                    <Suspense fallback={<ModuleLoadingFallback />}>
+                      {moduleContent}
+                    </Suspense>
+                  </div>
                 </div>
               </ScrollArea>
-            </aside>
-          )}
+            </div>
+
+            {/* ── Right binnacle panel (toggled from the top bar) ─────────── */}
+            {rightPanelOpen ? (
+              <aside aria-label="Bitácoras profesionales" className="flex w-[26rem] max-w-[38vw] shrink-0 flex-col overflow-hidden border-l border-border bg-card/50">
+                <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border/60 bg-background/70 px-3">
+                  <ClipboardList className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  <h2 className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Bitácoras profesionales</h2>
+                </div>
+                <ScrollArea className="min-h-0 flex-1">
+                  <div className="p-2.5">
+                    <RecordsBinnacleStack
+                      translation={translation}
+                      swaMsg={swaMsg}
+                      globals={globals}
+                      currentItem={binnaclePanelItem}
+                      currentVersion={currentVersion}
+                      activeSection={activeSection}
+                      requestUpdateRecord={requestUpdate}
+                      compact
+                    />
+                  </div>
+                </ScrollArea>
+              </aside>
+            ) : null}
+          </div>
         </div>
-      </div>
+      </TooltipProvider>
+
+      {!isWideViewport ? (
+        <Sheet open={navSheetOpen} onOpenChange={setNavSheetOpen}>
+          <SheetContent side="left" className="flex w-[280px] max-w-[85vw] flex-col p-0 sm:max-w-[280px]">
+            <SheetTitle className="sr-only">Menú del expediente</SheetTitle>
+            <SheetDescription className="sr-only">Módulos disponibles para {currentPublic}</SheetDescription>
+            <ExpedienteSideNav
+              variant="sheet"
+              groups={visibleSectionGroups}
+              activeSection={activeSection}
+              onSelect={handleNavSelect}
+              identity={navIdentity}
+              className="pt-8"
+            />
+          </SheetContent>
+        </Sheet>
+      ) : null}
 
       <AlertsDialog
         open={alertsDialogOpen}

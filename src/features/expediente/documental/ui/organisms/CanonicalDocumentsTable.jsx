@@ -52,20 +52,20 @@ function compactDeliveryDate(value) {
 
 const COLUMN_DEFS = {
   delivery: {
-    head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[18%] px-[0.75rem]',
+    head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[9.5rem] px-[0.75rem]',
     cell: (row) => (
       <span className={LINE}>
         <VrBadge value={row.receipt.vrLabel} />
-        <span className={`${MUTED} whitespace-nowrap`} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{compactDeliveryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
+        <span className={`${MUTED} shrink-0 overflow-visible whitespace-nowrap tabular-nums`} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{compactDeliveryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
       </span>
     ),
   },
   supports: {
-    head: <HeadLabel icon={Archive}>Soportes</HeadLabel>, className: 'w-[12%] px-2',
+    head: <HeadLabel icon={Archive}>Soportes</HeadLabel>, className: 'w-[7.5rem] px-2',
     cell: (row) => <SupportIcons support={rowSupport(row)} location={row.receipt?.location || null} />,
   },
   evaluation: {
-    head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]',
+    head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[9rem] px-[0.75rem]',
     cell: (row, { instances }) => {
       const effective = effectiveOf(instances?.get(row.documentKey)?.instance);
       // With legal-form data the delivery in use is derived from it; without it only an explicit choice is marked.
@@ -106,7 +106,7 @@ const COLUMN_DEFS = {
       );
     },
   },
-  versions: { head: <HeadLabel icon={Layers}>Versiones</HeadLabel>, className: 'w-[9%] px-2', cellClassName: 'font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
+  versions: { head: <span className="flex items-center justify-center" title="Versiones"><Layers className="h-3.5 w-3.5" aria-hidden="true" /><span className="sr-only">Versiones</span></span>, className: 'w-[3.25rem] px-2 text-center', cellClassName: 'text-center font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
   actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
 };
 

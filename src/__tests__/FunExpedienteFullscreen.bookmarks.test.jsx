@@ -277,11 +277,13 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
     const navGroups = within(workspaceNav).getAllByRole('group');
 
-    expect(navGroups).toHaveLength(3);
+    expect(navGroups).toHaveLength(4);
     expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
-    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Tiempos',
+    expect(within(navGroups[2]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
       'Informe P.H.',
+    ]);
+    expect(within(navGroups[3]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Expedición P.H.',
     ]);
     expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
@@ -324,7 +326,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(await screen.findByTestId('module-law')).toBeInTheDocument();
   });
 
-  it('renderiza tres grupos directos de ancho completo, elimina la subnavegación de informes y conserva el cambio de reporte activo', async () => {
+  it('agrupa los módulos en Consulta, Documentos, Informes y Cierre y conserva el cambio de reporte activo', async () => {
     const user = userEvent.setup();
 
     render(
@@ -340,33 +342,20 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     );
 
     const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
-    const navScroller = workspaceNav.firstElementChild;
     const navGroups = within(workspaceNav).getAllByRole('group');
+    const labelsOf = (group) => within(group).getAllByRole('button').map((button) => button.textContent?.trim());
 
     expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
-    expect(navScroller).toHaveClass('flex');
-    expect(navGroups).toHaveLength(3);
-    navGroups.forEach((group) => {
-      expect(group).toHaveClass('grid-flow-col', 'auto-cols-max');
-    });
-    expect(within(navGroups[0]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Detalles',
-      'Actualizar',
-      'Documentos (new)',
-      'Documentos',
-      'Chequeo',
-      'Publicidad',
+    expect(navGroups.map((group) => group.textContent)).toEqual([
+      expect.stringMatching(/^Consulta/),
+      expect.stringMatching(/^Documentos/),
+      expect.stringMatching(/^Informes/),
+      expect.stringMatching(/^Cierre/),
     ]);
-    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Tiempos',
-      'Inf. Jur',
-      'Inf. Arq',
-      'Inf. Estr',
-    ]);
-    expect(within(navGroups[2]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Acta',
-      'Expedición',
-    ]);
+    expect(labelsOf(navGroups[0])).toEqual(['Detalles', 'Tiempos']);
+    expect(labelsOf(navGroups[1])).toEqual(['Documentos (nuevo)', 'Documentos', 'Actualizar', 'Chequeo', 'Publicidad']);
+    expect(labelsOf(navGroups[2])).toEqual(['Inf. jurídico', 'Inf. arquitectónico', 'Inf. estructural']);
+    expect(labelsOf(navGroups[3])).toEqual(['Acta', 'Expedición']);
 
     expect(screen.getByRole('button', { name: /informe arquitectónico/i })).toHaveAttribute('aria-current', 'page');
     expect(await screen.findByTestId('module-arc')).toBeInTheDocument();
@@ -383,7 +372,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
   it('conserva Documentos new como módulo separado y permite volver al original', async () => {
     const user = userEvent.setup();
     render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="documentos-new" />);
-    expect(screen.getByRole('button', { name: 'Documentos (new)' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: 'Documentos (nuevo)' })).toHaveAttribute('aria-current', 'page');
     expect(await screen.findByTestId('module-documentos-new')).toBeInTheDocument();
     expect(screen.queryByTestId('module-documentos')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Documentos' }));
@@ -391,7 +380,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(await screen.findByTestId('module-documentos')).toBeInTheDocument();
   });
 
-  it('usa una variante activa más visible y mantiene contraste fuerte en botones inactivos del workspace', () => {
+  it('marca solo el módulo activo con aria-current y el pill animado', () => {
     render(
       <FunExpedienteFullscreen
         expediente={expediente}
@@ -402,9 +391,13 @@ describe('FunExpedienteFullscreen bookmarks', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: /detalles/i })).toHaveClass('border-sky-400', 'bg-sky-200/95', 'text-sky-950');
-    expect(screen.getByRole('button', { name: /detalles/i })).not.toHaveClass('bg-sky-700', 'text-white');
-    expect(screen.getByRole('button', { name: 'Documentos' })).toHaveClass('text-slate-900', 'bg-white/80');
+    const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
+    const current = within(workspaceNav).getAllByRole('button').filter((button) => button.getAttribute('aria-current') === 'page');
+    expect(current).toHaveLength(1);
+    expect(current[0]).toHaveAccessibleName('Detalles');
+    expect(current[0]).toHaveAttribute('data-active', 'true');
+    expect(screen.getByRole('button', { name: 'Documentos' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('heading', { level: 1, name: 'Detalles' })).toBeInTheDocument();
   });
 
   it('renderiza la aprobación PH legacy al abrir Expedición P.H.', async () => {

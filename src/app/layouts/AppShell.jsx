@@ -12,6 +12,7 @@ import { useIsCompactSidebar } from '@/shared/hooks/use-mobile';
 import { NavigationPendingProvider } from './navigation-pending-context';
 import { TopProgressBar } from './TopProgressBar';
 import { BusinessCalendarSyncNotice } from './BusinessCalendarBootstrap';
+import { ExpedienteDockMount } from '../../features/expediente/dock';
 
 const SIDEBAR_STORAGE_KEY = 'dovela-sidebar-collapsed';
 const SIDEBAR_SIZE_VARS = { '--sidebar-width': '16.5rem', '--sidebar-width-icon': '3.5rem' };
@@ -111,6 +112,8 @@ export function AppShell({ user, onLogout, children }) {
               </div>
             </SidebarInset>
 
+            {/* Global expediente dock: renders nothing (and loads no chunk) while empty. */}
+            <ExpedienteDockMount />
           </NavigationPendingProvider>
         </SidebarProvider>
       </MotionConfig>
