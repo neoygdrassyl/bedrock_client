@@ -12,14 +12,16 @@ const mocks = vi.hoisted(() => ({
   generators: vi.fn(),
   legalMounts: vi.fn(),
   workspaceVariant: vi.fn(),
+  inputReloadKey: vi.fn(),
 }));
 vi.mock('./hooks/useDocumentaryOrigin', () => ({ useDocumentaryOrigin: mocks.origin }));
 vi.mock('./hooks/useExpedienteDocumental', () => ({ useExpedienteDocumental: mocks.legacy }));
 vi.mock('./ui/organisms/CanonicalDocumentaryWorkspace', async () => {
   const { useEffect } = await import('react');
-  return { CanonicalDocumentaryWorkspace: ({ onCountChange, onRequirementsRefreshed, variant = 'input' }) => {
+  return { CanonicalDocumentaryWorkspace: ({ onCountChange, onRequirementsRefreshed, variant = 'input', reloadKey = 0 }) => {
     useEffect(() => { onCountChange?.(variant === 'issued' ? 3 : 7); }, [onCountChange, variant]);
     mocks.workspaceVariant(variant);
+    if (variant === 'input') mocks.inputReloadKey(reloadKey);
     if (variant === 'issued') return <div>Expedidos canónicos</div>;
     return <div>Recepción canónica<button type="button" onClick={onRequirementsRefreshed}>Simular actualización de requisitos</button></div>;
   } };
@@ -28,7 +30,7 @@ vi.mock('./ui/organisms/DocumentaryGovernance', () => ({ DocumentaryGovernance: 
 vi.mock('./ui/organisms/DocumentalWorkspaceHeader', () => ({ DocumentalWorkspaceHeader: () => <div>Redesigned documentary workspace</div> }));
 vi.mock('../fun/fun_forms/components/fun_docs', () => ({ default: () => { mocks.fund(); return <div>Legacy FUND module</div>; } }));
 vi.mock('./shared/UnifiedDocumentEntryModal', () => ({ default: () => null }));
-vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: function LegalMock({ onDeclarationChanged }) { mocks.legalMounts(); return <button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button>; } }));
+vi.mock('./ui/organisms/LegalFormPanel', () => ({ default: function LegalMock({ onDeclarationChanged, onDataChanged }) { mocks.legalMounts(); return <><button type="button" onClick={onDeclarationChanged}>Panel de legal y debida forma</button><button type="button" onClick={onDataChanged}>Simular cambio documental</button></>; } }));
 vi.mock('./ui/organisms/DocumentGeneratorsPanel', () => ({ default: (props) => { mocks.generators(props); return <div>Panel de generadores</div>; } }));
 vi.mock('./ui/organisms/DocumentalReviewTable', () => ({ DocumentalReviewTable: ({ summary }) => <div>{summary}</div> }));
 vi.mock('@/shared/api/data.service', () => ({ default: { getUserData: mocks.user } }));
@@ -235,6 +237,22 @@ describe('documentary tabs', () => {
     await settleIssuedCount();
     await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
     expect(await screen.findByRole('button', { name: 'Panel de legal y debida forma' })).toBeInTheDocument();
+  });
+
+  it('reloads Radicación once, when it is shown again, after Legal y debida forma changed documentary data', async () => {
+    const user = userEvent.setup();
+    mocks.origin.mockReturnValue({ origin: CANONICAL, refresh: vi.fn() });
+    render(<FunDocumentalNew currentId={1} currentPublic="FUN-1" />);
+    await settleIssuedCount();
+    expect(mocks.inputReloadKey).toHaveBeenLastCalledWith(0);
+    await user.click(screen.getByRole('tab', { name: /Legal y debida forma/ }));
+    await user.click(await screen.findByRole('button', { name: 'Simular cambio documental' }));
+    await user.click(screen.getByRole('button', { name: 'Simular cambio documental' }));
+    // Hidden Radicación does not reload while Legal y debida forma is open.
+    expect(mocks.inputReloadKey).toHaveBeenLastCalledWith(0);
+    await user.click(screen.getByRole('tab', { name: /Radicación/ }));
+    await waitFor(() => expect(mocks.inputReloadKey).toHaveBeenLastCalledWith(2));
+    expect(new Set(mocks.inputReloadKey.mock.calls.map(([key]) => key))).toEqual(new Set([0, 2]));
   });
 
   it('reloads the origin and remounts Legal y debida forma after the Radicación banner refreshes the requirements', async () => {

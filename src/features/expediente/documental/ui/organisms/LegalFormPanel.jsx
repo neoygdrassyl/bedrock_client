@@ -170,11 +170,12 @@ function LegacyConsult({ legacy }) {
  * when delivered, the shared evaluation sheet of its controls. The typology sections and the documents table of
  * Radicación (deliveries and versions) stay available, collapsed. Traditional expedientes only get a read-only consult
  * card of the legacy declaration. `onDeclarationChanged` lets the module reload origin, inventory and the expediente
- * state; `onOpenFunForm(form)` navigates to the FUN form (5.1 / 5.2 / 5.3) of a party.
+ * state; `onOpenFunForm(form)` navigates to the FUN form (5.1 / 5.2 / 5.3) of a party; `onDataChanged()` tells the module
+ * that documentary data changed here (selection, receipt, evaluation, refresh) so its other tabs reload.
  * The "Lista de chequeo" action needs `currentVersion` (hidden without it); the FUN it prints is
  * `currentItem` or, when absent, loaded from the expediente when the dialog opens.
  */
-export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged, currentItem = null, currentVersion = null, swaMsg, onOpenFunForm }) {
+export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged, currentItem = null, currentVersion = null, swaMsg, onOpenFunForm, onDataChanged }) {
   const titleId = useId();
   const fun0Id = origin?.project?.fun0Id;
   const legal = useLegalForm(fun0Id) || { status: 'loading', data: null, error: '', reload: () => {} };
@@ -275,9 +276,10 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
     return () => { ignore = true; };
   }, [checklistOpen, currentItem, fun0Id]);
 
-  function refresh(message = '') { setNotice(message); legal.reload(); setTableRevision((value) => value + 1); }
+  // One reload of the legal form and of the table; the module is told so Radicación follows when shown.
+  function refresh(message = '') { setNotice(message); legal.reload(); setTableRevision((value) => value + 1); onDataChanged?.(); }
   // An evaluation saved in the table: the table reloads itself, the legal-form state follows.
-  const evaluationSaved = () => legal.reload();
+  const evaluationSaved = () => { legal.reload(); onDataChanged?.(); };
   // A rejected declaration command (409) means the state moved: reload it behind the dialog.
   async function run(command, values, message) {
     try { await command(fun0Id, values); } catch (failure) { if (failure.response?.status === 409) legal.reload(); throw failure; }

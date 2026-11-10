@@ -171,4 +171,50 @@ describe('LegalFormPanel per person', () => {
     expect(await screen.findByText('Documento recibido.')).toBeInTheDocument();
     await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
   });
+
+  it('receives a missing alternative of a person from the "Documentos alternativos" sheet', async () => {
+    const catalogueOrigin = { ...origin, catalogue: { documents: [{ documentId: 'd-cc', code: 'ID-CC', name: 'Cédula de ciudadanía', isActive: true, listKey: 'L', classificationIds: [] },
+      { documentId: 'd-ce', code: 'ID-CE', name: 'Cédula de extranjería', isActive: true, listKey: 'L', classificationIds: [] }], classifications: [] } };
+    const group = `ID:doc@${EVA}`;
+    const alternative = (code, id) => requirement({ documentCode: code, documentId: id, title: code, required: false, groupCode: group, requirementKey: `${EVA}|${id}`, subjectId: EVA, subjectKind: 'professional', subjectLabel: 'Eva Gil' });
+    api.getLegalForm.mockResolvedValue(legalForm({
+      requirements: [alternative('ID-CC', 'd-cc'), alternative('ID-CE', 'd-ce')],
+      groups: [{ code: group, mode: 'at_least_one', status: 'missing', satisfied: false, subjectId: EVA, documentCodes: ['ID-CC', 'ID-CE'], typologyName: 'Identificación', optionLabel: 'Documento' }],
+      blockers: [{ code: 'GROUP_NOT_SATISFIED', groupCode: group, subjectId: EVA }],
+    }));
+    operations.getCanonicalDocuments.mockResolvedValue({ readOnly: false, capabilities: { createDocument: true, receivePhysical: true, receiveDigital: true, review: true }, governance: { inputRevision: 1 },
+      requirements: { documents: [{ documentId: 'd-cc', subjectId: EVA }, { documentId: 'd-ce', subjectId: EVA }], requirementGroups: [], typologyOptions: [], warnings: [] }, warnings: [],
+      submits: [{ id: 11, idPublic: 'VR-1' }], rows: [], pagination: { nextAfterId: null }, counts: { canonicalDocuments: 0 } });
+    render(<LegalFormPanel origin={catalogueOrigin} canManage />);
+    fireEvent.click(await screen.findByRole('button', { name: /^ID-CC \/ ID-CE Uno de/ }));
+    const sheet = await screen.findByRole('dialog', { name: /Documentos alternativos/ });
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Recibir ID-CE' }));
+    const receipt = await screen.findByRole('dialog', { name: /Recibir documento/ });
+    expect(within(receipt).getByText('Seleccionado: ID-CE · Cédula de extranjería')).toBeInTheDocument();
+    expect(within(receipt).getByLabelText('Persona')).toHaveValue(EVA);
+  });
+
+  it('explains on the Solicitud group which request documents are now asked of each person', async () => {
+    api.getLegalForm.mockResolvedValue(legalForm({ supersededBySubjectDocumentCodes: ['519', '520'] }));
+    render(<LegalFormPanel origin={origin} canManage />);
+    const request = await screen.findByTestId('ldf-group-request');
+    expect(within(request).getByRole('button', { name: 'Se piden a cada persona: 519, 520' })).toBeInTheDocument();
+    expect(within(request).queryByText('519')).not.toBeInTheDocument();
+  });
+
+  it('tells the module that documentary data changed after a typology selection is saved', async () => {
+    const changed = vi.fn();
+    api.getLegalForm.mockResolvedValue(legalForm());
+    api.saveTypologySelection.mockResolvedValue({ unchanged: false, cacheState: 'current' });
+    render(<LegalFormPanel origin={origin} canManage onDataChanged={changed} />);
+    fireEvent.click(await screen.findByRole('button', { name: /^Elegir la opción de «Profesional responsable»/ }));
+    const detail = await screen.findByRole('dialog');
+    fireEvent.click(await within(detail).findByRole('button', { name: 'Elegir opción' }));
+    const picker = await screen.findByRole('dialog', { name: /Elegir opción/ });
+    fireEvent.click(within(picker).getByLabelText(/Director de obra/));
+    fireEvent.change(within(picker).getByLabelText('Motivo'), { target: { value: 'Rol' } });
+    fireEvent.click(within(picker).getByRole('button', { name: 'Guardar selección' }));
+    await waitFor(() => expect(changed).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+  });
 });
