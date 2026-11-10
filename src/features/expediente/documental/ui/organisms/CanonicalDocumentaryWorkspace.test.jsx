@@ -277,10 +277,12 @@ describe('recepción según el catálogo y el expediente', () => {
     await screen.findByRole('heading', { name: 'Documento publicado' });
     const table = screen.getByRole('grid', { name: 'Documentos recibidos' });
     const headers = [...table.querySelectorAll('th[scope="col"]')].map((header) => header.textContent);
-    expect(headers).toEqual(['Documento', 'Última entrega', 'Físico', 'Digital', 'Evaluación', 'Versiones']);
+    expect(headers).toEqual(['Documento', 'Última entrega', 'Soportes', 'Evaluación', 'Versiones']);
     const [approvedRow, rejectedRow, pendingRow, annexRow] = within(table).getAllByRole('row').filter((row) => row.hasAttribute('data-row-key'));
     expect(within(approvedRow).getByText('Aprobado')).toHaveAttribute('data-tone', 'success');
-    expect(approvedRow).toHaveTextContent('por Marta Ruiz');
+    // One clean line: the reviewer is in the tooltip of the evaluation (and read by screen readers), not shown inline.
+    expect(within(approvedRow).getByTitle('Aprobado · por Marta Ruiz')).toBeInTheDocument();
+    expect(within(approvedRow).getByText('por Marta Ruiz')).toHaveClass('sr-only');
     expect(within(rejectedRow).getByText('Rechazado')).toHaveAttribute('data-tone', 'danger');
     expect(rejectedRow).toHaveTextContent('por usuario 9');
     expect(within(pendingRow).getByText('Sin evaluar')).toHaveAttribute('data-tone', 'warning');
@@ -334,7 +336,10 @@ describe('recepción según el catálogo y el expediente', () => {
     expect(documentRow).toHaveTextContent('28 sep');
 
     expect(within(documentRow).getByTitle('28 sep 2026, 00:48')).toBeInTheDocument();
-    expect(documentRow).toHaveTextContent('2 folios');
+    // One Soportes cell: physical (with folios and location in its tooltip), digital and scan icons.
+    expect(within(documentRow).getByRole('img', { name: 'Físico · 2 folios' })).toHaveAttribute('data-state-support', 'present');
+    expect(within(documentRow).getByRole('img', { name: 'Sin soporte digital' })).toHaveAttribute('data-state-support', 'absent');
+    expect(within(documentRow).getByRole('img', { name: 'Escaneo del físico pendiente' })).toHaveAttribute('data-state-support', 'pending');
     expect(documentRow).toHaveTextContent(/3$/);
     const annexes = screen.getByRole('rowgroup', { name: 'Anexos' });
     expect(annexes).toHaveTextContent('Plano adicional');
@@ -362,25 +367,22 @@ describe('recepción según el catálogo y el expediente', () => {
 });
 
 describe('presentación alineada con Actualizar', () => {
-  it('keeps the module title only on standalone screens and always renders the KPIs as chips in the toolbar', async () => {
+  it('keeps the module title only on standalone screens and the counters behind one toolbar button', async () => {
     const { unmount } = render(<CanonicalDocumentaryWorkspace origin={origin} />);
     expect(await screen.findByRole('heading', { name: 'Gestión documental' })).toBeInTheDocument();
     unmount();
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [docRow()], counts: { canonicalDocuments: 7, receivedVersions: 9 } });
     render(<CanonicalDocumentaryWorkspace origin={origin} embedded />);
     const workspace = await screen.findByRole('region', { name: 'Documentos recibidos' });
     expect(within(workspace).queryByRole('heading', { name: 'Gestión documental' })).not.toBeInTheDocument();
-    const summary = within(workspace).getByLabelText('Resumen documental');
-    expect(summary).toHaveTextContent('Documentos');
-    // Chips live in the card toolbar, next to the quick filters: no band of their own above the card.
-    expect(within(workspace.querySelector('[data-testid="canonical-documentary-workspace"]')).getByLabelText('Resumen documental')).toBe(summary);
-    expect(summary.closest('[role="group"]')).toBeNull();
-  });
-
-  it('explains KPI hints through an accessible tooltip trigger instead of a native title', async () => {
-    render(<CanonicalDocumentaryWorkspace origin={origin} embedded />);
-    const summary = await screen.findByLabelText('Resumen documental');
-    expect(within(summary).getByRole('button', { name: 'Recepciones: Cada entrega de un documento en una VR' })).toBeInTheDocument();
-    expect(summary.querySelector('[title]')).toBeNull();
+    // No band of chips above the table: one icon button next to the count opens them.
+    expect(within(workspace).queryByText('Recepciones')).not.toBeInTheDocument();
+    fireEvent.click(within(workspace).getByRole('button', { name: 'Resumen documental' }));
+    const summary = await screen.findByRole('dialog', { name: 'Resumen documental' });
+    expect(summary).toHaveTextContent('Documentos7');
+    expect(summary).toHaveTextContent('Recepciones');
+    expect(summary).toHaveTextContent('Cada entrega de un documento en una VR');
+    expect(summary).not.toHaveTextContent('Escaneados');
   });
 
   it('keeps the receipt actions in the sheet footer, outside the scrollable body', async () => {

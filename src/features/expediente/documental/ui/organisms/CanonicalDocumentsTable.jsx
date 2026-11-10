@@ -1,12 +1,12 @@
 import { Tag } from '../atoms/Tag';
-import { Archive, ClipboardCheck, FileSearch, History, Layers, Monitor, UserCheck, Wrench } from 'lucide-react';
+import { Archive, ClipboardCheck, FileSearch, History, Layers, UserCheck, Wrench } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { cn } from '@/shared/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
-import { ReceiptStatus } from '../molecules/DocumentReceiptStatus';
+import { SupportIcons } from '../molecules/SupportIcons';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { effectiveDeliveryLabel, effectiveOf } from '../../legalFormModel';
@@ -30,11 +30,11 @@ const HEAD = 'h-10 text-[11px] font-semibold uppercase tracking-wide text-muted-
 
 /**
  * Optional columns after the document title, in display order. A table shows the ones it is given
- * (`columns` prop): Radicación shows all but `actions`; Expedidos hides physical/digital/evaluation;
+ * (`columns` prop): Radicación shows all but `actions`; Expedidos hides supports/evaluation;
  * Legal y debida forma adds the applicant self-assessment; Evaluación técnica swaps the evaluation for the technical summary.
  */
-export const TABLE_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'applicant', 'technical', 'versions', 'actions'];
-export const INPUT_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'versions'];
+export const TABLE_COLUMNS = ['delivery', 'supports', 'evaluation', 'applicant', 'technical', 'versions', 'actions'];
+export const INPUT_COLUMNS = ['delivery', 'supports', 'evaluation', 'versions'];
 export const LEGAL_FORM_COLUMNS = ['delivery', 'evaluation', 'applicant', 'versions', 'actions'];
 export const TECHNICAL_COLUMNS = ['delivery', 'technical', 'versions', 'actions'];
 export const ISSUED_COLUMNS = ['delivery', 'versions'];
@@ -60,19 +60,10 @@ const COLUMN_DEFS = {
       </span>
     ),
   },
-  physical: {
-    head: <HeadLabel icon={Archive}>Físico</HeadLabel>, className: 'w-[11%] px-2',
-    cell: (row) => {
-      const support = rowSupport(row);
-      return (
-        <span className={LINE}>
-          <ReceiptStatus row={support} medium="physical" />
-          {support.pagesPhysical !== null ? <span className={MUTED}>{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
-        </span>
-      );
-    },
+  supports: {
+    head: <HeadLabel icon={Archive}>Soportes</HeadLabel>, className: 'w-[12%] px-2',
+    cell: (row) => <SupportIcons support={rowSupport(row)} location={row.receipt?.location || null} />,
   },
-  digital: { head: <HeadLabel icon={Monitor}>Digital</HeadLabel>, className: 'w-[9%] px-2', cell: (row) => <ReceiptStatus row={rowSupport(row)} medium="digital" /> },
   evaluation: {
     head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]',
     cell: (row, { instances }) => {
@@ -85,9 +76,10 @@ const COLUMN_DEFS = {
       return (
         <span className={LINE} title={title}>
           <EvaluationStatus row={row} showReviewer={false} />
+          {/* The reviewer lives in the tooltip (title) of the cell; screen readers still hear it. */}
+          {reviewer ? <span className="sr-only">por {reviewer}</span> : null}
           {inUse ? <Tag tone="success" title="Entrega que usa legal y debida forma">En uso</Tag>
-            : effective ? <span className={MUTED} title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span>
-              : reviewer ? <span className={MUTED}>por {reviewer}</span> : null}
+            : effective ? <span className={MUTED} title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span> : null}
         </span>
       );
     },

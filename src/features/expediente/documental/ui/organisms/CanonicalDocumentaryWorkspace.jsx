@@ -14,6 +14,7 @@ import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
 import { DocumentFiltersMenu } from '../molecules/DocumentFiltersMenu';
+import { DocumentMetricsPopover } from '../molecules/DocumentMetricsPopover';
 import { CanonicalDocumentsTable, canEvaluateTechnicalRow, INPUT_COLUMNS, ISSUED_COLUMNS, LEGAL_FORM_COLUMNS, TECHNICAL_COLUMNS } from './CanonicalDocumentsTable';
 import { EvaluationSheet } from './EvaluationSheet';
 import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
@@ -297,6 +298,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 <span className="mr-1 text-xs text-muted-foreground" aria-live="polite">
                   <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {config.countNoun[visibleRows.length === 1 ? 0 : 1]}
                 </span>
+                {config.metrics ? <DocumentMetricsPopover metrics={headerMetrics} loading={!view} /> : null}
                 {config.refreshButton ? (
                   <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => refresh()}>
                     <RefreshCw className={cn(loading && view && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />Actualizar documentos
@@ -305,11 +307,6 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 {canReceive ? <Button type="button" size="sm" onClick={() => openSheet('receive')}><Plus aria-hidden="true" />Recibir documento</Button> : null}
               </div>
             </div>
-            {config.metrics ? (
-              <div className="min-w-0 px-[1rem] pb-1.5">
-                <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
-              </div>
-            ) : null}
             {readinessView ? (
               <div className="flex flex-wrap items-center justify-between gap-x-[1rem]">
                 <DocumentalQuickFilters
