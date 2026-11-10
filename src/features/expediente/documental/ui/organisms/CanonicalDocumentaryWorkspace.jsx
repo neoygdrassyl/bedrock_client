@@ -129,8 +129,9 @@ function InfoNotice({ children }) {
  * `origin`, `canManage`, `fixedSubmitId` (VR screen) and the optional `onCountChange`.
  * `embedded` hides the module title when the workspace lives inside the Documentos new tabs.
  * `tagFilter` (technical variant) keeps only the rows with a technical control tagged with one of the given tags.
+ * `evaluationContext(row)` (optional) renders a node above the evaluation form of a row (Legal y debida forma: why it is required).
  */
-export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest, tagFilter }) {
+export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixedSubmitId, onCountChange, onRequirementsRefreshed, embedded = false, variant = 'input', reloadKey = 0, onEvaluationSaved, legalForm, instances, openRequest, tagFilter, evaluationContext }) {
   const ids = useId();
   const config = WORKSPACE_VARIANTS[variant] || WORKSPACE_VARIANTS.input;
   const layer = config.layer || 'checking';
@@ -371,6 +372,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
         layer={layer}
         tagFilter={tagFilter}
         legalForm={legalForm}
+        context={evaluating && evaluationContext ? evaluationContext(evaluating.row) : null}
         onSelectionChanged={selectionChanged}
         onClose={() => setEvaluating(null)}
         onSaved={evaluationSaved}
