@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { partiesById, receiptSubjectsOf, rowsOfSubject, subjectOptionLabel } from './receiptSubjectsModel';
+import { partiesById, receiptSubjectsOf, rowsNeedPartyNames, rowsOfSubject, subjectFilterOptions, subjectOfRow, subjectOptionLabel } from './receiptSubjectsModel';
+import { filterCanonicalRows } from './canonicalDocumentaryModel';
 
 const view = { requirements: { documents: [
   { documentId: 'd-1', subjectId: 'fun_51:1' }, { documentId: 'd-1', subjectId: 'fun_52:7' }, { documentId: 'd-1', subjectId: 'fun_51:1' },
@@ -26,5 +27,24 @@ describe('receiptSubjectsModel', () => {
     const rows = [{ rowKey: 'a', subjectId: 'fun_51:1' }, { rowKey: 'b', subjectId: 'fun_52:7' }, { rowKey: 'c' }];
     expect(rowsOfSubject(rows, 'fun_51:1').map((row) => row.rowKey)).toEqual(['a']);
     expect(rowsOfSubject(rows, null).map((row) => row.rowKey)).toEqual(['c']);
+  });
+
+  it('names the person of a delivery from the row first, then from the parties, then by kind', () => {
+    const byId = partiesById({ applicants: [{ id: 'fun_51:1', label: 'Ana Pérez', kindLabel: 'Solicitante' }], professionals: [] });
+    expect(subjectOfRow({ subjectId: 'fun_52:7', subjectLabel: 'Eva Gil Ruiz', subjectKind: 'professional' }, byId)).toMatchObject({ text: 'Eva Gil Ruiz · Profesional' });
+    expect(subjectOfRow({ subjectId: 'fun_51:1' }, byId)).toMatchObject({ label: 'Ana Pérez', text: 'Ana Pérez · Solicitante' });
+    expect(subjectOfRow({ subjectId: 'fun_52:9' }, byId).text).toBe('Profesional fun_52:9');
+    expect(subjectOfRow({ subjectId: null }, byId)).toBeNull();
+    expect(rowsNeedPartyNames([{ subjectId: 'fun_51:1', subjectLabel: 'Ana' }])).toBe(false);
+    expect(rowsNeedPartyNames([{ subjectId: 'fun_51:1' }])).toBe(true);
+  });
+
+  it('offers a person filter only when some delivery has a person, and filters by it', () => {
+    const rows = [{ rowKey: 'a', subjectId: 'fun_51:1', subjectLabel: 'Ana' }, { rowKey: 'b', subjectId: 'fun_52:7', subjectLabel: 'Eva', subjectKind: 'professional' }, { rowKey: 'c' }];
+    expect(subjectFilterOptions([{ rowKey: 'c' }], new Map())).toEqual([]);
+    expect(subjectFilterOptions(rows, new Map()).map((option) => option.label)).toEqual(['Ana · Solicitante', 'Eva · Profesional', 'Solicitud (sin persona)']);
+    const named = rows.map((row) => ({ ...row, catalogueDisplay: { code: row.rowKey, name: row.rowKey }, receipt: {} }));
+    expect(filterCanonicalRows(named, { subject: 'fun_52:7' }).map((row) => row.rowKey)).toEqual(['b']);
+    expect(filterCanonicalRows(named, { subject: '__request__' }).map((row) => row.rowKey)).toEqual(['c']);
   });
 });

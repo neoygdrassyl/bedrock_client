@@ -22,10 +22,12 @@ import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForm
 import { filterByReadiness, READINESS_FILTER, sortByReadiness } from '../../legalFormModel';
 import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, scanCounts, SCAN_FILTER } from '../../canonicalDocumentaryModel';
 import { filterRowsByTechnicalTags } from '../../technicalEvaluationModel';
+import { partiesById, rowsNeedPartyNames, subjectFilterOptions, subjectOfRow } from '../../receiptSubjectsModel';
+import { useLegalForm } from '../../hooks/useLegalForm';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
-const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL };
+const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL, subject: '' };
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
 
 // What each use of the workspace loads and shows. `input` is Radicación; `legalForm` embeds the same table in
@@ -183,6 +185,11 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const canReview = Boolean(canManage && view && !view.readOnly && (technical ? view.capabilities.reviewTechnical : view.capabilities.review));
   // The technical layer only lists rows with technical controls (of the chosen tags when a filter is active).
   const rows = technical ? filterRowsByTechnicalTags(view?.rows, tagFilter) : (view?.rows || []);
+  // Per-person deliveries: the row names its person (subjectLabel) or the legal-form parties do (loaded only when needed).
+  const ownParties = useLegalForm(!parties && rowsNeedPartyNames(view?.rows) ? origin.project.fun0Id : null);
+  const people = partiesById(parties || ownParties?.data?.parties);
+  const personOf = (row) => subjectOfRow(row, people);
+  const subjectOptions = subjectFilterOptions(rows, people);
   const filteredRows = filterCanonicalRows(rows, filters);
   // Legal y debida forma: unresolved rows first (rejected, unevaluated, approved without a chosen VR), then the ready ones.
   // The legalForm variant loads every row, so the order and the chips apply to the whole list.
@@ -275,6 +282,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
             <div className="flex flex-wrap items-center gap-2 px-[1rem] py-[0.75rem]">
               <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
               <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className={FILTER_SELECT_CLASS} />
+              {subjectOptions.length ? <ColumnFilterField type="select" id={`${ids}-subject-filter`} value={filters.subject} options={subjectOptions} allLabel="Todas las personas" onChange={(value) => setFilter('subject', value)} aria-label="Filtrar por persona" className={FILTER_SELECT_CLASS} /> : null}
               {config.classFilter ? <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} /> : null}
               {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={resetFilters}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
               <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:ml-auto lg:w-auto">
@@ -335,6 +343,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 onEvaluate={config.rowEvaluate && canReview ? openEvaluation : undefined}
                 rowEvaluable={technical ? canEvaluateTechnicalRow : undefined}
                 instances={instances}
+                personOf={personOf}
               />
             </div>
             {!config.detail ? null : view && selected ? (
@@ -343,6 +352,7 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                   key={selected.rowKey}
                   origin={origin}
                   row={selected}
+                  person={personOf(selected)}
                   canReceive={canReceive}
                   canReview={canReview}
                   headingId={`${ids}-detail`}

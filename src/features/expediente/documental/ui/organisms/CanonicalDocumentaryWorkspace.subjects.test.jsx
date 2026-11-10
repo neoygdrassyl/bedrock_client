@@ -101,4 +101,18 @@ describe('recepción a nombre de una persona', () => {
     await waitFor(() => expect(api.receiveCanonicalDocument).toHaveBeenCalledWith(1, expect.objectContaining({ documentId: 'C-DOC-A', subjectId: EVA }), null, null));
     await waitFor(() => expect(received).toHaveBeenCalledWith('Documento recibido.'));
   });
+
+  it('shows to whom each delivery belongs in the table and the ficha, and filters by person', async () => {
+    const row = (key, extra) => ({ rowKey: `canonical:${key}`, documentKey: key, documentClass: 'requirement', documentId: 'C-DOC-A', receivedDocumentRowId: key.length, versionSequence: 1, versionCount: 1,
+      catalogueDisplay: { code: 'DOC-A', name: 'Cédula' }, receipt: { id: key.length, submitId: 11, rowVersion: 1, evidenceRevision: 1, hasPhysical: false, files: { digital: null, scan: null }, vrLabel: 'VR-A' },
+      actions: {}, controls: [], allowsMultipleInstances: false, ...extra });
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [row('a', { subjectId: EVA, subjectLabel: 'Eva Gil Ruiz', subjectKind: 'professional' }), row('bb', { subjectId: ANA })] });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    const table = await screen.findByRole('grid');
+    await waitFor(() => expect(within(table).getAllByTestId('row-person').map((tag) => tag.textContent)).toEqual(['Eva Gil Ruiz · Profesional', 'Ana Pérez · Solicitante']));
+    // Ana has no label on the row: the legal-form parties name her.
+    expect(legalForm.getLegalForm).toHaveBeenCalledWith(1, expect.any(AbortSignal));
+    expect(screen.getByTestId('detail-person')).toHaveTextContent('A nombre de: Eva Gil Ruiz · Profesional');
+    expect(screen.getByRole('combobox', { name: 'Filtrar por persona' })).toBeInTheDocument();
+  });
 });

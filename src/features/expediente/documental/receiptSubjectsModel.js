@@ -34,3 +34,35 @@ export function subjectOptionLabel(subjectId, byId) {
 export function rowsOfSubject(rows, subjectId) {
   return (rows || []).filter((row) => (row.subjectId || null) === (subjectId || null));
 }
+
+const KIND_LABELS = { applicant: 'Solicitante', professional: 'Profesional' };
+
+/**
+ * Person a delivery (view row or version) belongs to, or null for request-level deliveries:
+ * { id, label, kind, text: "Ana Pérez Ruiz · Profesional" }. The row's own subjectLabel/subjectKind win; otherwise the
+ * legal-form parties (`byId`) name it; otherwise the kind and the FUN row id.
+ */
+export function subjectOfRow(row, byId) {
+  const id = row?.subjectId;
+  if (!id) return null;
+  const party = byId?.get(id);
+  const kind = KIND_LABELS[row.subjectKind] || row.subjectKind || party?.kindLabel || KIND_BY_PREFIX[String(id).split(':')[0]] || 'Persona';
+  const label = row.subjectLabel || party?.label || null;
+  return { id, label: label || id, kind, text: label ? `${label} · ${kind}` : `${kind} ${id}` };
+}
+
+/** Whether some row names a person without its label (the legal-form parties are needed to name it). */
+export const rowsNeedPartyNames = (rows) => (rows || []).some((row) => row?.subjectId && !row.subjectLabel);
+
+/** Options of the person filter of a documents table: every person of the rows (by label) and the request itself. */
+export function subjectFilterOptions(rows, byId) {
+  const people = new Map();
+  let request = false;
+  (rows || []).forEach((row) => {
+    const person = subjectOfRow(row, byId);
+    if (person) { if (!people.has(person.id)) people.set(person.id, person); } else request = true;
+  });
+  if (!people.size) return [];
+  const options = Array.from(people.values()).sort((a, b) => a.text.localeCompare(b.text, 'es')).map((person) => ({ value: person.id, label: person.text }));
+  return request ? [...options, { value: REQUEST_SUBJECT, label: 'Solicitud (sin persona)' }] : options;
+}
