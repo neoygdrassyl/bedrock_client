@@ -2,24 +2,28 @@
 export const EXPEDIENTE_STATUS_META = Object.freeze({
   EN_TERMINO: {
     label: 'En término',
+    tone: 'ok',
     badgeClass: 'border-accent/30 bg-accent/10 text-accent',
     barClass: 'bg-accent',
     dotClass: 'bg-accent',
   },
   PRONTO_A_VENCER: {
     label: 'Pronto a vencer',
+    tone: 'warning',
     badgeClass: 'border-warning/30 bg-warning/10 text-warning',
     barClass: 'bg-warning',
     dotClass: 'bg-warning',
   },
   ALERTA_VENCIMIENTO: {
     label: 'Alerta de vencimiento',
+    tone: 'danger',
     badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
     barClass: 'bg-destructive',
     dotClass: 'bg-destructive',
   },
   VENCIDO: {
     label: 'Vencido',
+    tone: 'danger',
     badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
     barClass: 'bg-destructive',
     dotClass: 'bg-destructive',
@@ -28,6 +32,7 @@ export const EXPEDIENTE_STATUS_META = Object.freeze({
 
 export const UNKNOWN_STATUS_META = Object.freeze({
   label: 'Sin estado',
+  tone: 'neutral',
   badgeClass: 'border-border bg-muted text-muted-foreground',
   barClass: 'bg-muted-foreground/40',
   dotClass: 'bg-muted-foreground/40',

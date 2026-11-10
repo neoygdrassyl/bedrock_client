@@ -129,6 +129,23 @@
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
 
+    /* Operational states on dark surfaces: deep tinted fills, light text (AA on the fill). */
+    --operational-review-bg: 217 55% 19%;
+    --operational-review-border: 217 80% 62%;
+    --operational-review-text: 213 94% 84%;
+    --operational-warning-bg: 36 62% 16%;
+    --operational-warning-border: 38 90% 55%;
+    --operational-warning-text: 43 96% 74%;
+    --operational-danger-bg: 0 52% 19%;
+    --operational-danger-border: 0 80% 64%;
+    --operational-danger-text: 0 94% 84%;
+    --operational-success-bg: 150 45% 15%;
+    --operational-success-border: 145 55% 48%;
+    --operational-success-text: 142 70% 74%;
+    --operational-neutral-bg: 217 30% 20%;
+    --operational-neutral-border: 217 25% 30%;
+    --operational-neutral-text: 215 22% 74%;
+
     /* Component tokens */
     --button-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.24);
     --card-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.22);
@@ -250,6 +267,14 @@
     --ring: 199 69% 58%;
     --sidebar-accent: 199 69% 58%;
   }
+}
+
+/* Bootstrap's `.border` utility wins over Tailwind border colours (!important), so feed it the
+   design token: borders follow light/dark instead of a fixed #dee2e6. */
+html:root,
+html:root[data-bs-theme] {
+  --bs-border-color: hsl(var(--border));
+  --bs-border-color-translucent: hsl(var(--border) / 0.8);
 }
 
 @layer components {
