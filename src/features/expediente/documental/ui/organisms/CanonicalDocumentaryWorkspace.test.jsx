@@ -330,7 +330,9 @@ describe('recepción según el catálogo y el expediente', () => {
     expect(technical).toHaveTextContent('Lista técnica (1)');
     const [, documentRow] = within(technical).getAllByRole('row');
     expect(documentRow).toHaveTextContent('Requisito');
-    expect(documentRow).toHaveTextContent('28 sep 2026, 00:48');
+    // Single-line cells: the date of the last delivery (full date and time on hover).
+    expect(documentRow).toHaveTextContent('28 sep 2026');
+    expect(within(documentRow).getByTitle('28 sep 2026, 00:48')).toBeInTheDocument();
     expect(documentRow).toHaveTextContent('2 folios');
     expect(documentRow).toHaveTextContent(/3$/);
     const annexes = screen.getByRole('rowgroup', { name: 'Anexos' });
@@ -395,7 +397,8 @@ describe('presentación alineada con Actualizar', () => {
     api.getCanonicalDocuments.mockResolvedValue({ ...view(), submits: [{ id: 11, idPublic: 'VR-A' }, { id: 12, idPublic: 'VR-B' }], rows: [sheet1] });
     api.receiveCanonicalDocument.mockResolvedValue({});
     render(<CanonicalDocumentaryWorkspace origin={origin} fixedSubmitId={12} canManage />);
-    expect(await screen.findByText('Hoja 1')).toHaveAttribute('data-tone', 'teal');
+    // The instance is part of the second line of the row: code · class · instance.
+    expect(await screen.findByText('DOC-A · Requisito · Hoja 1')).toHaveAttribute('data-testid', 'row-meta');
     const dialog = await openReceive();
     fireEvent.click(within(dialog).getByRole('option', { name: /DOC-A/ }));
     expect(within(dialog).getByRole('radio', { name: 'Nueva instancia' })).toBeChecked();
@@ -453,19 +456,19 @@ describe('variante technical (Evaluación técnica)', () => {
     api.getCanonicalDocuments.mockResolvedValue(technicalView());
     const { rerender } = render(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="technical" tagFilter={[]} embedded />);
     const table = await screen.findByRole('grid', { name: 'Documentos de evaluación técnica' });
-    await within(table).findByText('DOC-A');
+    await within(table).findByText('DOC-A · Requisito');
     expect(api.getCanonicalDocuments).toHaveBeenCalledWith(origin, 0, expect.any(AbortSignal), { scope: 'input', documentClass: 'requirement' });
     const headers = within(table).getAllByRole('columnheader').map((header) => header.textContent);
     expect(headers).toEqual(expect.arrayContaining(['Documento', 'Última entrega', 'Técnica', 'Versiones']));
     expect(headers).not.toContain('Evaluación');
-    expect(within(table).getByText('DOC-B')).toBeInTheDocument();
+    expect(within(table).getByText('DOC-B · Requisito')).toBeInTheDocument();
     expect(within(table).queryByText('DOC-C')).not.toBeInTheDocument();
     expect(within(table).getByText('1/1')).toBeInTheDocument();
     expect(within(table).getByText('0/2')).toBeInTheDocument();
     expect(within(table).getAllByRole('button', { name: /^Evaluar / })).toHaveLength(2);
     rerender(<CanonicalDocumentaryWorkspace origin={origin} canManage variant="technical" tagFilter={['estructural']} embedded />);
-    await waitFor(() => expect(within(table).queryByText('DOC-A')).not.toBeInTheDocument());
-    expect(within(table).getByText('DOC-B')).toBeInTheDocument();
+    await waitFor(() => expect(within(table).queryByText('DOC-A · Requisito')).not.toBeInTheDocument());
+    expect(within(table).getByText('DOC-B · Requisito')).toBeInTheDocument();
   });
 
   it('opens the technical controls of a delivery (filtered by tag) and saves them with the control command', async () => {

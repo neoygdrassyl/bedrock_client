@@ -10,19 +10,12 @@ import { ReceiptStatus } from '../molecules/DocumentReceiptStatus';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { effectiveDeliveryLabel, effectiveOf } from '../../legalFormModel';
-import { canEvaluateRow, CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
+import { canEvaluateRow, evaluationOf, evaluationReviewer, EVALUATION_META, formatDocumentaryDate, rowCode, rowMetaLine, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 import { applicantSummaryLabel, applicantSummaryTitle, technicalControlsOf, technicalSummary, technicalSummaryLabel, technicalSummaryTone } from '../../technicalEvaluationModel';
 
-const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
-
-function ClassBadge({ row }) {
-  const documentClass = documentClassOf(row);
-  return (
-    <Tag tone={CLASS_TONES[documentClass] || 'neutral'}>
-      {CLASS_SHORT_LABELS[documentClass] || 'Documento'}
-    </Tag>
-  );
-}
+/** One line, never wrapping: the cells of a document row stay single-line (full text in `title`). */
+const LINE = 'flex min-w-0 items-center gap-1.5 whitespace-nowrap';
+const MUTED = 'min-w-0 truncate text-[11px] leading-4 text-muted-foreground';
 
 function HeadLabel({ icon: Icon, children }) {
   return (
@@ -53,10 +46,10 @@ const COLUMN_DEFS = {
   delivery: {
     head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[18%] px-[0.75rem]',
     cell: (row) => (
-      <>
+      <span className={LINE}>
         <VrBadge value={row.receipt.vrLabel} />
-        <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
-      </>
+        <span className={MUTED} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt, { withTime: false })}</span>
+      </span>
     ),
   },
   physical: {
@@ -64,10 +57,10 @@ const COLUMN_DEFS = {
     cell: (row) => {
       const support = rowSupport(row);
       return (
-        <>
+        <span className={LINE}>
           <ReceiptStatus row={support} medium="physical" />
-          {support.pagesPhysical !== null ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
-        </>
+          {support.pagesPhysical !== null ? <span className={MUTED}>{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
+        </span>
       );
     },
   },
@@ -78,12 +71,16 @@ const COLUMN_DEFS = {
       const effective = effectiveOf(instances?.get(row.documentKey)?.instance);
       // With legal-form data the delivery in use is derived from it; without it only an explicit choice is marked.
       const inUse = effective ? effective.rowId === row.receivedDocumentRowId : Boolean(row.ldfSelected);
+      const evaluation = evaluationOf(row);
+      const reviewer = evaluationReviewer(evaluation);
+      const title = [EVALUATION_META[evaluation.status]?.label, reviewer ? `por ${reviewer}` : null, inUse ? 'En uso en legal y debida forma' : effective ? `Se usa: ${effectiveDeliveryLabel(effective)}` : null].filter(Boolean).join(' · ');
       return (
-        <>
-          <EvaluationStatus row={row} />
-          {inUse ? <Tag tone="success" className="mt-1" title="Entrega que usa legal y debida forma">En uso</Tag>
-            : effective ? <span className="mt-1 block text-[11px] leading-4 text-muted-foreground" title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span> : null}
-        </>
+        <span className={LINE} title={title}>
+          <EvaluationStatus row={row} showReviewer={false} />
+          {inUse ? <Tag tone="success" title="Entrega que usa legal y debida forma">En uso</Tag>
+            : effective ? <span className={MUTED} title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span>
+              : reviewer ? <span className={MUTED}>por {reviewer}</span> : null}
+        </span>
       );
     },
   },
@@ -102,10 +99,10 @@ const COLUMN_DEFS = {
       const label = technicalSummaryLabel(summary);
       if (!label) return <span className="text-xs text-muted-foreground" title="Sin controles técnicos">—</span>;
       return (
-        <>
+        <span className={LINE}>
           <Tag tone={technicalSummaryTone(summary)} mono title={`${summary.complies} cumple de ${summary.total} controles técnicos`}>{label}</Tag>
-          {summary.pending ? <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{summary.pending} {summary.pending === 1 ? 'pendiente' : 'pendientes'}</span> : null}
-        </>
+          {summary.pending ? <span className={MUTED}>{summary.pending} {summary.pending === 1 ? 'pendiente' : 'pendientes'}</span> : null}
+        </span>
       );
     },
   },
@@ -113,11 +110,6 @@ const COLUMN_DEFS = {
   actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
 };
 
-/** Compact, one-line person of a per-person delivery (full text on hover and for assistive technology). */
-function PersonTag({ person }) {
-  if (!person) return null;
-  return <Tag tone="slate" className="min-w-0 max-w-[14rem] truncate" title={`A nombre de: ${person.text}`} aria-label={`A nombre de: ${person.text}`} data-testid="row-person">{person.text}</Tag>;
-}
 
 /**
  * One row per current document, grouped by ventanilla list. Presentation only.
@@ -171,9 +163,8 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                   <DocumentTitleButton
                     name={rowName({ ...row, instanceLabel: null })}
                     code={rowCode(row)}
-                    extra={<><ClassBadge row={row} />{row.instanceLabel ? <Tag tone="teal" title="Instancia del documento">{row.instanceLabel}</Tag> : null}<PersonTag person={personOf?.(row)} /></>}
+                    meta={rowMetaLine(row, personOf?.(row))}
                     selected={selected}
-                    expanded={expandedKey === row.rowKey}
                     controlsId={`${idPrefix}-${row.receivedDocumentRowId}`}
                     tabIndex={-1}
                   />
