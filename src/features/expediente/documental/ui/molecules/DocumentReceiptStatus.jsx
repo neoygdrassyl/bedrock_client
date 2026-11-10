@@ -43,3 +43,19 @@ export function ScanStatus({ scanned }) {
     </span>
   );
 }
+
+/**
+ * Tooltip copy of the three supports of a delivery (`support`: rowSupport() shape, `location`: physical location).
+ * Physical: "Físico · 4 folios · Caja demo 1"; digital: received or not; scan of the physical copy: done, pending or N/A.
+ */
+export function supportIconTexts(support, location = null) {
+  const physical = Boolean(support?.mediumPresence?.physical);
+  const digital = Boolean(support?.mediumPresence?.digital);
+  const pages = support?.pagesPhysical;
+  const scanned = support?.scanned || {};
+  return {
+    physical: physical ? ['Físico', pages != null ? `${pages} ${pages === 1 ? 'folio' : 'folios'}` : null, location || null].filter(Boolean).join(' · ') : 'Sin soporte físico',
+    digital: digital ? 'Digital recibido' : 'Sin soporte digital',
+    scan: !scanned.applies ? 'Escaneado: no aplica (sin soporte físico)' : scanned.value ? 'Escaneado del físico' : 'Escaneo del físico pendiente',
+  };
+}
