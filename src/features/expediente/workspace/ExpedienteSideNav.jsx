@@ -11,6 +11,14 @@ export const NAV_WIDTH_EXPANDED = 248;
 export const NAV_WIDTH_COLLAPSED = 64;
 const LABEL_FADE_CLASS = 'truncate whitespace-nowrap transition-opacity duration-200 motion-reduce:transition-none';
 
+// Status chips tuned for the navy sidebar surface (light tints, AA text on --sidebar).
+const SIDEBAR_STATUS = {
+  ok: 'border-emerald-400/30 bg-emerald-400/15 text-emerald-300',
+  warning: 'border-amber-400/35 bg-amber-400/15 text-amber-200',
+  danger: 'border-rose-400/35 bg-rose-400/15 text-rose-200',
+  neutral: 'border-white/15 bg-white/10 text-sidebar-foreground/75',
+};
+
 function toneClasses(tone) {
   return NAV_TONE_CLASSES[tone] || NAV_TONE_CLASSES.sky;
 }
@@ -41,20 +49,20 @@ function NavItem({ item, active, collapsed, onSelect }) {
           aria-current={active ? 'page' : undefined}
           data-active={active ? 'true' : undefined}
           className={cn(
-            'group relative flex h-9 w-full items-center gap-3 rounded-lg border-0 bg-transparent px-[10px] text-left text-[13px] font-medium outline-none',
-            'transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card',
-            active ? 'text-foreground' : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground',
+            'group relative flex h-9 w-full items-center gap-3 rounded-xl border-0 bg-transparent px-[10px] text-left text-[13px] font-medium outline-none',
+            'transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-sidebar-ring',
+            active ? 'text-sidebar-accent-foreground' : 'text-sidebar-foreground/70 hover:bg-white/[0.07] hover:text-sidebar-foreground',
           )}
         >
           {active ? (
             <m.span
               layoutId="expediente-nav-pill"
               transition={PILL_TRANSITION}
-              className={cn('absolute inset-0 rounded-lg ring-1 ring-inset', tone.pill)}
+              className="absolute inset-0 rounded-xl bg-sidebar-accent shadow-[0_6px_16px_-6px_hsl(var(--sidebar-accent)/0.75)]"
               aria-hidden="true"
             />
           ) : null}
-          <span className={cn('relative z-10 flex size-[18px] shrink-0 items-center justify-center', active ? tone.icon : undefined)}>
+          <span className={cn('relative z-10 flex size-[18px] shrink-0 items-center justify-center', active ? undefined : 'text-sidebar-foreground/55 group-hover:text-sidebar-foreground')}>
             <Icon name={item.icon} size={17} strokeWidth={1.85} aria-hidden="true" />
           </span>
           <span className={cn('relative z-10 min-w-0 flex-1', LABEL_FADE_CLASS, collapsed && 'pointer-events-none opacity-0')}>
@@ -77,7 +85,7 @@ function IdentityBlock({ identity, collapsed }) {
     return (
       <RailTooltip enabled label={`${radicado} · ${statusLabel} · ${remainingText}`}>
         <div
-          className={cn('mx-auto flex h-10 w-10 flex-col items-center justify-center rounded-xl border font-mono text-[11px] font-semibold leading-none', statusClass)}
+          className={cn('mx-auto flex h-10 w-10 flex-col items-center justify-center rounded-xl border font-mono text-[11px] font-semibold leading-none', SIDEBAR_STATUS[identity.statusTone] || statusClass)}
           aria-label={`${radicado}, ${statusLabel}, ${remainingText}`}
           role="img"
         >
@@ -88,34 +96,34 @@ function IdentityBlock({ identity, collapsed }) {
   }
 
   return (
-    <div className="space-y-3 border-b border-border/70 px-1 pb-4" data-testid="expediente-nav-identity">
+    <div className="space-y-3 rounded-2xl bg-white/[0.05] p-3 ring-1 ring-inset ring-white/10" data-testid="expediente-nav-identity">
       <div className="flex items-center justify-between gap-2">
-        <p className="m-0 min-w-0 truncate font-mono text-[15px] font-semibold tracking-tight text-foreground" title={radicado}>{radicado}</p>
-        <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground" title={`Versión ${version} del expediente`}>
+        <p className="m-0 min-w-0 truncate font-mono text-[15px] font-semibold tracking-tight text-sidebar-foreground" title={radicado}>{radicado}</p>
+        <span className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-sidebar-foreground/75" title={`Versión ${version} del expediente`}>
           v{version}
         </span>
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className={cn('inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold', statusClass)}>
+        <span className={cn('inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold', SIDEBAR_STATUS[identity.statusTone] || statusClass)}>
           {statusLabel}
         </span>
         {typeLabel ? (
-          <span className="inline-flex min-w-0 max-w-full items-center truncate text-[11px] text-muted-foreground" title={typeLabel}>
+          <span className="inline-flex min-w-0 max-w-full items-center truncate text-[11px] text-sidebar-foreground/60" title={typeLabel}>
             {typeLabel}
           </span>
         ) : null}
       </div>
       <div className="space-y-1.5">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="min-w-0 truncate text-xs text-muted-foreground">
+          <span className="min-w-0 truncate text-xs text-sidebar-foreground/65">
             {remainingDays != null
-              ? <><strong className="text-lg font-semibold tabular-nums text-foreground">{remainingDays}</strong>{' '}{remainingText.replace(/^\d+ /, '')}</>
+              ? <><strong className="text-xl font-semibold tabular-nums tracking-tight text-sidebar-foreground">{remainingDays}</strong>{' '}{remainingText.replace(/^\d+ /, '')}</>
               : remainingText}
           </span>
-          <span className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">{progressPercent}%</span>
+          <span className="shrink-0 font-mono text-[11px] tabular-nums text-sidebar-foreground/65">{progressPercent}%</span>
         </div>
         <div
-          className="h-1 overflow-hidden rounded-full bg-muted"
+          className="h-1.5 overflow-hidden rounded-full bg-white/10"
           role="progressbar"
           aria-label="Avance del término legal"
           aria-valuemin={0}
@@ -142,6 +150,7 @@ export function ExpedienteSideNav({
   collapsed = false,
   onToggleCollapsed,
   variant = 'rail',
+  header = null,
   className,
 }) {
   const isRail = variant === 'rail';
@@ -151,15 +160,17 @@ export function ExpedienteSideNav({
     <TooltipProvider delayDuration={150}>
       <div
         className={cn(
-          'flex h-full min-h-0 flex-col bg-card',
-          isRail && 'shrink-0 overflow-hidden border-r border-border transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none',
+          'flex h-full min-h-0 flex-col bg-sidebar text-sidebar-foreground dark:[background:linear-gradient(hsl(0_0%_0%/0.45),hsl(0_0%_0%/0.45)),hsl(var(--sidebar))]',
+          isRail && 'shrink-0 overflow-hidden border-r border-white/[0.06] dark:border-white/10 shadow-[4px_0_24px_-12px_rgb(0_0_0/0.45)] transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none',
           className,
         )}
         style={isRail ? { width: isCollapsed ? NAV_WIDTH_COLLAPSED : NAV_WIDTH_EXPANDED } : undefined}
         data-collapsed={isCollapsed ? 'true' : 'false'}
         data-testid={`expediente-side-nav-${variant}`}
       >
-        <div className={cn('shrink-0 px-3 pt-4', isCollapsed ? 'pb-2' : 'pb-1')}>
+        {header ? <div className="shrink-0 px-3 pt-3">{header}</div> : null}
+        {header ? <div className="mx-4 mt-2 h-px shrink-0 bg-white/10" aria-hidden="true" /> : null}
+        <div className={cn('shrink-0 px-3', header ? 'pt-3' : 'pt-4', isCollapsed ? 'pb-2' : 'pb-1')}>
           <IdentityBlock identity={identity} collapsed={isCollapsed} />
         </div>
 
@@ -174,7 +185,7 @@ export function ExpedienteSideNav({
                   <span
                     id={titleId}
                     className={cn(
-                      'text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80',
+                      'text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/50',
                       LABEL_FADE_CLASS,
                       isCollapsed && 'opacity-0',
                     )}
@@ -199,14 +210,14 @@ export function ExpedienteSideNav({
         </nav>
 
         {isRail && onToggleCollapsed ? (
-          <div className="shrink-0 border-t border-border/70 p-3">
+          <div className="shrink-0 border-t border-white/10 p-3">
             <RailTooltip enabled={isCollapsed} label="Expandir menú">
               <button
                 type="button"
                 onClick={onToggleCollapsed}
                 aria-label={isCollapsed ? 'Expandir menú del expediente' : 'Contraer menú del expediente'}
                 aria-expanded={!isCollapsed}
-                className="flex h-9 w-full items-center gap-3 rounded-lg border-0 bg-transparent px-[10px] text-[13px] font-medium text-muted-foreground outline-none transition-colors duration-150 hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-9 w-full items-center gap-3 rounded-xl border-0 bg-transparent px-[10px] text-[13px] font-medium text-sidebar-foreground/60 outline-none transition-colors duration-150 hover:bg-white/[0.07] hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
                 <span className="flex size-[18px] shrink-0 items-center justify-center">
                   {isCollapsed

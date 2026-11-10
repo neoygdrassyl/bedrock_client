@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ClipboardList,
   Menu,
+  MessagesSquare,
   PanelRightClose,
   PanelRightOpen,
   Plus,
@@ -44,8 +45,10 @@ import {
 } from '../../../workspace/expedienteNavConfig';
 import { getExpedienteStatusMeta } from '../../../workspace/expedienteStatus';
 import { ExpedienteSideNav } from '../../../workspace/ExpedienteSideNav';
+import { ExpedienteAppSwitcher } from '../../../workspace/ExpedienteAppSwitcher';
+import { ExpedienteBinnacleLauncher } from '../../../workspace/ExpedienteBinnacleLauncher';
 import { useExpedienteNavCollapsed, useIsWideViewport } from '../../../workspace/useExpedienteNavLayout';
-import { addToDock, minimize as minimizeDockWindow, setActiveWorkspace, setDockSearchOpen } from '../../../dock';
+import { addToDock, minimize as minimizeDockWindow, setActiveWorkspace, setDockSearchOpen, useExpedienteDock } from '../../../dock';
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
@@ -1053,6 +1056,9 @@ export function FunExpedienteFullscreen({
   const { collapsed: navCollapsed, toggleCollapsed: toggleNavCollapsed } = useExpedienteNavCollapsed();
   const isWideViewport = useIsWideViewport();
   const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
+  // Binnacles open either docked in the right column (reports default) or as a floating chat window.
+  const [binnacleFloating, setBinnacleFloating] = useState(false);
+  const { items: dockItems } = useExpedienteDock();
   const [alertsDialogOpen, setAlertsDialogOpen] = useState(false);
   const [bitacoraDialogOpen, setBitacoraDialogOpen] = useState(false);
   const [liveLegalSummary, setLiveLegalSummary] = useState(null);
@@ -1089,11 +1095,13 @@ export function FunExpedienteFullscreen({
 
   useEffect(() => {
     setRightPanelOpen(resolvedDefaultRightPanelOpen);
+    setBinnacleFloating(false);
   }, [resolvedDefaultRightPanelOpen]);
 
   const activateSection = useCallback((nextSection) => {
     setActiveSection(nextSection);
     setRightPanelOpen(isBinnaclePanelDefaultOpen(nextSection));
+    setBinnacleFloating(false);
   }, []);
 
   useEffect(() => {
@@ -1481,12 +1489,28 @@ export function FunExpedienteFullscreen({
       : legalSummary?.categoria ? `Categoría ${legalSummary.categoria}` : null,
     statusLabel: summaryStatus.label,
     statusClass: summaryStatus.badgeClass,
+    statusTone: summaryStatus.tone,
     barClass: summaryStatus.barClass,
     remainingDays,
     progressPercent,
   };
 
   const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem });
+
+  const binnacleDocked = rightPanelOpen && !binnacleFloating;
+  const binnacleFloatingOpen = rightPanelOpen && binnacleFloating;
+  const binnacleStack = (
+    <RecordsBinnacleStack
+      translation={translation}
+      swaMsg={swaMsg}
+      globals={globals}
+      currentItem={binnaclePanelItem}
+      currentVersion={currentVersion}
+      activeSection={activeSection}
+      requestUpdateRecord={requestUpdate}
+      compact
+    />
+  );
 
   const content = (
     <div
@@ -1502,6 +1526,7 @@ export function FunExpedienteFullscreen({
             activeSection={activeSection}
             onSelect={handleNavSelect}
             identity={navIdentity}
+            header={<ExpedienteAppSwitcher currentRadicado={currentPublic} collapsed={navCollapsed} />}
             collapsed={navCollapsed}
             onToggleCollapsed={toggleNavCollapsed}
           />
@@ -1592,7 +1617,10 @@ export function FunExpedienteFullscreen({
                 </TopBarIconButton>
                 <TopBarIconButton
                   label={rightPanelOpen ? 'Ocultar panel de bitácoras' : 'Mostrar panel de bitácoras'}
-                  onClick={() => setRightPanelOpen((value) => !value)}
+                  onClick={() => {
+                    setBinnacleFloating(false);
+                    setRightPanelOpen((value) => !value);
+                  }}
                   aria-expanded={rightPanelOpen}
                   active={rightPanelOpen}
                   className="hidden sm:inline-flex"
@@ -1617,9 +1645,9 @@ export function FunExpedienteFullscreen({
 
           {/* ── Work area ───────────────────────────────────────────────── */}
           <div className="flex min-h-0 flex-1 overflow-hidden">
-            <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden bg-muted/30 transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
+            <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden bg-muted/30 transition-[max-width] duration-200', binnacleDocked ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
               <ScrollArea className="min-w-0 flex-1">
-                <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
+                <div className="w-full min-w-0 space-y-4 p-3 pb-24 sm:p-5 sm:pb-24">
                   {headerExpanded ? (
                     <section
                       aria-label="Resumen del expediente"
@@ -1675,36 +1703,46 @@ export function FunExpedienteFullscreen({
               </ScrollArea>
             </div>
 
-            {/* ── Right binnacle panel (toggled from the top bar) ─────────── */}
-            {rightPanelOpen ? (
+            {/* ── Right binnacle panel (docked mode; toggled from the top bar) ─── */}
+            {binnacleDocked ? (
               <aside aria-label="Bitácoras profesionales" className="flex w-[26rem] max-w-[38vw] shrink-0 flex-col overflow-hidden border-l border-border bg-card/50">
                 <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border/60 bg-background/70 px-3">
                   <ClipboardList className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                  <h2 className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Bitácoras profesionales</h2>
+                  <h2 className="m-0 flex-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Bitácoras profesionales</h2>
+                  <TopBarIconButton label="Desacoplar bitácoras en ventana flotante" onClick={() => setBinnacleFloating(true)}>
+                    <MessagesSquare className="h-4 w-4" aria-hidden="true" />
+                  </TopBarIconButton>
                 </div>
                 <ScrollArea className="min-h-0 flex-1">
-                  <div className="p-2.5">
-                    <RecordsBinnacleStack
-                      translation={translation}
-                      swaMsg={swaMsg}
-                      globals={globals}
-                      currentItem={binnaclePanelItem}
-                      currentVersion={currentVersion}
-                      activeSection={activeSection}
-                      requestUpdateRecord={requestUpdate}
-                      compact
-                    />
-                  </div>
+                  <div className="p-2.5">{binnacleStack}</div>
                 </ScrollArea>
               </aside>
             ) : null}
           </div>
         </div>
+
+        <ExpedienteBinnacleLauncher
+          open={binnacleFloatingOpen}
+          onToggle={() => {
+            if (binnacleFloatingOpen) {
+              setRightPanelOpen(false);
+              return;
+            }
+            setBinnacleFloating(true);
+            setRightPanelOpen(true);
+          }}
+          onDock={() => setBinnacleFloating(false)}
+          subtitle={currentPublic}
+          liftForDock={dockItems.length > 0}
+          hideLauncher={binnacleDocked}
+        >
+          {binnacleFloatingOpen ? binnacleStack : null}
+        </ExpedienteBinnacleLauncher>
       </TooltipProvider>
 
       {!isWideViewport ? (
         <Sheet open={navSheetOpen} onOpenChange={setNavSheetOpen}>
-          <SheetContent side="left" className="flex w-[280px] max-w-[85vw] flex-col p-0 sm:max-w-[280px]">
+          <SheetContent side="left" className="flex w-[280px] max-w-[85vw] flex-col border-white/10 bg-sidebar p-0 text-sidebar-foreground sm:max-w-[280px] [&>button]:text-sidebar-foreground/70">
             <SheetTitle className="sr-only">Menú del expediente</SheetTitle>
             <SheetDescription className="sr-only">Módulos disponibles para {currentPublic}</SheetDescription>
             <ExpedienteSideNav
@@ -1713,6 +1751,7 @@ export function FunExpedienteFullscreen({
               activeSection={activeSection}
               onSelect={handleNavSelect}
               identity={navIdentity}
+              header={<ExpedienteAppSwitcher currentRadicado={currentPublic} />}
               className="pt-8"
             />
           </SheetContent>
