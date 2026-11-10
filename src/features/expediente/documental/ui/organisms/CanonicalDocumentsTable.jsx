@@ -113,6 +113,12 @@ const COLUMN_DEFS = {
   actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
 };
 
+/** Compact, one-line person of a per-person delivery (full text on hover and for assistive technology). */
+function PersonTag({ person }) {
+  if (!person) return null;
+  return <Tag tone="slate" className="min-w-0 max-w-[14rem] truncate" title={`A nombre de: ${person.text}`} aria-label={`A nombre de: ${person.text}`} data-testid="row-person">{person.text}</Tag>;
+}
+
 /**
  * One row per current document, grouped by ventanilla list. Presentation only.
  * The whole row selects the document (click, Enter or Space); one row is tabbable at a time.
@@ -120,7 +126,7 @@ const COLUMN_DEFS = {
  * "Evaluar" action to the `actions` column for rows the server allows to evaluate (`rowEvaluable(row)` decides which; by default
  * the checking-layer flags). `instances` (documentKey -> legal-form instance, optional) lets the evaluation cell tag the delivery in use and name it when the row is another one.
  */
-export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, rowEvaluable = canEvaluateRow, instances, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
+export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, rowEvaluable = canEvaluateRow, instances, personOf, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
   const defs = columns.filter((key) => COLUMN_DEFS[key]).map((key) => ({ key, ...COLUMN_DEFS[key] }));
   const span = defs.length + 1;
   return (
@@ -165,7 +171,7 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                   <DocumentTitleButton
                     name={rowName({ ...row, instanceLabel: null })}
                     code={rowCode(row)}
-                    extra={<><ClassBadge row={row} />{row.instanceLabel ? <Tag tone="teal" title="Instancia del documento">{row.instanceLabel}</Tag> : null}</>}
+                    extra={<><ClassBadge row={row} />{row.instanceLabel ? <Tag tone="teal" title="Instancia del documento">{row.instanceLabel}</Tag> : null}<PersonTag person={personOf?.(row)} /></>}
                     selected={selected}
                     expanded={expandedKey === row.rowKey}
                     controlsId={`${idPrefix}-${row.receivedDocumentRowId}`}

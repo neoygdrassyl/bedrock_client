@@ -85,12 +85,14 @@ function normalize(text) {
 }
 
 /** Client-side filters over the rows of the current page. */
-export function filterCanonicalRows(rows, { search = '', list = '', documentClass = '', scan = SCAN_FILTER.ALL } = {}) {
+/** `subject`: '' every row, '__request__' rows without a person, else the rows of that person (subjectId). */
+export function filterCanonicalRows(rows, { search = '', list = '', documentClass = '', scan = SCAN_FILTER.ALL, subject = '' } = {}) {
   const needle = normalize(search.trim());
   return rows.filter((row) => {
     if (needle && !normalize(`${rowCode(row) || ''} ${rowName(row)}`).includes(needle)) return false;
     if (list && rowListTitle(row) !== list) return false;
     if (documentClass && documentClassOf(row) !== documentClass) return false;
+    if (subject && (subject === '__request__' ? Boolean(row.subjectId) : row.subjectId !== subject)) return false;
     const { scanned } = rowSupport(row);
     if (scan === SCAN_FILTER.PENDING && !(scanned.applies && !scanned.value)) return false;
     if (scan === SCAN_FILTER.SCANNED && !scanned.value) return false;
