@@ -113,8 +113,15 @@ function Delivered({ row }) {
   );
 }
 
+/** "Recibir a nombre de Ana Pérez" (per-person requirement) or "Recibir documento" (request level). */
+export function receiveLabel(data, row) {
+  if (!row?.subjectId) return 'Recibir documento';
+  const name = partyById(data, row.subjectId)?.label || row.requirement?.subjectLabel || 'esta persona';
+  return `Recibir a nombre de ${name}`;
+}
+
 /** Body of a document without a delivery: what is missing and what will be checked once it is received. */
-function Undelivered({ row }) {
+function Undelivered({ row, receiveText, onReceive }) {
   const requirement = row.requirement;
   const total = requirement?.controls?.total || 0;
   const status = ROW_STATUS[row.status] || ROW_STATUS.missing;
@@ -122,8 +129,10 @@ function Undelivered({ row }) {
     <div className="flex flex-col gap-2 text-xs leading-5">
       <div className="flex flex-wrap items-center gap-2"><Tag tone={status.tone}>{status.label}</Tag>{requirement?.required ? <span className="text-muted-foreground">Obligatorio para declarar.</span> : null}</div>
       <p className="mb-0 text-foreground">
-        Aún no hay una entrega vigente. Recíbalo en «Radicación»{requirement?.subjectLabel || row.subjectId ? ' a nombre de esta persona' : ''}; después se evalúa aquí.
+        {onReceive ? 'Aún no hay una entrega vigente. Recíbalo aquí; después se evalúa en esta lista.'
+          : `Aún no hay una entrega vigente. Recíbalo en «Radicación»${requirement?.subjectLabel || row.subjectId ? ' a nombre de esta persona' : ''}; después se evalúa aquí.`}
       </p>
+      {onReceive ? <div><Button type="button" size="sm" onClick={() => onReceive(row)}>{receiveText}</Button></div> : null}
       <p className="mb-0 text-muted-foreground" data-testid="ldf-requirement-controls">
         {total ? `Al recibirlo se verifican ${total} ${total === 1 ? 'control' : 'controles'} de Central.` : 'Al recibirlo se registra el veredicto del revisor (no tiene controles de Central).'}
       </p>
@@ -136,8 +145,9 @@ const SHEET_TITLES = { alternatives: 'Documentos alternativos', selection: 'Opci
 /**
  * Side detail of a checklist row without an evaluation to open directly: a document not delivered yet, an
  * at_least_one group or a typology option to choose. Delivered documents open the evaluation sheet instead.
+ * `onReceive(row)` (optional) opens the receipt of a missing document, preselected with the document and its person.
  */
-export function LdfRequirementSheet({ target, data, optionState, onChoose, onOpenInstance, onClose }) {
+export function LdfRequirementSheet({ target, data, optionState, onChoose, onOpenInstance, onReceive, onClose }) {
   const row = target?.row || null;
   return (
     <Sheet open={Boolean(row)} onOpenChange={(next) => { if (!next) onClose(); }}>
@@ -151,7 +161,7 @@ export function LdfRequirementSheet({ target, data, optionState, onChoose, onOpe
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
               <LdfRequirementContext data={data} row={row} optionState={optionState} onChoose={onChoose} onOpenInstance={onOpenInstance} />
               {row.type === 'alternatives' ? <Alternatives row={row} onOpenInstance={onOpenInstance} /> : null}
-              {row.type === 'document' ? (row.delivered ? <Delivered row={row} /> : <Undelivered row={row} />) : null}
+              {row.type === 'document' ? (row.delivered ? <Delivered row={row} /> : <Undelivered row={row} receiveText={receiveLabel(data, row)} onReceive={onReceive && row.requirement?.documentId ? onReceive : undefined} />) : null}
               {row.type === 'selection' ? (
                 <p className="mb-0 text-xs leading-5 text-foreground">Debe elegirse la opción de esta tipología para conocer los documentos que se exigen{row.subjectId ? ' a esta persona' : ''}.</p>
               ) : null}

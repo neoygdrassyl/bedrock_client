@@ -194,6 +194,8 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   // Asks the documents table to open the evaluation sheet of a document (pending panel item).
   const [openRequest, setOpenRequest] = useState(null);
   const openEvaluation = (documentKey) => setOpenRequest({ documentKey, nonce: Date.now() });
+  // Asks the documents table to open the receipt form preselected ({ documentId, subjectId, nonce }).
+  const [receiveRequest, setReceiveRequest] = useState(null);
   const data = legal.data;
   const traditional = data?.mode === 'traditional';
   const actions = data?.actions || {};
@@ -239,6 +241,8 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
     setDetail({ row, nonce: Date.now() });
   }
   const openInstance = (documentKey) => { setDetail(null); openEvaluation(documentKey); };
+  // "Recibir a nombre de …": the receipt form of the documents table, with the document and its person chosen.
+  const receiveFor = (row) => { setNotice(''); setDetail(null); setReceiveRequest({ documentId: row.requirement.documentId, subjectId: row.subjectId || null, nonce: Date.now() }); };
   // On top of the evaluation sheet: why Legal y debida forma requires the document of that row.
   const evaluationContext = (viewRow) => {
     const requirement = requirementOfDocumentKey(data, viewRow?.documentKey);
@@ -383,6 +387,10 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
               instances={instances}
               openRequest={openRequest}
               evaluationContext={evaluationContext}
+              receiveRequest={receiveRequest}
+              receiveOnRequest={Boolean(canManage)}
+              parties={data.parties || null}
+              onReceived={(message) => refresh(message)}
             />
           </div>
         </Disclosure>
@@ -409,6 +417,7 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
         optionState={optionState}
         onChoose={choose}
         onOpenInstance={origin?.publication ? openInstance : undefined}
+        onReceive={canManage && origin?.publication ? receiveFor : undefined}
         onClose={() => setDetail(null)}
       />
       <TypologySelectionDialog

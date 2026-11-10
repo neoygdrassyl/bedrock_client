@@ -146,4 +146,29 @@ describe('LegalFormPanel per person', () => {
     expect(await within(detail).findByText(api.SUBJECT_STORAGE_MESSAGE)).toBeInTheDocument();
     expect(within(detail).queryByRole('button', { name: 'Elegir opción' })).not.toBeInTheDocument();
   });
+  it('receives a missing per-person document on behalf of its person from the detail sheet', async () => {
+    const catalogueOrigin = { ...origin, catalogue: { documents: [{ documentId: 'd-511', code: '511', name: 'Cédula', isActive: true, listKey: 'L', classificationIds: [] }], classifications: [] } };
+    api.getLegalForm.mockResolvedValue(legalForm());
+    operations.getCanonicalDocuments.mockResolvedValue({ readOnly: false, capabilities: { createDocument: true, receivePhysical: true, receiveDigital: true, review: true }, governance: { inputRevision: 1 },
+      requirements: { documents: [{ documentId: 'd-511', subjectId: ANA }, { documentId: 'd-511', subjectId: EVA }], requirementGroups: [], typologyOptions: [], warnings: [] }, warnings: [],
+      submits: [{ id: 11, idPublic: 'VR-1' }], rows: [viewRow], pagination: { nextAfterId: null }, counts: { canonicalDocuments: 1 } });
+    operations.receiveCanonicalDocument.mockResolvedValue({});
+    render(<LegalFormPanel origin={catalogueOrigin} canManage />);
+    const evaGroup = await screen.findByRole('region', { name: /^Eva Gil/ });
+    fireEvent.click(within(evaGroup).getByRole('button', { name: /^511 Cédula: Sin entregar/ }));
+    const detail = await screen.findByRole('dialog');
+    fireEvent.click(within(detail).getByRole('button', { name: 'Recibir a nombre de Eva Gil' }));
+    const receipt = await screen.findByRole('dialog', { name: /Recibir documento/ });
+    expect(within(receipt).getByLabelText('Persona')).toHaveValue(EVA);
+    expect(within(within(receipt).getByLabelText('Persona')).getByRole('option', { name: 'Eva Gil · Profesional' }).value).toBe(EVA);
+    fireEvent.change(within(receipt).getByLabelText('VR de recepción'), { target: { value: '11' } });
+    fireEvent.click(within(receipt).getByLabelText('Se recibió soporte físico'));
+    fireEvent.change(within(receipt).getByLabelText('Folios físicos'), { target: { value: '1' } });
+    fireEvent.change(within(receipt).getByLabelText('Ubicación o referencia física'), { target: { value: 'Caja 1' } });
+    fireEvent.change(within(receipt).getByLabelText('Nota de recepción'), { target: { value: 'Cédula de Eva' } });
+    fireEvent.click(within(receipt).getByRole('button', { name: 'Guardar recepción' }));
+    await waitFor(() => expect(operations.receiveCanonicalDocument).toHaveBeenCalledWith(1, expect.objectContaining({ documentId: 'd-511', subjectId: EVA }), null, null));
+    expect(await screen.findByText('Documento recibido.')).toBeInTheDocument();
+    await waitFor(() => expect(api.getLegalForm).toHaveBeenCalledTimes(2));
+  });
 });
