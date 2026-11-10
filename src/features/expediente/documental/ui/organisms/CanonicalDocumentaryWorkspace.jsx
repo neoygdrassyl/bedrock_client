@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Archive, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, ClipboardList, FileText, Files, History, Info, Monitor, Plus, RefreshCw, RotateCcw, ScanLine, TriangleAlert } from 'lucide-react';
+import { Archive, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, ClipboardList, FileText, Files, History, Info, Monitor, Plus, RefreshCw, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/shared/ui/sheet';
@@ -13,34 +13,34 @@ import { DOCUMENTAL_SCOPE } from '../documentalScope';
 import { DocumentalWorkspaceHeader } from './DocumentalWorkspaceHeader';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
-import { ColumnFilterField } from '../molecules/ColumnFilterField';
+import { DocumentFiltersMenu } from '../molecules/DocumentFiltersMenu';
 import { CanonicalDocumentsTable, canEvaluateTechnicalRow, INPUT_COLUMNS, ISSUED_COLUMNS, LEGAL_FORM_COLUMNS, TECHNICAL_COLUMNS } from './CanonicalDocumentsTable';
 import { EvaluationSheet } from './EvaluationSheet';
 import { CanonicalDocumentDetail, DocumentFiles } from './CanonicalDocumentDetail';
 import { CanonicalRequirementBanner } from './CanonicalRequirementBanner';
 import { ErrorMessage, EvidenceForm, ReceiptForm } from './CanonicalDocumentForms';
 import { filterByReadiness, READINESS_FILTER, sortByReadiness } from '../../legalFormModel';
-import { CLASS_SHORT_LABELS, canonicalMetrics, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, scanCounts, SCAN_FILTER } from '../../canonicalDocumentaryModel';
+import { activeFilterCount, CLASS_SHORT_LABELS, canonicalMetrics, EVALUATION_FILTER_OPTIONS, filterCanonicalRows, formatDocumentaryDate, groupRowsByList, listOptions, rowName, SUPPORT_FILTER_OPTIONS } from '../../canonicalDocumentaryModel';
 import { filterRowsByTechnicalTags } from '../../technicalEvaluationModel';
 import { partiesById, rowsNeedPartyNames, subjectFilterOptions, subjectOfRow } from '../../receiptSubjectsModel';
 import { useLegalForm } from '../../hooks/useLegalForm';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 const CLASS_OPTIONS = Object.entries(CLASS_SHORT_LABELS).map(([value, label]) => ({ value, label }));
-const EMPTY_FILTERS = { search: '', list: '', documentClass: '', scan: SCAN_FILTER.ALL, subject: '' };
+const EMPTY_FILTERS = { search: '', list: '', documentClass: '', subject: '', evaluation: '', support: '' };
 const EVENT_LABELS = { received: 'Documento recibido', evidence_updated: 'Evidencia actualizada', control_decided: 'Revisión de legal y debida forma', submit_created: 'VR creada', source_updated: 'Datos del expediente actualizados', configuration_changed: 'Catálogo documental cambiado' };
 
 // What each use of the workspace loads and shows. `input` is Radicación; `legalForm` embeds the same table in
 // Legal y debida forma (requirements only, row action "Evaluar"); `technical` embeds it in Evaluación técnica (requirements with
 // Central technical controls, decided per tag layer); `issued` lists the expedidos of the expediente.
 export const WORKSPACE_VARIANTS = {
-  input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, scanFilter: true, classFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
+  input: { scope: 'input', documentClass: '', columns: INPUT_COLUMNS, label: 'Documentos recibidos', detail: true, banner: true, history: true, metrics: true, classFilter: true, evaluationFilter: true, supportFilter: true, receive: true, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos recibidos', emptyHint: 'Los documentos que se reciban en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
-  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true, loadAll: true,
+  legalForm: { scope: 'input', documentClass: 'requirement', columns: LEGAL_FORM_COLUMNS, label: 'Documentos de legal y debida forma', detail: false, banner: false, history: false, metrics: false, classFilter: false, evaluationFilter: true, receive: false, refreshButton: false, rowEvaluate: true, readinessFilter: true, loadAll: true,
     emptyText: 'Aún no hay requisitos recibidos', emptyHint: 'Los requisitos que se reciban en este expediente aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
-  technical: { scope: 'input', documentClass: 'requirement', columns: TECHNICAL_COLUMNS, label: 'Documentos de evaluación técnica', detail: false, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: true, loadAll: true, layer: 'technical',
+  technical: { scope: 'input', documentClass: 'requirement', columns: TECHNICAL_COLUMNS, label: 'Documentos de evaluación técnica', detail: false, banner: false, history: false, metrics: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: true, loadAll: true, layer: 'technical',
     emptyText: 'Aún no hay requisitos con controles técnicos', emptyHint: 'Los requisitos recibidos que tengan controles técnicos en Central aparecerán aquí para evaluarlos.', countNoun: ['requisito', 'requisitos'] },
-  issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, scanFilter: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
+  issued: { scope: 'issued', documentClass: '', columns: ISSUED_COLUMNS, label: 'Documentos expedidos', detail: true, banner: false, history: false, metrics: false, classFilter: false, receive: false, refreshButton: true, rowEvaluate: false,
     emptyText: 'Aún no hay documentos expedidos para este expediente.', emptyHint: 'Los documentos que se expidan en este expediente aparecerán aquí.', countNoun: ['documento', 'documentos'] },
 };
 // Pages loaded at most when a variant lists every row (the requirement list is bounded; this only stops a runaway cursor).
@@ -57,7 +57,6 @@ async function loadAllPages(origin, signal, options) {
   }
   return { ...first, rows, pagination: { ...first.pagination, nextAfterId: null } };
 }
-const FILTER_SELECT_CLASS = 'h-9 min-w-[10rem] flex-1 text-sm sm:w-auto sm:flex-none';
 
 function AuditHistory({ origin }) {
   const [open, setOpen] = useState(false);
@@ -175,6 +174,8 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   function conflict() { refresh(CONFLICT_MESSAGE); }
   function setFilter(key, value) { setFilters((current) => ({ ...current, [key]: value })); }
   function resetFilters() { setFilters(EMPTY_FILTERS); setReadiness(READINESS_FILTER.ALL); }
+  // Keeps the search: "Limpiar filtros" of the Filtros menu only clears what the menu sets.
+  function clearMenuFilters() { setFilters((current) => ({ ...EMPTY_FILTERS, search: current.search })); }
   function changePage(next) { setSheet(null); setSelectedKey(null); setCursors(next); }
 
   const submitMatches = !fixedSubmitId || Boolean(view?.submits.some((submit) => submit.id === Number(fixedSubmitId)));
@@ -200,13 +201,11 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
   const selected = visibleRows.find((row) => row.rowKey === selectedKey) || visibleRows[0] || null;
   const metrics = canonicalMetrics(view, { firstPage: cursors.length === 1 });
   const pageHint = metrics.partial ? 'Contado en la página actual' : undefined;
-  const scans = scanCounts(rows);
   const headerMetrics = [
     { label: 'Documentos', value: metrics.documents, icon: Files },
     { label: 'Recepciones', value: metrics.deliveries, icon: History, hint: 'Cada entrega de un documento en una VR' },
     { label: 'Físicos', value: metrics.physical, icon: Archive, hint: pageHint },
     { label: 'Digitales', value: metrics.digital, icon: Monitor, hint: pageHint },
-    { label: 'Escaneados', value: metrics.scanned, icon: ScanLine, hint: pageHint },
     ...(metrics.missing === null ? [] : [{ label: 'Faltantes', value: metrics.missing, icon: ClipboardList }]),
   ];
 
@@ -281,10 +280,19 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
           <div className="shrink-0 border-b bg-[hsl(var(--card))]">
             <div className="flex flex-wrap items-center gap-2 px-[1rem] py-[0.75rem]">
               <DocumentalSearchField id={`${ids}-search`} value={filters.search} onChange={(value) => setFilter('search', value)} />
-              <ColumnFilterField type="select" id={`${ids}-list-filter`} value={filters.list} options={listOptions(rows)} allLabel="Todas las listas" onChange={(value) => setFilter('list', value)} aria-label="Filtrar por lista" className={FILTER_SELECT_CLASS} />
-              {subjectOptions.length ? <ColumnFilterField type="select" id={`${ids}-subject-filter`} value={filters.subject} options={subjectOptions} allLabel="Todas las personas" onChange={(value) => setFilter('subject', value)} aria-label="Filtrar por persona" className={FILTER_SELECT_CLASS} /> : null}
-              {config.classFilter ? <ColumnFilterField type="select" id={`${ids}-class-filter`} value={filters.documentClass} options={CLASS_OPTIONS} allLabel="Todas las clases" onChange={(value) => setFilter('documentClass', value)} aria-label="Filtrar por clase" className={FILTER_SELECT_CLASS} /> : null}
-              {hasFilters ? <Button type="button" variant="ghost" size="sm" className="px-2.5 text-muted-foreground" onClick={resetFilters}><RotateCcw aria-hidden="true" />Limpiar</Button> : null}
+              <DocumentFiltersMenu
+                values={filters}
+                activeCount={activeFilterCount(filters)}
+                onChange={setFilter}
+                onClear={clearMenuFilters}
+                fields={[
+                  { key: 'subject', label: 'Persona', allLabel: 'Todas', options: subjectOptions.map((option) => (option.value === '__request__' ? { ...option, label: 'Solicitud — sin persona' } : option)) },
+                  { key: 'list', label: 'Lista', allLabel: 'Todas las listas', options: listOptions(rows) },
+                  { key: 'documentClass', label: 'Clase', allLabel: 'Todas las clases', options: config.classFilter ? CLASS_OPTIONS : [] },
+                  { key: 'evaluation', label: 'Evaluación', allLabel: 'Todas', options: config.evaluationFilter ? EVALUATION_FILTER_OPTIONS : [] },
+                  { key: 'support', label: 'Soporte', allLabel: 'Todos', options: config.supportFilter ? SUPPORT_FILTER_OPTIONS : [] },
+                ]}
+              />
               <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:ml-auto lg:w-auto">
                 <span className="mr-1 text-xs text-muted-foreground" aria-live="polite">
                   <strong className="font-semibold tabular-nums text-foreground">{visibleRows.length}</strong> {config.countNoun[visibleRows.length === 1 ? 0 : 1]}
@@ -297,21 +305,9 @@ export function CanonicalDocumentaryWorkspace({ origin, canManage = false, fixed
                 {canReceive ? <Button type="button" size="sm" onClick={() => openSheet('receive')}><Plus aria-hidden="true" />Recibir documento</Button> : null}
               </div>
             </div>
-            {config.metrics || config.scanFilter ? (
-              <div className="flex flex-wrap items-center justify-between gap-x-[1rem] gap-y-1 pr-[1rem]">
-                {config.scanFilter ? (
-                  <DocumentalQuickFilters
-                    label="Accesos rápidos de escaneo"
-                    options={[{ value: SCAN_FILTER.ALL, label: 'Todos', count: rows.length }, { value: SCAN_FILTER.PENDING, label: 'Por escanear', count: scans.pending }, { value: SCAN_FILTER.SCANNED, label: 'Escaneados', count: scans.scanned }]}
-                    value={filters.scan}
-                    onChange={(value) => setFilter('scan', value)}
-                  />
-                ) : <span />}
-                {config.metrics ? (
-                  <div className="min-w-0 py-1.5 pl-[1rem] sm:pl-0">
-                    <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
-                  </div>
-                ) : null}
+            {config.metrics ? (
+              <div className="min-w-0 px-[1rem] pb-1.5">
+                <DocumentalWorkspaceHeader variant="chips" metrics={headerMetrics} loading={!view} />
               </div>
             ) : null}
             {readinessView ? (

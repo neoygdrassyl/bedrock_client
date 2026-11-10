@@ -36,6 +36,10 @@ async function openReceive() {
   return screen.findByRole('dialog');
 }
 
+const personRow = (key, extra) => ({ rowKey: `canonical:${key}`, documentKey: key, documentClass: 'requirement', documentId: 'C-DOC-A', receivedDocumentRowId: key.length, versionSequence: 1, versionCount: 1,
+  catalogueDisplay: { code: 'DOC-A', name: 'Cédula' }, listTitle: 'Lista A', receipt: { id: key.length, submitId: 11, rowVersion: 1, evidenceRevision: 1, hasPhysical: false, files: { digital: null, scan: null }, vrLabel: 'VR-A' },
+  actions: {}, controls: [], allowsMultipleInstances: false, ...extra });
+
 beforeEach(() => {
   vi.clearAllMocks();
   api.getCanonicalDocuments.mockResolvedValue(view());
@@ -102,17 +106,57 @@ describe('recepción a nombre de una persona', () => {
     await waitFor(() => expect(received).toHaveBeenCalledWith('Documento recibido.'));
   });
 
-  it('shows to whom each delivery belongs in the table and the ficha, and filters by person', async () => {
-    const row = (key, extra) => ({ rowKey: `canonical:${key}`, documentKey: key, documentClass: 'requirement', documentId: 'C-DOC-A', receivedDocumentRowId: key.length, versionSequence: 1, versionCount: 1,
-      catalogueDisplay: { code: 'DOC-A', name: 'Cédula' }, receipt: { id: key.length, submitId: 11, rowVersion: 1, evidenceRevision: 1, hasPhysical: false, files: { digital: null, scan: null }, vrLabel: 'VR-A' },
-      actions: {}, controls: [], allowsMultipleInstances: false, ...extra });
-    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [row('a', { subjectId: EVA, subjectLabel: 'Eva Gil Ruiz', subjectKind: 'professional' }), row('bb', { subjectId: ANA })] });
+  it('shows to whom each delivery belongs in the table and the ficha', async () => {
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows: [personRow('a', { subjectId: EVA, subjectLabel: 'Eva Gil Ruiz', subjectKind: 'professional' }), personRow('bb', { subjectId: ANA }), personRow('ccc', { documentId: 'C-DOC-B', catalogueDisplay: { code: 'DOC-B', name: 'Plano de localización' } })] });
     render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
     const table = await screen.findByRole('grid');
-    await waitFor(() => expect(within(table).getAllByTestId('row-person').map((tag) => tag.textContent)).toEqual(['Eva Gil Ruiz · Profesional', 'Ana Pérez · Solicitante']));
+    // Two lines per document: the name, then code · class · person (request-level rows simply have no person).
+    await waitFor(() => expect(within(table).getAllByTestId('row-meta').map((line) => line.textContent)).toEqual(['DOC-A · Requisito · Eva Gil Ruiz · Profesional', 'DOC-A · Requisito · Ana Pérez · Solicitante', 'DOC-B · Requisito']));
+    expect(within(table).getAllByTestId('row-name').map((line) => line.textContent)).toEqual(['Cédula', 'Cédula', 'Plano de localización']);
     // Ana has no label on the row: the legal-form parties name her.
     expect(legalForm.getLegalForm).toHaveBeenCalledWith(1, expect.any(AbortSignal));
     expect(screen.getByTestId('detail-person')).toHaveTextContent('A nombre de: Eva Gil Ruiz · Profesional');
-    expect(screen.getByRole('combobox', { name: 'Filtrar por persona' })).toBeInTheDocument();
+  });
+
+  it('filters by persona, lista, clase, evaluación and soporte from one Filtros menu, counting and clearing them', async () => {
+    const support = (physical, digital) => ({ hasPhysical: physical, files: { digital: digital ? { name: 'd.pdf' } : null, scan: null } });
+    const rows = [
+      personRow('a', { subjectId: EVA, subjectLabel: 'Eva Gil', subjectKind: 'professional', evaluation: { status: 'approved' }, receipt: { ...personRow('a').receipt, ...support(true, false) } }),
+      personRow('bb', { subjectId: ANA, subjectLabel: 'Ana Pérez', evaluation: { status: 'pending' }, receipt: { ...personRow('bb').receipt, ...support(false, true) } }),
+      personRow('ccc', { documentId: 'C-DOC-B', catalogueDisplay: { code: 'DOC-B', name: 'Plano' }, listTitle: 'Lista B', evaluation: { status: 'rejected' }, receipt: { ...personRow('ccc').receipt, ...support(true, true) } }),
+      personRow('dddd', { documentClass: 'annex', documentId: null, catalogueDisplay: null, title: 'Anexo libre', evaluation: { status: 'not_applicable' }, receipt: { ...personRow('dddd').receipt, ...support(true, false) } }),
+    ];
+    api.getCanonicalDocuments.mockResolvedValue({ ...view(), rows });
+    render(<CanonicalDocumentaryWorkspace origin={origin} canManage />);
+    const table = await screen.findByRole('grid');
+    const names = () => within(table).queryAllByTestId('row-meta').map((line) => line.textContent.split(' · ')[0]);
+    await waitFor(() => expect(names()).toHaveLength(4));
+    expect(screen.queryByRole('group', { name: 'Accesos rápidos de escaneo' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Escaneados')).not.toBeInTheDocument();
+    const open = async () => { fireEvent.click(screen.getByTestId('documents-filters')); return screen.findByRole('dialog', { name: 'Filtros de documentos' }); };
+    let menu = await open();
+    const select = (label, value) => fireEvent.change(within(menu).getByLabelText(label), { target: { value } });
+    expect(within(within(menu).getByLabelText('Persona')).getAllByRole('option').map((option) => option.textContent)).toEqual(['Todas', 'Ana Pérez · Solicitante', 'Eva Gil · Profesional', 'Solicitud — sin persona']);
+    select('Persona', '__request__');
+    await waitFor(() => expect(names()).toEqual(['DOC-B', 'Anexo']));
+    select('Soporte', 'digital');
+    await waitFor(() => expect(names()).toEqual(['DOC-B']));
+    expect(screen.getByTestId('documents-filters')).toHaveAccessibleName('Filtros (2 activos)');
+    fireEvent.click(within(menu).getByRole('button', { name: 'Limpiar filtros' }));
+    await waitFor(() => expect(names()).toHaveLength(4));
+    select('Evaluación', 'pending');
+    await waitFor(() => expect(names()).toEqual(['DOC-A']));
+    select('Evaluación', 'not_applicable');
+    select('Clase', 'annex');
+    await waitFor(() => expect(names()).toEqual(['Anexo']));
+    select('Clase', 'requirement');
+    await waitFor(() => expect(names()).toEqual([]));
+    fireEvent.click(within(menu).getByRole('button', { name: 'Limpiar filtros' }));
+    select('Lista', 'Lista B');
+    select('Soporte', 'physical');
+    await waitFor(() => expect(names()).toEqual(['DOC-B']));
+    select('Persona', EVA);
+    await waitFor(() => expect(names()).toEqual([]));
+    expect(screen.getByTestId('documents-filters')).toHaveAccessibleName('Filtros (3 activos)');
   });
 });
