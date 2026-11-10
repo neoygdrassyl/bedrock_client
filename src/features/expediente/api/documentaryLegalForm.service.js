@@ -138,7 +138,10 @@ export async function listTypologySelections(fun0Id, signal) {
   return data;
 }
 
-/** Stores the options chosen for one typology; the backend re-evaluates the requirements in the same command. */
+/**
+ * Stores the options chosen for one typology; the backend re-evaluates the requirements in the same command.
+ * Per-person typologies send `command.subjectId` (party id "fun_5x:<id>").
+ */
 export async function saveTypologySelection(fun0Id, typologyCode, command) {
   if (!string(typologyCode) || !typologyCode.trim() || !Array.isArray(command?.optionIds) || !command.optionIds.length) invalid();
   const { data } = await http.put(`${ROOT}/projects/${documentaryProjectId(fun0Id)}/typology-selections/${encodeURIComponent(typologyCode)}`, command, { headers: JSON_HEADERS });
@@ -174,6 +177,9 @@ export async function clearLegalFormVr(fun0Id, documentKey, command) {
   return data;
 }
 
+/** Per-person selections and deliveries need the documentary migration of the backend (503 SUBJECT_STORAGE_UNAVAILABLE). */
+export const SUBJECT_STORAGE_MESSAGE = 'Las opciones y entregas por persona aún no están habilitadas en el servidor (falta la actualización de la base documental). Contacte al administrador.';
+
 // Rule errors the user can act on; anything else falls back to the generic documentary message.
 const LEGAL_FORM_ERRORS = {
   CONTROLS_CONFIGURED: 'Este documento tiene controles de Central: decida sus controles en lugar de registrar un veredicto.',
@@ -199,6 +205,7 @@ const LEGAL_FORM_ERRORS = {
   SELECTION_SCOPE_MISMATCH: 'La entrega no corresponde a este documento. Actualice la vista e intente nuevamente.',
   DOCUMENT_NOT_FOUND: 'La entrega ya no existe en este expediente. Actualice la vista e intente nuevamente.',
   INVALID_TYPOLOGY_SELECTION_COUNT: 'Esta tipología admite una sola opción.',
+  SUBJECT_STORAGE_UNAVAILABLE: SUBJECT_STORAGE_MESSAGE,
 };
 export const isRevisionConflict = (code) => code === 'REVIEW_REVISION_CONFLICT' || code === 'SHEET_REVISION_CONFLICT' || code === 'CHECKLIST_REVISION_CONFLICT' || code === 'REVISION_CONFLICT';
 

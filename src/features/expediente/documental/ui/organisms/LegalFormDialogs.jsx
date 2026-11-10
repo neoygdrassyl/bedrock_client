@@ -99,7 +99,8 @@ export function TypologySelectionDialog({ open, typology, fun0Id, onClose, onSav
     setBusy(true); setError('');
     try {
       key.current ||= crypto.randomUUID();
-      const result = await saveTypologySelection(fun0Id, typology.typologyCode, { optionIds: selected, expectedSelectionRevision: typology.selectionRevision || 0, reason: reason.trim(), idempotencyKey: key.current });
+      const result = await saveTypologySelection(fun0Id, typology.typologyCode, { optionIds: selected, expectedSelectionRevision: typology.selectionRevision || 0, reason: reason.trim(), idempotencyKey: key.current,
+        ...(typology.subjectId ? { subjectId: typology.subjectId } : {}) });
       onSaved(result);
     } catch (failure) {
       if (failure.response) key.current = null;
@@ -111,9 +112,9 @@ export function TypologySelectionDialog({ open, typology, fun0Id, onClose, onSav
       <DialogContent className={cn(DOCUMENTAL_SCOPE, 'max-w-xl')}>
         <form onSubmit={submit} className="flex min-w-0 flex-col gap-[1rem]" noValidate>
           <DialogHeader>
-            <DialogTitle className="mb-0 text-base">Elegir opción · {typology?.typologyName || typology?.typologyCode}</DialogTitle>
+            <DialogTitle className="mb-0 text-base">Elegir opción · {typology?.typologyName || typology?.typologyCode}{typology?.subjectId ? ` · ${typology.subjectLabel || typology.subjectId}` : ''}</DialogTitle>
             <DialogDescription className="mb-0 text-xs">
-              {single ? 'Elija una opción.' : 'Elija una o varias opciones.'} Los documentos exigidos se recalculan al guardar.
+              {single ? 'Elija una opción.' : 'Elija una o varias opciones.'} {typology?.subjectId ? 'La opción aplica solo a esta persona. ' : ''}Los documentos exigidos se recalculan al guardar.
             </DialogDescription>
           </DialogHeader>
           <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-2 p-0 !border-0">
