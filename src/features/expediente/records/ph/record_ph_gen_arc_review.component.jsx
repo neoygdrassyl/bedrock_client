@@ -240,7 +240,7 @@ export default function RECORD_PH_GEN_ARC_REVIEW(props) {
                                                     className="form-control form-control-sm"
                                                     onBlur={() => manage_rar_context()}
                                                     onChange={handleChange(re.pid, it.v, it.c, 'context')}
-                                                    style={{backgroundColor: 'LightPink'}} />
+                                                    style={{backgroundColor: 'hsl(var(--destructive) / 0.12)'}} />
                                                 : <input type='hidden' value={st.context} />
                                             }
                                         </div>

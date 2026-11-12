@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue, noNaN } from './calcFieldValue';
 
 export const ENG_MANPOSTERIA = (props) => {
 
@@ -208,8 +209,8 @@ export const ENG_MANPOSTERIA = (props) => {
         let values = [];
         let checks = [];
 
-        document.getElementById('mamposteria_01_4').value = get_emin();
-        document.getElementById('mamposteria_01_5').value = get_E118();
+        setCalcValue('mamposteria_01_4', get_emin());
+        setCalcValue('mamposteria_01_5', get_E118());
 
         MANPOSTERIA_1.map(item => {
             if (item.i > -1) values.push(document.getElementById('mamposteria_01_' + item.i).value)
@@ -231,11 +232,11 @@ export const ENG_MANPOSTERIA = (props) => {
         let values = [];
         let checks = [];
 
-        document.getElementById('mamposteria_02_0').value = get_F355();
-        document.getElementById('mamposteria_02_1').value = get_F356();
-        document.getElementById('mamposteria_02_3').value = get_F358();
-        document.getElementById('mamposteria_02_6').value = get_F362();
-        document.getElementById('mamposteria_02_7').value = get_G362();
+        setCalcValue('mamposteria_02_0', get_F355());
+        setCalcValue('mamposteria_02_1', get_F356());
+        setCalcValue('mamposteria_02_3', get_F358());
+        setCalcValue('mamposteria_02_6', get_F362());
+        setCalcValue('mamposteria_02_7', get_G362());
 
         MANPOSTERIA_2.map(item => {
             if (item.i > -1) values.push(document.getElementById('mamposteria_02_' + item.i).value)
@@ -261,10 +262,10 @@ export const ENG_MANPOSTERIA = (props) => {
         let values = [];
         let checks = [];
 
-        document.getElementById('mamposteria_p2_2').value = get_F367();
-        document.getElementById('mamposteria_p2_3').value = get_F368();
-        document.getElementById('mamposteria_p2_4').value = get_F369();
-        document.getElementById('mamposteria_p2_5').value = get_F370();
+        setCalcValue('mamposteria_p2_2', get_F367());
+        setCalcValue('mamposteria_p2_3', get_F368());
+        setCalcValue('mamposteria_p2_4', get_F369());
+        setCalcValue('mamposteria_p2_5', get_F370());
 
         MAMPOSTERIA_PASO_2.map(item => {
             values.push(document.getElementById('mamposteria_p2_' + item.i).value)
@@ -285,8 +286,8 @@ export const ENG_MANPOSTERIA = (props) => {
         let values = [];
         let checks = [];
 
-        document.getElementById('mamposteria_p3_4').value = get_H374();
-        document.getElementById('mamposteria_p3_5').value = get_H376();
+        setCalcValue('mamposteria_p3_4', get_H374());
+        setCalcValue('mamposteria_p3_5', get_H376());
 
 
         MAMPOSTERIA_PASO_2.map(item => {
@@ -373,7 +374,7 @@ export const ENG_MANPOSTERIA = (props) => {
                                 </select> : <input type={item.open ? "number" : "text"} step="0.01"
                                     className="form-control" name="mamposteria_01" id={'mamposteria_01_' + item.i} disabled={item.open !== true}
                                     onBlur={() => SAVE_STEP_MAMPOSTERIA_1()}
-                                    defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_01', 'value', item.i) ?? item.calc() ?? ''} />}
+                                    defaultValue={noNaN(_GET_STEP_TYPE_INDEX('mamposteria_01', 'value', item.i) ?? item.calc() ?? '')} />}
 
                             </> : <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('mamposteria_01', 'check', item.c) ?? 1)}
                                 name="mamposteria_01_c" id={'mamposteria_01_c_' + item.c}
@@ -416,14 +417,14 @@ export const ENG_MANPOSTERIA = (props) => {
 
         <label className="app-p fw-bold my-2">Paso 1. Chequeo longitud mínima de muros en cada dirección de análisis</label>
         <div className="row">
-            {MANPOSTERIA_2.map(item => <>
+            {MANPOSTERIA_2.map(item => <Fragment key={`MANPOSTERIA_2_${item.i > -1 ? 'i' + item.i : 'c' + item.c}_${item.name}`}>
                 <div className="col-3 mb-1">{item.name}</div>
                 <div className="col-3 mb-1">
                     {item.i > -1 ? <>
                         <input type={item.open ? "number" : "text"} step="0.01"
                             className="form-control" name="mamposteria_02" id={'mamposteria_02_' + item.i} disabled={item.open !== true}
                             onBlur={() => SAVE_STEP_MAMPOSTERIA_2()}
-                            defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', item.i) ?? item.calc() ?? ''} />
+                            defaultValue={noNaN(_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', item.i) ?? item.calc() ?? '')} />
 
                     </> : <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('mamposteria_02', 'check', item.c) ?? 1)}
                         name="mamposteria_02_c" id={'mamposteria_02_c_' + item.c}
@@ -433,18 +434,18 @@ export const ENG_MANPOSTERIA = (props) => {
                     </select>}
 
                 </div>
-            </>)}
+            </Fragment>)}
         </div>
         <br />
         <div className="row">
-            {MANPOSTERIA_2_1.map(item => <>
+            {MANPOSTERIA_2_1.map(item => <Fragment key={`MANPOSTERIA_2_1_${item.i > -1 ? 'i' + item.i : 'c' + item.c}_${item.name}`}>
                 <div className="col-3 mb-1">{item.name}</div>
                 <div className="col-3 mb-1">
                     {item.i > -1 ? <>
                         <input type="number" step="0.01"
                             className="form-control" name="mamposteria_02" id={'mamposteria_02_' + item.i} disabled={item.open !== true}
                             onBlur={() => SAVE_STEP_MAMPOSTERIA_2()}
-                            defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', item.i) ?? item.calc() ?? ''} />
+                            defaultValue={noNaN(_GET_STEP_TYPE_INDEX('mamposteria_02', 'value', item.i) ?? item.calc() ?? '')} />
 
                     </> : <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('mamposteria_02', 'check', item.c) ?? 1)}
                         name="mamposteria_02_c" id={'mamposteria_02_c_' + item.c}
@@ -454,7 +455,7 @@ export const ENG_MANPOSTERIA = (props) => {
                     </select>}
 
                 </div>
-            </>)}
+            </Fragment>)}
         </div>
 
     </>
@@ -462,13 +463,13 @@ export const ENG_MANPOSTERIA = (props) => {
     let COMPONENT_2 = () => <>
         <label className="app-p fw-bold my-2">Paso 2. Chequeo distancia de confinamiento</label>
         <div className="row">
-            {MAMPOSTERIA_PASO_2.map(item => <>
+            {MAMPOSTERIA_PASO_2.map(item => <Fragment key={`MAMPOSTERIA_PASO_2_${item.i > -1 ? 'i' + item.i : 'c' + item.c}_${item.name}`}>
                 <div className="col-4 mb-1">{item.name}</div>
                 <div className="col-4 mb-1">
                     <input type="number" step="0.01"
                         className="form-control" name="mamposteria_p2" id={'mamposteria_p2_' + item.i} disabled={item.open !== true}
                         onBlur={() => SAVE_STEP_MAMPOSTERIA_P2()}
-                        defaultValue={_GET_STEP_TYPE_INDEX('mamposteria_p2', 'value', item.i) ?? item.calc() ?? ''} />
+                        defaultValue={noNaN(_GET_STEP_TYPE_INDEX('mamposteria_p2', 'value', item.i) ?? item.calc() ?? '')} />
                 </div>
                 {item.c != undefined ? <div className="col-4 mb-1">
                     <select className={_GET_SELECT_COLOR_VALUE(_GET_STEP_TYPE_INDEX('mamposteria_p2', 'check', item.c) ?? 1)}
@@ -479,14 +480,14 @@ export const ENG_MANPOSTERIA = (props) => {
                     </select>
                 </div>
                     : <div className="col-4 mb-1"></div>}
-            </>)}
+            </Fragment>)}
         </div>
     </>
 
     let COMPONENT_3 = () => <>
         <label className="app-p fw-bold my-2">Paso 3. Aberturas en los muroso</label>
         <div className="row">
-            {MAMPOSTERIA_PASO_3.map(item => <>
+            {MAMPOSTERIA_PASO_3.map(item => <Fragment key={`MAMPOSTERIA_PASO_3_${item.i > -1 ? 'i' + item.i : 'c' + item.c}_${item.name}`}>
                 <div className="col-3 mb-1">{item.name}</div>
                 <div className="col-3 mb-1">
                     <input type="number" step="0.01"
@@ -511,14 +512,14 @@ export const ENG_MANPOSTERIA = (props) => {
                 </div>
                     : <div className="col-3 mb-1"></div>}
 
-            </>)}
+            </Fragment>)}
         </div>
     </>
 
     let COMPONENT_4 = () => <>
         <label className="app-p fw-bold my-2">Paso 4.Distribución simetrica de muros</label>
         <div className="row">
-            {MAMPOSTERIA_PASO_4.map(item => <>
+            {MAMPOSTERIA_PASO_4.map(item => <Fragment key={`MAMPOSTERIA_PASO_4_${item.i > -1 ? 'i' + item.i : 'c' + item.c}_${item.name}`}>
                 <div className="col-9 mb-1">{item.name}</div>
 
                 {item.c != undefined ? <div className="col-3 mb-1">
@@ -531,7 +532,7 @@ export const ENG_MANPOSTERIA = (props) => {
                 </div>
                     : <div className="col-3 mb-1"></div>}
 
-            </>)}
+            </Fragment>)}
         </div>
     </>
 

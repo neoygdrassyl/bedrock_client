@@ -1,0 +1,45 @@
+/* DateInput: native date field drawn as dd/mm/yyyy at rest (see DateInput.jsx). */
+.dv-date {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+/* Bootstrap input groups expect the control as a direct flex child. */
+.input-group > .dv-date {
+  flex: 1 1 auto;
+  width: 1%;
+}
+.input-group > .dv-date:not(:first-child) > .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.input-group > .dv-date:not(:last-child) > .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* At rest the native text is hidden; the display span draws the value. */
+.dv-date > input:not(:focus),
+.dv-date > input:not(:focus)::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.dv-date-display {
+  position: absolute;
+  transform: translateY(-50%);
+  color: hsl(var(--foreground));
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.dv-date[data-empty] > .dv-date-display,
+.dv-date > input:disabled ~ .dv-date-display {
+  color: hsl(var(--muted-foreground));
+}
+
+.dv-date:focus-within > .dv-date-display {
+  visibility: hidden;
+}

@@ -12,16 +12,21 @@ describe('ClockRow date and alarm display', () => {
   });
 
   it('keeps state 504 alarm independent from a legal limit date', () => {
-    expect(getClockRowAlarmInfo({
-      state: 504,
-      isCompleted: false,
-      hasAdministrativeAct: false,
-    })).toEqual({ text: 'Pendiente', color: '#f08c00', icon: 'Hourglass' });
+    const pending = getClockRowAlarmInfo({ state: 504, isCompleted: false, hasAdministrativeAct: false });
+    const overdue = getClockRowAlarmInfo({ state: 504, isCompleted: false, hasAdministrativeAct: true });
+    const onTime = getClockRowAlarmInfo({ state: 504, isCompleted: true, hasAdministrativeAct: true });
 
-    expect(getClockRowAlarmInfo({
-      state: 504,
-      isCompleted: false,
-      hasAdministrativeAct: true,
-    })).toEqual({ text: 'Vencida', color: '#e03131', icon: 'XCircle' });
+    expect(pending).toMatchObject({ text: 'Pendiente', icon: 'Hourglass' });
+    expect(overdue).toMatchObject({ text: 'Vencida', icon: 'XCircle' });
+    expect(onTime).toMatchObject({ text: 'A tiempo', icon: 'Check' });
+
+    // Each status keeps its own tone (design tokens, not literal colours).
+    const tones = [pending.color, overdue.color, onTime.color];
+    expect(new Set(tones).size).toBe(3);
+    tones.forEach((tone) => expect(tone).toMatch(/^var\(--/));
+  });
+
+  it('gives no alarm of its own to any other state', () => {
+    expect(getClockRowAlarmInfo({ state: 30, isCompleted: false, hasAdministrativeAct: true })).toBeNull();
   });
 });

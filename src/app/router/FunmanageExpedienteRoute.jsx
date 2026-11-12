@@ -1,32 +1,65 @@
-import { useEffect, useMemo, useState, lazy } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useState, lazy } from 'react';
+import { createPortal } from 'react-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FUNService from '../../features/expediente/api/fun.service';
 import { parseExpedienteWorkspaceSearch, rememberRecentExpediente } from '../../features/expediente/fun/fun_forms/utils/expedienteWorkspaceRoute';
 import LoadingFallback from './LoadingFallback';
 import { IllustratedState } from '../../shared/components/feedback/IllustratedState';
+import { buildSectionSearchParams } from '../../features/expediente/workspace/expedienteNavConfig';
+import { ExpedienteHeaderBreadcrumb, ExpedienteHeaderChipsSkeleton } from '../../features/expediente/workspace/ExpedienteHeaderBreadcrumb';
+import { enterWorkspaceMode, useShellHeaderBreadcrumbSlot, useShellWorkspaceSlot } from '../../shared/lib/shellWorkspace';
 
 const FUN_EXPEDIENTE_FULLSCREEN = lazy(() => import('../../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen').then((mod) => ({ default: mod.FunExpedienteFullscreen })));
 
 export default function FunmanageExpedienteRoute({ translation, globals, swaMsg }) {
   const { radicado } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // True when the request itself failed (retryable), not when nothing was found.
   const [requestFailed, setRequestFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const workspaceSlot = useShellWorkspaceSlot();
+  const headerBreadcrumbSlot = useShellHeaderBreadcrumbSlot();
+  const hasError = Boolean(error);
+
+  // Hold the shell in workspace mode for the whole visit (loading included), so switching
+  // between expedientes does not flicker the header or re-expand the sidebar. Errors give
+  // the regular page area back.
+  useLayoutEffect(() => (hasError ? undefined : enterWorkspaceMode()), [hasError]);
+
   const workspaceTarget = useMemo(
     () => parseExpedienteWorkspaceSearch(location.search),
     [location.search]
   );
 
+  // Mirrors the active workspace module in `?section=` (and `report` for reports)
+  // without adding history entries, so the browser back button still leaves the workspace.
+  const syncSectionToUrl = useCallback((sectionId) => {
+    const next = buildSectionSearchParams(location.search, sectionId);
+    if (!next) return;
+    const query = next.toString();
+    navigate(
+      { pathname: location.pathname, search: query ? `?${query}` : '', hash: location.hash },
+      { replace: true, state: location.state }
+    );
+  }, [location.hash, location.pathname, location.search, location.state, navigate]);
+
+  // Going back can land on another entry of this same expediente (e.g. it was opened twice);
+  // in that case leave the workspace for the dashboard instead of reopening it.
   const closeExpedienteWindow = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.assign('/dashboard');
+    const workspacePath = location.pathname;
+    const hasInAppHistory = (window.history.state?.idx ?? 0) > 0;
+    if (!hasInAppHistory) {
+      navigate('/dashboard', { replace: true });
+      return;
     }
+    window.addEventListener('popstate', () => {
+      if (window.location.pathname === workspacePath) navigate('/dashboard', { replace: true });
+    }, { once: true });
+    window.history.back();
   };
 
   useEffect(() => {
@@ -75,8 +108,37 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
     });
   }, [expediente, workspaceTarget.report, workspaceTarget.section]);
 
+  // In workspace mode the regular page area is hidden, so loading states go to the slot.
+  // The header keeps the trail with the radicado from the URL and placeholder chips, and
+  // the nav card keeps its place, so nothing jumps when the expediente arrives.
+  const loadingState = workspaceSlot
+    ? (
+      <>
+        {headerBreadcrumbSlot
+          ? createPortal(
+            <ExpedienteHeaderBreadcrumb radicado={radicado} onClose={closeExpedienteWindow}>
+              <ExpedienteHeaderChipsSkeleton />
+            </ExpedienteHeaderBreadcrumb>,
+            headerBreadcrumbSlot
+          )
+          : null}
+        {createPortal(
+          <>
+            <div className="shrink-0 px-2 pt-2" aria-hidden="true">
+              <div className="h-12 rounded-2xl border border-border/70 bg-card shadow-[shadow:var(--elevation-floating)]" />
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto p-2">
+              <LoadingFallback />
+            </div>
+          </>,
+          workspaceSlot
+        )}
+      </>
+    )
+    : <LoadingFallback />;
+
   if (loading) {
-    return <LoadingFallback />;
+    return loadingState;
   }
 
   if (error) {
@@ -96,15 +158,18 @@ export default function FunmanageExpedienteRoute({ translation, globals, swaMsg 
   }
 
   return (
-    <FUN_EXPEDIENTE_FULLSCREEN
-      expediente={expediente}
-      translation={translation}
-      globals={globals}
-      swaMsg={swaMsg}
-      initialSection={workspaceTarget.section}
-      initialReport={workspaceTarget.report}
-      defaultRightPanelOpen={workspaceTarget.rightPanel}
-      onClose={closeExpedienteWindow}
-    />
+    <Suspense fallback={loadingState}>
+      <FUN_EXPEDIENTE_FULLSCREEN
+        expediente={expediente}
+        translation={translation}
+        globals={globals}
+        swaMsg={swaMsg}
+        initialSection={workspaceTarget.section}
+        initialReport={workspaceTarget.report}
+        defaultRightPanelOpen={workspaceTarget.rightPanel}
+        onClose={closeExpedienteWindow}
+        onSectionChange={syncSectionToUrl}
+      />
+    </Suspense>
   );
 }

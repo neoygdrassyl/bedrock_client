@@ -2,6 +2,7 @@ import { Tag } from '../atoms/Tag';
 import { ListFilter, RotateCcw, X } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { ColumnFilterField } from '../molecules/ColumnFilterField';
 import { DocumentalSearchField } from '../molecules/DocumentalSearchField';
 import { DocumentalQuickFilters } from '../molecules/DocumentalQuickFilters';
@@ -49,7 +50,7 @@ export function DocumentalTableToolbar({
       label: SCAN_OPTIONS.find((option) => option.value === value)?.label || value,
       reset: filters.statuses.filter((item) => item !== value),
     })),
-    filters.date && { key: 'date', label: `Fecha: ${filters.date}`, reset: '' },
+    filters.date && { key: 'date', label: `Fecha: ${formatDisplayDate(filters.date)}`, reset: '' },
     filters.folios && { key: 'folios', label: `Folios: ${filters.folios}`, reset: '' },
   ].filter(Boolean);
 
@@ -142,7 +143,7 @@ export function DocumentalTableToolbar({
               name="documentalDate"
               value={filters.date || ''}
               onChange={(value) => onFilterChange?.('date', value)}
-              placeholder="AAAA-MM-DD"
+              placeholder="dd/mm/aaaa"
               aria-label="Filtrar por fecha"
             />
           </label>

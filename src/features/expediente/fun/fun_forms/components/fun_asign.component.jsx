@@ -514,7 +514,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
             })}
             {/**
              *  <ul className="list-group">
-                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'hsl(var(--muted))', }}>
                     <label>MATRIZ DE CARGA PROFESIONAL</label>
                 </li>
                 <li className='list-group-item my-0 py-1'>
@@ -616,7 +616,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
         ]
         return <>
             <ul className="list-group">
-                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'gainsboro', }}>
+                <li className='list-group-item my-0 py-1' style={{ backgroundColor: 'hsl(var(--muted))', }}>
                     <div className='row'>
                         <div className='col'>
                             COLORES
@@ -775,7 +775,7 @@ export default function FUN_ASIGNS_COMPONENT(props) {
                 let _n = n < 4 ? 4 : n;
                 for (let i = 0; i < _n; i++) {
                     if (i < n && i < 4) badges.push(<Badge className='me-1' color="green" />)
-                    else if (i < _n && n <= 4) badges.push(<Badge className='me-1' style={{ backgroundColor: 'lightgray' }} />)
+                    else if (i < _n && n <= 4) badges.push(<Badge className='me-1' style={{ backgroundColor: 'hsl(var(--muted))' }} />)
                     else if (i < _n && n > 4) badges.push(<Badge className='me-1' />)
                 }
                 return <>{badges}</>

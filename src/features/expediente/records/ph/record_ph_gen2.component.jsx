@@ -213,7 +213,7 @@ export default function RECORD_PH_GEN_2(props) {
                     <div className="row mb-3 text-center">
                         <div className="col-12">
                             <Button size="sm" className="my-3" disabled={isSaving}>
-                                <Icon name="file-alt" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="file-alt" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </div>

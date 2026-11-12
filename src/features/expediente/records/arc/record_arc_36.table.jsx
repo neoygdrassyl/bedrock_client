@@ -47,7 +47,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         let _LIST = perfilData;
         let _COMPONENT = [];
         for (var _JSON in _LIST) {
-            _COMPONENT.push(<option>{_JSON}</option>)
+            _COMPONENT.push(<option key={_COMPONENT.length}>{_JSON}</option>)
         }
         return <>{_COMPONENT}</>
     }
@@ -189,7 +189,7 @@ export default function RECORD_ARC_36_TABLE(props) {
             minWidth: '110px',
             cell: row => <>
                 <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => setEdit(edit36 ? false : row)}><Icon name="edit" size={16} /></Button>
-                <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></Button>
+                <Button variant="outline" size="sm" className="px-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_36_info(row.id)}><Icon name="trash-alt" size={16} /></Button>
             </>,
         },
     ]
@@ -199,7 +199,7 @@ export default function RECORD_ARC_36_TABLE(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO PERFIL</Button>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>Nuevo perfil</Button>
                 </div>
             </div>
 
@@ -248,7 +248,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                             {editRow['parent_' + data.id + i] ?
                                 <select className="form-select form-select-sm" name={'parent_' + data.id} id={'parent_' + data.id + i}
                                     defaultValue={parent} onBlur={() => add_perfil(data.id)}>
-                                    {PERFILS().map(g => <option>{g}</option>)}
+                                    {PERFILS().map((g, gIndex) => <option key={gIndex}>{g}</option>)}
                                 </select>
                                 :
                                 <label name={'parent_' + data.id} id={'parent_' + data.id + i} onDoubleClick={() => setRowE({ ['parent_' + data.id + i]: true })}>{parent}</label>
@@ -258,7 +258,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                             {editRow['side_' + data.id + i] ?
                                 <select className="form-select form-select-sm" name={'side_' + data.id} id={'side_' + data.id + i}
                                     defaultValue={side} onBlur={() => add_perfil(data.id)}>
-                                    {SIDES.map(g => <option>{g}</option>)}
+                                    {SIDES.map((g, gIndex) => <option key={gIndex}>{g}</option>)}
                                 </select>
                                 :
                                 <label name={'side_' + data.id} id={'side_' + data.id + i} onDoubleClick={() => setRowE({ ['side_' + data.id + i]: true })}>{side}</label>
@@ -268,7 +268,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                             {editRow['name_' + data.id + i] ?
                                 <select className="form-select form-select-sm" name={'name_' + data.id} id={'name_' + data.id + i}
                                     defaultValue={name} onBlur={() => add_perfil(data.id)}>
-                                    {ELEMENTS.map(g => <option>{g}</option>)}
+                                    {ELEMENTS.map((g, gIndex) => <option key={gIndex}>{g}</option>)}
                                 </select>
                                 :
                                 <label name={'name_' + data.id} id={'name_' + data.id + i}>{name}</label>
@@ -319,17 +319,17 @@ export default function RECORD_ARC_36_TABLE(props) {
                 <div className='row border my-1'>
                     <div className='col-3'>
                         <select className="form-select form-select-sm" name={'parent_' + data.id} id={'parent_' + data.id + subItems.length}>
-                            {PERFILS().map(g => <option>{g}</option>)}
+                            {PERFILS().map((g, gIndex) => <option key={gIndex}>{g}</option>)}
                         </select>
                     </div>
                     <div className='col'>
                         <select className="form-select form-select-sm" name={'side_' + data.id} id={'side_' + data.id + subItems.length}>
-                            {SIDES.map(sg => <option>{sg}</option>)}
+                            {SIDES.map((sg, sgIndex) => <option key={sgIndex}>{sg}</option>)}
                         </select>
                     </div>
                     <div className='col'>
                         <select className="form-select form-select-sm" name={'name_' + data.id} id={'name_' + data.id + subItems.length}>
-                            {ELEMENTS.map(sg => <option>{sg}</option>)}
+                            {ELEMENTS.map((sg, sgIndex) => <option key={sgIndex}>{sg}</option>)}
                         </select>
                     </div>
                     <div className='col'>
@@ -381,13 +381,13 @@ export default function RECORD_ARC_36_TABLE(props) {
                         <div className="col p-1">
                             <label>Lado</label>
                             <select className="form-select form-select-sm" id={"r_a_36_info_6" + edit}>
-                                {SIDES.map(it => <option>{it}</option>)}
+                                {SIDES.map((it, itIndex) => <option key={itIndex}>{it}</option>)}
                             </select>
                         </div>
                         <div className="col p-1">
                             <label>Elemento</label>
                             <select className="form-select form-select-sm" id={"r_a_36_info_2" + edit}>
-                                {ELEMENTS.map(it => <option>{it}</option>)}
+                                {ELEMENTS.map((it, itIndex) => <option key={itIndex}>{it}</option>)}
                             </select>
                         </div>
                         <div className="col-1 p-1">
@@ -407,9 +407,8 @@ export default function RECORD_ARC_36_TABLE(props) {
     let _LIST_COMPONENT = () => {
         let _LIST = _GET_CHILD_36_INFO();
 
-        return <DataTable
+        return <DataTable pagination={false}
             noDataComponent="No hay Items"
-            striped="true"
             columns={columns}
             data={_LIST}
             highlightOnHover
@@ -702,7 +701,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('')}
                     <div className="text-center">
                         <Button size="sm" className="my-2">
-                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
+                            <Icon name="share-square" size={16} /> Añadir elementos
                         </Button>
                     </div>
                 </form>
@@ -714,7 +713,7 @@ export default function RECORD_ARC_36_TABLE(props) {
                     {_COMPONENT_1('_edit')}
                     <div className="text-center">
                         <Button size="sm" className="my-2">
-                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> Guardar cambios
                         </Button>
                     </div>
                 </form>

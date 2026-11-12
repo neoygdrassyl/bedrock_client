@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/features/expediente/api/documentaryOperations.service';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
@@ -103,7 +105,7 @@ function FUN_0_RECIPE(props) {
             return <>
                 <div className="row mb-2">
                     <div className="col-5">
-                        <label>Relacionar Documento</label>
+                        <label>Relacionar documento</label>
                         <select id="fun_c_select_payment" className="form-select"
                             defaultValue={_CHILD_LAW.id6payment}>
                             <option value="-1">APORTADO FISICAMENTE</option>
@@ -112,16 +114,16 @@ function FUN_0_RECIPE(props) {
                         </select>
                     </div>
                     <div className="col-3">
-                        <label>consecutivo de Recibo</label>
+                        <label>Consecutivo de recibo</label>
                         <div className="input-group">
                             <input type="text" className="form-control me-1" id="fun_c_payment_2"
                                 defaultValue={currentItem.id_payment} />
                         </div>
                     </div>
                     <div className="col-3">
-                        <label>Fecha de Recibo</label>
+                        <label>Fecha de recibo</label>
                         <div className="input-group">
-                            <input type="date" max="2100-01-01" className="form-control me-1" id="fun_c_payment_1"
+                            <DateInput max="2100-01-01" className="form-control me-1" id="fun_c_payment_1"
                                 defaultValue={_CHILD_CLOCK.date_start} />
                         </div>
                     </div>
@@ -145,7 +147,7 @@ function FUN_0_RECIPE(props) {
                         <input type='hidden' value={'iv'} id="fun_0_cats" />
                         : <>
                             <div className="col-6">
-                                <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">NO ESTA CATEGORIZADO</label>}</label>
+                                <label>Categorización de la Solicitud {currentItem.type ? "" : <label className="text-danger fw-bold">No está categorizado</label>}</label>
                                 <select className="form-select" id="fun_0_cats" defaultValue={currentItem.type}>
                                     <option value="0">Sin Categorizar</option>
                                     <option value="i">Categoria I</option>
@@ -171,7 +173,7 @@ function FUN_0_RECIPE(props) {
                 </div>
                 <div className="row mb-2">
                     <div className="col">
-                        <label>Descripcion del Proyecto (Maximo 2000 Caracteres)</label>
+                        <label>Descripción del proyecto (máximo 2000 caracteres)</label>
                         <textarea className="input-group" maxLength="2000" id="fun_0_desc" rows="4"
                             defaultValue={_GET_CHILD_1().description}></textarea>
                     </div>
@@ -185,27 +187,20 @@ function FUN_0_RECIPE(props) {
                         ref={tagInput}
                     />
                 </div>
+                <h3 className="ew-subheading">Reglas adicionales</h3>
                 <div className="row my-2">
-                    <label className='fw-bold'>Reglas adicionales</label>
                     <div className="col">
                         <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[0] == 1} />
-                            <label className="form-check-label">No usar Publicidad</label>
+                            <label className="form-check-label">No usar publicidad</label>
                         </div>
                     </div>
                     <div className="col">
                         <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="1" name="fun_0_rules" defaultChecked={rules[1] == 1} />
-                            <label className="form-check-label" >No usar informe Estructural</label>
+                            <label className="form-check-label" >No usar informe estructural</label>
                         </div>
-                        <h6><b>Valido para:</b></h6>
-                        <ul>
-                            <li><h6>Propiedad horizontal</h6></li>
-                            <li><h6>Revalidación</h6></li>
-                            <li><h6>Prorroga</h6></li>
-                            <li><h6>Subdivisión</h6></li>
-                            <li><h6>Parcelación</h6></li>
-                        </ul>
+                        <p className="form-text m-0 text-xs">Válido para propiedad horizontal, revalidación, prórroga, subdivisión y parcelación.</p>
                     </div>
                 </div>
             </>
@@ -226,11 +221,11 @@ function FUN_0_RECIPE(props) {
             }
 
             if (_CHILD.id) {
-                FUNService.update_clock(_CHILD.id, formDataclock)
+                return FUNService.update_clock(_CHILD.id, formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 props.requestUpdate(currentItem.id);
                             }
                         } else {
@@ -247,11 +242,11 @@ function FUN_0_RECIPE(props) {
                     });
             }
             else {
-                FUNService.create_clock(formDataclock)
+                return FUNService.create_clock(formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             props.requestUpdate(currentItem.id);
                         } else {
@@ -280,7 +275,7 @@ function FUN_0_RECIPE(props) {
             formDataclock.set('time', 30);
             formDataclock.set('state', 3);
             formDataclock.set('version', currentItem.version);
-            manage_clock(false, 3);
+            return manage_clock(false, 3);
         }
 
         let manage_law = (useMySwal) => {
@@ -290,11 +285,11 @@ function FUN_0_RECIPE(props) {
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
-                FUNService.update_law(_CHILD.id, formData)
+                return FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                         } else {
                             if (useMySwal) {
@@ -310,11 +305,11 @@ function FUN_0_RECIPE(props) {
                     });
             }
             else {
-                FUNService.create_law(formData)
+                return FUNService.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                         } else {
                             if (useMySwal) {
@@ -332,14 +327,16 @@ function FUN_0_RECIPE(props) {
 
         }
         let save_law = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_0_recipe:save_law')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             let id6payment = document.getElementById("fun_c_select_payment").value;
             formData.set('id6payment', id6payment);
-            manage_law(true);
-            save_desc();
-            save_fun0();
-            save_clock();
+            holdSubmit('fun_0_recipe:save_law', manage_law(true));
+            holdSubmit('fun_0_recipe:save_law', save_desc());
+            holdSubmit('fun_0_recipe:save_law', save_fun0());
+            holdSubmit('fun_0_recipe:save_law', save_clock());
         }
 
         let save_desc = () => {
@@ -347,7 +344,7 @@ function FUN_0_RECIPE(props) {
             formData.set('description', description);
             formData.set('version', currentVersion);
             formData.set('fun0Id', currentItem.id);
-            manage_fun_1(false);
+            return manage_fun_1(false);
         }
         let manage_fun_1 = (useMySwal) => {
             appendDocumentarySourceCommand(formData, currentItem);
@@ -359,11 +356,11 @@ function FUN_0_RECIPE(props) {
 
 
             if (_CHILD.item_0) {
-                FUNService.update_1(_CHILD.item_0, formData)
+                return FUNService.update_1(_CHILD.item_0, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             props.requestUpdate(currentItem.id)
                         } else {
@@ -377,11 +374,11 @@ function FUN_0_RECIPE(props) {
                         console.log(e);
                     });
             } else {
-                FUNService.create_fun1(formData)
+                return FUNService.create_fun1(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             props.requestUpdate(currentItem.id)
                         } else {
@@ -421,7 +418,7 @@ function FUN_0_RECIPE(props) {
 
             formData0.set('rules', rules.join(';'));
 
-            FUNService.update(currentItem.id, formData0).then(response => {
+            return FUNService.update(currentItem.id, formData0).then(response => {
                 if (response.data === 'OK') props.requestUpdate(currentItem.id)
             });
         }
@@ -431,8 +428,8 @@ function FUN_0_RECIPE(props) {
                 <form id="form_fun_c_payment" onSubmit={save_law}>
                     {_COMPONENT_PAYMENT()}
                     {_COMPONENT_DESC()}
-                    <div className="col-12 text-center">
-                        <Button type="submit" size="sm" className="my-3" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
+                    <div className="ew-actions">
+                        <Button type="submit" size="sm" id="btn-review"><Icon name="share-square" size={14} /> Guardar cambios</Button>
                     </div>
                 </form>
 

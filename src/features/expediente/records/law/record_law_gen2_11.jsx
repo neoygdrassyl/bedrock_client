@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import DataTable from '@/shared/components/data-table-bridge';
 import RECORD_LAW_SERVICE from '../../api/record_law.service'
@@ -146,7 +147,7 @@ function RECORD_LAW_GEN2_11(props) {
             let _LIST = _GET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -320,14 +321,13 @@ function RECORD_LAW_GEN2_11(props) {
                     cell: row => <>
                         <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
                                 <Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_gen(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_gen(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
 
                     </>
                 },
             ]
             return <DataTable
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -357,7 +357,7 @@ function RECORD_LAW_GEN2_11(props) {
                                 <Icon name="calendar-times" size={16} />
 
                             </span>
-                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_liberty_2" />
+                            <DateInput max="2100-01-01" className="form-control" id="r_lg_liberty_2" />
 
                         </div>
                     </div>
@@ -500,7 +500,7 @@ function RECORD_LAW_GEN2_11(props) {
                                 <Icon name="calendar-times" size={16} />
 
                             </span>
-                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_liberty_2_edit" />
+                            <DateInput max="2100-01-01" className="form-control" id="r_lg_liberty_2_edit" />
 
                         </div>
                     </div>
@@ -694,13 +694,12 @@ function RECORD_LAW_GEN2_11(props) {
                     minWidth: '120px',
                     cell: row => <>
                         <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEditTax(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_tax(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_tax(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
             return <DataTable
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -744,7 +743,7 @@ function RECORD_LAW_GEN2_11(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2" require />
+                            <DateInput max="2100-01-01" className="form-control" id="r_lg_tax_2" require />
                         </div>
                     </div>
                 </div>
@@ -848,7 +847,7 @@ function RECORD_LAW_GEN2_11(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-times" size={16} />
                             </span>
-                            <input type="date" max="2100-01-01" className="form-control" id="r_lg_tax_2_edit" require />
+                            <DateInput max="2100-01-01" className="form-control" id="r_lg_tax_2_edit" require />
                         </div>
                     </div>
                 </div>
@@ -955,27 +954,27 @@ function RECORD_LAW_GEN2_11(props) {
             var _COMPONENT = [];
 
             for (const item in _LIST) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={item}>
                     <div className='row border'>
                         <div className="col-10 py-0"><label> <label className='fw-bold'>{parseInt(item, 10) + 1}.</label> {_LIST[item].desc}</label> </div>
-                        <div className="col-2 py-0"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} name="s_sc1_checks" id={"s_sc1_checks_" + item}
+                        <div className="col-2 py-0"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} aria-label={_LIST[item].desc} name="s_sc1_checks" id={"s_sc1_checks_" + item}
                             defaultValue={_CHECK_ARRAY[item]} onChange={() => manage_rl_sc('sc1')}>
                             {_LIST[item].alt
                                 ? <>
-                                    {_LIST[item].alt.map((value2, j) => <option value={j}>{value2}</option>)}
+                                    {_LIST[item].alt.map((value2, j) => <option key={j} value={j}>{value2}</option>)}
                                 </>
                                 : <>
                                     <option value="0" className="text-danger">NO</option>
                                     <option value="1" className="text-success">SI</option>
                                     <option value="2" className="text-success">NA</option>
-                                </>}0
+                                </>}
                         </select> </div>
                     </div>
                     {_LIST[item].subText ?
                         <div className='row border'><div className="col-12 py-0"><label className='ms-4  fw-bold'>{_LIST[item].subText} </label> </div></div>
                         : ''}
                     {_LIST[item].subItems ?
-                        _LIST[item].subItems.map((v, i) => <>
+                        _LIST[item].subItems.map((v, i) => <Fragment key={i}>
 
                             {v.open ?
                                 <div className='row border'>
@@ -991,7 +990,7 @@ function RECORD_LAW_GEN2_11(props) {
                                         defaultValue={_CHECK_ARRAY[8 + v.idOffSet]} onChange={() => manage_rl_sc('sc1')}>
                                         {v.alt
                                             ? <>
-                                                {v.alt.map((value2, j) => <option value={j}>{value2}</option>)}
+                                                {v.alt.map((value2, j) => <option key={j} value={j}>{value2}</option>)}
                                             </>
                                             : <>
                                                 <option value="0" className="text-danger">NO</option>
@@ -1000,10 +999,10 @@ function RECORD_LAW_GEN2_11(props) {
                                     </select> </div>
                                 </div>}
 
-                        </>)
+                        </Fragment>)
                         : ''}
 
-                </>)
+                </Fragment>)
             }
             return <div className="row">{_COMPONENT}</div>
         }
@@ -1017,9 +1016,9 @@ function RECORD_LAW_GEN2_11(props) {
             var _COMPONENT = [];
 
             for (const item in _LIST) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={item}>
                     <div className="col-10 py-0"><label><label className='fw-bold'>{parseInt(item, 10) + 1}.</label> {_LIST[item].desc}</label> </div>
-                    <div className="col-2 py-0"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} name="s_sc2_checks" id={"s_sc2_checks_" + item}
+                    <div className="col-2 py-0"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} aria-label={_LIST[item].desc} name="s_sc2_checks" id={"s_sc2_checks_" + item}
                         defaultValue={_CHECK_ARRAY[item]} onChange={() => manage_rl_sc('sc2')}>
                         {_LIST[item].alt
                             ? <>
@@ -1031,7 +1030,7 @@ function RECORD_LAW_GEN2_11(props) {
                                 <option value="1" className="text-success">SI</option>
                             </>}
                     </select> </div>
-                </>)
+                </Fragment>)
             }
             return <div className="row">{_COMPONENT}</div>
         }
@@ -1340,16 +1339,14 @@ function RECORD_LAW_GEN2_11(props) {
             }
         }
         return (
-            <div className="record_law_gen_11 container my-2">
-                <div className='row  border border-dark bg-primary text-primary-foreground text-center fwb-bold py-2'>
-                    <div className='col'>
-                        <label>CERTIFICADOS</label>
-                    </div>
+            <section className="record_law_gen_11 ew-card">
+                <div className="ew-card__header">
+                    <h3 className="ew-card__title">Certificados</h3>
                 </div>
-                <h3 className="py-3" >Certificado de tradición matrícula inmobiliaria</h3>
-                <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
+                <h4 className="ew-subheading ew-subheading--first">Certificado de tradición matrícula inmobiliaria</h4>
+                <div className="form-check mb-2">
+                    <input className="form-check-input" type="checkbox" id="rl_gen_11_new_liberty_toggle" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="rl_gen_11_new_liberty_toggle">
                         Nuevo certificado de tradición
                     </label>
                 </div>
@@ -1359,7 +1356,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_NEW_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                 </div>
                             </div>
                         </form>
@@ -1369,11 +1366,11 @@ function RECORD_LAW_GEN2_11(props) {
                 {edit
                     ? <>
                         <form id="form_rl_gen_11_edit" onSubmit={edit_liberty}>
-                            <h3 className="my-3 text-center">Actualizar certificado de tradición</h3>
+                            <h5 className="ew-subheading">Actualizar certificado de tradición</h5>
                             {_COMPONENT_EDIT_LIBERTY()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                 </div>
                             </div>
                         </form>
@@ -1382,10 +1379,10 @@ function RECORD_LAW_GEN2_11(props) {
 
                 {_COMPONENT_CHECK_1()}
 
-                <h3 className="py-3" >Documento Oficial de Nomenclatura</h3>
-                <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setNewTax(e.target.checked)} />
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
+                <h4 className="ew-subheading">Documento oficial de nomenclatura</h4>
+                <div className="form-check mb-2">
+                    <input className="form-check-input" type="checkbox" id="rl_gen_11_new_tax_toggle" onChange={(e) => setNewTax(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="rl_gen_11_new_tax_toggle">
                         Nuevo documento
                     </label>
                 </div>
@@ -1395,7 +1392,7 @@ function RECORD_LAW_GEN2_11(props) {
                             {_COMPONENT_NEW_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                 </div>
                             </div>
                         </form>
@@ -1405,18 +1402,18 @@ function RECORD_LAW_GEN2_11(props) {
                 {editTax
                     ? <>
                         <form id="form_rl_gen_11_edit_tax" onSubmit={edit_tax}>
-                            <h3 className="my-3 text-center">Actualizar documento</h3>
+                            <h5 className="ew-subheading">Actualizar documento</h5>
                             {_COMPONENT_EDIT_TAX()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                 </div>
                             </div>
                         </form>
                     </>
                     : ""}
                 {_COMPONENT_CHECK_2()}
-            </div >
+            </section>
         );
 }
 

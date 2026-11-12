@@ -1,6 +1,7 @@
 import { dateParser, dateParser_finalDate } from '../../../../../shared/config/customClasses/typeParse';
 import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';
+import { formatDateInputValue } from '@/shared/components/DateInput';
 
 function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
 
@@ -77,7 +78,7 @@ function FUN_REPORT_DATA({ translation, swaMsg, globals, currentItem }) {
                 ],
                 [
                     { id: 'deadline', value: 'Fecha Limite (Fecha radicacion mas 10 dias hábiles)', readOnly: true },
-                    { value: dateParser_finalDate(_CHILD[2], 10), readOnly: true },
+                    { value: formatDateInputValue(dateParser_finalDate(_CHILD[2], 10)) || dateParser_finalDate(_CHILD[2], 10), readOnly: true },
                 ],
                 [
                     { id: 'planning-office', value: 'Oficio de Planeacion', readOnly: true },

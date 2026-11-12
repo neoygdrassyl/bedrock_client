@@ -421,7 +421,7 @@ describe('FunClocks — Render (fun_clock, fun_c_clocks, fun_clock_control, fun_
 
     fireEvent.click(screen.getByText(/CANCELAR PROCESO DE DESISTIMIENTO/i));
 
-    await waitFor(() => expect(FUN_SERVICE.delete_clock).toHaveBeenCalledWith(99));
+    await waitFor(() => expect(FUN_SERVICE.delete_clock).toHaveBeenCalledWith(99, itemWithActiveDesistimiento.id));
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
     });

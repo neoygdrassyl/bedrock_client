@@ -1,5 +1,6 @@
 
 import FUN_SERVICE from '../../../api/fun.service';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { dateParser, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
@@ -159,8 +160,9 @@ export default function FUN_D_ABDICATE(props) {
             return s
         }).join(' ');
 
-        let date_2 = dateParser(RES_DATA.date || ' ');
-        date_2 = date_2.split(' ').map(s => {
+        let date_2 = RES_DATA.date ? dateParser(RES_DATA.date) : '';
+        // No resolution date yet: the field stays empty instead of "Invalid Date".
+        if (date_2) date_2 = date_2.split(' ').map(s => {
             if (!isNaN(s)) return writtenNumber(s)
             return s
         }).join(' ');
@@ -173,7 +175,7 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Fecha</label>
                     <div className="row">
                         <div className="col mx-0 px-0">
-                            <input type="date" className="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} />
+                            <DateInput className="form-control form-control-sm" id="fda_date_1" max="2100-01-01" defaultValue={dayjs().format('YYYY-MM-DD')} />
                         </div>
                         <div className="col mx-0 px-0">
                             <input type="text" className="form-control form-control-sm" id="fda_date_2" max="2100-01-01" defaultValue={date_1} />
@@ -206,7 +208,7 @@ export default function FUN_D_ABDICATE(props) {
                     <label>Resolución Fecha</label>
                     <div className="row">
                         <div className="col mx-0 px-0">
-                            <input type="date" className="form-control form-control-sm" id="fda_res_date_1" max="2100-01-01" defaultValue={RES_DATA.date} />
+                            <DateInput className="form-control form-control-sm" id="fda_res_date_1" max="2100-01-01" defaultValue={RES_DATA.date} />
                         </div>
                         <div className="col mx-0 px-0">
                             <input type="text" className="form-control form-control-sm" id="fda_res_date_2" defaultValue={date_2} />
@@ -345,7 +347,7 @@ export default function FUN_D_ABDICATE(props) {
             <div className='border p-2'>
                 {_COMPONENT()}
                 <div className='text-center my-2'>
-                    <Button variant="destructive" size="sm" className="my-3" onClick={(e) => get_pdf(e)}><Icon name="file-pdf" size={16} /> GENERAR PDF</Button>
+                    <Button variant="destructive" size="sm" className="my-3" onClick={(e) => get_pdf(e)}><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                 </div>
             </div>
         </>

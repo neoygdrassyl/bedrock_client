@@ -33,6 +33,7 @@ import { ENG_MANPOSTERIA } from './eng/recprd_eng_mamporteria';
 import { ENG_FUEGO } from './eng/record_eng_fuego.component';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
+import { SectionCard } from '@/shared/components/SectionCard';
 
 // RECORDS
 
@@ -136,7 +137,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
         retrieveItem(currentId);
         loadArcSteps(currentId);
     }, [currentId, setItem_RecordArc, retrieveItem, loadArcSteps]);
-        const title = { 0: '', 1: 'ESTUDIO', 2: 'CERTIFICACIÓN' }
+        const title = { 0: '', 1: 'Estudio', 2: 'Certificación', 3: 'Estudio 2.0' }
         var formData = new FormData();
         const STEP_PROVIDER = () => {
             let steps = [
@@ -303,21 +304,21 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
         }
         let PARENT_STEP_PROVIDER = () => {
             const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
-            return <div className="p-2">
+            return <div className="mb-3">
                 {STEP_PROVIDER().map((value, index) => {
                     let cbdv = SUBCATEGORIES[index] == '1' ?? true;
-                    return <div className="row border">
-                        <div className="col-1">
+                    return <div className="row border" key={index}>
+                        <div className="col-auto">
                             <div className="custom-control custom-switch">
-                                <div className="form-check form-switch text-end">
-                                    <input className="form-check-input" type="checkbox" defaultChecked={cbdv}
+                                <div className="form-check form-switch m-0">
+                                    <input className="form-check-input" type="checkbox" defaultChecked={cbdv} id={`subcategory_check_${index}`}
                                         name={'subcategory_check'} onChange={() => selectSubCategory(false)} />
                                 </div>
                             </div>
                         </div>
                         <div className="col">
                             <div className="input-group">
-                                <label className="fw-bold">{Object.keys(value)}</label>
+                                <label className="m-0 font-medium" htmlFor={`subcategory_check_${index}`}>{Object.keys(value)}</label>
                             </div>
                         </div>
 
@@ -333,9 +334,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
 
-                                <legend className="my-2 px-3 Collapsible text-start" id="record_eng_41">
-                                    <label className="app-p lead fw-normal">4.1 Revisión Documentos y profesionales requeridos para la actuación urbanística solicitada.</label>
-                                </legend>
+                                <SectionCard id="record_eng_41" title="4.1 Revisión de documentos y profesionales requeridos para la actuación urbanística solicitada">
 
                                 <RecordReviewWorkspace
                                     inventoryLabel="4.1.1 Inventario de Información Aportada"
@@ -388,10 +387,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentItem={currentItem}
                                     currentVersion={currentVersion} noLaw noArc
                                 />
+                                </SectionCard>
 
-                                <legend className="my-2 px-3 bg-light" id="record_eng_430">
-                                    <label className="app-p lead fw-normal">4.1.4 REVISION DE PLANOS, ESTUDIOS Y MEMORIAS</label>
-                                </legend>
+                                <SectionCard id="record_eng_430" title="4.1.4 Revisión de planos, estudios y memorias">
 
                                 <RECORD_ENG_STEP_430
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -402,13 +400,12 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                     requestUpdate={requestUpdate}
                                     requestUpdateRecord={requestUpdateRecord}
                                 />
+                                </SectionCard>
 
-                                <div className="row border my-2 py-4 border border-warning" id="re_cc" style={{ backgroundColor: 'Gainsboro', borderWidth: '3px' }}>
-                                    <div className="col-5 p-1 mt-1 text-end">
-                                        <h3 className="fw-bold">CATEGORIA DEL INFORME </h3>
-                                    </div>
-                                    <div className="col-4">
+                                <SectionCard id="re_cc" title="Categoría del informe" meta="Define los pasos de revisión que aplican. El cambio se guarda al seleccionar.">
+                                    <div className="max-w-sm">
                                         <select className="form-select" defaultValue={currentRecord.category ?? 0} id="r_e_select_category"
+                                            aria-label="Categoría del informe"
                                             onChange={() => selectCategory()}>
                                             <option disabled value="0">SELECCIONE UNA CATEGORIA...</option>
                                             <option value="rule">NO REQUIERE ESTUDIO</option>
@@ -418,19 +415,17 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                         </select>
                                     </div>
-                                </div>
+                                </SectionCard>
 
-                                <legend className="my-2 px-3 Collapsible text-center">
-                                    <label className="app-p lead fw-normal">{title[currentRecord.category] ?? 'DEBE SELECCIONAR UNA CATEGORIA'}</label>
-                                </legend>
+                                {(title[currentRecord.category] ?? 'Debe seleccionar una categoría') !== ''
+                                    ? <h2 className="ew-group-title">{title[currentRecord.category] ?? 'Debe seleccionar una categoría'}</h2>
+                                    : null}
 
                                 {currentRecord.category != null
                                     ?
                                     <>
 
-                                        <legend className="my-2 px-3 Collapsible" id="record_eng_42">
-                                            <label className="app-p lead fw-normal">4.2 DESCRIPCIÓN DEL PROYECTO</label>
-                                        </legend>
+                                        <SectionCard id="record_eng_42" title="4.2 Descripción del proyecto">
                                         <RECORD_ENG_DESC
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
@@ -474,12 +469,11 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                 AIM={"Estructural"}
                                             />
                                         </> : null}
+                                        </SectionCard>
                                         {currentRecord.category == 0
                                             ?
                                             <>
-                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal">4.3 Revisión general</label>
-                                                </legend>
+                                                <SectionCard id="record_eng_43" title="4.3 Revisión general">
 
                                                 <RECORD_ENG_43
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -490,6 +484,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     requestUpdate={requestUpdate}
                                                     requestUpdateRecord={requestUpdateRecord}
                                                 />
+                                                </SectionCard>
                                             </>
                                             : ""}
 
@@ -497,9 +492,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ?
                                             <>
 
-                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
-                                                </legend>
+                                                <SectionCard id="record_eng_43" title="4.3 Revisión del proyecto" meta="Active los pasos que aplican a este informe.">
                                                 {PARENT_STEP_PROVIDER()}
 
                                                 <RECORD_ENG_STEP_431
@@ -559,10 +552,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     requestUpdate={requestUpdate}
                                                     requestUpdateRecord={requestUpdateRecord}
                                                 />
+                                                </SectionCard>
 
-                                                <legend className="my-2 px-3 Collapsible" id="record_eng_44">
-                                                    <label className="app-p lead fw-normal">4.4 REVISIÓN DEL PROYECTO</label>
-                                                </legend>
+                                                <SectionCard id="record_eng_44" title="4.4 Revisión del proyecto">
                                                 <RECORD_ENG_STEP_44
                                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                                     currentItem={currentItem}
@@ -572,6 +564,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     requestUpdate={requestUpdate}
                                                     requestUpdateRecord={requestUpdateRecord}
                                                 />
+                                                </SectionCard>
                                             </>
                                             : ""}
 
@@ -579,9 +572,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ?
                                             <>
 
-                                                <legend className="my-2 px-3 Collapsible" id="record_eng_43">
-                                                    <label className="app-p lead fw-normal">4.3 REVISIÓN DEL PROYECTO</label>
-                                                </legend>
+                                                <SectionCard id="record_eng_43" title="4.3 Revisión del proyecto" meta="Active los pasos que aplican a este informe.">
                                                 {PARENT_STEP_PROVIDER()}
 
                                                 <RECORD_ENG_STEP_431
@@ -690,13 +681,12 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     requestUpdateRecord={requestUpdateRecord}
                                                     version={2}
                                                 />
+                                                </SectionCard>
 
                                             </>
                                             : ""}
 
-                                        <legend className="my-2 px-3 Collapsible" id="record_eng_45">
-                                            <label className="app-p lead fw-normal">4.5 APROBACIÓN</label>
-                                        </legend>
+                                        <SectionCard id="record_eng_45" title="4.5 Aprobación">
 
                                         <RECORD_ENG_REVIEW
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -707,6 +697,7 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                             requestUpdate={requestUpdate}
                                             requestUpdateRecord={requestUpdateRecord}
                                         />
+                                        </SectionCard>
                                     </>
 
                                     : ""}
@@ -714,17 +705,15 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                                 {/* {NAV_FUNA(currentRecord)} */}
                             </> : <>
 
-                                <fieldset className="p-3">
-                                    <div className="text-center">
-                                        <p className="mb-3 text-sm text-muted-foreground">No existe informe estructural para la versión {currentVersion}.</p>
-                                        {Number(currentVersion) === 1 ? <Button size="sm" onClick={() => new_record_eng()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button> : null}
-                                    </div>
-                                </fieldset>
+                                <SectionCard title="Informe estructural">
+                                    <p className="mb-3 text-sm text-muted-foreground">No existe informe estructural para la versión {currentVersion}.</p>
+                                    {Number(currentVersion) === 1 ? <Button size="sm" onClick={() => new_record_eng()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button> : null}
+                                </SectionCard>
 
                             </>}
-                    </> : <div className="text-center">
-                        <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3>
-                    </div>}
+                    </> : <SectionCard>
+                        <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                    </SectionCard>}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentRecord}
@@ -740,9 +729,9 @@ function RECORD_ENG({ translation, swaMsg, globals, currentVersion, currentId, N
                         NAVIGATION={NAVIGATION}
                         pqrsxfun={pqrsxfun}
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                </SectionCard>}
             </div >
         );
 }

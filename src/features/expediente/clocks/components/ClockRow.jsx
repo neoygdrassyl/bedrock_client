@@ -1,7 +1,9 @@
-import React, { useState, useCallback, useMemo, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import dayjs from 'dayjs';
 import { calcularDiasHabiles, sumarDiasHabiles } from '../hooks/useClocksManager';
 import { calculateScheduledLimitForDisplay } from '../utils/scheduleUtils';
+import { isClockRowHidden } from '../utils/clockRows';
+import { cn } from '@/shared/lib/utils';
 import { Icon } from '@/shared/components/icon';
 import { swalFormDialog } from '../../../../shared/utils/swalAdapter';
 import { getIconSvg } from '../../../../shared/utils/iconSvgString';
@@ -13,17 +15,49 @@ export const DEFAULT_CLOCK_COLUMN_VISIBILITY = {
     nextStep: false,
 };
 
+// The event column includes the 16px left padding of the row.
 export const CLOCK_COLUMN_WIDTHS = {
-    EVENT: 300,
-    DATE: 150,
-    LEGAL_LIMIT: 150,
-    LEGAL_ALARM: 150,
-    SCHEDULED_LIMIT: 150,
-    SCHEDULED_ALARM: 150,
-    NEXT_STEP: 220,
+    EVENT: 316,
+    DATE: 172,
+    LEGAL_LIMIT: 168,
+    LEGAL_ALARM: 216,
+    SCHEDULED_LIMIT: 168,
+    SCHEDULED_ALARM: 216,
+    NEXT_STEP: 232,
 };
 
+// Widest the event column grows; beyond it the dates would drift away from the names.
+const EVENT_COLUMN_MAX = '37rem';
+
 const px = (value) => `${value}px`;
+
+const OPTIONAL_COLUMNS = [
+    { key: 'scheduledLimit', label: 'Límite programado', width: CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT },
+    { key: 'scheduledAlarm', label: 'Alarma programada', width: CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM },
+    { key: 'nextStep', label: 'Siguiente paso', width: CLOCK_COLUMN_WIDTHS.NEXT_STEP },
+];
+
+const visibleOptionalColumns = (visibleColumns) => OPTIONAL_COLUMNS.filter((column) => visibleColumns[column.key]);
+
+/**
+ * The one column grid of the events table. The table root sets it as `--tc-cols`; the
+ * header, the group headers and every event row lay out with that same template, so a
+ * column starts at the same x in all of them. The last column takes the free width.
+ */
+export const getClockGridTemplate = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => {
+    const fixed = [CLOCK_COLUMN_WIDTHS.DATE, CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT, CLOCK_COLUMN_WIDTHS.LEGAL_ALARM, ...visibleOptionalColumns(visibleColumns).map((column) => column.width)];
+    const last = fixed.pop();
+    return [`minmax(${px(CLOCK_COLUMN_WIDTHS.EVENT)}, ${EVENT_COLUMN_MAX})`, ...fixed.map(px), `minmax(${px(last)}, 1fr)`].join(' ');
+};
+
+export const getClockColumnCount = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => 4 + visibleOptionalColumns(visibleColumns).length;
+
+const DATE_TEXT_CLASS = 'font-mono tabular-nums';
+// States whose legal limit is derived from an earlier event (see calculateLegalData).
+const DERIVED_LIMIT_STATES = [30, 49, 61, 350, 351, 401];
+
+// Kept here for the callers that import it from the row module.
+export { isClockRowHidden };
 
 const isEpochSentinel = (value) => {
     if (value === 0 || value === 1 || value === '0' || value === '1') return true;
@@ -38,100 +72,36 @@ export const formatClockDate = (value) => {
 
 export const getClockRowAlarmInfo = ({ state, isCompleted, hasAdministrativeAct }) => {
     if (state !== 504) return null;
-    if (isCompleted) return { text: 'A tiempo', color: '#2f9e44', icon: 'Check' };
-    if (hasAdministrativeAct) return { text: 'Vencida', color: '#e03131', icon: 'XCircle' };
-    return { text: 'Pendiente', color: '#f08c00', icon: 'Hourglass' };
+    if (isCompleted) return { text: 'A tiempo', color: 'var(--ew-success-text, hsl(var(--accent)))', icon: 'Check' };
+    if (hasAdministrativeAct) return { text: 'Vencida', color: 'var(--ew-danger-text, hsl(var(--destructive)))', icon: 'XCircle' };
+    return { text: 'Pendiente', color: 'var(--ew-warning-text, hsl(var(--warning)))', icon: 'Hourglass' };
 };
 
-export const getClockTableWidth = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => {
-    let width = CLOCK_COLUMN_WIDTHS.EVENT
-        + CLOCK_COLUMN_WIDTHS.DATE
-        + CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT
-        + CLOCK_COLUMN_WIDTHS.LEGAL_ALARM;
+/** Minimum width of the table: below it the scroller scrolls horizontally. */
+export const getClockTableWidth = (visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY) => (
+    CLOCK_COLUMN_WIDTHS.EVENT
+    + CLOCK_COLUMN_WIDTHS.DATE
+    + CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT
+    + CLOCK_COLUMN_WIDTHS.LEGAL_ALARM
+    + visibleOptionalColumns(visibleColumns).reduce((total, column) => total + column.width, 0)
+);
 
-    if (visibleColumns.scheduledLimit) width += CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT;
-    if (visibleColumns.scheduledAlarm) width += CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM;
-    if (visibleColumns.nextStep) width += CLOCK_COLUMN_WIDTHS.NEXT_STEP;
-
-    return width;
-};
-
-export const ClockTableHeader = ({ visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY }) => {
-    const headerStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.75rem 1rem',
-        backgroundColor: '#f8f9fa',
-        borderBottom: '2px solid #dee2e6',
-        fontWeight: 600,
-        fontSize: '0.85rem',
-        color: '#495057',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-    };
-
-    const colStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-    };
-
-    // --- NUEVO: Estilos para columnas fijas (sticky) en el header ---
-    const stickyColStyle = {
-        position: 'sticky',
-        zIndex: 11, // Debe ser mayor que el zIndex del header (10)
-        backgroundColor: '#f8f9fa', // Fondo opaco para no ver el scroll detrás
-    };
-
-    return (
-        <div style={headerStyle}>
-            {/* Columna 1 Fija (Evento) */}
-            <div style={{ 
-                ...colStyle, 
-                ...stickyColStyle,
-                left: 0, // Pegado a la izquierda
-                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.EVENT)}`, 
-                minWidth: px(CLOCK_COLUMN_WIDTHS.EVENT) 
-            }}>
-                <Icon name="list" size={16} /> Evento
-            </div>
-            {/* Columna 2 Fija (Fecha Evento) */}
-            <div style={{ 
-                ...colStyle, 
-                ...stickyColStyle,
-                left: px(CLOCK_COLUMN_WIDTHS.EVENT), // Desplazado por el ancho de la primera columna
-                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.DATE)}`, 
-                minWidth: px(CLOCK_COLUMN_WIDTHS.DATE)
-            }}>
-                <Icon name="calendar" size={16} /> Fecha evento
-            </div>
-
-            {/* Columnas con scroll */}
-            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT) }}>
-                <Icon name="gavel" size={16} /> Límite legal
-            </div>
-            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM) }}>
-                <Icon name="exclamation-triangle" size={16} /> Alarma legal
-            </div>
-            {visibleColumns.scheduledLimit && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT) }}>
-                    <Icon name="calendar-check" size={16} /> Límite programado
-                </div>
-            )}
-            {visibleColumns.scheduledAlarm && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM) }}>
-                    <Icon name="bell" size={16} /> Alarma programada
-                </div>
-            )}
-            {visibleColumns.nextStep && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.NEXT_STEP)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.NEXT_STEP) }}>
-                    <Icon name="arrow-right" size={16} /> Siguiente paso
-                </div>
-            )}
+export const ClockTableHeader = ({ visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY }) => (
+    <div role="row" className="tc-head">
+        <div role="columnheader" className="tc-cell tc-cell-event">
+            <span className="tc-row-slot" aria-hidden="true" />
+            <span>Evento</span>
         </div>
-    );
-};
+        <div role="columnheader" className="tc-cell tc-cell-date">Fecha</div>
+        <div role="columnheader" className="tc-cell">Límite legal</div>
+        <div role="columnheader" className="tc-cell">
+            <span>Estado <span className="font-normal">(alarma legal)</span></span>
+        </div>
+        {visibleOptionalColumns(visibleColumns).map((column) => (
+            <div role="columnheader" className="tc-cell" key={column.key}>{column.label}</div>
+        ))}
+    </div>
+);
 
 
 // Componente ClockRow memoizado para evitar re-renders innecesarios
@@ -148,6 +118,12 @@ export const ClockRow = memo((props) => {
         isHighlighted,
         visibleColumns = DEFAULT_CLOCK_COLUMN_VISIBILITY,
         onDateDraftChange,
+        // Process finished (see workspace/expedientePendingStatus): an event without a date
+        // is a pending record, not a running legal term.
+        processFinished = false,
+        // One of the pending records of that finished process (the events that keep a phase open).
+        isPendingRecord = false,
+        isFlashed = false,
     } = props;
     const { getClock, getClockVersion, FUN_0_TYPE_TIME, suspensionPreActa, suspensionPostActa, extension, currentItem, calculateDaysSpent, viaTime } = helpers;
 
@@ -159,8 +135,6 @@ export const ClockRow = memo((props) => {
         return getClock(state);
     }, [value.version, getClockVersion, getClock]);
 
-    const [isHovered, setIsHovered] = useState(false);
-    
     // SOLUCIÓN: Estado local para el input de fecha - evita re-renders del padre
     const originalDate = clock?.date_start ?? value.manualDate ?? '';
     const [localDateValue, setLocalDateValue] = useState(originalDate);
@@ -199,14 +173,19 @@ export const ClockRow = memo((props) => {
         const currentDate = clock?.date_start ?? value.manualDate;
         
         if (currentDate) {
-            return <Icon name="check-circle" size={16} style={{ color: '#2f9e44', fontSize: '0.9rem' }} />;
+            return <Icon name="check-circle" size={16} style={{ color: 'var(--ew-success-text, hsl(var(--accent)))', fontSize: '0.9rem' }} />;
         }
         
         if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) {
-             return <Icon name="minus-circle" size={16} style={{ color: '#dee2e6', fontSize: '0.9rem' }} />;
+             return <Icon name="minus-circle" size={16} style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.9rem' }} />;
         }
 
-        return <Icon name="clock" size={16} style={{ color: '#fcc419', fontSize: '0.9rem' }} />;
+        // Finished process: only the pending records keep the "waiting" mark.
+        if (processFinished && !isPendingRecord) {
+            return <Icon name="minus-circle" size={16} style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.9rem' }} />;
+        }
+
+        return <Icon name="clock" size={16} style={{ color: 'hsl(var(--warning))', fontSize: '0.9rem' }} />;
     };
 
 
@@ -348,7 +327,16 @@ export const ClockRow = memo((props) => {
         const isCompleted = !!clock?.date_start;
         const state = value.state;
 
+        // Presentation only: in a finished process an event without a date is listed as a
+        // pending record; its limit stays visible in the "Límite legal" column and here as the tooltip.
+        // Only the events counted as pending records read "Pendiente por registrar"; any other
+        // event without a date (optional, or of a phase that did close) just has no record.
+        const pendingInfo = (title) => (isPendingRecord
+            ? { text: 'Pendiente por registrar', color: 'var(--ew-warning-text, hsl(var(--warning)))', icon: 'Hourglass', title }
+            : { text: 'Sin registro', color: 'var(--tc-text-3, hsl(var(--muted-foreground)))', icon: null, title });
+
         if (state === 504) {
+            if (processFinished && !isCompleted) return pendingInfo('Sin plazo fijo · sin registro');
             const actoAdministrativo = getClock(70);
             return getClockRowAlarmInfo({
                 state,
@@ -359,6 +347,9 @@ export const ClockRow = memo((props) => {
 
         if (!legalData || !legalData.limitDate) return null;
         const { limitDate } = legalData;
+        if (processFinished && !isCompleted && !(state === 34 && getClock(35)?.date_start)) {
+            return pendingInfo(`Límite legal ${formatDate(limitDate)} · sin registro`);
+        }
         const limitMoment = dayjs(limitDate);
         const today = dayjs(systemDate);
 
@@ -381,11 +372,11 @@ export const ClockRow = memo((props) => {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
-                color = '#e03131';
+                color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                 icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
-                color = '#2f9e44';
+                color = 'var(--ew-success-text, hsl(var(--accent)))';
                 icon = 'Check';
             }
         } else {
@@ -395,17 +386,17 @@ export const ClockRow = memo((props) => {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
-                color = '#e03131';
+                color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                 icon = 'AlertCircle';
             } else {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
-                color = '#f08c00';
+                color = 'var(--ew-warning-text, hsl(var(--warning)))';
                 icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
-                    color = '#e03131';
+                    color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                     icon = 'AlertTriangle';
                 }
             }
@@ -415,14 +406,16 @@ export const ClockRow = memo((props) => {
     
     const alarmInfo = getAlarmInfo();
 
+    const renderStatus = (info) => (
+        <span className="tc-status" style={{ color: info.color }} title={info.title || undefined}>
+            {info.icon && <Icon name={info.icon} size={16} aria-hidden="true" />}
+            <span>{info.text}</span>
+        </span>
+    );
+
     const renderAlarmColumn = () => {
-        if (!alarmInfo) return null;
-        return (
-            <div className="d-flex align-items-center" style={{ color: alarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {alarmInfo.icon && <Icon name={alarmInfo.icon} size={16} className="me-1" />}
-                {alarmInfo.text}
-            </div>
-        );
+        if (!alarmInfo || !alarmInfo.text) return null;
+        return renderStatus(alarmInfo);
     };
 
     // =====================================================
@@ -446,11 +439,11 @@ export const ClockRow = memo((props) => {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const delayDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), completionDate.format('YYYY-MM-DD'));
                 text = `Retraso de ${delayDays} día(s)`;
-                color = '#e03131';
+                color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                 icon = 'AlertCircle';
             } else {
                 text = `A tiempo`;
-                color = '#2f9e44';
+                color = 'var(--ew-success-text, hsl(var(--accent)))';
                 icon = 'Check';
             }
         } else {
@@ -460,17 +453,17 @@ export const ClockRow = memo((props) => {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const overdueDays = calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                 text = `Vencido por ${overdueDays} día(s)`;
-                color = '#e03131';
+                color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                 icon = 'AlertCircle';
             } else {
                 // CORRECCIÓN: Usar formato string YYYY-MM-DD para evitar problemas de timezone
                 const remainingDays = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                 text = `${remainingDays} día(s) restante(s)`;
-                color = '#f08c00';
+                color = 'var(--ew-warning-text, hsl(var(--warning)))';
                 icon = 'Hourglass';
                 
                 if (remainingDays <= 2) {
-                    color = '#e03131';
+                    color = 'var(--ew-danger-text, hsl(var(--destructive)))';
                     icon = 'AlertTriangle';
                 }
             }
@@ -518,7 +511,7 @@ export const ClockRow = memo((props) => {
                         return {
                             text: `Espera: ${depClockDef.name || 'Evento previo'}`,
                             icon: 'PauseCircle',
-                            color: '#868e96'
+                            color: 'hsl(var(--muted-foreground))'
                         };
                     }
                 }
@@ -529,30 +522,20 @@ export const ClockRow = memo((props) => {
         return {
             text: 'Acción requerida',
             icon: 'PlayCircle',
-            color: '#1971c2'
+            color: 'var(--ew-info-text, hsl(var(--primary)))'
         };
     };
 
     const nextStepInfo = getNextStepInfo();
 
     const renderScheduledAlarmColumn = () => {
-        if (!scheduledAlarmInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem' }}>- -</span>;
-        return (
-            <div style={{ display: 'flex', alignItems: 'center', color: scheduledAlarmInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {scheduledAlarmInfo.icon && <Icon name={scheduledAlarmInfo.icon} size={16} className="me-1" />}
-                {scheduledAlarmInfo.text}
-            </div>
-        );
+        if (!scheduledAlarmInfo) return <span className="tc-muted">Sin alarma programada</span>;
+        return renderStatus(scheduledAlarmInfo);
     };
 
     const renderNextStepColumn = () => {
-        if (!nextStepInfo) return <span style={{ color: '#adb5bd', fontSize: '0.75rem', fontStyle: 'italic' }}>Completado</span>;
-        return (
-            <div style={{ display: 'flex', alignItems: 'center', color: nextStepInfo.color, fontWeight: 500, fontSize: '0.8rem' }}>
-                {nextStepInfo.icon && <Icon name={nextStepInfo.icon} size={16} className="me-1" />}
-                {nextStepInfo.text}
-            </div>
-        );
+        if (!nextStepInfo) return <span className="tc-muted">Completado</span>;
+        return renderStatus(nextStepInfo);
     };
 
     // =====================================================
@@ -606,7 +589,7 @@ export const ClockRow = memo((props) => {
                         <div class="tdm-card-header">${getIconSvg("fa-calendar-check", 14, "text-primary")} Fecha Real</div>
                         <div class="tdm-card-body">
                             <div class="tdm-big-value">${currentDate}</div>
-                            ${legalData.baseDate ? `<div className="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
+                            ${legalData.baseDate ? `<div class="tdm-sub-value">Calculado desde: ${formatDate(legalData.baseDate)}</div>` : ''}
                         </div>
                     </div>
 
@@ -628,9 +611,9 @@ export const ClockRow = memo((props) => {
                 </div>
 
                 ${value.legalSupport ? `
-                <div className="tdm-section">
-                    <div className="tdm-section-title"><Icon name="balance-scale" size={16} /> Soporte Legal</div>
-                    <div className="tdm-legal-text">
+                <div class="tdm-section">
+                    <div class="tdm-section-title">${getIconSvg('fa-balance-scale')} Soporte Legal</div>
+                    <div class="tdm-legal-text">
                         ${value.legalSupport}
                     </div>
                 </div>
@@ -673,9 +656,8 @@ export const ClockRow = memo((props) => {
         });
     };
 
-    if (value.show === false) return null;
-    if (value.requiredClock && !getClockScoped(value.requiredClock)?.date_start) return null;
-    if (value.optional && !clock) return null;
+    // Rows outside the current path of the process (definition logic, unchanged).
+    if (isClockRowHidden({ value, clock, getClock, getClockVersion })) return null;
 
     const currentDate = clock?.date_start ?? value.manualDate ?? '';
     const canEditDate = value.editableDate !== false;
@@ -684,133 +666,114 @@ export const ClockRow = memo((props) => {
     const eventName = value.name ?? sentenceCaseEs(clock?.name) ?? '';
 
     const rowIcon = getRowIcon();
-    
-    const titleClassName = `row-title text-truncate sticky ${isHighlighted ? 'title-highlight' : ''}`;
-    const dateInputClassName = `form-control form-control-sm border-0 bg-transparent dates-input-class ${localDateValue ? '' : 'padding-date-input'}`;
-    
-    const ACTIVE_BG = 'rgba(245, 245, 245)';   // .active-row-container
-    const ACTIVE_HOVER_BG = 'rgba(242, 242, 242)'; // .active-row-container:hover
 
-    const backgroundColor = isHighlighted
-    ? (isHovered ? ACTIVE_HOVER_BG : ACTIVE_BG)
-    : '#fff';
+    const hasLimitRule = Boolean(value.limit) || DERIVED_LIMIT_STATES.includes(value.state);
+    const missingLimitText = value.state === 504
+        ? 'Sin plazo fijo'
+        : hasLimitRule ? 'Evento previo sin fecha' : 'Sin límite legal';
 
-
-    const rowStyle = {
-        display: 'flex',
-        alignItems: 'stretch',
-        padding: '0.5rem 1rem',
-        backgroundColor: isHighlighted ? '#ffffffff' : '#fff',
-        borderBottom: '1px solid #f1f3f5',
-        transition: 'background-color 0.2s',
-    };
-
-    const colStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 0.5rem',
-    };
-    
-    // --- NUEVO: Estilos para columnas fijas (sticky) en cada fila ---
-    const stickyColStyle = {
-        position: 'sticky',
-        zIndex: 1, // z-index para filas, menor que el del header
-        // El color de fondo se toma del estilo de la fila para manejar el resaltado
-        backgroundColor: backgroundColor,
-    };
-
+    // Every cell is a track of the shared grid (`--tc-cols`, see getClockGridTemplate).
+    // A date sits in the same box whether it is editable or not: the text starts at the
+    // same x, and the eraser has its own fixed slot so it never moves the value.
     return (
-        <div style={rowStyle} 
-             className={isHighlighted ? 'active-row-container' : ''} 
-             >
-            {/* Columna 1 Fija (Evento) */}
-            <div style={{ 
-                ...colStyle, 
-                ...stickyColStyle,
-                left: 0,
-                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.EVENT)}`, 
-                minWidth: px(CLOCK_COLUMN_WIDTHS.EVENT) 
-            }}>
-                <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
-                    {rowIcon}
-                </div>
-                <div 
-                    className={titleClassName} 
+        <div
+            role="row"
+            id={`tc-row-${i}`}
+            className={cn('tc-row', isHighlighted && 'is-phase', isFlashed && 'is-flash')}
+            data-state={String(value.state)}
+        >
+            <div role="cell" className="tc-cell tc-cell-event">
+                <span className="tc-row-slot" aria-hidden="true">{rowIcon}</span>
+                <button
+                    type="button"
+                    className={cn('tc-row-name', isHighlighted && 'title-highlight')}
                     onClick={openDetailModal}
-                    title="Ver detalles"
-                    style={{ flex: 1, cursor: 'pointer', minWidth: 0 }}
+                    title={eventName}
+                    aria-label={`Ver detalles de ${eventName}`}
                 >
-                    {eventName}
+                    <span className="tc-row-name-text">{eventName}</span>
                     {clock?.desc && clock.desc.includes('|| OBS:') && (
-                        <Icon name="comment-dots" size={12} className="ms-2 text-info" title="Tiene observaciones" />
+                        <Icon name="comment-dots" size={12} className="shrink-0 text-primary" title="Tiene observaciones" />
                     )}
-                </div>
+                </button>
             </div>
 
-            {/* Columna 2 Fija (Fecha Evento) */}
-            <div style={{ 
-                ...colStyle,
-                ...stickyColStyle,
-                left: px(CLOCK_COLUMN_WIDTHS.EVENT),
-                flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.DATE)}`, 
-                minWidth: px(CLOCK_COLUMN_WIDTHS.DATE),
-            }}>
+            <div role="cell" className="tc-cell tc-cell-date">
                 {canEditDate ? (
-                    <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                        <input 
-                            type="date" 
-                            className={dateInputClassName}
-                            style={{fontSize: '0.85rem', color: '#495057', fontWeight: 500, flex: 1}}
-                            id={'clock_exp_date_' + i} 
-                            value={localDateValue} 
-                            max="2100-01-01" 
-                            onChange={handleDateChange}
-                            onBlur={handleDateBlur} 
-                        />
-                        {localDateValue && (
-                            <button 
-                                style={{ background: 'none', border: 'none', padding: '0 0.25rem', cursor: 'pointer', color: '#6c757d' }}
-                                onClick={() => onDelete(value)} 
-                                title="Eliminar fecha"
-                            >
-                                <Icon name="eraser" size={16} />
-                            </button>
-                        )}
-                    </div>
+                    <>
+                        <span className="tc-date" data-empty={localDateValue ? undefined : 'true'}>
+                            <input
+                                type="date"
+                                className={cn('tc-date-input', DATE_TEXT_CLASS)}
+                                id={'clock_exp_date_' + i}
+                                aria-label={`Fecha de ${eventName}`}
+                                value={localDateValue}
+                                max="2100-01-01"
+                                onChange={handleDateChange}
+                                onBlur={handleDateBlur}
+                            />
+                            {/* At rest the date reads dd/mm/yyyy like every read-only date; the native field shows while editing. */}
+                            <span className={cn('tc-date-display', DATE_TEXT_CLASS)} aria-hidden="true">
+                                {localDateValue ? formatDate(localDateValue) : 'dd/mm/aaaa'}
+                            </span>
+                        </span>
+                        <span className="tc-row-slot">
+                            {localDateValue ? (
+                                <button
+                                    type="button"
+                                    className="tc-row-erase"
+                                    onClick={() => onDelete(value)}
+                                    title="Eliminar fecha"
+                                    aria-label={`Eliminar la fecha de ${eventName}`}
+                                >
+                                    <Icon name="eraser" size={16} aria-hidden="true" />
+                                </button>
+                            ) : null}
+                        </span>
+                    </>
                 ) : (
-                    <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#495057' }}>
-                        {formatDate(currentDate)}
+                    <span className="tc-date is-readonly" data-empty={currentDate ? undefined : 'true'}>
+                        {currentDate ? (
+                            <span className={cn('tc-date-display', DATE_TEXT_CLASS)}>{formatDate(currentDate)}</span>
+                        ) : (
+                            <span className="tc-muted">Sin fecha registrada</span>
+                        )}
                     </span>
                 )}
             </div>
 
-            {/* Columnas con scroll */}
-            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_LIMIT) }}>
-                <span style={{ fontSize: '0.85rem', color: '#495057' }}>
-                    {legalData.limitDate ? formatDate(legalData.limitDate) : '- -'}
-                </span>
+            <div role="cell" className="tc-cell">
+                {legalData.limitDate ? (
+                    <span className={cn('tc-date-text', DATE_TEXT_CLASS)} title={legalData.tooltip || undefined}>
+                        {formatDate(legalData.limitDate)}
+                    </span>
+                ) : (
+                    <span className="tc-muted">{missingLimitText}</span>
+                )}
             </div>
 
-            <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.LEGAL_ALARM) }}>
+            <div role="cell" className="tc-cell">
                 {renderAlarmColumn()}
             </div>
 
             {visibleColumns.scheduledLimit && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_LIMIT) }}>
-                    <span style={{ fontSize: '0.85rem', color: '#495057' }}>
-                        {scheduledData && scheduledData.limitDate ? formatDate(scheduledData.limitDate) : '- -'}
-                    </span>
+                <div role="cell" className="tc-cell">
+                    {scheduledData && scheduledData.limitDate ? (
+                        <span className={cn('tc-date-text', DATE_TEXT_CLASS)}>{formatDate(scheduledData.limitDate)}</span>
+                    ) : (
+                        <span className="tc-muted">Sin programar</span>
+                    )}
                 </div>
             )}
 
             {visibleColumns.scheduledAlarm && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.SCHEDULED_ALARM) }}>
+                <div role="cell" className="tc-cell">
                     {renderScheduledAlarmColumn()}
                 </div>
             )}
 
             {visibleColumns.nextStep && (
-                <div style={{ ...colStyle, flex: `0 0 ${px(CLOCK_COLUMN_WIDTHS.NEXT_STEP)}`, minWidth: px(CLOCK_COLUMN_WIDTHS.NEXT_STEP) }}>
+                <div role="cell" className="tc-cell">
                     {renderNextStepColumn()}
                 </div>
             )}

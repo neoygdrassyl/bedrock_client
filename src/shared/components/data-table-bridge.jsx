@@ -19,7 +19,39 @@ import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { cn } from '@/shared/lib/utils';
-import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
+
+// Unified pagination: a table with more rows than the smallest page size paginates
+// by default. Consumers opt out with `pagination={false}` (editable grids, tables
+// with totals rows, anything that must show or print every row).
+const AUTO_PAGINATION_PAGE_SIZE = 10;
+const EXPLICIT_PAGINATION_PAGE_SIZE = 20;
+const DEFAULT_ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
+
+function PagerButton({ label, onClick, disabled, children }) {
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      className="h-8 w-8 p-0"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </Button>
+  );
+}
 
 /**
  * Bridge component: accepts react-data-table-component props,
@@ -27,16 +59,22 @@ import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from '
  *
  * Drop-in replacement: change import from 'react-data-table-component'
  * to '@/shared/components/data-table-bridge'.
+ *
+ * Pagination differs from react-data-table-component on purpose:
+ *   - `pagination` omitted → automatic: on when there are more than 10 rows (10/25/50 per page).
+ *   - `pagination` / `pagination={true}` → always on (20 per page unless `paginationPerPage`).
+ *   - `pagination={false}` → never; every row is rendered.
+ *   - `paginationServer` keeps working as in rdt and is never switched on automatically.
  */
 export function DataTableBridge({
   columns: rdtColumns = [],
   data = [],
-  pagination = false,
-  paginationPerPage = 20,
+  pagination,
+  paginationPerPage,
   paginationRowsPerPageOptions,
   paginationComponentOptions,
   // Server-side pagination (opt-in, mirrors the react-data-table-component API).
-  // Off by default so the ~98 existing consumers keep paginating client-side.
+  // Off by default so existing consumers keep paginating client-side.
   paginationServer = false,
   paginationTotalRows = 0,
   // 1-based current page. In server mode the parent owns the page number, so
@@ -82,9 +120,15 @@ export function DataTableBridge({
     return [];
   });
   const [expanded, setExpanded] = useState({});
+  const rowCount = Array.isArray(data) ? data.length : 0;
+  const paginationEnabled = pagination == null
+    ? !paginationServer && rowCount > AUTO_PAGINATION_PAGE_SIZE
+    : Boolean(pagination);
+  const defaultPageSize = paginationPerPage
+    || (pagination ? EXPLICIT_PAGINATION_PAGE_SIZE : AUTO_PAGINATION_PAGE_SIZE);
   const [paginationState, setPaginationState] = useState({
     pageIndex: 0,
-    pageSize: paginationPerPage,
+    pageSize: defaultPageSize,
   });
   const rowsPerPageId = useId();
 
@@ -174,10 +218,17 @@ export function DataTableBridge({
     ));
   }, [paginationServer, paginationPage]);
 
+  // Client mode: go back to the first page when the number of rows changes (filter,
+  // add, delete) but keep the page when the same rows are merely re-rendered or edited.
+  useEffect(() => {
+    if (paginationServer) return;
+    setPaginationState((current) => (current.pageIndex === 0 ? current : { ...current, pageIndex: 0 }));
+  }, [paginationServer, rowCount]);
+
   // In server mode `data` is already the current page, so TanStack must not
   // slice it again; it only needs the total page count to drive the controls.
   const serverPageCount = paginationServer
-    ? Math.max(1, Math.ceil((paginationTotalRows || 0) / (paginationState.pageSize || paginationPerPage)))
+    ? Math.max(1, Math.ceil((paginationTotalRows || 0) / (paginationState.pageSize || defaultPageSize)))
     : undefined;
 
   // Page/size changes are owned by the parent in server mode: apply them to
@@ -203,7 +254,11 @@ export function DataTableBridge({
     const next = typeof updater === 'function' ? updater(sorting) : updater;
     setSorting(next);
 
-    if (!sortServer) return;
+    if (!sortServer) {
+      // A new order starts from the first page.
+      setPaginationState((current) => (current.pageIndex === 0 ? current : { ...current, pageIndex: 0 }));
+      return;
+    }
     const [active] = next;
     if (!active) {
       onSort?.(null, null);
@@ -225,7 +280,10 @@ export function DataTableBridge({
     // option-merging reason as pageCount above.
     manualSorting: sortServer,
     ...(sortServer ? {} : { getSortedRowModel: getSortedRowModel() }),
-    ...(pagination && {
+    ...(paginationEnabled && {
+      // Page resets are handled above (row count / sort changes); the automatic one
+      // would send the user back to page 1 on every parent re-render that rebuilds `data`.
+      autoResetPageIndex: false,
       // Client mode keeps the row model that slices locally; server mode swaps
       // it for manualPagination + an explicit pageCount.
       // `manualPagination` and `pageCount` are always passed, never omitted:
@@ -244,7 +302,7 @@ export function DataTableBridge({
     state: {
       sorting,
       expanded,
-      ...(pagination && { pagination: paginationState }),
+      ...(paginationEnabled && { pagination: paginationState }),
     },
   });
 
@@ -270,10 +328,17 @@ export function DataTableBridge({
   };
 
   const cellPadding = dense ? 'py-1 px-2 text-xs' : 'py-2 px-3 text-sm';
-  const rowsPerPageOptions = Array.isArray(paginationRowsPerPageOptions) && paginationRowsPerPageOptions.length
-    ? paginationRowsPerPageOptions
-    : [paginationPerPage];
-  const rowsPerPageText = paginationComponentOptions?.rowsPerPageText || 'Filas por página:';
+  // The current size is always offered, even when it is not one of the standard options.
+  const rowsPerPageOptions = Array.from(new Set([
+    ...(Array.isArray(paginationRowsPerPageOptions) && paginationRowsPerPageOptions.length
+      ? paginationRowsPerPageOptions
+      : DEFAULT_ROWS_PER_PAGE_OPTIONS),
+    defaultPageSize,
+    paginationState.pageSize,
+  ].map(Number).filter((size) => Number.isFinite(size) && size > 0))).sort((a, b) => a - b);
+  const rowsPerPageText = paginationComponentOptions?.rowsPerPageText || 'Filas por página';
+  const rangeSeparatorText = paginationComponentOptions?.rangeSeparatorText || 'de';
+  const showRowsPerPage = !paginationComponentOptions?.noRowsPerPage;
 
   const getColumnStyle = (columnDef) => {
     const style = {};
@@ -311,19 +376,21 @@ export function DataTableBridge({
           'rdt_Table rounded-[var(--radius)] border border-border overflow-auto',
           fixedHeader && 'overflow-y-auto'
         )}
+        aria-busy={progressPending || undefined}
         style={fixedHeader ? { maxHeight: fixedHeaderScrollHeight || '400px' } : undefined}
       >
         <Table>
           {!noTableHead && (
-            <TableHeader className="rdt_TableHead bg-muted/40 sticky top-0 z-10">
+            <TableHeader className="rdt_TableHead bg-muted sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="rdt_TableHeadRow border-b-border/60">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
+                      aria-sort={header.column.getIsSorted() ? (header.column.getIsSorted() === 'desc' ? 'descending' : 'ascending') : undefined}
                       className={cn(
                         cellPadding,
-                        'font-semibold text-[0.6875rem] uppercase tracking-wide text-muted-foreground',
+                        'h-auto font-semibold text-[0.6875rem] uppercase tracking-wide text-foreground/80',
                         getColumnAlignmentClass(header.column.columnDef),
                         header.column.getCanSort() && 'cursor-pointer select-none hover:text-foreground transition-colors'
                       )}
@@ -425,65 +492,67 @@ export function DataTableBridge({
         </Table>
       </div>
 
-      {pagination && !progressPending && (
-        <div className="rdt_Pagination flex flex-wrap items-center justify-between gap-2 text-sm pt-1">
-          <div className="flex items-center gap-2">
-            <label htmlFor={rowsPerPageId} className="text-xs text-muted-foreground">
-              {rowsPerPageText}
-            </label>
-            <select
-              id={rowsPerPageId}
-              aria-label={rowsPerPageText}
-              className="h-7 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-              value={String(table.getState().pagination.pageSize)}
-              onChange={(event) => {
-                // Routed through the shared handler so server mode is notified;
-                // it also resets to the first page, as before.
-                handlePaginationChange({
-                  pageIndex: 0,
-                  pageSize: Number(event.target.value),
-                });
-              }}
-            >
-              {rowsPerPageOptions.map((option) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-          </div>
-          <span className="text-muted-foreground text-xs">
-            {/* In server mode the row model only holds the current page, so the
-                record count has to come from the server's total. */}
-            {paginationServer ? paginationTotalRows : table.getFilteredRowModel().rows.length} registros
-            {' · '}
-            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
-          </span>
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </Button>
-            {table.getPageCount() <= 7 ? (
-              Array.from({ length: table.getPageCount() }, (_, i) => (
-                <Button
-                  key={i}
-                  variant={table.getState().pagination.pageIndex === i ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-7 w-7 p-0 text-xs"
-                  onClick={() => table.setPageIndex(i)}
+      {paginationEnabled && !progressPending && (() => {
+        const { pageIndex, pageSize } = table.getState().pagination;
+        const totalRows = paginationServer ? (paginationTotalRows || 0) : table.getPrePaginationRowModel().rows.length;
+        const pageCount = Math.max(1, table.getPageCount() || 1);
+        const firstRow = totalRows ? pageIndex * pageSize + 1 : 0;
+        const lastRow = Math.min(totalRows, (pageIndex + 1) * pageSize);
+
+        return (
+          <nav
+            aria-label="Paginación de la tabla"
+            className="rdt_Pagination flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-1 text-xs text-muted-foreground"
+          >
+            {showRowsPerPage ? (
+              <div className="flex items-center gap-2">
+                <label htmlFor={rowsPerPageId} className="m-0 text-xs text-muted-foreground">
+                  {rowsPerPageText}
+                </label>
+                <select
+                  id={rowsPerPageId}
+                  className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={String(pageSize)}
+                  onChange={(event) => {
+                    // Routed through the shared handler so server mode is notified;
+                    // it also resets to the first page.
+                    handlePaginationChange({
+                      pageIndex: 0,
+                      pageSize: Number(event.target.value),
+                    });
+                  }}
                 >
-                  {i + 1}
-                </Button>
-              ))
-            ) : (
-              <span className="text-xs text-muted-foreground px-2">
-                {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+                  {rowsPerPageOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+            <div className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-2">
+              {/* In server mode the row model only holds the current page, so the
+                  total has to come from the server. */}
+              <span className="tabular-nums text-foreground/80" aria-live="polite">
+                {firstRow}–{lastRow} {rangeSeparatorText} {totalRows}
+                <span className="sr-only">. Página {pageIndex + 1} de {pageCount}</span>
               </span>
-            )}
-            <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center gap-1">
+                <PagerButton label="Primera página" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+                  <ChevronsLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                </PagerButton>
+                <PagerButton label="Página anterior" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                  <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                </PagerButton>
+                <PagerButton label="Página siguiente" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                  <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </PagerButton>
+                <PagerButton label="Última página" onClick={() => table.setPageIndex(pageCount - 1)} disabled={!table.getCanNextPage()}>
+                  <ChevronsRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </PagerButton>
+              </div>
+            </div>
+          </nav>
+        );
+      })()}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';
@@ -238,8 +239,8 @@ export default function RECORD_ARC_AREAS_2(props) {
         if (!STEP.id) return {};
         var value = STEP['json']
         if (!value) return {};
-        value = JSON.parse(JSON.parse(value));
-        return value
+        value = parseLegacyJson(value, {}, `record_arc_areas_2:step.${_id_public}.json`);
+        return value ?? {}
     }
     let _ADD_AREAS = (_array, ss = ",") => {
         if (!_array) return 0;
@@ -934,6 +935,14 @@ export default function RECORD_ARC_AREAS_2(props) {
         st = Number(st);
         en = Number(en);
 
+        // An empty or out-of-range selection used to fall through and remove row 1 (or save untouched rows).
+        const firstRow = Math.min(st || en, en || st);
+        const lastRow = Math.max(st || en, en || st);
+        if (!Number.isInteger(firstRow) || !Number.isInteger(lastRow) || firstRow < 1 || lastRow > data.length) {
+            swalError({ title: 'Rango de filas no válido', text: `Indica la fila inicial y la fila final a eliminar (entre 1 y ${data.length}).` });
+            return;
+        }
+
         if (!en && st) en = st
         else if (!st && en) st = en
 
@@ -983,33 +992,28 @@ export default function RECORD_ARC_AREAS_2(props) {
     }
     let _COMPONENT_BTNS = () => {
         return <>
-            <div className='row'>
-                <div className='col-8'>
-                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <Button variant={!openConfig ? "outline" : "default"} size="sm"
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
-                        <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
-                        <Button variant="outline" size="sm" onClick={() => manage_areas(undefined, true)}>GUARDAR CAMBIOS</Button>
-                    </div>
-                    <div>
-                        {saving === 0 ?
-                            <label className='fw-bold'>GUARDANDO...</label>
-                            : ''}
-                        {saving === 1 ?
-                            <label className='fw-bold text-success'>DATOS GUARDADOS</label>
-                            : ''}
-                        {saving === 2 ?
-                            <label className='fw-bold text-danger'>{saveError || 'NO SE PUDO GUARDAR. REVISA LA CONEXIÓN Y VUELVE A INTENTAR.'}</label>
-                            : ''}
-                    </div>
-
+            <div className='ew-toolbar mt-3'>
+                <div className="ew-toolbar__actions" role="group" aria-label="Acciones de la tabla de áreas">
+                    <Button variant="outline" size="sm" aria-pressed={openConfig}
+                        onClick={() => setOc(!openConfig)}>Configurar tabla</Button>
+                    <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>Nueva fila</Button>
+                    <Button size="sm" onClick={() => manage_areas(undefined, true)}>Guardar cambios</Button>
+                    <span className="ew-toolbar__meta" role="status">
+                {saving === 0 ?
+                    <span className='font-semibold'>Guardando…</span>
+                    : ''}
+                {saving === 1 ?
+                    <span className='font-semibold text-success'>Datos guardados</span>
+                    : ''}
+                {saving === 2 ?
+                    <span className='font-semibold text-danger'>{saveError || 'No se pudo guardar. Revisa la conexión y vuelve a intentar.'}</span>
+                    : ''}
+                    </span>
                 </div>
-                <div className='col text-end'>
-                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
-                        <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <Button variant="outline" size="sm" className="text-destructive border-destructive" onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</Button>
-                    </div>
+                <div className="ew-toolbar__actions" role="group" aria-label="Eliminar filas de la tabla de áreas">
+                    <input type='number' step={1} className="form-control form-control-sm ew-num w-20 text-end" id="delete_pos_area" aria-label="Fila inicial a eliminar" placeholder="Desde" />
+                    <input type='number' step={1} className="form-control form-control-sm ew-num w-20 text-end" id="delete_pos_area_end" aria-label="Fila final a eliminar" placeholder="Hasta" />
+                    <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => _REMOVE_TO_TABLE()}>Eliminar filas</Button>
                 </div>
             </div>
         </>
@@ -1135,7 +1139,7 @@ export default function RECORD_ARC_AREAS_2(props) {
                             </div>
                         </div>
                         <div className='col-2'>
-                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>CREAR</Button>
+                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>Crear</Button>
                         </div>
                         <div className='col'>
                             <div className="form-check">
@@ -1568,7 +1572,7 @@ export default function RECORD_ARC_AREAS_2(props) {
             {_COMPONENT_TABLE_2()}
             {_COMPONENT_BTNS()}
             {_COMPONENT_CONFIG()}
-            <h4>Resumen de Tabla (por usos)</h4>
+            <h4 className="ew-subheading">Resumen de la tabla por usos <span className="ew-card__meta">· áreas en m²</span></h4>
             <RECORD_ARC_AREAS_RESUME {...props} />
         </div >
     );

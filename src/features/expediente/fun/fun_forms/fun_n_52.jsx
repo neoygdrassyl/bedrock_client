@@ -1,4 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
 import FUNService from '../../api/fun.service'
@@ -108,37 +110,37 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             _COMPONENT.push(<Fragment key="document-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={'hsl(var(--doc-key-identity))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'DarkOrchid'} />
+                    icon={'FileText'} color={'hsl(var(--doc-key-registration))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'GoldenRod'} />
+                    icon={'FileText'} color={'hsl(var(--doc-key-validity))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'LimeGreen'} />
+                    icon={'FileText'} color={'hsl(var(--doc-key-resume))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'tomato'} />
+                    icon={'FileText'} color={'hsl(var(--doc-key-postgraduate))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-5">{_array[5] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[5]).path + "/" + _FIND_6(_array[5]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'gray'} />
+                    icon={'FileText'} color={'hsl(var(--muted-foreground))'} />
                 : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
@@ -262,7 +264,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527" onChange={() => _GET_YEARS_EXPERIENCE('')} />
+                            <DateInput className="form-control" max="2100-01-01" id="f_527" onChange={() => _GET_YEARS_EXPERIENCE('')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -488,7 +490,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _GET_YEARS_EXPERIENCE('_edit')} />
+                            <DateInput className="form-control" max="2100-01-01" id="f_527_edit" onChange={() => _GET_YEARS_EXPERIENCE('_edit')} />
                         </div>
                     </div>
                     <div className="col-6">
@@ -626,7 +628,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
@@ -635,21 +636,18 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'TELEFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.number}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.email}</span>
                 },
@@ -658,41 +656,35 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.registration}</span>
                 },
                 {
                     name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
+                    cell: row => <span className="ew-num text-sm">{row.registration_date && dayjs(row.registration_date).isValid() ? dayjs(row.registration_date).format('DD/MM/YYYY') : row.registration_date}</span>
                 },
                 {
                     name: 'EXPERIENCIA',
                     selector: row => row.expirience, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
                     cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
                 },
                 {
                     name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
                 },
                 {
                     name: 'SUPERVISION',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
@@ -708,7 +700,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     compact: true,
                     cell: row =>
                         <div className="form-check form-switch">
-                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_52(row)} />
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_52(row)} aria-label={`Profesional activo: ${[row.name, row.surname].filter(Boolean).join(' ') || 'sin nombre'}`} />
                         </div>
                 },
                 {
@@ -720,7 +712,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground m-0 p-2" 
+                                aria-label="Modificar ítem"
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-muted m-0 p-2"
                                 onClick={() => setEdit(row)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
@@ -730,7 +723,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 m-0 p-2" 
+                                aria-label="Eliminar ítem"
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-destructive/40 bg-background text-destructive hover:bg-destructive/10 m-0 ms-1 p-2"
                                 onClick={() => delete_52(row.id)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_52(row.id); }}
                                 style={{cursor: 'pointer'}}>
@@ -740,9 +734,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </>
                 },
             ]
-            return <DataTable
-                noDataComponent="No hay Items"
-                striped="true"
+            return <DataTable pagination={false}
+                noDataComponent="Sin registros"
                 columns={columns_52}
                 data={_LIST}
                 highlightOnHover
@@ -777,8 +770,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
         }
         // FUNCTIONS AND APIS
         let new_52 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_52:new_52')) { e?.preventDefault?.(); return; }
             e.preventDefault();
-            manage_prof();
+            holdSubmit('fun_n_52:new_52', manage_prof());
             let fun0Id = null;
             //
             formData = new FormData();
@@ -827,10 +822,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('docs', docs.join());
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.create_fun52(formData)
+            holdSubmit('fun_n_52:new_52', FUNService.create_fun52(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         document.getElementById('form_fun_52_new').reset();
                     } else {
@@ -840,9 +835,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
         let edit_52 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_52:edit_52')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
 
@@ -889,10 +886,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('docs', docs.join());
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.update_52(edit.id, formData)
+            holdSubmit('fun_n_52:edit_52', FUNService.update_52(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         setEdit(false);
                     } else {
@@ -902,7 +899,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
         let delete_52 = (id) => {
             swalConfirm({
@@ -916,7 +913,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     FUNService.delete_52(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id);
                                 setEdit(false);
                             } else {
@@ -1000,7 +997,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('title', role_type[role]);
             formData.set('active', 1);
 
-            profesionalsService.createOrFind(formData)
+            return profesionalsService.createOrFind(formData)
                 .then(data => {
                     return
                 })
@@ -1064,7 +1061,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                 </div>
                             </div>
                         </form>
@@ -1072,22 +1069,21 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     : ""}
 
                 {_CHILD_52_LIST()}
-                <div className="border p-2 m-2">
-                    <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
-                    <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
-                    <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
-                    <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida</label>
-                    <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "tomato" }} /></a> : Estudios de postgrado</label>
-                     <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "gray" }} /></a> : Certificados</label>
-                </div>
+                <ul className="ew-key" aria-label="Leyenda de documentos">
+                    <li><Icon name="id-card" size={16} style={{ color: 'hsl(var(--doc-key-identity))' }} aria-hidden="true" /> C.C.</li>
+                    <li><Icon name="file-alt" size={16} style={{ color: 'hsl(var(--doc-key-registration))' }} aria-hidden="true" /> Matrícula</li>
+                    <li><Icon name="file-alt" size={16} style={{ color: 'hsl(var(--doc-key-validity))' }} aria-hidden="true" /> Vigencia matricular</li>
+                    <li><Icon name="file-alt" size={16} style={{ color: 'hsl(var(--doc-key-resume))' }} aria-hidden="true" /> Hoja de vida</li>
+                    <li><Icon name="file-alt" size={16} style={{ color: 'hsl(var(--doc-key-postgraduate))' }} aria-hidden="true" /> Estudios de postgrado</li>
+                    <li><Icon name="file-alt" size={16} style={{ color: 'hsl(var(--muted-foreground))' }} aria-hidden="true" /> Certificados</li>
+                </ul>
                 {edit
                     ? <form id="form_fun_52_edit" onSubmit={edit_52}>
-                        <h3 className="my-3 text-center">Actualizar Profesional</h3>
+                        <h3 className="ew-subheading">Actualizar profesional</h3>
                         {_COMPONENT_EDIT()}
-                        <div className="text-center">
-                            <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                        <div className="ew-actions">
+                            <Button size="sm">
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </form>

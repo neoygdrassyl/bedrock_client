@@ -288,7 +288,7 @@ describe('RecordsPH — Render', () => {
     expect(screen.getByText(/PROFESIONAL RESPONSABLE DE LOS PLANOS/i)).toBeInTheDocument();
     expect(screen.getByText(/ARQUITECTO PROYECTISTA/i)).toBeInTheDocument();
     expect(screen.getByText(/IVAN FRANCISCO SOLANO FUENTES/i)).toBeInTheDocument();
-    expect(screen.getByText(/1998-05-14/i)).toBeInTheDocument();
+    expect(screen.getByText('14/05/1998')).toBeInTheDocument();
     expect(screen.queryByText(/Nuevo Profesional/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/No hay Items/i)).not.toBeInTheDocument();
   });

@@ -42,7 +42,7 @@ export function DovelaButton({
       data-tone={tone}
       data-size={size}
       className={cn(
-        'justify-center rounded-[var(--button-radius)] font-medium shadow-[var(--button-shadow)] transition-[background-color,border-color,color,box-shadow]',
+        'justify-center rounded-[var(--button-radius)] font-medium shadow-[shadow:var(--button-shadow)] transition-[background-color,border-color,color,box-shadow]',
         'focus-visible:ring-offset-0',
         fullWidth && 'w-full',
         SIZE_CLASSES[size] || SIZE_CLASSES.md,

@@ -4,6 +4,7 @@ import DataTable from '@/shared/components/data-table-bridge';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { downloadProtectedFile, toProtectedApiPath } from '@/shared/utils/pdfDownload';
@@ -160,7 +161,7 @@ function FunDocumentManagementModal({
                 selector: (row) => row.date,
                 sortable: true,
                 minWidth: '110px',
-                cell: (row) => <span className="text-sm font-mono">{row.date || 'Sin fecha'}</span>,
+                cell: (row) => <span className="text-sm font-mono">{formatDisplayDate(row.date, { empty: 'Sin fecha' })}</span>,
             },
             {
                 name: 'ESTADO',
@@ -220,7 +221,7 @@ function FunDocumentManagementModal({
                                 try {
                                     const response = await FUN_SERVICE.delete_6_h(row.id);
                                     if (response?.data === 'OK') {
-                                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                         resetHistoryForm(documentItem?.date || '');
                                         await loadHistory();
                                         return;
@@ -266,8 +267,8 @@ function FunDocumentManagementModal({
 
             if (response?.data === 'OK') {
                 swalSuccess({
-                    title: historyMode === 'edit' ? swaMsg.generic_success_title : swaMsg.publish_success_title,
-                    text: historyMode === 'edit' ? swaMsg.generic_success_text : swaMsg.publish_success_text,
+                    title: historyMode === 'edit' ? swaMsg.generic_success_title : swaMsg.generic_success_title,
+                    text: historyMode === 'edit' ? swaMsg.generic_success_text : swaMsg.generic_success_text,
                     footer: historyMode === 'edit' ? undefined : swaMsg.text_footer,
                 });
                 resetHistoryForm(documentItem?.date || '');
@@ -356,7 +357,7 @@ function FunDocumentManagementModal({
                         </span>
                         {documentItem?.id_public ? <span className="rounded-full border border-border px-2.5 py-1 font-mono">Código {documentItem.id_public}</span> : null}
                         {documentItem?.id_replace ? <span className="rounded-full border border-border px-2.5 py-1">VR {documentItem.id_replace}</span> : null}
-                        {documentItem?.date ? <span className="rounded-full border border-border px-2.5 py-1">{documentItem.date}</span> : null}
+                        {documentItem?.date ? <span className="rounded-full border border-border px-2.5 py-1">{formatDisplayDate(documentItem.date)}</span> : null}
                         {documentItem?.pages ? <span className="rounded-full border border-border px-2.5 py-1">{documentItem.pages} folios</span> : null}
                     </div>
                 </div>

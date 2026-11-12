@@ -1,5 +1,7 @@
+import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue } from './calcFieldValue';
 
 function RECORD_ENG_STEP_432(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
@@ -121,64 +123,64 @@ function RECORD_ENG_STEP_432(props) {
         let var_j94 = () => document.getElementById('j94') ? document.getElementById('j94').value : 0;
 
         let _set_f93 = () => {
-            if (var_e85() == 0 && document.getElementById('f93')) document.getElementById('f93').value = '';
+            if (var_e85() == 0 && document.getElementById('f93')) setCalcValue('f93', '');
             let op = var_e85() / 20;
             op = op.toFixed(2);
-            if (document.getElementById('f93')) document.getElementById('f93').value = op;
+            if (document.getElementById('f93')) setCalcValue('f93', op);
         }
         let _set_g93 = () => {
-            if (var_e86() == 0 && document.getElementById('g93')) document.getElementById('g93').value = '';
+            if (var_e86() == 0 && document.getElementById('g93')) setCalcValue('g93', '');
             let op = var_e86() / 24;
             op = op.toFixed(2);
-            if (document.getElementById('g93')) document.getElementById('g93').value = op;
+            if (document.getElementById('g93')) setCalcValue('g93', op);
         }
         let _set_h93 = () => {
-            if (var_e87() == 0 && document.getElementById('h93')) document.getElementById('h93').value = '';
+            if (var_e87() == 0 && document.getElementById('h93')) setCalcValue('h93', '');
             let op = var_e87() / 28;
             op = op.toFixed(2);
-            if (document.getElementById('h93')) document.getElementById('h93').value = op;
+            if (document.getElementById('h93')) setCalcValue('h93', op);
         }
         let _set_i93 = () => {
-            if (var_e88() == 0 && document.getElementById('i93')) document.getElementById('i93').value = '';
+            if (var_e88() == 0 && document.getElementById('i93')) setCalcValue('i93', '');
             let op = var_e88() / 10;
             op = op.toFixed(2);
-            if (document.getElementById('i93')) document.getElementById('i93').value = op;
+            if (document.getElementById('i93')) setCalcValue('i93', op);
         }
 
         let _set_f95 = () => {
-            if (var_f85() == 0 && document.getElementById('f95')) document.getElementById('f95').value = '';
+            if (var_f85() == 0 && document.getElementById('f95')) setCalcValue('f95', '');
             let op = var_f85() / 12;
             op = op.toFixed(2);
-            if (document.getElementById('f95')) document.getElementById('f95').value = op;
+            if (document.getElementById('f95')) setCalcValue('f95', op);
         }
         let _set_g95 = () => {
-            if (var_f86() == 0 && document.getElementById('g95')) document.getElementById('g95').value = '';
+            if (var_f86() == 0 && document.getElementById('g95')) setCalcValue('g95', '');
             let op = var_f86() / 14;
             op = op.toFixed(2);
-            if (document.getElementById('g95')) document.getElementById('g95').value = op;
+            if (document.getElementById('g95')) setCalcValue('g95', op);
         }
         let _set_h95 = () => {
-            if (var_f87() == 0 && document.getElementById('h95')) document.getElementById('h95').value = '';
+            if (var_f87() == 0 && document.getElementById('h95')) setCalcValue('h95', '');
             let op = var_f87() / 16;
             op = op.toFixed(2);
-            if (document.getElementById('h95')) document.getElementById('h95').value = op;
+            if (document.getElementById('h95')) setCalcValue('h95', op);
         }
         let _set_i95 = () => {
-            if (var_f88() == 0 && document.getElementById('i95')) document.getElementById('i95').value = '';
+            if (var_f88() == 0 && document.getElementById('i95')) setCalcValue('i95', '');
             let op = var_f88() / 8;
             op = op.toFixed(2);
-            if (document.getElementById('i95')) document.getElementById('i95').value = op;
+            if (document.getElementById('i95')) setCalcValue('i95', op);
         }
 
         let _set_de103 = () => {
             if (var_j94() == 0) {
-                document.getElementById('d103').value = '';
-                //document.getElementById('e103').value = '';
+                setCalcValue('d103', '');
+                //setCalcValue('e103', '');
             }
             let op = Number(var_j94());
             op = op.toFixed(2);
-            document.getElementById('d103').value = op;
-            //document.getElementById('e103').value = op;
+            setCalcValue('d103', op);
+            //setCalcValue('e103', op);
         }
         let _set_d104 = () => {
             let d103 = document.getElementById('d103').value;
@@ -189,7 +191,7 @@ function RECORD_ENG_STEP_432(props) {
                 op = 2.5 * d103;
             }
             op = op.toFixed(2);
-            document.getElementById('d104').value = op;
+            setCalcValue('d104', op);
         }
         let _set_de105 = () => {
             let d104 = document.getElementById('d104').value;
@@ -201,8 +203,8 @@ function RECORD_ENG_STEP_432(props) {
                 op = 0.05
             }
             op = op.toFixed(2);
-            document.getElementById('d105').value = op;
-            //document.getElementById('e105').value = op;
+            setCalcValue('d105', op);
+            //setCalcValue('e105', op);
         }
         let _set_de107 = () => {
             let d103 = document.getElementById('d103').value ?? 0;
@@ -210,8 +212,8 @@ function RECORD_ENG_STEP_432(props) {
             let d106 = document.getElementById('d106').value ?? 0;
             let op = Number(d103) - (Number(d105) + Number(d106));
             op = op.toFixed(2);
-            document.getElementById('d107').value = op;
-            //document.getElementById('e107').value = op;
+            setCalcValue('d107', op);
+            //setCalcValue('e107', op);
         }
         let _set_d108 = () => {
             let d107 = document.getElementById('d107').value;
@@ -222,7 +224,7 @@ function RECORD_ENG_STEP_432(props) {
                 op = 0.1;
             }
             op = op.toFixed(2);
-            document.getElementById('d108').value = op;
+            setCalcValue('d108', op);
         }
         let _set_de109 = () => {
             let d103 = document.getElementById('d103').value ?? 0;
@@ -233,8 +235,8 @@ function RECORD_ENG_STEP_432(props) {
                 op = 10 * d103;
             }
             op = op.toFixed(2);
-            document.getElementById('d109').value = op;
-            //document.getElementById('e109').value = op;
+            setCalcValue('d109', op);
+            //setCalcValue('e109', op);
         }
 
         let _set_def114 = () => {
@@ -244,10 +246,10 @@ function RECORD_ENG_STEP_432(props) {
             let isLCS = document.getElementById('lcs');
             let op = e107 * e108 * 24 / e104;
             op = op.toFixed(2);
-            document.getElementById('d114').value = op;
-            document.getElementById('e114').value = op;
+            setCalcValue('d114', op);
+            setCalcValue('e114', op);
             if (isLCS && isLCS.value == '1') op = 0;
-            document.getElementById('f114').value = op;
+            setCalcValue('f114', op);
         }
         let _set_def115 = () => {
             let e105 = document.getElementById('e105').value ?? 0;
@@ -255,20 +257,20 @@ function RECORD_ENG_STEP_432(props) {
             let isLCS = document.getElementById('lcs');
             let op = (Number(e105) + Number(e106)) * 24;
             op = op.toFixed(2);
-            document.getElementById('d115').value = op;
-            document.getElementById('e115').value = op;
+            setCalcValue('d115', op);
+            setCalcValue('e115', op);
             if (isLCS && isLCS.value == '1') op = 0;
-            document.getElementById('f115').value = op;
+            setCalcValue('f115', op);
         }
 
         let _set_def116 = () => {
             let op = Number(var_j94());
             op = op.toFixed(2);
-            document.getElementById('d116').value = op;
-            document.getElementById('e116').value = op;
+            setCalcValue('d116', op);
+            setCalcValue('e116', op);
             let isLCS = document.getElementById('lcs');
             if (isLCS && isLCS.value == '1') op = 0;
-            document.getElementById('f116').value = op;
+            setCalcValue('f116', op);
         }
 
         let _set_def119 = () => {
@@ -279,7 +281,7 @@ function RECORD_ENG_STEP_432(props) {
             let v118 = document.getElementById('d118').value ?? 0;
             let op = Number(v114) + Number(v115) + Number(v116) + Number(v117) + Number(v118);
             op = op.toFixed(2);
-            document.getElementById('d119').value = op;
+            setCalcValue('d119', op);
 
             v114 = document.getElementById('e114').value ?? 0;
             v115 = document.getElementById('e115').value ?? 0;
@@ -288,7 +290,7 @@ function RECORD_ENG_STEP_432(props) {
             v118 = document.getElementById('e118').value ?? 0;
             op = Number(v114) + Number(v115) + Number(v116) + Number(v117) + Number(v118);
             op = op.toFixed(2);
-            document.getElementById('e119').value = op;
+            setCalcValue('e119', op);
 
             let isLCS = document.getElementById('lcs');
             if (isLCS && isLCS.value == '1') {
@@ -303,7 +305,7 @@ function RECORD_ENG_STEP_432(props) {
                 op = op.toFixed(2);
             }
 
-            document.getElementById('f119').value = op;
+            setCalcValue('f119', op);
         }
 
         let _setStyles = () => {
@@ -353,10 +355,10 @@ function RECORD_ENG_STEP_432(props) {
             let Wconc = ((wcresta + (dcresta - wvalle)) * hcresta / 2) * 24 / dcresta;
             let Wtotal = Wplaca + Wmetaldeck + Wconc;
 
-            document.getElementById('steel_deck_5').value = (Wplaca).toFixed(2);
-            document.getElementById('steel_deck_6').value = (Wmetaldeck).toFixed(2);
-            document.getElementById('steel_deck_7').value = (Wconc).toFixed(2);
-            document.getElementById('steel_deck_8').value = (Wtotal).toFixed(2);
+            setCalcValue('steel_deck_5', (Wplaca).toFixed(2));
+            setCalcValue('steel_deck_6', (Wmetaldeck).toFixed(2));
+            setCalcValue('steel_deck_7', (Wconc).toFixed(2));
+            setCalcValue('steel_deck_8', (Wtotal).toFixed(2));
 
             var formData = new FormData();
             let values = STEEL_DECK.map(item => document.getElementById('steel_deck_' + item.i).value)
@@ -413,7 +415,7 @@ function RECORD_ENG_STEP_432(props) {
                 let carga = CARGA_VIVA_USOS.find(c => c.i == selected_uso);
                 carga.usos.map(uso => {
                     let id = 'carga_vida_' + i + "_" + uso.i;
-                    if (document.getElementById(id)) document.getElementById(id).value = _GET_STEP_TYPE_INDEX('carga_vida_' + i, 'value', uso.i) || uso.default;
+                    if (document.getElementById(id)) setCalcValue(id, _GET_STEP_TYPE_INDEX('carga_vida_' + i, 'value', uso.i) || uso.default);
                 })
             })
         }
@@ -455,7 +457,7 @@ function RECORD_ENG_STEP_432(props) {
         let COMPONENT_01 = () => {
             return <>
                 {step_01_option.map((value, i) => (
-                    <div className="row py-0">
+                    <div className="row py-0" key={i}>
                         <div className="col-10">
                             <div className="input-group">
                                 <label>{value}</label>
@@ -610,7 +612,7 @@ function RECORD_ENG_STEP_432(props) {
                             defaultValue={_GET_STEP_TYPE_INDEX('s4321', 'value', 11) ?? ''} />
                     </div>
                     <div className="col border border-dark ">
-                        <input type="number" step="0.01" id='j92' style={{ background: 'Pink' }}
+                        <input type="number" step="0.01" id='j92' style={{ background: 'hsl(var(--destructive) / 0.12)' }}
                             className="form-control my-1" name="recprd_eng_s4321" onChange={() => update_values()} onBlur={() => manage_step_432()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4321', 'value', 12) ?? ''} />
                     </div>
@@ -645,7 +647,7 @@ function RECORD_ENG_STEP_432(props) {
                             defaultValue={_GET_STEP_TYPE_INDEX('s4321', 'value', 16) ?? ''} />
                     </div>
                     <div className="col border border-dark ">
-                        <input type="number" step="0.01" id='j94' style={{ background: 'Pink' }}
+                        <input type="number" step="0.01" id='j94' style={{ background: 'hsl(var(--destructive) / 0.12)' }}
                             className="form-control my-1" name="recprd_eng_s4321" onChange={() => update_values()} onBlur={() => manage_step_432()}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4321', 'value', 17) ?? ''} />
                     </div>
@@ -825,19 +827,19 @@ function RECORD_ENG_STEP_432(props) {
                 </div>
 
                 <div className="row text-center">
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">Elementos</label>
                     </div>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">(kN/m2)</label>
                     </div>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">(kN/m2)</label>
                     </div>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">(kN/m2)</label>
                     </div>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <input type="text"
                             className="form-control my-1" name="recprd_eng_s4322-2"
                             defaultValue={_GET_STEP_TYPE_INDEX('s4322', 'value', 38) ?? ''} />
@@ -1015,10 +1017,10 @@ function RECORD_ENG_STEP_432(props) {
                     <div className="col"><label></label></div>
                 </div>
                 <div className="row text-center" hidden={version >= 2}>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">USO</label>
                     </div>
-                    <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                    <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                         <label className="fw-bold">(kN/m2)</label>
                     </div>
                 </div>
@@ -1103,7 +1105,7 @@ function RECORD_ENG_STEP_432(props) {
                     </div>
                 </div>
                 <div className="row">
-                    {CARGA_VIVA.map(i => <div className='col-4'>
+                    {CARGA_VIVA.map(i => <div className='col-4' key={i}>
 
                         <div className="row  my-2">
                             <div className="input-group mb-3">
@@ -1112,22 +1114,22 @@ function RECORD_ENG_STEP_432(props) {
                                 </div>
                                 <select className="form-select" id={"carga_vida_use_" + i} name="carga_vida_use" onChange={() => set_carga_vida_use()}
                                     defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0} >
-                                    {CARGA_VIVA_USOS.map(carga => <option value={carga.i}>{carga.name}</option>)}
+                                    {CARGA_VIVA_USOS.map(carga => <option key={carga.i} value={carga.i}>{carga.name}</option>)}
                                 </select>
 
                             </div>
                         </div>
                         <div className="row text-center">
-                            <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                            <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                                 <label className="fw-bold">USO</label>
                             </div>
-                            <div className="col border border-dark" style={{ background: 'lightgray' }}>
+                            <div className="col border border-dark" style={{ background: 'hsl(var(--muted))' }}>
                                 <label className="fw-bold">(kN/m2)</label>
                             </div>
                         </div>
 
                         {CARGA_VIVA_USOS.find(carga => carga.i == (_GET_STEP_TYPE_INDEX('carga_vida_use', 'value', i) ?? 0)).usos.map(uso =>
-                            <>
+                            <Fragment key={uso.name}>
                                 <div className="row text-center">
                                     <div className="col border border-dark">
                                         <label >{uso.name}</label>
@@ -1138,7 +1140,7 @@ function RECORD_ENG_STEP_432(props) {
                                             defaultValue={_GET_STEP_TYPE_INDEX('carga_vida_' + i, 'value', uso.i) ?? uso.default} />
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
 
                         )}
                     </div>)}
@@ -1169,7 +1171,7 @@ function RECORD_ENG_STEP_432(props) {
                                 <label className="fw-bold">STEEL DECK</label>
                             </div>
                         </div>
-                        {STEEL_DECK.map(item => <div className="row text-center">
+                        {STEEL_DECK.map(item => <div className="row text-center" key={item.i}>
                             <div className="col border border-dark">
                                 <label >{item.name}</label>
                             </div>

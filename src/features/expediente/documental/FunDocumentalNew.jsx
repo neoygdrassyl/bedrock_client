@@ -160,6 +160,9 @@ function ProjectDocumentaryWorkspace(props) {
   function handleDeclarationChanged() {
     setRevision((value) => value + 1);
     source.refresh();
+    // The workspace header (phase, term, status) is derived from the expediente summary:
+    // reload it too, as every other module does after a save.
+    props.requestUpdate?.(props.currentId);
   }
   const conflictNotice = notice === CONFLICT_NOTICE;
 

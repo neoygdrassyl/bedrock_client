@@ -18,7 +18,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             <Icon name="chevron-left" size={16} className="me-1" />-5d
           </Button>
 
-          <Button variant="outline" size="sm" title="Retroceder 1 días"
+          <Button variant="outline" size="sm" title="Retroceder 1 día"
             onClick={() => onDateShift(-1)}
           >
             <Icon name="chevron-left" size={16} className="me-1" />-1d
@@ -31,7 +31,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
             onChange={(e) => onDateChange(e.target.value)}
           />
 
-          <Button variant="outline" size="sm" title="Avanzar 1 días"
+          <Button variant="outline" size="sm" title="Avanzar 1 día"
             onClick={() => onDateShift(1)}
           >
             <Icon name="chevron-right" size={16} className="me-1" />+1d
@@ -65,7 +65,7 @@ export const ControlBar = ({ timeTravel, onClose }) => {
        {!isToday && (
         <div className="time-travel-banner">
           <Icon name="exclamation-triangle" size={16} className="me-2" />
-          Estás viendo el expediente a fecha de <strong>{dayjs(systemDate).format('DD MMMM YYYY')}</strong>. Los cálculos reflejan esta fecha.
+          Estás viendo el expediente a fecha de <strong className="font-mono">{dayjs(systemDate).format('DD/MM/YYYY')}</strong>. Los cálculos reflejan esta fecha.
         </div>
       )}
     </div>

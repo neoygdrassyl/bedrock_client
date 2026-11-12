@@ -55,8 +55,8 @@ class RecordArcService {
   new_record(data) {
     return http.post(`/${route}/newrecord`, data);
   }
-  create_step(data) {
-    return http.post(`/${route}/create_step`, data);
+  create_step(data, config) {
+    return http.post(`/${route}/create_step`, data, config);
   }
   finalize_blueprint_review(data) {
     return http.post(`/${route}/finalize_blueprint_review`, data);
@@ -114,8 +114,8 @@ class RecordArcService {
   update_arc_extra(id, data) {
     return http.put(`/${route}/updateextra/${id}`, data);
   }
-  update_step(id, data) {
-    return http.put(`/${route}/update_step/${id}`, data);
+  update_step(id, data, config) {
+    return http.put(`/${route}/update_step/${id}`, data, config);
   }
 
   delete(id) {

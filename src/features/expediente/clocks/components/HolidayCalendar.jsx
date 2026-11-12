@@ -90,20 +90,22 @@ const CalendarContentInternal = React.memo(({
                 </div>
                 
                 <div className="calendar-nav-compact">
-                    <button className="nav-btn-compact" onClick={() => onChangeMonth(-1)}>
+                    <button type="button" className="nav-btn-compact" onClick={() => onChangeMonth(-1)} aria-label="Mes anterior" title="Mes anterior">
                         <Icon name="chevron-left" size={16} />
                     </button>
                     <span className="current-month-label-compact">{currentDate.format('MMM YYYY')}</span>
-                    <button className="nav-btn-compact" onClick={() => onChangeMonth(1)}>
+                    <button type="button" className="nav-btn-compact" onClick={() => onChangeMonth(1)} aria-label="Mes siguiente" title="Mes siguiente">
                         <Icon name="chevron-right" size={16} />
                     </button>
                 </div>
 
                 {isFloating && (
-                    <button 
-                        className="btn-close-compact" 
+                    <button
+                        type="button"
+                        className="btn-close-compact"
                         onClick={handleClose}
                         title="Cerrar calendario"
+                        aria-label="Cerrar calendario"
                     >
                         <Icon name="times" size={16} />
                     </button>
@@ -233,7 +235,7 @@ export const HolidayCalendar = React.memo(({ isFloating = false, onClose }) => {
             const numDays = parseInt(daysToAdd, 10);
             if (!numDays || numDays <= 0) return setResult({ text: 'Días inválidos', isError: true });
             const finalDate = businessDaysCalculator.sumarDiasHabiles(startDateStr, numDays);
-            setResult({ text: dayjs(finalDate).format('DD MMM YY'), isError: false });
+            setResult({ text: dayjs(finalDate).format('DD/MM/YYYY'), isError: false });
         }
     }, [calcMode, startDate, endDate, daysToAdd]);
 

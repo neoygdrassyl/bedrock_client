@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import FUNService from '../../api/fun.service'
 
@@ -19,6 +21,7 @@ import dayjs from 'dayjs';
 import submitService from '../../../ventanilla/api/submit.service';
 import { Icon } from '@/shared/components/icon';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';
+import { SectionCard, DataGrid, DataField } from '@/shared/components/SectionCard';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import {
     evaluateLegalReviewEligibility,
@@ -262,36 +265,14 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             }
             return <>
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 Collapsible" id="func_1"><h4 className="mt-2">1. Identificación de la Solicitud</h4></legend>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            <label>1.1 Tipo de Solicitud</label>
-                            <textarea className="form-control" rows="3" defaultValue={_CHILD_VARS.item_1} disabled></textarea>
-                        </div>
-                        <div className="col-6">
-                            <label>1.2 Objeto del Tramite</label>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_2} disabled />
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            <label>1.3 Modalidad Licencia de Urbanización</label>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_3} disabled />
-                        </div>
-                        <div className="col-6">
-                            <label>1.4 Modalidad Licencia de Subdivisión</label>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_4} disabled />
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            <label>1.5 Modalidad Licencia de Construcción</label>
-                            <textarea className="form-control" rows="3" defaultValue={_CHILD_VARS.item_5} disabled></textarea>
-                        </div>
-                        <div className="col-6">
-
-                        </div>
-                    </div>
+                    <legend className="my-2 px-3 Collapsible" id="func_1">1. Identificación de la solicitud</legend>
+                    <DataGrid>
+                        <DataField label="1.1 Tipo de solicitud" value={_CHILD_VARS.item_1} />
+                        <DataField label="1.2 Objeto del trámite" value={_CHILD_VARS.item_2} />
+                        <DataField label="1.3 Modalidad licencia de urbanización" value={_CHILD_VARS.item_3} emptyText="No aplica" />
+                        <DataField label="1.4 Modalidad licencia de subdivisión" value={_CHILD_VARS.item_4} emptyText="No aplica" />
+                        <DataField label="1.5 Modalidad licencia de construcción" value={_CHILD_VARS.item_5} emptyText="No aplica" />
+                    </DataGrid>
                 </fieldset>
             </>
         }
@@ -324,31 +305,13 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
             return <>
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 Collapsible" id="func_2"><h4 className="mt-2">2. IDENTIFICACIÓN DEL SOLICITANTE</h4></legend>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            <label>Nombres</label>
-                            <input type="text" className="form-control" id="c_531" disabled
-                                defaultValue={_CHILD_VARS.item_5311 + " " + _CHILD_VARS.item_5312} />
-                        </div>
-                        <div className="col-6 ">
-                            <label>Número de Contacto</label>
-                            <input type="text" className="form-control" id="c_536" disabled
-                                defaultValue={_CHILD_VARS.item_534} />
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-6">
-                            <label>Dirección de Correspondencia</label>
-                            <input type="text" className="form-control" id="c_534" disabled
-                                defaultValue={_CHILD_VARS.item_536} />
-                        </div>
-                        <div className="col-6">
-                            <label>Correo Electrónico</label>
-                            <input type="text" className="form-control" id="c_535" disabled
-                                defaultValue={_CHILD_VARS.item_535} />
-                        </div>
-                    </div>
+                    <legend className="my-2 px-3 Collapsible" id="func_2">2. Identificación del solicitante</legend>
+                    <DataGrid>
+                        <DataField label="Nombres" value={[_CHILD_VARS.item_5311, _CHILD_VARS.item_5312].filter(Boolean).join(' ')} />
+                        <DataField label="Número de contacto" mono value={_CHILD_VARS.item_534} />
+                        <DataField label="Dirección de correspondencia" value={_CHILD_VARS.item_536} />
+                        <DataField label="Correo electrónico" value={_CHILD_VARS.item_535} />
+                    </DataGrid>
                 </fieldset>
             </>
         }
@@ -386,49 +349,49 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
 
             return <> <input type="hidden" id="f_c0" defaultValue={_CHILD_VARS.item_c0} />
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 Collapsible" id="func_3"><h4 className="mt-2">3. IDENTIFICACIÓN DEL ENCARGADO DE LA REVISIÓN</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_3">3. Encargado de la revisión</legend>
                     <div className="row">
                         <div className="col-6">
-                            <label>Nombre Encargado de Revisión</label>
+                            <label htmlFor="c_31">Nombre del encargado de revisión</label>
                             <input className="form-control mb-3" id="c_31" defaultValue={_CHILD_VARS.item_c1} />
                         </div>
                         <div className="col-6">
-                            <label>No. Radicación</label>
+                            <label htmlFor="c_33">No. radicación</label>
                             <input type="text" className="form-control mb-3" id="c_33" disabled
                                 defaultValue={currentItem.id_public} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-6">
-                            <label>Fecha de Revisión</label>
-                            <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32"
+                            <label htmlFor="c_32">Fecha de revisión</label>
+                            <DateInput className="form-control mb-3" max='2100-01-01' id="c_32"
                                 defaultValue={_CHILD_VARS.item_c6} />
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset className="p-3">
-                    <legend className="my-2 px-3 Collapsible" id="func_4"><h4 className="mt-2">4. CONDICIÓN DE LA RADICACIÓN</h4></legend>
+                    <legend className="my-2 px-3 Collapsible" id="func_4">4. Condición de la radicación</legend>
                     <div className="row  mb-3">
                         <div className="col-6">
-                            <label>Estado de la radicación</label>
+                            <label id="c_41_label">Estado de la radicación</label>
                             <div className="form-check">
-                                <input key={`lydf-${ALLOW_REVIEW}`} className="form-check-input" type="radio" value="1" name="c_41" required disabled={!ALLOW_REVIEW}
+                                <input key={`lydf-${ALLOW_REVIEW}`} className="form-check-input" type="radio" value="1" name="c_41" id="c_41_1" required disabled={!ALLOW_REVIEW}
                                     defaultChecked={ALLOW_REVIEW && _CHILD_VARS.item_c3 == '1'} />
-                                <label className="form-check-label" htmlFor="flexCheckDefault">
-                                    RADICACIÓN EN LEGAL Y DEBIDA FORMA
+                                <label className="form-check-label" htmlFor="c_41_1">
+                                    Radicación en legal y debida forma
                                 </label>
                             </div>
                             <div className="form-check mb-2">
-                                <input className="form-check-input" type="radio" value="0" name="c_41"
+                                <input className="form-check-input" type="radio" value="0" name="c_41" id="c_41_0"
                                     defaultChecked={_CHILD_VARS.item_c3 == '0' ? true : false} />
-                                <label className="form-check-label" htmlFor="flexCheckChecked">
-                                    RADICACIÓN INCOMPLETA
+                                <label className="form-check-label" htmlFor="c_41_0">
+                                    Radicación incompleta
                                 </label>
                             </div>
-                            {!ALLOW_REVIEW ? <div className='note note-danger'>
-                                <h3 className="text-justify text-dark">ADVERTENCIA</h3>
-                                <div>NO ES POSIBLE DECLARAR EN "LYDF" PORQUE HAY REQUISITOS PENDIENTES:</div>
+                            {!ALLOW_REVIEW ? <div className='alert alert-danger' role="alert">
+                                <strong className="d-block mb-1">No es posible declarar en legal y debida forma</strong>
+                                <div>Hay requisitos pendientes:</div>
                                 <ul className="mb-0">
                                     {REVIEW_ELIGIBILITY.blockers.map(({ displayCode, storageCode, descriptionCode }) => (
                                         <li key={`${displayCode}-${storageCode}`}>({displayCode}) {DCO_LIS[descriptionCode] || 'Requisito pendiente'}</li>
@@ -439,24 +402,24 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         <div className="col-6">
                             <label>Solicitante</label>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" value="A" name="c_42"
+                                <input className="form-check-input" type="radio" value="A" name="c_42" id="c_42_A"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'A' ? true : false} />
-                                <label className="form-check-label" htmlFor="flexCheckDefault">
-                                    TITULAR
+                                <label className="form-check-label" htmlFor="c_42_A">
+                                    Titular
                                 </label>
                             </div>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" value="B" name="c_42"
+                                <input className="form-check-input" type="radio" value="B" name="c_42" id="c_42_B"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'B' ? true : false} />
-                                <label className="form-check-label" htmlFor="flexCheckChecked">
-                                    APODERADO
+                                <label className="form-check-label" htmlFor="c_42_B">
+                                    Apoderado
                                 </label>
                             </div>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" value="C" name="c_42"
+                                <input className="form-check-input" type="radio" value="C" name="c_42" id="c_42_C"
                                     defaultChecked={_CHILD_VARS.item_c8 == 'C' ? true : false} />
-                                <label className="form-check-label" htmlFor="flexCheckChecked">
-                                    MANDATARIO
+                                <label className="form-check-label" htmlFor="c_42_C">
+                                    Mandatario
                                 </label>
                             </div>
                         </div>
@@ -468,20 +431,20 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                 defaultValue={_CHILD_VARS.item_c5} />
                         </div>
                         <div className="col-6">
-                            <label>Fecha Incompleto</label>
-                            <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01'
+                            <label htmlFor="c_44">Fecha incompleto</label>
+                            <DateInput className="form-control mb-3" id="c_44" max='2100-01-01'
                                 defaultValue={_CHILD_VARS.item_c2} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-6">
-                            <label>CC/NIT</label>
+                            <label htmlFor="c_45">CC/NIT</label>
                             <input type="text" className="form-control mb-3" id="c_45" onBlur={(e) => { if (e.currentTarget === e.target) _REGEX_IDNUMBER(e) }}
                                 defaultValue={_CHILD_VARS.item_c7} />
                         </div>
                         <div className="col-6">
-                            <label>Fecha Legal y Debida Forma</label>
-                            <input type="date" className="form-control mb-3" id="c_47" max='2100-01-01'
+                            <label htmlFor="c_47">Fecha legal y debida forma</label>
+                            <DateInput className="form-control mb-3" id="c_47" max='2100-01-01'
                                 defaultValue={LYDF_DATE} />
                         </div>
                         <div className="col-12">
@@ -509,6 +472,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
         var formDataclock = new FormData();
 
         let save_c = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_c:save_c')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             let version = currentVersion;
@@ -553,10 +520,10 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             let legal_date = document.getElementById("c_47").value;
             if (legal_date) formData.set('legal_date', legal_date);
 
-            manage_c(true);
-            save_review(condition);
-            save_clock(date, -1);
-            if (condition == 1) save_clock(legal_date, 5);
+            holdSubmit('fun_c:save_c', manage_c(true));
+            holdSubmit('fun_c:save_c', save_review(condition));
+            holdSubmit('fun_c:save_c', save_clock(date, -1));
+            if (condition == 1) holdSubmit('fun_c:save_c', save_clock(legal_date, 5));
         }
         let manage_c = (useMySwal) => {
             let _CHILD = _SET_CHILD_C();
@@ -565,11 +532,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.item_c0) {
-                FUNService.update_c(_CHILD.item_c0, formData)
+                return FUNService.update_c(_CHILD.item_c0, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdate(currentItem.id, true);
                         } else {
@@ -588,11 +555,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             else {
                 formData.set('fun0Id', currentItem.id);
                 formData.set('version', currentVersion);
-                FUNService.create_func(formData)
+                return FUNService.create_func(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdate(currentItem.id, true);
                         } else {
@@ -615,16 +582,16 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 formData = new FormData();
                 let state = condition == 1 ? 5 : 1;
                 formData.set('state', state);
-                update_fun_0(true, false);
+                return update_fun_0(true, false);
             }
 
         }
         let update_fun_0 = (useMySwal, closeModal) => {
-            FUNService.update(currentItem.id, formData)
+            return FUNService.update(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id);
                             requesRefresh();
                             if (closeModal) closeModal();
@@ -656,7 +623,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                 formDataclock.set('desc', "Fue declarada como: " + desc + " por " + worker);
                 formDataclock.set('state', state);
 
-                manage_clock(false, state);
+                return manage_clock(false, state);
             }
 
         }
@@ -668,11 +635,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
             }
 
             if (_CHILD.id) {
-                FUNService.update_clock(_CHILD.id, formDataclock)
+                return FUNService.update_clock(_CHILD.id, formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id);
                                 requesRefresh();
                             }
@@ -690,11 +657,11 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                     });
             }
             else {
-                FUNService.create_clock(formDataclock)
+                return FUNService.create_clock(formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdate(currentItem.id);
                         } else {
@@ -721,20 +688,16 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         {_SET_CHILD_1_C()}
                         {_SET_CHILD_53_C()}
                         {_SET_CHILD_C_C()}
-                        <div className="row text-center my-2">
-                            <div className="col">
-                                <Button size="sm"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS</Button>
-                            </div>
-                            <div className="col">
-                                <Button type="button" size="sm" onClick={() => _SET_MISSING_FUN_R()}><Icon name="tasks" size={16} /> CARGAR FALTANTES</Button>
-                            </div>
+                        <div className="ew-card ew-card--actions">
+                            <Button type="button" variant="outline" size="sm" onClick={() => _SET_MISSING_FUN_R()} title="Escribe en Observaciones los requisitos pendientes"><Icon name="tasks" size={16} /> Cargar faltantes</Button>
+                            <Button size="sm"><Icon name="share-square" size={16} /> Guardar cambios</Button>
                         </div>
 
                     </form>
 
                     <fieldset className="p-3">
                         <legend className='my-2 px-3 Collapsible' id="func_5">
-                            <label className="app-p lead fw-normal">5. CONTROL DE LYDF</label>
+                            <label className="app-p lead fw-normal">5. Control de legal y debida forma</label>
                         </legend>
 
                         <FUN_C_CLOCKS
@@ -746,7 +709,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                             requestUpdate={requestUpdate}
                         />
 
-                        <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">CARTA - LEGAL Y DEBIDA FORMA</label>}>
+                        <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">Carta: legal y debida forma</label>}>
                             <div className='text-start'>
                                 <FUN_DOC_CONFIRMLEGAL
                                     translation={translation}
@@ -759,7 +722,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                                     edit />
                             </div>
                         </Collapsible>
-                        <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">CARTA - INCOMPLETO</label>}>
+                        <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">Carta: incompleto</label>}>
                             <div className='text-start'>
                                 <FUN_DOC_CONFIRM_INCOMPLETE
                                     translation={translation}
@@ -772,7 +735,7 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                             </div>
                         </Collapsible>
                     </fieldset>
-                    <h3 className="text-center py-3" id="func_6">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</h3>
+                    <SectionCard id="func_6" title="6. Lista general de chequeo de documentos">
                     <FunChecklistWindowSwitcher
                         translation={translation}
                         swaMsg={swaMsg}
@@ -782,11 +745,13 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         requestUpdate={requestUpdate}
                         vrDocs={VRDocs}
                         hideDocumentManagement
+                        hideHeading
                         LegacyChecklistComponent={FUNG_CHECKLIST}
                     />
+                    </SectionCard>
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 bg-danger" id="func_pdf">
-                            <label className="app-p lead fw-normal text-light">DESCARGAR PDF</label>
+                        <legend className="my-2 px-3" id="func_pdf">
+                            <label className="app-p lead fw-normal">Descargar PDF</label>
                         </legend>
                         <FUN_PDF_CHECK
                             translation={translation}
@@ -813,9 +778,9 @@ function FUNC({ currentId, requestUpdate: propRequestUpdate, swaMsg, translation
                         NAVIGATION_VERSION={NAVIGATION_VERSION}
 
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    <p className="m-0 py-8 text-center text-sm text-muted-foreground" role="status">Cargando información de la solicitud…</p>
+                </SectionCard>}
             </div>
         );
 }

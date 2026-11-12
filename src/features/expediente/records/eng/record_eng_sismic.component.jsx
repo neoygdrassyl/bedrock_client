@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from '@/shared/components/data-table-bridge';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { Icon } from '@/shared/components/icon';
+import { setCalcValue } from './calcFieldValue';
 
 import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess, swalFormDialog } from '@/shared/utils/swalAdapter';
 
@@ -30,7 +31,7 @@ function RECORD_ENG_SISMIC(props) {
     }
     function set_d231() {
         var op = _GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? _GET_STEP_TYPE_INDEX('s4238', 'value', 0) ?? ''
-        if (document.getElementById('d231')) document.getElementById('d231').value = op;
+        if (document.getElementById('d231')) setCalcValue('d231', op);
     }
     function set_d232() {
         let d232 = document.getElementById('d232') ? document.getElementById('d232').value : 0;
@@ -41,7 +42,7 @@ function RECORD_ENG_SISMIC(props) {
         else op = 2;
 
         op = Number(op).toFixed(2)
-        if (document.getElementById('d233')) document.getElementById('d233').value = op;
+        if (document.getElementById('d233')) setCalcValue('d233', op);
     }
     function set_d233() {
         let d232 = document.getElementById('d232') ? document.getElementById('d232').value : 0;
@@ -52,7 +53,7 @@ function RECORD_ENG_SISMIC(props) {
         else op = 2;
 
         op = Number(op).toFixed(2)
-        if (document.getElementById('d233')) document.getElementById('d233').value = op;
+        if (document.getElementById('d233')) setCalcValue('d233', op);
     }
     function set_d236() {
         let d231 = document.getElementById('d231') ? document.getElementById('d231').value : 0;
@@ -67,7 +68,7 @@ function RECORD_ENG_SISMIC(props) {
 
         let op = d231 * tot;
         op = Number(op).toFixed(2)
-        if (document.getElementById('d236')) document.getElementById('d236').value = op;
+        if (document.getElementById('d236')) setCalcValue('d236', op);
     }
     function get_d236() {
         let d231 = document.getElementById('d231') ? document.getElementById('d231').value : 0;
@@ -89,7 +90,7 @@ function RECORD_ENG_SISMIC(props) {
         let op = d236 / 10;
         op = Number(op).toFixed(2)
         setD237(op)
-        if (document.getElementById('d237')) document.getElementById('d237').value = op;
+        if (document.getElementById('d237')) setCalcValue('d237', op);
     }
     function set_values() {
         set_d231();
@@ -273,21 +274,21 @@ function RECORD_ENG_SISMIC(props) {
         if (edit !== false) {
             var _ITEM = edit;
 
-            document.getElementById("r_eng_sismic_1_edit").value = _ITEM.name;
-            document.getElementById("r_eng_sismic_2_edit").value = _ITEM.height;
-            document.getElementById("r_eng_sismic_3_edit").value = _ITEM.area;
-            document.getElementById("r_eng_sismic_4_edit").value = _ITEM.esca;
-            document.getElementById("r_eng_sismic_5_edit").value = _ITEM.pos;
-            document.getElementById("r_eng_sismic_6_edit").value = _ITEM.denplac;
+            setCalcValue("r_eng_sismic_1_edit", _ITEM.name);
+            setCalcValue("r_eng_sismic_2_edit", _ITEM.height);
+            setCalcValue("r_eng_sismic_3_edit", _ITEM.area);
+            setCalcValue("r_eng_sismic_4_edit", _ITEM.esca);
+            setCalcValue("r_eng_sismic_5_edit", _ITEM.pos);
+            setCalcValue("r_eng_sismic_6_edit", _ITEM.denplac);
 
             let column;
             column = JSON.parse(_ITEM.column);
             column = JSON.parse(column);
             if (!column) column = { n: 9, c1: 0.3, c2: 0.3 }
 
-            document.getElementById("r_eng_sismic_column_1_edit").value = column.n;
-            document.getElementById("r_eng_sismic_column_2_edit").value = column.c1;
-            document.getElementById("r_eng_sismic_column_3_edit").value = column.c2;
+            setCalcValue("r_eng_sismic_column_1_edit", column.n);
+            setCalcValue("r_eng_sismic_column_2_edit", column.c1);
+            setCalcValue("r_eng_sismic_column_3_edit", column.c2);
         }
     }, [edit]);
 
@@ -731,9 +732,8 @@ function RECORD_ENG_SISMIC(props) {
                 },
             ]
 
-            return <DataTable
+            return <DataTable pagination={false}
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -806,9 +806,8 @@ function RECORD_ENG_SISMIC(props) {
                     cell: row => <span className="text-sm">{_get_F_y(row)}</span>
                 },
             ]
-            return <DataTable
+            return <DataTable pagination={false}
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -973,7 +972,7 @@ function RECORD_ENG_SISMIC(props) {
                     </div>
                     <div className="col-3"><label>T {'<'} 0.5     K= 1.0</label></div>
                     <div className="col-2"> </div>
-                    <div className="col-2"><Button size="sm" onClick={() => set_values()}>ACTUALIZAR</Button></div>
+                    <div className="col-2"><Button size="sm" onClick={() => set_values()}>Actualizar</Button></div>
                 </div>
 
                 <div className="row mb-1">
@@ -1019,7 +1018,7 @@ function RECORD_ENG_SISMIC(props) {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s08" id='d236' disabled style={{ background: 'DarkKhaki' }}
+                            className="form-control" name="recprd_eng_s08" id='d236' disabled style={{ background: 'hsl(var(--warning) / 0.22)' }}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4238', 'value', 3) ?? ''} />
                     </div>
                     <div className="col-3"></div>
@@ -1032,7 +1031,7 @@ function RECORD_ENG_SISMIC(props) {
                     </div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s08" id='d237' disabled style={{ background: 'DarkKhaki' }}
+                            className="form-control" name="recprd_eng_s08" id='d237' disabled style={{ background: 'hsl(var(--warning) / 0.22)' }}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4238', 'value', 4) ?? ''} />
                     </div>
                     <div className="col-3"></div>
@@ -1368,7 +1367,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                     </div>
                                 </div>
                             </form>
@@ -1387,7 +1386,7 @@ function RECORD_ENG_SISMIC(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                     </div>
                                 </div>
                             </form>

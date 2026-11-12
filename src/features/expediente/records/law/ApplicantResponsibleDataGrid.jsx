@@ -25,8 +25,8 @@ function parseChecks(value) {
 }
 
 function selectClass(value) {
-  if (value === '1') return 'text-emerald-700';
-  if (value === '2' || value === '3') return 'text-amber-700';
+  if (value === '1') return 'ew-text-success';
+  if (value === '2' || value === '3') return 'ew-text-warning';
   return 'text-destructive';
 }
 
@@ -41,12 +41,12 @@ function documentIds(value) {
 
 function DocumentCell({ id, file, label }) {
   if (!id || id === '0') return <span className="text-destructive">No</span>;
-  if (id === '-1') return <span className="text-emerald-700" title="Aportado físicamente">Sí</span>;
+  if (id === '-1') return <span className="ew-text-success" title="Aportado físicamente">Sí</span>;
   if (!file?.path || !file?.filename) return <span className="text-muted-foreground" title={`El archivo de ${label.toLowerCase()} no está disponible`}>No disponible</span>;
 
   return <span className="inline-flex items-center justify-center gap-1 whitespace-nowrap">
     <VIZUALIZER url={`${file.path}/${file.filename}`} apipath="/files/" icon="FileText" color="DeepSkyBlue" />
-    <span className="text-emerald-700">Sí</span>
+    <span className="ew-text-success">Sí</span>
   </span>;
 }
 
@@ -121,36 +121,35 @@ export default function ApplicantResponsibleDataGrid({ currentItem, currentVersi
     </select>;
   };
 
-  return <section className="mt-3 rounded-lg border border-border bg-card p-3" aria-label="Tabla consolidada del responsable de la solicitud">
-    <div className="mb-3">
-      <h3 className="mb-1 text-sm font-semibold">5.3. Responsable de la solicitud</h3>
-      <p className="mb-0 text-xs text-muted-foreground">Información consolidada para consulta y verificación.</p>
+  return <section className="ew-card" aria-label="Tabla consolidada del responsable de la solicitud">
+    <div className="ew-card__header">
+      <h3 className="ew-card__title">5.3. Responsable de la solicitud</h3>
     </div>
     {error ? <p className="mb-2 text-xs text-destructive" role="alert">{error}</p> : null}
     {!canPersist ? <p className="mb-2 text-xs text-muted-foreground" role="status">La verificación estará disponible cuando se cargue el informe jurídico.</p> : null}
     <div className="max-h-[70vh] overflow-auto rounded-md border border-border">
       <table className="w-max border-separate border-spacing-0 text-[11px] text-foreground" aria-label="Responsable de la solicitud">
-        <thead className="sticky top-0 z-20 bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
+        <thead className="sticky top-0 z-20 bg-muted text-foreground/80 ">
           <tr>
-            <th rowSpan="2" className="sticky left-0 z-30 border-b border-r border-slate-400 bg-slate-200 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600 dark:bg-slate-800">Nombre</th>
-            <th rowSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Cédula</th>
-            <th rowSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Calidad</th>
-            <th colSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Documentos aportados</th>
-            <th colSpan={POWER_CHECKS.length} className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Validación del poder</th>
-            <th colSpan={SIGNATURE_CHECKS.length} className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Firmas</th>
-            <th rowSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Notif.<br />electronica</th>
-            <th rowSpan="2" className="border-b border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Estado</th>
+            <th rowSpan="2" className="sticky left-0 z-30 border-b border-r border-border bg-muted px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Nombre</th>
+            <th rowSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Cédula</th>
+            <th rowSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Calidad</th>
+            <th colSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Documentos aportados</th>
+            <th colSpan={POWER_CHECKS.length} className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Validación del poder</th>
+            <th colSpan={SIGNATURE_CHECKS.length} className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Firmas</th>
+            <th rowSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Notif.<br />electronica</th>
+            <th rowSpan="2" className="border-b border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Estado</th>
           </tr>
           <tr>
             {['Doc. identidad', 'Poder', ...POWER_CHECKS, ...SIGNATURE_CHECKS].map(column => {
               const label = typeof column === 'string' ? column : column.label;
-              return <th key={label} className="w-20 whitespace-normal border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">{label}</th>;
+              return <th key={label} className="w-20 whitespace-normal border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">{label}</th>;
             })}
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold dark:bg-slate-900">{fullName}</td>
+            <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold ">{fullName}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(responsible?.id_number)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(responsible?.role)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center"><DocumentCell id={docs[0]} file={filesById.get(docs[0])} label="Documento de identidad" /></td>
@@ -159,7 +158,7 @@ export default function ApplicantResponsibleDataGrid({ currentItem, currentVersi
             {SIGNATURE_CHECKS.map(check => <td key={check.index} className="border-b border-r border-border px-2 py-1 text-center">{control(check)}</td>)}
             <td className="border-b border-r border-border px-2 py-1 text-center">{control(NOTIFICATION_CHECK)}</td>
             <td className="border-b border-border px-2 py-1 text-center">
-              <span aria-label="Estado del responsable de la solicitud" className={`text-[11px] font-semibold ${status === 'accepted' ? 'text-emerald-700' : 'text-muted-foreground'}`}>
+              <span aria-label="Estado del responsable de la solicitud" className={`text-[11px] font-semibold ${status === 'accepted' ? 'ew-text-success' : 'text-muted-foreground'}`}>
                 {status === 'accepted' ? 'Aceptado' : 'Pendiente'}
               </span>
             </td>

@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import RECORD_LAW_SERVICE from '../../api/record_law.service'
 import FUN_SERVICE from '../../api/fun.service'
@@ -303,7 +305,8 @@ function RECORD_LAW_EVALUATION(props) {
                     <div className="col text-center">
                         <label>FECHA RESULTADO</label>
                     </div>
-                    <div className="col-1">
+                    <div className="col-2">
+                        <span className="sr-only">Acciones</span>
                     </div>
                 </div>
                 {CLOCKS_R.map((value, i) => {
@@ -315,7 +318,7 @@ function RECORD_LAW_EVALUATION(props) {
                     let isPrimal = i == 0;
                     let allowReview = iasing != null && iasing != undefined && iasing != '';
 
-                    return <>
+                    return <Fragment key={value}>
                         <div className="row border">
                             <div className="col">
                                 <label className='fw-bold'>{value}</label>
@@ -328,7 +331,7 @@ function RECORD_LAW_EVALUATION(props) {
                                 }
                             </div>
                             <div className="col text-center">
-                                <label>{iasing}</label>
+                                <label>{formatDisplayDate(iasing, { empty: '' })}</label>
                             </div>
                             <div className="col text-center">
                                 {dynState['REW' + i]
@@ -341,17 +344,18 @@ function RECORD_LAW_EVALUATION(props) {
                             </div>
                             <div className="col text-center">
                                 {dynState['REW' + i]
-                                    ? <input type="date" className="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
+                                    ? <DateInput className="form-control form-control-sm" id={"r_l_review_3_" + i} max="2100-01-01"
                                         defaultValue={idate} />
-                                    : <label>{idate ?? ''}</label>
+                                    : <label>{formatDisplayDate(idate, { empty: '' })}</label>
                                 }
                             </div>
-                            <div className="col-1">
+                            <div className="col-2 d-flex flex-wrap align-items-center justify-content-end gap-1">
                                 {allowReview ? <Button variant={!dynState['REW' + i] ? "outline" : "default"} size="sm"
+                                    aria-label={`Editar revisión: ${value}`} title="Editar revisión"
                                     onClick={() => setDynState(prev => ({ ...prev, ['REW' + i]: !prev['REW' + i] }))}><Icon name="edit" size={16} /></Button>
                                     : ''}
                                 {dynState['REW' + i]
-                                    ? <Button size="sm" className="ms-1" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
+                                    ? <Button size="sm" className="ms-1" aria-label={`Confirmar revisión: ${value}`} title="Confirmar revisión" onClick={() => review_r(isPrimal, i, iasing)}><Icon name="check" size={16} /></Button>
                                     : ""
                                 }
                                 {true ?
@@ -367,7 +371,7 @@ function RECORD_LAW_EVALUATION(props) {
                                 }
                             </div>
                         </div>
-                    </>
+                    </Fragment>
                 })}
             </>
         }
@@ -556,12 +560,15 @@ function RECORD_LAW_EVALUATION(props) {
 
         }
     return (
-        <div className="record_lar_evaluation container">
-            <h3 className="py-3" >3.1. Observaciones</h3>
+        <div className="record_lar_evaluation">
+            <section className="ew-card">
+            <div className="ew-card__header">
+                <h3 className="ew-card__title">3.1 Observaciones</h3>
+            </div>
             {_COMPOENTN_CORRECTIONS_HISTORIC()}
             {_COMPONENT_CORRECTIONS()}
-            <div className="row text-center">
-                <label className='fw-bold my-2'>GENERAR PDFS</label>
+            <h4 className="ew-subheading">Generar PDF</h4>
+            <div className="row">
                 <div className="col">
                     <RECORD_LAW_PDF
                         currentItem={currentItem}
@@ -571,9 +578,16 @@ function RECORD_LAW_EVALUATION(props) {
                         swaMsg={swaMsg} />
                 </div>
             </div>
-            <h3 className="py-3" >3.2. Evaluar Viabilidad</h3>
+            </section>
+            <section className="ew-card">
+            <div className="ew-card__header">
+                <h3 className="ew-card__title">3.2 Evaluar viabilidad</h3>
+            </div>
+            <div className="ew-grid-table">
             {_COMPONENT_REVIEW()}
-        </div >
+            </div>
+            </section>
+        </div>
     );
 }
 

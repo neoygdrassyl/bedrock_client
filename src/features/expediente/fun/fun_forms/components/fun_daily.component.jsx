@@ -98,7 +98,7 @@ function LegacyChartLoading({
 
                     <div
                         className="progress overflow-hidden"
-                        style={{ height: 10, backgroundColor: '#e2e8f0' }}
+                        style={{ height: 10, backgroundColor: 'hsl(var(--muted))' }}
                         aria-label="Progreso de carga del gráfico legacy"
                     >
                         <div

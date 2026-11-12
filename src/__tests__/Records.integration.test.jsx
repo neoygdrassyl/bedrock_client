@@ -202,6 +202,11 @@ const loadedFunItem = {
 describe('RECORDS — Integración inicial LAW/ARC/ENG', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // A test that swaps a service answer with `mockResolvedValue` must not leak it into the
+    // next one: every service mock goes back to the implementation it was declared with.
+    [hoisted.funService, hoisted.arcService, hoisted.lawService, hoisted.engService].forEach((service) => {
+      Object.values(service).forEach((fn) => { if (vi.isMockFunction(fn)) fn.mockReset(); });
+    });
     window.user = { id: 1, roleId: 1, name: 'Admin Test' };
   });
 

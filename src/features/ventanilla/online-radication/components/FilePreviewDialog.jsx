@@ -13,18 +13,20 @@ const PREVIEWABLE = /^(?:application\/pdf|image\/(?:png|jpe?g|gif|webp))$/i;
 
 /**
  * Loads one entry file with the session JWT and keeps its object URL for the lifetime of the
- * preview. `file`: `{ requestId, entryId, index, name, label, mimeType, byteSize }`.
+ * preview. `file`: `{ requestId, entryId, index, name, label, mimeType, byteSize }`, or `{ requestId, liquidationKind: 'invoice' | 'receipt', ... }`.
  */
 function useEntryFile(file, revision) {
   const [state, setState] = useState({ key: null, url: '', contentType: '', error: null });
-  const key = file ? `${file.requestId}|${file.entryId}|${file.index}|${revision}` : null;
+  const key = file ? `${file.requestId}|${file.liquidationKind || ''}|${file.entryId}|${file.index}|${revision}` : null;
 
   useEffect(() => {
     if (!file) return undefined;
     const controller = new AbortController();
     let objectUrl = '';
     setState({ key, url: '', contentType: '', error: null });
-    OnlineRadicationService.fetchEntryFile(file.requestId, file.entryId, file.index, { signal: controller.signal })
+    (file.liquidationKind
+      ? OnlineRadicationService.fetchLiquidationFile(file.requestId, file.liquidationKind, { signal: controller.signal })
+      : OnlineRadicationService.fetchEntryFile(file.requestId, file.entryId, file.index, { signal: controller.signal }))
       .then(({ blob, contentType }) => {
         if (controller.signal.aborted) return;
         objectUrl = URL.createObjectURL(blob);

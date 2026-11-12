@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
@@ -444,7 +444,7 @@ export default function RECORD_LAW_FUN_1(props) {
         var _COMPONENT = [];
 
         for (const item in _LIST) {
-            _COMPONENT.push(<>
+            _COMPONENT.push(<Fragment key={item}>
                 <div className="col-9 my-1"><h3 className='fw-bold'>{parseInt(item, 10) + 1}. {_LIST[item].desc}</h3> </div>
                 <div className="col-3 my-1"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} name="s_23_checks"
                     defaultValue={_CHECK_ARRAY[item]} onChange={() => manage_rl_s23()} >
@@ -453,7 +453,7 @@ export default function RECORD_LAW_FUN_1(props) {
                     <option value="2" className="text-danger">NO APLICA</option>
 
                 </select> </div>
-            </>)
+            </Fragment>)
         }
         return <div className="row">{_COMPONENT}</div>
     }

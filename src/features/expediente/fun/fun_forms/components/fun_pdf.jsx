@@ -2182,7 +2182,7 @@ function FUN_PDF({ currentItem: liveItem, currentVersion: liveVersion, swaMsg, h
 
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={getPdfForm}><Icon name="file-pdf" size={16} /> DESCARGAR FORMULARIO</Button>
+                        <Button size="sm" className="my-3" onClick={getPdfForm}><Icon name="file-pdf" size={16} /> Descargar formulario</Button>
                     </div>
                 </div>
             </div>

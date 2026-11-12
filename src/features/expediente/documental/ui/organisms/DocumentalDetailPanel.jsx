@@ -88,7 +88,7 @@ function VrHistory({ row }) {
                   {item.value === latestVr ? <DetailPill tone="primary">Última recepción</DetailPill> : null}
                 </div>
                 <p className="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
-                  <span className="font-mono">{item.date || 'Sin fecha'}</span>
+                  <span className="font-mono">{item.date ? String(item.date).replace(/^(\d{4})-(\d{2})-(\d{2})/, '$3/$2/$1') : 'Sin fecha'}</span>
                   <span className="mx-1.5" aria-hidden="true">
                     ·
                   </span>

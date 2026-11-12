@@ -1,5 +1,6 @@
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { getRequiredExperienceYears } from './professionalResponsibility.constants';
 
 const baseColumns = [
@@ -87,19 +88,19 @@ export default function ProfessionalVerificationGrid({
 
   return <div className="max-h-[70vh] overflow-auto rounded-md border border-border" data-professional-verification-grid>
     <table className="w-max border-separate border-spacing-0 text-[11px] text-foreground" aria-label="Profesionales responsables">
-      <thead className="sticky top-0 z-20 bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
+      <thead className="sticky top-0 z-20 bg-muted text-foreground/80 ">
         <tr>
-          {baseColumns.map((column, index) => <th key={column} rowSpan="2" className={`border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600 ${index === 0 ? 'sticky left-0 z-30 bg-slate-200 dark:bg-slate-800' : ''}`}>{column}</th>)}
-          <th colSpan="4" className="border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600">Certificado vigencia</th>
-          <th colSpan="4" className="border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600">Experiencia</th>
-          <th rowSpan="2" aria-label="Se reconoce la calidad" className="w-16 whitespace-normal border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase leading-tight dark:border-slate-600">Se reconoce<br />calidad</th>
-          <th colSpan="3" className="border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600">Firmas</th>
-          <th rowSpan="2" aria-label="Se reconoce para la actuación" className="w-16 whitespace-normal border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase leading-tight dark:border-slate-600">Se reconoce<br />actuación</th>
-          <th rowSpan="2" className="border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600">Estado</th>
-          <th rowSpan="2" className="border-b border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600">Acción</th>
+          {baseColumns.map((column, index) => <th key={column} rowSpan="2" className={`border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ${index === 0 ? 'sticky left-0 z-30 bg-muted ' : ''}`}>{column}</th>)}
+          <th colSpan="4" className="border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ">Certificado vigencia</th>
+          <th colSpan="4" className="border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ">Experiencia</th>
+          <th rowSpan="2" aria-label="Se reconoce la calidad" className="w-16 whitespace-normal border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Se reconoce<br />calidad</th>
+          <th colSpan="3" className="border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ">Firmas</th>
+          <th rowSpan="2" aria-label="Se reconoce para la actuación" className="w-16 whitespace-normal border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Se reconoce<br />actuación</th>
+          <th rowSpan="2" className="border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ">Estado</th>
+          <th rowSpan="2" className="border-b border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ">Acción</th>
         </tr>
         <tr>
-          {[...certificateColumns, ...experienceColumns, ...signatureColumns].map((column, index) => <th key={`${column}-${index}`} className={`border-b border-r border-slate-400 px-1 py-1 text-center text-[10px] font-semibold uppercase dark:border-slate-600 ${compactColumnClasses[column] || ''}`}>{column}</th>)}
+          {[...certificateColumns, ...experienceColumns, ...signatureColumns].map((column, index) => <th key={`${column}-${index}`} className={`border-b border-r border-border px-1 py-1 text-center text-[11px] font-semibold uppercase ${compactColumnClasses[column] || ''}`}>{column}</th>)}
         </tr>
       </thead>
       <tbody>
@@ -113,28 +114,28 @@ export default function ProfessionalVerificationGrid({
           const professionalActionRecognitionStatus = getProfessionalActionRecognitionStatus(professional);
           const signatureOriginal = isTrue(professional.signature_original_fun) ? 'Sí' : 'No';
           const signatureMatches = isTrue(professional.signature_matches_plans) ? 'Sí' : 'No';
-          return <tr key={professional.id || `${professional.role}-${fullName}`} className="group hover:bg-slate-50 dark:hover:bg-slate-800/40">
-            <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold dark:bg-slate-900">{text(professional.role)}</td>
+          return <tr key={professional.id || `${professional.role}-${fullName}`} className="group hover:bg-muted/50 ">
+            <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold ">{text(professional.role)}</td>
             <td className="border-b border-r border-border px-2 py-1">{fullName}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(professional.id_number)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(professional.number)}</td>
             <td className="border-b border-r border-border px-2 py-1">{text(professional.email)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(professional.registration)}</td>
-            <td className="border-b border-r border-border px-2 py-1 text-center">{text(professional.registration_date)}</td>
+            <td className="border-b border-r border-border px-2 py-1 text-center">{formatDisplayDate(professional.registration_date, { empty: 'Sin registro' })}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{text(professional.registration_certificate_id)}</td>
-            <td className="w-16 break-words border-b border-r border-border px-2 py-1 text-center">{text(professional.registration_certificate_date)}</td>
-            <td className={`w-16 border-b border-r border-border px-2 py-1 text-center font-semibold ${registrationValidity === 'yes' ? 'text-emerald-700' : registrationValidity === 'no' ? 'text-destructive' : 'text-muted-foreground'}`}>{registrationValidity === 'yes' ? 'Sí' : registrationValidity === 'no' ? 'No' : 'Pendiente'}</td>
+            <td className="w-16 break-words border-b border-r border-border px-2 py-1 text-center">{formatDisplayDate(professional.registration_certificate_date, { empty: 'Sin registro' })}</td>
+            <td className={`w-16 border-b border-r border-border px-2 py-1 text-center font-semibold ${registrationValidity === 'yes' ? 'ew-text-success' : registrationValidity === 'no' ? 'text-destructive' : 'text-muted-foreground'}`}>{registrationValidity === 'yes' ? 'Sí' : registrationValidity === 'no' ? 'No' : 'Pendiente'}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center text-muted-foreground">{valueOrRenderer(renderCertificateStatus, professional, certificateStatus)}</td>
             <td className="w-24 whitespace-normal border-b border-r border-border px-2 py-1 text-center leading-tight">{requiredExperienceLabel(professional.role)}</td>
             <td className="w-20 border-b border-r border-border px-2 py-1 text-center">{years(professional.expirience)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{valueOrRenderer(renderPostgraduate, professional, postgraduateApplies(professional) ? 'APLICA' : 'NO APLICA')}</td>
-            <td className={`w-20 border-b border-r border-border px-2 py-1 text-center font-semibold ${experienceStatus === 'ACEPTADO' ? 'text-emerald-700' : 'text-destructive'}`}>{experienceStatus}</td>
-            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalQualityStatus === 'SI' ? 'text-emerald-700' : 'text-destructive'}`}>{professionalQualityStatus}</td>
+            <td className={`w-20 border-b border-r border-border px-2 py-1 text-center font-semibold ${experienceStatus === 'ACEPTADO' ? 'ew-text-success' : 'text-destructive'}`}>{experienceStatus}</td>
+            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalQualityStatus === 'SI' ? 'ew-text-success' : 'text-destructive'}`}>{professionalQualityStatus}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{valueOrRenderer(renderSignatureOriginal, professional, signatureOriginal)}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{valueOrRenderer(renderSignaturePlans, professional, isTrue(professional.signature_original_plans) ? 'Sí' : 'No')}</td>
             <td className="border-b border-r border-border px-2 py-1 text-center">{valueOrRenderer(renderSignatureMatches, professional, signatureMatches)}</td>
-            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalActionRecognitionStatus === 'SI' ? 'text-emerald-700' : 'text-destructive'}`}>{professionalActionRecognitionStatus}</td>
-            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalActiveStatus === 'ACTIVO' ? 'text-emerald-700' : 'text-destructive'}`}>{professionalActiveStatus}</td>
+            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalActionRecognitionStatus === 'SI' ? 'ew-text-success' : 'text-destructive'}`}>{professionalActionRecognitionStatus}</td>
+            <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${professionalActiveStatus === 'ACTIVO' ? 'ew-text-success' : 'text-destructive'}`}>{professionalActiveStatus}</td>
             <td className="border-b border-border px-2 py-1 text-center">{readOnly ? <span className="text-muted-foreground">Solo lectura</span> : onEdit ? <Button type="button" variant="ghost" size="sm" className="h-6 w-6 p-0" aria-label={`Editar ${fullName}`} onClick={() => onEdit(professional)}><Icon name="edit" size={13} /></Button> : null}</td>
           </tr>;
         }) : <tr><td colSpan="22" className="h-24 px-4 text-center text-sm text-muted-foreground">No hay profesionales registrados. Añada un profesional para comenzar.</td></tr>}

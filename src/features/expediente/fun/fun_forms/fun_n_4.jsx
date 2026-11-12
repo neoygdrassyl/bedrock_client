@@ -1,5 +1,7 @@
 import FUNService from '../../api/fun.service'
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { Button } from '@/shared/ui/button';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import DataTable from '@/shared/components/data-table-bridge';
 import { Icon } from '@/shared/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
@@ -20,6 +22,10 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
     .map(item => ({ ...item, rowKey: `tecnico-${item.id}` }));
 
   const createBoundary = (tipo) => {
+
+      // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+      if (isRepeatedSubmit(`fun_n_4:createBoundary:${tipo}`)) return;
     const suffix = tipo.toLowerCase();
     const coord = document.getElementById(`f_41_${suffix}`)?.value || '';
     const longitud = document.getElementById(`f_42_${suffix}`)?.value.trim() || '';
@@ -41,19 +47,23 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
     const request = tipo === 'TECNICO'
       ? FUNService.create_fun4Technical(formData)
       : FUNService.create_fun4(formData);
-    request.then(response => {
+    holdSubmit(`fun_n_4:createBoundary:${tipo}`, request.then(response => {
       if (response.data === 'OK') {
-        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
         requestUpdate(currentItem.id);
       } else {
         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
       }
     }).catch(() => {
       swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-    });
+    }));
   };
 
   const createTechnicalBoundary = () => {
+
+      // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+      if (isRepeatedSubmit('fun_n_4:createTechnicalBoundary')) return;
     const values = ['lindero', 'puntoInicialEtiqueta', 'puntoInicialX', 'puntoInicialY', 'puntoFinalEtiqueta', 'puntoFinalX', 'puntoFinalY', 'distancia', 'rumbo', 'colindante']
       .reduce((payload, field) => ({ ...payload, [field]: document.getElementById(`f_4t_${field}`)?.value.trim() || '' }), {});
     const numericValues = ['puntoInicialX', 'puntoInicialY', 'puntoFinalX', 'puntoFinalY', 'distancia']
@@ -70,16 +80,16 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
     Object.entries(values).forEach(([field, value]) => formData.set(field, value));
 
     swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-    FUNService.create_fun4Technical(formData).then(response => {
+    holdSubmit('fun_n_4:createTechnicalBoundary', FUNService.create_fun4Technical(formData).then(response => {
       if (response.data === 'OK') {
-        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
         requestUpdate(currentItem.id);
       } else {
         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
       }
     }).catch(() => {
       swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-    });
+    }));
   };
 
   const deleteBoundary = (id, tipo) => {
@@ -94,7 +104,7 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
       const request = tipo === 'TECNICO' ? FUNService.delete_4Technical(id) : FUNService.delete_4(id);
       request.then(response => {
         if (response.data === 'OK') {
-          swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+          swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
           requestUpdate(currentItem.id);
         } else {
           swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -109,7 +119,7 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
     { name: 'LINDEROS', selector: row => row.coord, sortable: true, filterable: true, cell: row => <span className="text-sm">{row.coord}</span> },
     { name: 'LONGITUD', selector: row => row.longitud, sortable: true, filterable: true, cell: row => <span className="text-sm">{row.longitud}</span> },
     { name: 'COLINDA CON', selector: row => row.colinda, cell: row => <span className="text-sm">{row.colinda}</span> },
-    { name: 'ACCIÓN', button: true, cell: row => <Button variant="destructive" size="sm" onClick={() => deleteBoundary(row.id, row.tipo)}><Icon name="trash-alt" size={16} /></Button> },
+    { name: 'ACCIÓN', button: true, cell: row => <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar" title="Eliminar" onClick={() => deleteBoundary(row.id, row.tipo)}><Icon name="trash-alt" size={16} /></Button> },
   ];
 
   const technicalColumns = [
@@ -119,15 +129,15 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
     { name: 'DISTANCIA', selector: row => row.distancia || row.longitud || '', cell: row => <span className="text-sm">{row.distancia || row.longitud || '-'}</span> },
     { name: 'RUMBO', selector: row => row.rumbo || '', cell: row => <span className="text-sm">{row.rumbo || '-'}</span> },
     { name: 'COLINDA CON', selector: row => row.colindante || row.colinda || '', cell: row => <span className="text-sm">{row.colindante || row.colinda || '-'}</span> },
-    { name: 'ACCIÓN', button: true, cell: row => <Button variant="destructive" size="sm" onClick={() => deleteBoundary(row.id, 'TECNICO')}><Icon name="trash-alt" size={16} /></Button> },
+    { name: 'ACCIÓN', button: true, cell: row => <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar" title="Eliminar" onClick={() => deleteBoundary(row.id, 'TECNICO')}><Icon name="trash-alt" size={16} /></Button> },
   ];
 
   const BoundaryBox = ({ value, title, internal }) => {
     const suffix = value.toLowerCase();
-    return <section className="rounded-md border border-border bg-card p-3 shadow-sm" aria-label={title}>
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="mb-0 text-sm font-semibold">{title}</h3>
-        {internal ? <span className="rounded bg-muted px-2 py-1 text-[10px] font-semibold text-muted-foreground">CONTROL INTERNO</span> : null}
+    return <section aria-label={title}>
+      <div className="mb-3 flex items-center gap-2">
+        <h3 className="mb-0 text-[13px] font-semibold text-foreground">{title}</h3>
+        {internal ? <DovelaBadge tone="neutral">Control interno</DovelaBadge> : null}
       </div>
       {internal ? <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div>
@@ -195,23 +205,22 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
           </div>
         </div>
       </div>}
-      <div className="mt-3 text-right">
-        <Button size="sm" onClick={internal ? createTechnicalBoundary : () => createBoundary(value)}><Icon name="file-alt" size={16} /> AÑADIR ITEM</Button>
+      <div className="ew-actions ew-actions--start">
+        <Button size="sm" onClick={internal ? createTechnicalBoundary : () => createBoundary(value)}><Icon name="file-alt" size={16} /> Añadir ítem</Button>
       </div>
     </section>;
   };
 
   return <fieldset className="p-3">
     <FunUpdateSectionLegend id="funn_4" step="4">Linderos, Dimensiones y Áreas</FunUpdateSectionLegend>
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="max-w-4xl">
       <BoundaryBox {...BOUNDARY_TYPES[0]} />
     </div>
     <div className="mt-4">
       <DataTable
         keyField="rowKey"
-        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-        noDataComponent="No hay Items"
-        striped="true"
+        paginationComponentOptions={{ rowsPerPageText: 'Filas por página', rangeSeparatorText: 'de' }}
+        noDataComponent="Sin registros"
         columns={columns}
         data={boundaries}
         highlightOnHover
@@ -222,15 +231,14 @@ const FUNN4 = ({ swaMsg, currentItem, requestUpdate }) => {
         noHeader
       />
     </div>
-    <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="mt-6 max-w-4xl border-t border-border/70 pt-4">
       <BoundaryBox {...BOUNDARY_TYPES[1]} />
     </div>
     <div className="mt-4">
       <DataTable
         keyField="rowKey"
-        paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
+        paginationComponentOptions={{ rowsPerPageText: 'Filas por página', rangeSeparatorText: 'de' }}
         noDataComponent="No hay linderos técnicos"
-        striped="true"
         columns={technicalColumns}
         data={technicalBoundaries}
         highlightOnHover

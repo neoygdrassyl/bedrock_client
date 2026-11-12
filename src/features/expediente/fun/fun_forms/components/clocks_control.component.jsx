@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import dayjs from 'dayjs';
 import { isEmptyEntity } from '../../../../../shared/utils/isEmptyEntity';
 
 import { dateParser_dateDiff, dateParser_finalDate, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
@@ -7,60 +8,26 @@ import FUN_CLOCK_CHART from './func_clock_chart';
 import FUN_CLOCK_EVENTS from './fun_clocks_events.component';
 import FUN_CLOCKS_NEGATIVE from './fun_clocks_negative.component';
 import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 
-// Estilos ajustados para la nueva interfaz de pestañas.
-const styles = {
-    tabsContainer: {
-        marginBottom: '0', // Se quita el margen para unir con el contenido
-        paddingLeft: '0',
-        display: 'flex',
-        maxWidth: '100%',
-        overflowX: 'auto',
-        overflowY: 'hidden',
-        listStyle: 'none',
-        borderBottom: '1px solid var(--bs-border-color)',
-    },
-    tabItem: {
-        marginRight: '0.25rem',
-    },
-    tabLink: {
-        cursor: 'pointer',
-        padding: '0.75rem 1.25rem',
-        color: 'var(--bs-secondary-color)',
-        textDecoration: 'none',
-        display: 'block',
-        backgroundColor: 'var(--bs-tertiary-bg)',
-        border: '1px solid var(--bs-border-color)',
-        borderBottom: 'none',
-        borderTopLeftRadius: '.35rem',
-        borderTopRightRadius: '.35rem',
-        transition: 'background-color 0.2s ease-in-out',
-    },
-    tabLinkActive: {
-        color: 'var(--bs-primary)',
-        backgroundColor: 'var(--bs-body-bg)',
-        borderTop: '3px solid var(--bs-primary)',
-        borderLeft: '1px solid var(--bs-border-color)',
-        borderRight: '1px solid var(--bs-border-color)',
-        borderBottom: '1px solid var(--bs-body-bg)', // Esto hace que se funda con el panel
-        fontWeight: 'bold',
-        marginBottom: '-1px', // Compensa el borde inferior del contenedor
-    },
-    tabPane: {
-        width: '100%',
-        maxWidth: '100%',
-        overflow: 'hidden',
-        padding: '1.5rem',
-        border: '1px solid var(--bs-border-color)',
-        borderTop: 'none',
-        borderRadius: '0 0 .35rem .35rem',
-        backgroundColor: 'var(--bs-body-bg)',
-        marginTop: '-1px', // solapa con el borde del nav
-    }
+// Display only: ISO dates are shown as dd/mm/yyyy; anything else is printed as stored.
+const formatControlDate = (value) => {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}/.test(value)) return value || '';
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY') : value;
 };
+
+const CONTROL_GRID = 'grid grid-cols-[minmax(0,1.1fr)_17rem_9.5rem_minmax(0,1.4fr)]';
+const CONTROL_GRID_SECONDARY = 'grid grid-cols-[minmax(0,1.2fr)_9.5rem_minmax(0,1.5fr)]';
+// Same header as the events table of "Tiempos Expedición": card surface, quiet label, one rule below.
+const CONTROL_HEAD_ROW = 'border-b border-border bg-card';
+const CONTROL_HEAD_CELL = 'px-3 py-2 text-xs font-semibold text-[color:var(--tc-text-3)]';
+const CONTROL_CELL = 'min-w-0 px-3 py-2 text-[13px] text-foreground';
+const CONTROL_EMPTY = 'text-xs text-muted-foreground';
 
 function CLOCKS_CONTROL(props) {
     const [activeTab, setActiveTab] = useState('tiempos');
+    const tabsId = useId();
     const { translation, swaMsg, globals, currentItem, currentVersion, secondary } = props;
 
     const requestUpdate = (id) => {
@@ -81,14 +48,6 @@ function CLOCKS_CONTROL(props) {
         setActiveTab(tabName);
     }
     
-    const getTabLinkStyle = (tabName) => {
-        const baseStyle = styles.tabLink;
-        if (activeTab === tabName) {
-            return { ...baseStyle, ...styles.tabLinkActive };
-        }
-        return baseStyle;
-    }
-
         const stepsToCheck = ['-5', '-6', '-7', '-8', '-10', '-11', '-17', '-18', '-19', '-20', '-21', '-22', '-30'];
         const _fun_0_type_time = { 'i': 20, 'ii': 25, 'iii': 35, 'iv': 45, 'oa': 15 };
         
@@ -271,19 +230,30 @@ function CLOCKS_CONTROL(props) {
 
             }
 
+            const limitValue = limit_clock
+                ? dateParser_finalDate(limit_clock.date_start, value.limitValues || value.limit[2])
+                : value.version < 0
+                    ? _GET_TIME_FOR_NEGATIVE_PROCESS({ state: value.state, version: value.version, date_start: clock.date_start })
+                    : '';
+            const dateValue = value.date ?? clock.date_start ?? '';
+            const descValue = value.desc ?? clock.desc ?? '';
+
             return (
-                <div className="row" key={key}>
-                    <div className="col border"><label className="fw-bold">{value.icon} {value.name ?? clock.name ?? ''}</label></div>
-                    {!hideLimit && 
-                    <div className="col-2 border py-1 text-center">
-                        {limit_clock 
-                            ? dateParser_finalDate(limit_clock.date_start, value.limitValues || value.limit[2]) 
-                            : value.version < 0 
-                                ? _GET_TIME_FOR_NEGATIVE_PROCESS({ state: value.state, version: value.version, date_start: clock.date_start }) 
-                                : ''}
+                <div role="row" className={cn(hideLimit ? CONTROL_GRID_SECONDARY : CONTROL_GRID, 'min-h-10 items-center border-b border-border/70 last:border-b-0')} key={key}>
+                    <div role="cell" className={cn(CONTROL_CELL, 'flex items-center gap-2 font-medium')}>
+                        <span className="shrink-0" aria-hidden="true">{value.icon}</span>
+                        <span className="min-w-0 break-words">{value.name ?? clock.name ?? ''}</span>
+                    </div>
+                    {!hideLimit &&
+                    <div role="cell" className={cn(CONTROL_CELL, 'font-mono tabular-nums')}>
+                        {limitValue ? formatControlDate(limitValue) : <span className={cn(CONTROL_EMPTY, 'font-sans')}>Sin límite calculado</span>}
                     </div>}
-                    <div className="col-2 border py-1 text-center"><label>{value.date ?? clock.date_start ?? ''}</label></div>
-                    <div className="col border"><label>{value.desc ?? clock.desc ?? ''}</label></div>
+                    <div role="cell" className={cn(CONTROL_CELL, 'font-mono tabular-nums')}>
+                        {dateValue ? formatControlDate(dateValue) : <span className={cn(CONTROL_EMPTY, 'font-sans')}>Sin fecha registrada</span>}
+                    </div>
+                    <div role="cell" className={cn(CONTROL_CELL, 'break-words text-foreground/80')}>
+                        {descValue || <span className={CONTROL_EMPTY}>Sin observaciones</span>}
+                    </div>
                 </div>
             );
         };
@@ -393,33 +363,24 @@ function CLOCKS_CONTROL(props) {
         };
         
         const HEAD = (
-            <div className="row text-light">
-                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Control Proceso</label></div>
-                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha límite términos y plazos</label></div>
-                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center"><label className="fw-bold">Fecha ejecución proceso</label></div>
-                <div className="col border bg-primary text-primary-foreground text-center"><label className="fw-bold">Observaciones</label></div>
-            </div>
-        );
-
-        const HEAD_SECONDARY_TITLE = (
-            <div className="row text-light mt-3">
-                <div className="col border bg-primary text-primary-foreground text-center">
-                    <label className="fw-bold">EVENTOS SECUNDARIOS</label>
+            <div role="row" className={cn(CONTROL_GRID, CONTROL_HEAD_ROW)}>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Control del proceso</div>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>
+                    Fecha límite (términos y plazos)
+                    <span className="mt-1 block text-[11px] font-normal leading-snug">
+                        Fechas calculadas con el motor anterior; la referencia vigente es la pestaña Tiempos Expedición.
+                    </span>
                 </div>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Fecha de ejecución</div>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Observaciones</div>
             </div>
         );
 
         const HEAD_SECONDARY_HEADER = (
-            <div className="row text-light">
-                <div className="col border bg-primary text-primary-foreground text-center">
-                    <label className="fw-bold">Control Proceso términos y plazos</label>
-                </div>
-                <div className="col-2 border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">Fecha ejecución proceso</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground text-center">
-                    <label className="fw-bold">Observaciones</label>
-                </div>
+            <div role="row" className={cn(CONTROL_GRID_SECONDARY, CONTROL_HEAD_ROW)}>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Control del proceso (términos y plazos)</div>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Fecha de ejecución</div>
+                <div role="columnheader" className={CONTROL_HEAD_CELL}>Observaciones</div>
             </div>
         );
 
@@ -434,27 +395,33 @@ function CLOCKS_CONTROL(props) {
             { id: 'principal', label: 'Control Principal' },
             { id: 'eventos', label: 'Anuncios y Eventos' },
             { id: 'grafico', label: 'Gráfico de Tiempos' },
-            { id: 'desistimientos', label: 'Control Desistimientos', className: 'text-danger fw-bold' },
+            { id: 'desistimientos', label: 'Control Desistimientos' },
         ];
+        const secondaryRows = secondary ? _COMPONENT_SECONDARY().filter(Boolean) : [];
 
         return (
-            <div className="mb-5 w-full min-w-0 overflow-hidden">
-                <ul style={styles.tabsContainer}>
+            <div className="mb-5 w-full min-w-0">
+                {/* Bootstrap nav-tabs markup: the legacy bridge turns it into the shared module tab strip. */}
+                <ul className="nav nav-tabs mb-3" role="tablist" aria-label="Vistas de tiempos">
                     {tabs.map(tab => (
-                        <li key={tab.id} style={styles.tabItem}>
-                            <a
-                                style={getTabLinkStyle(tab.id)}
+                        <li key={tab.id} className="nav-item" role="presentation">
+                            <button
+                                type="button"
+                                role="tab"
+                                id={`${tabsId}-tab-${tab.id}`}
+                                aria-controls={`${tabsId}-panel`}
+                                aria-selected={activeTab === tab.id}
                                 onClick={() => handleTabChange(tab.id)}
-                                className={tab.className || ''}
+                                className={`nav-link ${activeTab === tab.id ? 'active' : ''}`}
                             >
                                 {tab.label}
-                            </a>
+                            </button>
                         </li>
                     ))}
                 </ul>
 
-                <div className="tab-content w-full min-w-0 overflow-hidden">
-                    <div style={styles.tabPane}>
+                <div className="tab-content w-full min-w-0">
+                    <div className="w-full min-w-0" role="tabpanel" id={`${tabsId}-panel`} aria-labelledby={`${tabsId}-tab-${activeTab}`}>
                         {activeTab === 'tiempos' && (
                             <EXP_CLOCKS 
                                 {...props}
@@ -462,38 +429,73 @@ function CLOCKS_CONTROL(props) {
                             />
                         )}
                         {activeTab === 'principal' && (
-                            <>
-                                {HEAD}
-                                {_COMPONENT_CLOCK_LIST()}
-                                {secondary && <>
-                                    {HEAD_SECONDARY_TITLE}
-                                    {HEAD_SECONDARY_HEADER}
-                                    {_COMPONENT_SECONDARY()}
-                                </>}
-                            </>
+                            <div className="flex flex-col gap-3">
+                                <section className="tc-card" aria-labelledby={`${tabsId}-principal-title`}>
+                                    <div className="tc-card-header">
+                                        <h3 id={`${tabsId}-principal-title`} className="tc-card-title">Control principal</h3>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <div role="table" aria-labelledby={`${tabsId}-principal-title`} className="min-w-[52rem]">
+                                            {HEAD}
+                                            {_COMPONENT_CLOCK_LIST()}
+                                        </div>
+                                    </div>
+                                </section>
+                                {secondary && (
+                                    <section className="tc-card" aria-labelledby={`${tabsId}-secondary-title`}>
+                                        <div className="tc-card-header">
+                                            <h3 id={`${tabsId}-secondary-title`} className="tc-card-title">Eventos secundarios</h3>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <div role="table" aria-labelledby={`${tabsId}-secondary-title`} className="min-w-[38rem]">
+                                                {HEAD_SECONDARY_HEADER}
+                                                {secondaryRows.length > 0
+                                                    ? secondaryRows
+                                                    : <p className="tc-empty">Sin eventos secundarios registrados.</p>}
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
+                            </div>
                         )}
                         {activeTab === 'eventos' && (
-                            <FUN_CLOCK_EVENTS
-                                {...props}
-                                requestUpdate={requestUpdate}
-                            />
+                            <section className="tc-card" aria-labelledby={`${tabsId}-eventos-title`}>
+                                <div className="tc-card-header">
+                                    <h3 id={`${tabsId}-eventos-title`} className="tc-card-title">Anuncios y eventos</h3>
+                                </div>
+                                <div className="p-3 sm:p-4">
+                                    <FUN_CLOCK_EVENTS
+                                        {...props}
+                                        requestUpdate={requestUpdate}
+                                    />
+                                </div>
+                            </section>
                         )}
                         {activeTab === 'grafico' && (
-                            <FUN_CLOCK_CHART
-                                {...props}
-                            />
+                            <section className="tc-card" aria-labelledby={`${tabsId}-grafico-title`}>
+                                <div className="tc-card-header">
+                                    <h3 id={`${tabsId}-grafico-title`} className="tc-card-title">Gráfico de tiempos</h3>
+                                </div>
+                                <div className="overflow-x-auto p-3 sm:p-4">
+                                    <FUN_CLOCK_CHART
+                                        {...props}
+                                    />
+                                </div>
+                            </section>
                         )}
                         {activeTab === 'desistimientos' && (
-                            <>
-                                <legend className="my-3 px-3 bg-danger">
-                                    <label className="app-p lead text-center fw-normal text-light">CONTROL DE PROCESOS DE DESISTIMIENTOS</label>
-                                </legend>
-                                <FUN_CLOCKS_NEGATIVE
-                                    {...props}
-                                    requestUpdate={requestUpdate}
-                                    requestRefresh={requestRefresh}
-                                />
-                            </>
+                            <section className="tc-card" aria-labelledby={`${tabsId}-desist-title`}>
+                                <div className="tc-card-header">
+                                    <h3 id={`${tabsId}-desist-title`} className="tc-card-title">Control de procesos de desistimiento</h3>
+                                </div>
+                                <div className="p-3 sm:p-4">
+                                    <FUN_CLOCKS_NEGATIVE
+                                        {...props}
+                                        requestUpdate={requestUpdate}
+                                        requestRefresh={requestRefresh}
+                                    />
+                                </div>
+                            </section>
                         )}
                     </div>
                 </div>

@@ -18,19 +18,19 @@ function BlueprintTable({ rows, renderDocument, onEdit, onDelete }) {
             name: 'ID',
             center: true,
             maxWidth: '80px',
-            cell: row => <span>{row.id_public}</span>,
+            cell: row => <span className="ew-num">{row.id_public}</span>,
         },
         {
             name: 'Escala',
             center: true,
             maxWidth: '100px',
-            cell: row => <span>{row.scale}</span>,
+            cell: row => <span className="ew-num">{row.scale}</span>,
         },
         {
             name: 'FECHA',
             center: true,
             maxWidth: '130px',
-            cell: row => <span>{formatDate(row.date)}</span>,
+            cell: row => <span className="ew-num">{formatDate(row.date)}</span>,
         },
         {
             name: 'CATEGORIA',
@@ -40,7 +40,6 @@ function BlueprintTable({ rows, renderDocument, onEdit, onDelete }) {
         },
         {
             name: 'Descripción',
-            center: true,
             cell: row => <span>{row.use}</span>,
         },
         {
@@ -56,6 +55,7 @@ function BlueprintTable({ rows, renderDocument, onEdit, onDelete }) {
             cell: row => <>
                 <Button
                     aria-label={`Editar plano ${row.id_public}`}
+                    title="Editar plano"
                     variant="outline"
                     size="sm"
                     className="px-2 me-1"
@@ -65,9 +65,10 @@ function BlueprintTable({ rows, renderDocument, onEdit, onDelete }) {
                 </Button>
                 <Button
                     aria-label={`Eliminar plano ${row.id_public}`}
-                    variant="destructive"
+                    title="Eliminar plano"
+                    variant="outline"
                     size="sm"
-                    className="px-2"
+                    className="px-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => onDelete(row)}
                 >
                     <Icon name="trash-alt" size={16} />
@@ -78,7 +79,6 @@ function BlueprintTable({ rows, renderDocument, onEdit, onDelete }) {
 
     return <DataTable
         noDataComponent="No hay Items"
-        striped="true"
         columns={columns}
         data={rows}
         highlightOnHover

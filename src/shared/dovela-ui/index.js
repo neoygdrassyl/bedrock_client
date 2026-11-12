@@ -14,6 +14,7 @@ export {
 } from './dovela-card.jsx';
 export { DovelaInlineAlert } from './dovela-inline-alert.jsx';
 export { DovelaPageHeader } from './dovela-page-header.jsx';
+export { DovelaBreadcrumb } from './dovela-breadcrumb.jsx';
 export { DovelaSectionPanel } from './dovela-section-panel.jsx';
 export { DovelaDocumentChip } from './dovela-document-chip.jsx';
 export { DovelaOperationalState } from './dovela-operational-state.jsx';

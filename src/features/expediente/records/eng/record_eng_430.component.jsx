@@ -69,7 +69,7 @@ export default function RECORD_ENG_STEP_430(props) {
             </div>
 
             {LIST.map((value, i) => {
-                return <div className="row">
+                return <div className="row" key={i}>
                     <div className="col">
                         {value.otrher ?
                             <input type="text" className="form-control form-control-sm" id="r_e_input_s430_other" placeholder='OTRO'

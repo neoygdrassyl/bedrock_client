@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import SERVICE_ARCHIVE from './api/archive.service';
-import { Icon } from '@/shared/components/icon';
+import { DataGrid, DataField } from '@/shared/components/SectionCard';
 
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
@@ -20,34 +20,18 @@ export default function ARCHIVE_FUN_VIEW(props) {
 
     // ***************************  JXS *********************** //
     let _LIST_COMPONENT = () => {
-        if (LIST_A.length == 0) return <div className='row'>
-            <div className='col text-center'>
-                <label className='fw-bold text-muted'>No hay Información de archivo</label>
-            </div>
-        </div>
+        if (LIST_A.length == 0) return <p className='m-0 text-sm text-muted-foreground'>Sin información de archivo.</p>
 
         return LIST_A.map((li, index) => {
             let box = li.fun_archive ?? {};
             //let json = getJSONFull(li.json ?? false);
-            return <div key={li.id || `${li.folder || 'folder'}-${index}`} className='row border py-1'>
-                    <div className='row'>
-                        <div className='col'>
-                            <label><Icon name="border-all" size={16} /> Estante: <label className='fw-bold'>{box.column}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label><Icon name="inbox" size={16} /> Entrepaño: <label className='fw-bold'>{box.row}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label><Icon name="archive" size={16} /> Caja: <label className='fw-bold'>{box.box}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label><Icon name="folder" size={16} /> Carpeta: <label className='fw-bold'>{li.folder}</label></label>
-                        </div>
-                        <div className='col'>
-                            <label><Icon name="file-alt" size={16} /> Folios: <label className='fw-bold'>{li.pages}</label></label>
-                        </div>
-                    </div>
-                </div>
+            return <DataGrid key={li.id || `${li.folder || 'folder'}-${index}`}>
+                <DataField label="Estante" mono value={box.column} />
+                <DataField label="Entrepaño" mono value={box.row} />
+                <DataField label="Caja" mono value={box.box} />
+                <DataField label="Carpeta" mono value={li.folder} />
+                <DataField label="Folios" mono value={li.pages} />
+            </DataGrid>
         })
     }
 
@@ -67,7 +51,7 @@ export default function ARCHIVE_FUN_VIEW(props) {
     }
 
     return (
-        <div className='p-2'>
+        <div>
             {_LIST_COMPONENT()}
         </div>
     );

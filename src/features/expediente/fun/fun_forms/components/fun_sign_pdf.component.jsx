@@ -1,3 +1,5 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { DateInput } from '@/shared/components/DateInput';
 import dayjs from 'dayjs';
 import { Button } from '@/shared/ui/button';
 import writtenNumber from 'written-number';
@@ -127,7 +129,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `fun_sign_pdf:step.${_id_public}.json`);
             return value
         }
         let LOAD_STEP = (_id_public) => {
@@ -196,7 +198,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                                     <Icon name="home" size={16} />
                                 </span>
                                 <input type="text" className="form-control" defaultValue={_GET_CHILD_2().item_211} id="sign_pdf_4" />
-                                <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("sign_pdf_4", _GET_CHILD_2())}>DIRECCIÓN COMPLETA</button>
+                                <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("sign_pdf_4", _GET_CHILD_2())}>Dirección completa</button>
                             </div>
                         </div>
 
@@ -219,7 +221,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                                 <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" className="form-control" defaultValue={_GET_SIGN()[1]} id="sign_pdf_6" />
+                                <DateInput className="form-control" defaultValue={_GET_SIGN()[1]} id="sign_pdf_6" />
                             </div>
                         </div>
                         <div className=" col">
@@ -228,7 +230,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                                 <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_lic" />
+                                <DateInput className="form-control" defaultValue={res_expiration_date} id="sign_pdf_lic" />
                             </div>
                         </div>
 
@@ -238,8 +240,8 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                                 <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-1" />
-                                <input type="date" className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-2" />
+                                <DateInput className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-1" />
+                                <DateInput className="form-control" defaultValue={res_expiration_date} id="sign_pdf_13-2" />
                             </div>
                         </div>
 
@@ -343,7 +345,7 @@ function FUN_SIGN_PDF({ translation, swaMsg, globals, currentItem, currentVersio
                     <div className="row">
                         <div className="Col-12">
                             <div className="text-center py-4 mt-3">
-                                <Button variant="destructive" size="sm"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                <Button variant="destructive" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF </Button>
                             </div>
                         </div>
                     </div>

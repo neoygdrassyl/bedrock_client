@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import DataTable from '@/shared/components/data-table-bridge';
 
-import { dateParser } from '../../../../shared/config/customClasses/typeParse';
+import dayjs from 'dayjs';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import FUN_SERVICE from '../../api/fun.service';
 import { swalError, swalLoading, swalSuccess } from '../../../../shared/utils/swalAdapter';
@@ -12,7 +13,7 @@ import {
     normalizeLegacyReview,
 } from './utils/legalReviewEligibility';
 
-const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false, hideDocumentManagement = false }) => {
+const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVersion, requestUpdate, readOnly = false, hideDocumentManagement = false, hideHeading = false }) => {
 
         const [isSaving, setIsSaving] = useState(false);
         const [checkedOverrides, setCheckedOverrides] = useState({});
@@ -100,7 +101,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     await FUN_SERVICE.create_funr(formData);
                 }
                 await requestUpdate?.(currentItem.id, true);
-                swalSuccess({ title: swaMsg?.publish_success_title || 'Guardado', text: swaMsg?.publish_success_text || 'Lista de chequeo actualizada.' });
+                swalSuccess({ title: swaMsg?.generic_success_title || 'Guardado', text: swaMsg?.generic_success_text || 'Lista de chequeo actualizada.' });
             } catch (error) {
                 setCheckedOverrides((current) => {
                     const next = { ...current };
@@ -142,15 +143,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="1" aria-label="Requisito 511: Sí"
                             checked={_CHECK_INDEXVALUE('511', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="0" aria-label="Requisito 511: No"
                             checked={_CHECK_INDEXVALUE('511', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="511" value="2" aria-label="Requisito 511: No aplica"
                             checked={_CHECK_INDEXVALUE('511', 2)} />
                     </div>
                 </div>
@@ -161,15 +162,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="1" aria-label="Requisito 512: Sí"
                             checked={_CHECK_INDEXVALUE('512', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="0" aria-label="Requisito 512: No"
                             checked={_CHECK_INDEXVALUE('512', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="512" value="2" aria-label="Requisito 512: No aplica"
                             checked={_CHECK_INDEXVALUE('512', 2)} />
                     </div>
                 </div>
@@ -180,15 +181,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="1" aria-label="Requisito 513: Sí"
                             checked={_CHECK_INDEXVALUE('513', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="0" aria-label="Requisito 513: No"
                             checked={_CHECK_INDEXVALUE('513', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="513" value="2" aria-label="Requisito 513: No aplica"
                             checked={_CHECK_INDEXVALUE('513', 2)} />
                     </div>
                 </div>
@@ -199,15 +200,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="1" aria-label="Requisito 516: Sí"
                             checked={_CHECK_INDEXVALUE('516', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="0" aria-label="Requisito 516: No"
                             checked={_CHECK_INDEXVALUE('516', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="516" value="2" aria-label="Requisito 516: No aplica"
                             checked={_CHECK_INDEXVALUE('516', 2)} />
                     </div>
                 </div>
@@ -218,15 +219,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="1" aria-label="Requisito 517: Sí"
                             checked={_CHECK_INDEXVALUE('517', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="0" aria-label="Requisito 517: No"
                             checked={_CHECK_INDEXVALUE('517', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="517" value="2" aria-label="Requisito 517: No aplica"
                             checked={_CHECK_INDEXVALUE('517', 2)} />
                     </div>
                 </div>
@@ -237,15 +238,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="1" aria-label="Requisito 518: Sí"
                             checked={_CHECK_INDEXVALUE('518', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="0" aria-label="Requisito 518: No"
                             checked={_CHECK_INDEXVALUE('518', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="518" value="2" aria-label="Requisito 518: No aplica"
                             checked={_CHECK_INDEXVALUE('518', 2)} />
                     </div>
                 </div>
@@ -256,15 +257,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="1" aria-label="Requisito 519: Sí"
                             checked={_CHECK_INDEXVALUE('519', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="0" aria-label="Requisito 519: No"
                             checked={_CHECK_INDEXVALUE('519', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="519" value="2" aria-label="Requisito 519: No aplica"
                             checked={_CHECK_INDEXVALUE('519', 2)} />
                     </div>
                 </div>
@@ -309,15 +310,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="1" aria-label="Requisito 621: Sí"
                                 checked={_CHECK_INDEXVALUE('621', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="0" aria-label="Requisito 621: No"
                                 checked={_CHECK_INDEXVALUE('621', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="621" value="2" aria-label="Requisito 621: No aplica"
                                 checked={_CHECK_INDEXVALUE('621', 2)} />
                         </div>
                     </div>
@@ -328,15 +329,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="1" aria-label="Requisito 601a: Sí"
                                 checked={_CHECK_INDEXVALUE('601a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="0" aria-label="Requisito 601a: No"
                                 checked={_CHECK_INDEXVALUE('601a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601a" value="2" aria-label="Requisito 601a: No aplica"
                                 checked={_CHECK_INDEXVALUE('601a', 2)} />
                         </div>
                     </div>
@@ -347,15 +348,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="1" aria-label="Requisito 622: Sí"
                                 checked={_CHECK_INDEXVALUE('622', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="0" aria-label="Requisito 622: No"
                                 checked={_CHECK_INDEXVALUE('622', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="622" value="2" aria-label="Requisito 622: No aplica"
                                 checked={_CHECK_INDEXVALUE('622', 2)} />
                         </div>
                     </div>
@@ -366,15 +367,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="1" aria-label="Requisito 602a: Sí"
                                 checked={_CHECK_INDEXVALUE('602a', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="0" aria-label="Requisito 602a: No"
                                 checked={_CHECK_INDEXVALUE('602a', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602a" value="2" aria-label="Requisito 602a: No aplica"
                                 checked={_CHECK_INDEXVALUE('602a', 2)} />
                         </div>
                     </div>
@@ -396,15 +397,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="1" aria-label="Requisito 623: Sí"
                                 checked={_CHECK_INDEXVALUE('623', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="0" aria-label="Requisito 623: No"
                                 checked={_CHECK_INDEXVALUE('623', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="623" value="2" aria-label="Requisito 623: No aplica"
                                 checked={_CHECK_INDEXVALUE('623', 2)} />
                         </div>
                     </div>
@@ -415,15 +416,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="1" aria-label="Requisito 601b: Sí"
                                 checked={_CHECK_INDEXVALUE('601b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="0" aria-label="Requisito 601b: No"
                                 checked={_CHECK_INDEXVALUE('601b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601b" value="2" aria-label="Requisito 601b: No aplica"
                                 checked={_CHECK_INDEXVALUE('601b', 2)} />
                         </div>
                     </div>
@@ -434,15 +435,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="1" aria-label="Requisito 602b: Sí"
                                 checked={_CHECK_INDEXVALUE('602b', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="0" aria-label="Requisito 602b: No"
                                 checked={_CHECK_INDEXVALUE('602b', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602b" value="2" aria-label="Requisito 602b: No aplica"
                                 checked={_CHECK_INDEXVALUE('602b', 2)} />
                         </div>
                     </div>
@@ -453,15 +454,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="1" aria-label="Requisito 624: Sí"
                                 checked={_CHECK_INDEXVALUE('624', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="0" aria-label="Requisito 624: No"
                                 checked={_CHECK_INDEXVALUE('624', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="624" value="2" aria-label="Requisito 624: No aplica"
                                 checked={_CHECK_INDEXVALUE('624', 2)} />
                         </div>
                     </div>
@@ -472,15 +473,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="1" aria-label="Requisito 625: Sí"
                                 checked={_CHECK_INDEXVALUE('625', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="0" aria-label="Requisito 625: No"
                                 checked={_CHECK_INDEXVALUE('625', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="625" value="2" aria-label="Requisito 625: No aplica"
                                 checked={_CHECK_INDEXVALUE('625', 2)} />
                         </div>
                     </div>
@@ -502,15 +503,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="1" aria-label="Requisito 626: Sí"
                                 checked={_CHECK_INDEXVALUE('626', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="0" aria-label="Requisito 626: No"
                                 checked={_CHECK_INDEXVALUE('626', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="626" value="2" aria-label="Requisito 626: No aplica"
                                 checked={_CHECK_INDEXVALUE('626', 2)} />
                         </div>
                     </div>
@@ -521,15 +522,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="1" aria-label="Requisito 627: Sí"
                                 checked={_CHECK_INDEXVALUE('627', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="0" aria-label="Requisito 627: No"
                                 checked={_CHECK_INDEXVALUE('627', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="627" value="2" aria-label="Requisito 627: No aplica"
                                 checked={_CHECK_INDEXVALUE('627', 2)} />
                         </div>
                     </div>
@@ -540,15 +541,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="1" aria-label="Requisito 601c: Sí"
                                 checked={_CHECK_INDEXVALUE('601c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="0" aria-label="Requisito 601c: No"
                                 checked={_CHECK_INDEXVALUE('601c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="601c" value="2" aria-label="Requisito 601c: No aplica"
                                 checked={_CHECK_INDEXVALUE('601c', 2)} />
                         </div>
                     </div>
@@ -559,15 +560,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="1" aria-label="Requisito 602c: Sí"
                                 checked={_CHECK_INDEXVALUE('602c', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="0" aria-label="Requisito 602c: No"
                                 checked={_CHECK_INDEXVALUE('602c', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="602c" value="2" aria-label="Requisito 602c: No aplica"
                                 checked={_CHECK_INDEXVALUE('602c', 2)} />
                         </div>
                     </div>
@@ -606,15 +607,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="1" aria-label="Requisito 631: Sí"
                             checked={_CHECK_INDEXVALUE('631', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="0" aria-label="Requisito 631: No"
                             checked={_CHECK_INDEXVALUE('631', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="631" value="2" aria-label="Requisito 631: No aplica"
                             checked={_CHECK_INDEXVALUE('631', 2)} />
                     </div>
                 </div>
@@ -625,15 +626,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="1" aria-label="Requisito 632: Sí"
                             checked={_CHECK_INDEXVALUE('632', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="0" aria-label="Requisito 632: No"
                             checked={_CHECK_INDEXVALUE('632', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="632" value="2" aria-label="Requisito 632: No aplica"
                             checked={_CHECK_INDEXVALUE('632', 2)} />
                     </div>
                 </div>
@@ -644,15 +645,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="1" aria-label="Requisito 633: Sí"
                             checked={_CHECK_INDEXVALUE('633', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="0" aria-label="Requisito 633: No"
                             checked={_CHECK_INDEXVALUE('633', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="633" value="2" aria-label="Requisito 633: No aplica"
                             checked={_CHECK_INDEXVALUE('633', 2)} />
                     </div>
                 </div>
@@ -663,15 +664,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="1" aria-label="Requisito 6023: Sí"
                             checked={_CHECK_INDEXVALUE('6023', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="0" aria-label="Requisito 6023: No"
                             checked={_CHECK_INDEXVALUE('6023', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6023" value="2" aria-label="Requisito 6023: No aplica"
                             checked={_CHECK_INDEXVALUE('6023', 2)} />
                     </div>
                 </div>
@@ -691,15 +692,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="1" aria-label="Requisito 634: Sí"
                             checked={_CHECK_INDEXVALUE('634', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="0" aria-label="Requisito 634: No"
                             checked={_CHECK_INDEXVALUE('634', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="634" value="2" aria-label="Requisito 634: No aplica"
                             checked={_CHECK_INDEXVALUE('634', 2)} />
                     </div>
                 </div>
@@ -710,15 +711,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="1" aria-label="Requisito 635: Sí"
                             checked={_CHECK_INDEXVALUE('635', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="0" aria-label="Requisito 635: No"
                             checked={_CHECK_INDEXVALUE('635', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="635" value="2" aria-label="Requisito 635: No aplica"
                             checked={_CHECK_INDEXVALUE('635', 2)} />
                     </div>
                 </div>
@@ -729,15 +730,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="1" aria-label="Requisito 636: Sí"
                             checked={_CHECK_INDEXVALUE('636', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="0" aria-label="Requisito 636: No"
                             checked={_CHECK_INDEXVALUE('636', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="636" value="2" aria-label="Requisito 636: No aplica"
                             checked={_CHECK_INDEXVALUE('636', 2)} />
                     </div>
                 </div>
@@ -773,15 +774,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="1" aria-label="Requisito 641: Sí"
                                 checked={_CHECK_INDEXVALUE('641', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="0" aria-label="Requisito 641: No"
                                 checked={_CHECK_INDEXVALUE('641', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="641" value="2" aria-label="Requisito 641: No aplica"
                                 checked={_CHECK_INDEXVALUE('641', 2)} />
                         </div>
                     </div>
@@ -797,15 +798,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="1" aria-label="Requisito 642: Sí"
                                 checked={_CHECK_INDEXVALUE('642', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="0" aria-label="Requisito 642: No"
                                 checked={_CHECK_INDEXVALUE('642', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="642" value="2" aria-label="Requisito 642: No aplica"
                                 checked={_CHECK_INDEXVALUE('642', 2)} />
                         </div>
                     </div>
@@ -816,15 +817,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="1" aria-label="Requisito 643: Sí"
                                 checked={_CHECK_INDEXVALUE('643', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="0" aria-label="Requisito 643: No"
                                 checked={_CHECK_INDEXVALUE('643', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="643" value="2" aria-label="Requisito 643: No aplica"
                                 checked={_CHECK_INDEXVALUE('643', 2)} />
                         </div>
                     </div>
@@ -856,15 +857,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="1" aria-label="Requisito 651: Sí"
                                 checked={_CHECK_INDEXVALUE('651', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="0" aria-label="Requisito 651: No"
                                 checked={_CHECK_INDEXVALUE('651', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="651" value="2" aria-label="Requisito 651: No aplica"
                                 checked={_CHECK_INDEXVALUE('651', 2)} />
                         </div>
                     </div>
@@ -875,15 +876,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="1" aria-label="Requisito 652: Sí"
                                 checked={_CHECK_INDEXVALUE('652', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="0" aria-label="Requisito 652: No"
                                 checked={_CHECK_INDEXVALUE('652', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="652" value="2" aria-label="Requisito 652: No aplica"
                                 checked={_CHECK_INDEXVALUE('652', 2)} />
                         </div>
                     </div>
@@ -894,15 +895,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="1" aria-label="Requisito 653: Sí"
                                 checked={_CHECK_INDEXVALUE('653', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="0" aria-label="Requisito 653: No"
                                 checked={_CHECK_INDEXVALUE('653', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="653" value="2" aria-label="Requisito 653: No aplica"
                                 checked={_CHECK_INDEXVALUE('653', 2)} />
                         </div>
                     </div>
@@ -947,15 +948,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="1" aria-label="Requisito 6601: Sí"
                             checked={_CHECK_INDEXVALUE('6601', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="0" aria-label="Requisito 6601: No"
                             checked={_CHECK_INDEXVALUE('6601', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6601" value="2" aria-label="Requisito 6601: No aplica"
                             checked={_CHECK_INDEXVALUE('6601', 2)} />
                     </div>
                 </div>
@@ -966,15 +967,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="1" aria-label="Requisito 6602: Sí"
                             checked={_CHECK_INDEXVALUE('6602', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="0" aria-label="Requisito 6602: No"
                             checked={_CHECK_INDEXVALUE('6602', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6602" value="2" aria-label="Requisito 6602: No aplica"
                             checked={_CHECK_INDEXVALUE('6602', 2)} />
                     </div>
                 </div>
@@ -985,15 +986,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="1" aria-label="Requisito 6603: Sí"
                             checked={_CHECK_INDEXVALUE('6603', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="0" aria-label="Requisito 6603: No"
                             checked={_CHECK_INDEXVALUE('6603', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6603" value="2" aria-label="Requisito 6603: No aplica"
                             checked={_CHECK_INDEXVALUE('6603', 2)} />
                     </div>
                 </div>
@@ -1004,15 +1005,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="1" aria-label="Requisito 6604: Sí"
                             checked={_CHECK_INDEXVALUE('6604', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="0" aria-label="Requisito 6604: No"
                             checked={_CHECK_INDEXVALUE('6604', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6604" value="2" aria-label="Requisito 6604: No aplica"
                             checked={_CHECK_INDEXVALUE('6604', 2)} />
                     </div>
                 </div>
@@ -1023,15 +1024,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="1" aria-label="Requisito 6605: Sí"
                             checked={_CHECK_INDEXVALUE('6605', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="0" aria-label="Requisito 6605: No"
                             checked={_CHECK_INDEXVALUE('6605', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6605" value="2" aria-label="Requisito 6605: No aplica"
                             checked={_CHECK_INDEXVALUE('6605', 2)} />
                     </div>
                 </div>
@@ -1056,15 +1057,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="1" aria-label="Requisito 660a: Sí"
                             checked={_CHECK_INDEXVALUE('660a', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="0" aria-label="Requisito 660a: No"
                             checked={_CHECK_INDEXVALUE('660a', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660a" value="2" aria-label="Requisito 660a: No aplica"
                             checked={_CHECK_INDEXVALUE('660a', 2)} />
                     </div>
                 </div>
@@ -1075,15 +1076,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="1" aria-label="Requisito 660b: Sí"
                             checked={_CHECK_INDEXVALUE('660b', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="0" aria-label="Requisito 660b: No"
                             checked={_CHECK_INDEXVALUE('660b', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660b" value="2" aria-label="Requisito 660b: No aplica"
                             checked={_CHECK_INDEXVALUE('660b', 2)} />
                     </div>
                 </div>
@@ -1094,15 +1095,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="1" aria-label="Requisito 660c: Sí"
                             checked={_CHECK_INDEXVALUE('660c', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="0" aria-label="Requisito 660c: No"
                             checked={_CHECK_INDEXVALUE('660c', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660c" value="2" aria-label="Requisito 660c: No aplica"
                             checked={_CHECK_INDEXVALUE('660c', 2)} />
                     </div>
                 </div>
@@ -1113,15 +1114,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="1" aria-label="Requisito 660d: Sí"
                             checked={_CHECK_INDEXVALUE('660d', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="0" aria-label="Requisito 660d: No"
                             checked={_CHECK_INDEXVALUE('660d', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660d" value="2" aria-label="Requisito 660d: No aplica"
                             checked={_CHECK_INDEXVALUE('660d', 2)} />
                     </div>
                 </div>
@@ -1132,15 +1133,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="1" aria-label="Requisito 660e: Sí"
                             checked={_CHECK_INDEXVALUE('660e', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="0" aria-label="Requisito 660e: No"
                             checked={_CHECK_INDEXVALUE('660e', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660e" value="2" aria-label="Requisito 660e: No aplica"
                             checked={_CHECK_INDEXVALUE('660e', 2)} />
                     </div>
                 </div>
@@ -1156,15 +1157,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="1" aria-label="Requisito 660f: Sí"
                             checked={_CHECK_INDEXVALUE('660f', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="0" aria-label="Requisito 660f: No"
                             checked={_CHECK_INDEXVALUE('660f', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="660f" value="2" aria-label="Requisito 660f: No aplica"
                             checked={_CHECK_INDEXVALUE('660f', 2)} />
                     </div>
                 </div>
@@ -1175,15 +1176,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="1" aria-label="Requisito 6611: Sí"
                             checked={_CHECK_INDEXVALUE('6611', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="0" aria-label="Requisito 6611: No"
                             checked={_CHECK_INDEXVALUE('6611', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6611" value="2" aria-label="Requisito 6611: No aplica"
                             checked={_CHECK_INDEXVALUE('6611', 2)} />
                     </div>
                 </div>
@@ -1194,15 +1195,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="1" aria-label="Requisito 6612: Sí"
                             checked={_CHECK_INDEXVALUE('6612', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="0" aria-label="Requisito 6612: No"
                             checked={_CHECK_INDEXVALUE('6612', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6612" value="2" aria-label="Requisito 6612: No aplica"
                             checked={_CHECK_INDEXVALUE('6612', 2)} />
                     </div>
                 </div>
@@ -1222,15 +1223,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="1" aria-label="Requisito 6613: Sí"
                             checked={_CHECK_INDEXVALUE('6613', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="0" aria-label="Requisito 6613: No"
                             checked={_CHECK_INDEXVALUE('6613', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6613" value="2" aria-label="Requisito 6613: No aplica"
                             checked={_CHECK_INDEXVALUE('6613', 2)} />
                     </div>
                 </div>
@@ -1246,15 +1247,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="1" aria-label="Requisito 6614: Sí"
                             checked={_CHECK_INDEXVALUE('6614', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="0" aria-label="Requisito 6614: No"
                             checked={_CHECK_INDEXVALUE('6614', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6614" value="2" aria-label="Requisito 6614: No aplica"
                             checked={_CHECK_INDEXVALUE('6614', 2)} />
                     </div>
                 </div>
@@ -1270,15 +1271,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="1" aria-label="Requisito 6615: Sí"
                             checked={_CHECK_INDEXVALUE('6615', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="0" aria-label="Requisito 6615: No"
                             checked={_CHECK_INDEXVALUE('6615', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6615" value="2" aria-label="Requisito 6615: No aplica"
                             checked={_CHECK_INDEXVALUE('6615', 2)} />
                     </div>
                 </div>
@@ -1294,15 +1295,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="1" aria-label="Requisito 6616: Sí"
                             checked={_CHECK_INDEXVALUE('6616', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="0" aria-label="Requisito 6616: No"
                             checked={_CHECK_INDEXVALUE('6616', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6616" value="2" aria-label="Requisito 6616: No aplica"
                             checked={_CHECK_INDEXVALUE('6616', 2)} />
                     </div>
                 </div>
@@ -1313,15 +1314,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="1" aria-label="Requisito 6617: Sí"
                             checked={_CHECK_INDEXVALUE('6617', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="0" aria-label="Requisito 6617: No"
                             checked={_CHECK_INDEXVALUE('6617', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6617" value="2" aria-label="Requisito 6617: No aplica"
                             checked={_CHECK_INDEXVALUE('6617', 2)} />
                     </div>
                 </div>
@@ -1337,15 +1338,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                         </ul>
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="1"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="1" aria-label="Requisito 6618: Sí"
                             checked={_CHECK_INDEXVALUE('6618', 1)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="0"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="0" aria-label="Requisito 6618: No"
                             checked={_CHECK_INDEXVALUE('6618', 0)} />
                     </div>
                     <div className="col-1">
-                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="2"
+                        <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6618" value="2" aria-label="Requisito 6618: No aplica"
                             checked={_CHECK_INDEXVALUE('6618', 2)} />
                     </div>
                 </div>
@@ -1381,15 +1382,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="1" aria-label="Requisito 671: Sí"
                                 checked={_CHECK_INDEXVALUE('671', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="0" aria-label="Requisito 671: No"
                                 checked={_CHECK_INDEXVALUE('671', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="671" value="2" aria-label="Requisito 671: No aplica"
                                 checked={_CHECK_INDEXVALUE('671', 2)} />
                         </div>
                     </div>
@@ -1400,15 +1401,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="1" aria-label="Requisito 672: Sí"
                                 checked={_CHECK_INDEXVALUE('672', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="0" aria-label="Requisito 672: No"
                                 checked={_CHECK_INDEXVALUE('672', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="672" value="2" aria-label="Requisito 672: No aplica"
                                 checked={_CHECK_INDEXVALUE('672', 2)} />
                         </div>
                     </div>
@@ -1450,15 +1451,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="1" aria-label="Requisito 681: Sí"
                                 checked={_CHECK_INDEXVALUE('681', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="0" aria-label="Requisito 681: No"
                                 checked={_CHECK_INDEXVALUE('681', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="681" value="2" aria-label="Requisito 681: No aplica"
                                 checked={_CHECK_INDEXVALUE('681', 2)} />
                         </div>
                     </div>
@@ -1474,15 +1475,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="1" aria-label="Requisito 682: Sí"
                                 checked={_CHECK_INDEXVALUE('682', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="0" aria-label="Requisito 682: No"
                                 checked={_CHECK_INDEXVALUE('682', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="682" value="2" aria-label="Requisito 682: No aplica"
                                 checked={_CHECK_INDEXVALUE('682', 2)} />
                         </div>
                     </div>
@@ -1493,15 +1494,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="1" aria-label="Requisito 683: Sí"
                                 checked={_CHECK_INDEXVALUE('683', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="0" aria-label="Requisito 683: No"
                                 checked={_CHECK_INDEXVALUE('683', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="683" value="2" aria-label="Requisito 683: No aplica"
                                 checked={_CHECK_INDEXVALUE('683', 2)} />
                         </div>
                     </div>
@@ -1512,15 +1513,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="1" aria-label="Requisito 684: Sí"
                                 checked={_CHECK_INDEXVALUE('684', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="0" aria-label="Requisito 684: No"
                                 checked={_CHECK_INDEXVALUE('684', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="684" value="2" aria-label="Requisito 684: No aplica"
                                 checked={_CHECK_INDEXVALUE('684', 2)} />
                         </div>
                     </div>
@@ -1531,15 +1532,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="1" aria-label="Requisito 685: Sí"
                                 checked={_CHECK_INDEXVALUE('685', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="0" aria-label="Requisito 685: No"
                                 checked={_CHECK_INDEXVALUE('685', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="685" value="2" aria-label="Requisito 685: No aplica"
                                 checked={_CHECK_INDEXVALUE('685', 2)} />
                         </div>
                     </div>
@@ -1555,15 +1556,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="1" aria-label="Requisito 6861: Sí"
                                 checked={_CHECK_INDEXVALUE('6861', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="0" aria-label="Requisito 6861: No"
                                 checked={_CHECK_INDEXVALUE('6861', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6861" value="2" aria-label="Requisito 6861: No aplica"
                                 checked={_CHECK_INDEXVALUE('6861', 2)} />
                         </div>
                     </div>
@@ -1579,15 +1580,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="1" aria-label="Requisito 687: Sí"
                                 checked={_CHECK_INDEXVALUE('687', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="0" aria-label="Requisito 687: No"
                                 checked={_CHECK_INDEXVALUE('687', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="687" value="2" aria-label="Requisito 687: No aplica"
                                 checked={_CHECK_INDEXVALUE('687', 2)} />
                         </div>
                     </div>
@@ -1598,15 +1599,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="1" aria-label="Requisito 6862: Sí"
                                 checked={_CHECK_INDEXVALUE('6862', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="0" aria-label="Requisito 6862: No"
                                 checked={_CHECK_INDEXVALUE('6862', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="6862" value="2" aria-label="Requisito 6862: No aplica"
                                 checked={_CHECK_INDEXVALUE('6862', 2)} />
                         </div>
                     </div>
@@ -1622,15 +1623,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="1" aria-label="Requisito 688: Sí"
                                 checked={_CHECK_INDEXVALUE('688', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="0" aria-label="Requisito 688: No"
                                 checked={_CHECK_INDEXVALUE('688', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="688" value="2" aria-label="Requisito 688: No aplica"
                                 checked={_CHECK_INDEXVALUE('688', 2)} />
                         </div>
                     </div>
@@ -1641,15 +1642,15 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                             </ul>
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="1"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="1" aria-label="Requisito 689: Sí"
                                 checked={_CHECK_INDEXVALUE('689', 1)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="0"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="0" aria-label="Requisito 689: No"
                                 checked={_CHECK_INDEXVALUE('689', 0)} />
                         </div>
                         <div className="col-1">
-                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="2"
+                            <input className="form-check-input" disabled={readOnly || isSaving} type="radio" onChange={_HANDLE_CHECK_CHANGE} name="689" value="2" aria-label="Requisito 689: No aplica"
                                 checked={_CHECK_INDEXVALUE('689', 2)} />
                         </div>
                     </div>
@@ -1673,7 +1674,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '50px',
-                    cell: row => <span className="text-sm">{row.id_public}</span>
+                    cell: row => <span className="ew-num text-sm">{row.id_public}</span>
                 },
                 {
                     name: 'FOLIOS',
@@ -1681,7 +1682,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '40px',
-                    cell: row => <span className="text-sm">{row.pages}</span>
+                    cell: row => <span className="ew-num text-sm">{row.pages}</span>
                 },
                 {
                     name: 'FECHA ANEXO',
@@ -1689,7 +1690,7 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <span className="text-sm">{dateParser(row.date)}</span>
+                    cell: row => <span className="ew-num text-sm">{row.date && dayjs(row.date).isValid() ? dayjs(row.date).format('DD/MM/YYYY') : row.date}</span>
                 },
                 {
                     name: 'ESTADO',
@@ -1697,8 +1698,8 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                     maxWidth: '50px',
                     cell: row => <>
                         {row.active == 1
-                            ? <label className="text-success fw-bold">Activo</label>
-                            : <label className="text-danger fw-bold">Inactivo</label>}
+                            ? <DovelaBadge tone="success">Activo</DovelaBadge>
+                            : <DovelaBadge tone="danger">Inactivo</DovelaBadge>}
                     </>
                 },
                 {
@@ -1712,9 +1713,8 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 },
             ]
             return <DataTable
-                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                noDataComponent="No hay Items"
-                striped="true"
+                paginationComponentOptions={{ rowsPerPageText: 'Filas por página', rangeSeparatorText: 'de' }}
+                noDataComponent="Sin documentos anexos"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -1728,14 +1728,16 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
 
         return (
             <div>
-                <legend className="my-2 px-3 Collapsible" id="fung_c3">
-                    <label className="app-p lead text-center fw-normal">6. LISTA GENERAL DE CHEQUEO DE DOCUMENTOS</label>
-                </legend>
+                {/* The Chequeo module titles its own card with this heading (hideHeading). */}
+                {hideHeading
+                    ? null
+                    : <h3 className="ew-subheading ew-subheading--first" id="fung_c3">6. Lista general de chequeo de documentos</h3>}
                 {!currentApplication && (
-                    <div className="note note-danger">
+                    <div className="alert alert-danger" role="alert">
                         No hay información de la solicitud para la versión {currentVersion}.
                     </div>
                 )}
+                <div className="ew-checklist" role="group" aria-label="Lista general de chequeo de documentos">
                 {_SET_610()}
                 {_SET_620()}
                 {_SET_630()}
@@ -1744,10 +1746,9 @@ const FUNG_CHECKLIST = ({ translation, swaMsg, globals, currentItem, currentVers
                 {_SET_660()}
                 {_SET_670()}
                 {_SET_680()}
+                </div>
                 {!hideDocumentManagement ? <>
-                    <legend className="my-2 px-3 Collapsible" id="fung_c4">
-                        <label className="app-p lead text-center fw-normal">7. GESTIÓN DOCUMENTAL</label>
-                    </legend>
+                    <h3 className="ew-subheading" id="fung_c4">7. Gestión documental</h3>
                     {_CHILD_6_LIST()}
                 </> : null}
             </div>

@@ -11,3 +11,26 @@
   border-style: solid;
   border-color: hsl(var(--border));
 }
+
+/*
+ * Responsive list: the inbox decides by its own width (the app sidebar takes a variable share of
+ * the viewport), so a container query switches between the stacked cards (narrow) and the table
+ * (wide). Browsers without container queries keep the cards, which work at any width.
+ */
+.or-inbox-body {
+  container: or-inbox / inline-size;
+}
+
+.or-inbox-table {
+  display: none;
+}
+
+@container or-inbox (min-width: 56rem) {
+  .or-inbox-table {
+    display: block;
+  }
+
+  .or-inbox-cards {
+    display: none;
+  }
+}

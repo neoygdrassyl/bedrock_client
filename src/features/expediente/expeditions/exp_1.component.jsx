@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { DateInput, formatDateInputValue } from '@/shared/components/DateInput';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { useState, useEffect, Children } from 'react';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import EXPEDITION_SERVICE from '../api/expedition.service';
 import PQRS_Service from '../../pqrs/api/pqrs_main.service';
 import JSONObjectParser from '../../../shared/config/jsons/jsonReplacer';
-import { axis, infoCud, zones, zonesTable } from '../../../shared/config/jsons/vars'
+import { axisVar, infoCud, zones, zonesTable } from '../../../shared/config/jsons/vars'
 import { regexChecker_isOA_2, _MANAGE_IDS, _CALCULATE_EXPENSES, formsParser1, regexChecker_isPh } from '../../../shared/config/customClasses/typeParse';
 import EXP_CALC from './exp_calc.component';
 import { _FUN_6_PARSER } from '../../../shared/config/customClasses/funCustomArrays';
@@ -12,9 +14,11 @@ import dayjs from 'dayjs'
 import SubmitService from '../../ventanilla/api/submit.service'
 import CubXVrDataService from '../api/cubXvr.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { SectionCard, SectionSubheading } from '@/shared/components/SectionCard';
+import { useActionGuard } from './useActionGuard';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
-function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord, step }) {
     const [vrsRelated, setVrsRelated] = useState([]);
     const [vrSelected1, setVrSelected1] = useState(null);
     const [vrSelected2, setVrSelected2] = useState(null);
@@ -22,6 +26,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
     const [cubSelected2, setCubSelected2] = useState(null);
     const [idCUBxVr1, setIdCUBxVr1] = useState(null);
     const [idCUBxVr2, setIdCUBxVr2] = useState(null);
+    const guard = useActionGuard();
 
     const retrieveItem = async () => {
         try {
@@ -65,7 +70,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
         let _GET_EXPEDITION_JSON = (field) => {
             let json = currentRecord[field];
             if (!json) return {}
-            let object = JSON.parse(JSON.parse(json))
+            let object = parseLegacyJson(json, {}, `exp_1:expedition.${field}`)
             return object
         }
         let _GET_LAST_ID = (_id) => {
@@ -171,7 +176,7 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `exp_1:step.${_id_public}.json`);
             return value
         }
         let _GET_EXP_AREAS = () => {
@@ -256,61 +261,61 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             let mun_1 = _GET_EXP_SECOND_COST();
             //console.log(vrsRelated)
             return <>
-                <div className="card border border-dark mb-3">
-                    <div className="card-header">Expensas Fijas</div>
-                    <div className="card-body text-dark">
-                        <div className="row">
-                            <div className="col">
-                                <label className="mt-1">Area (m2)</label>
+                <div className="ew-group">
+                    <SectionSubheading className="ew-subheading--first">Expensas fijas</SectionSubheading>
+                    <div>
+                        <div className="ew-form-grid ew-form-grid--five">
+                            <div>
+                                <label className="mt-1">Área (m²)</label>
                                 <div className="input-group">
                                     <input type="number" className="form-control" id="expedition_25" min="0" step="0.01"
                                         defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_0_area ?? ''} onChange={(e) => document.getElementById("exxp_fix_1").value = _GET_EXPENSES(e.target.value).cf} />
                                 </div>
 
                             </div>
-                            <div className="col">
+                            <div>
                                 <label className="mt-1">Valor (COP)</label>
-                                <input type="text" className="form-control" id="exxp_fix_1" disabled value={epenses.cf ?? 0} />
+                                <input type="text" className="form-control ew-input-num" id="exxp_fix_1" disabled value={epenses.cf ?? 0} />
                             </div>
-                            <div className="col">
-                                <label className="mt-1">Valor Pagado (COP)</label>
+                            <div>
+                                <label className="mt-1">Valor pagado (COP)</label>
                                 <input type="number" step={1} className="form-control" id="expedition_27" defaultValue={taxes.id_payment_0_real ?? ''} />
                             </div>
-                            <div className="col">
+                            <div>
                                 <label className="mt-1">Fecha</label>
-                                <input type="text" className="form-control" id="exxp_fix_2" disabled value={CLOCK_FIX_PAYMENT.date_start} />
+                                <input type="text" className="form-control" id="exxp_fix_2" disabled value={formatDateInputValue(CLOCK_FIX_PAYMENT.date_start) || (CLOCK_FIX_PAYMENT.date_start ?? '')} />
                             </div>
-                            <div className="col">
+                            <div>
                                 <label className="mt-1">Factura #</label>
-                                <input type="text" className="form-control" id="exxp_fix_3" disabled value={currentItem.id_payment} />
+                                <input type="text" className="form-control" id="exxp_fix_3" disabled value={currentItem.id_payment ?? ''} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {!isPH() ? <>
-                    <div className="card border border-dark mb-3">
-                        <div className="card-header">Expensas variables</div>
-                        <div className="card-body text-dark">
-                            <div className="row">
-                                <div className="col">
-                                    <label className="mt-1">Area (m2)</label>
-                                    <input type="text" className="form-control" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
+                    <div className="ew-group">
+                        <SectionSubheading>Expensas variables</SectionSubheading>
+                        <div>
+                            <div className="ew-form-grid ew-form-grid--five">
+                                <div>
+                                    <label className="mt-1">Área (m²)</label>
+                                    <input type="text" className="form-control ew-input-num" id="exp_var_0" disabled value={_GET_EXP_VAR_AREA()} />
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Valor (COP)</label>
-                                    <input type="text" className="form-control" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
+                                    <input type="text" className="form-control ew-input-num" id="exp_var_1" disabled value={_GET_EXP_VAR_COST()} />
                                 </div>
-                                <div className="col">
-                                    <label className="mt-1">Valor Pagado (COP)</label>
+                                <div>
+                                    <label className="mt-1">Valor pagado (COP)</label>
                                     <input type="number" step={1} className="form-control" id="expedition_26" defaultValue={taxes.id_payment_1_real ?? ''} />
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Fecha</label>
-                                    <input type="date" className="form-control" id="expedition_24" max="2100-01-01"
+                                    <DateInput className="form-control" id="expedition_24" max="2100-01-01"
                                         defaultValue={taxes.id_payment_1_date ?? ''} />
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Factura #</label>
                                     <input type="text" className="form-control" id="expedition_18" defaultValue={taxes.id_payment_1 ?? ''} />
                                 </div>
@@ -318,31 +323,31 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                         </div>
                     </div>
 
-                    <div className="card border border-dark mb-3">
-                        <div className="card-header">Acto de tramite de licencia</div>
-                        <div className="card-body text-dark">
-                            <div className="row">
-                                <div className="col-3">
+                    <div className="ew-group">
+                        <SectionSubheading>Acto de trámite de licencia</SectionSubheading>
+                        <div>
+                            <div className="ew-form-grid ew-form-grid--five">
+                                <div>
                                     <label className="mt-1">Fecha</label>
-                                    <input type="date" className="form-control" id="expedition_1" max="2100-01-01"
+                                    <DateInput className="form-control" id="expedition_1" max="2100-01-01"
                                         defaultValue={currentRecord.date ?? ''} />
                                 </div>
-                                <div className="col-3">
-                                    <label className="mt-1">Ajuste Cargo Fijo</label>
+                                <div>
+                                    <label className="mt-1">Ajuste cargo fijo</label>
                                     <div className="input-group">
-                                        <input type="text" className="form-control" id="expedition_23"
+                                        <input type="text" className="form-control ew-input-num" id="expedition_23"
                                             defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_fix ?? 0} />
                                     </div>
                                 </div>
-                                <div className="col-3">
+                                <div>
                                     <label className="mt-1">{infoCud.serials.end} Acto</label>
                                     <div className="input-group">
                                         <input type="text" className="form-control" id="expedition_2"
                                             defaultValue={currentRecord.cub1 || cubSelected1 || ""} />
-                                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_2')}>GENERAR</Button>
+                                        <Button type="button" size="sm" variant="outline" onClick={() => _GET_LAST_ID('expedition_2')}>Generar</Button>
                                     </div>
                                 </div>
-                                <div className="col-3" >
+                                <div>
                                     <label className="mt-1">{infoCud.serials.start}</label>
                                     <div className="input-group">
                                         <select className="form-select" id="vr_selected" defaultValue={vrSelected1 || ""}>
@@ -364,11 +369,11 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
                 {!conOA() && _GLOBAL_ID === 'cb1' && !isPH() ? <>
 
-                    <div className="card border border-dark mb-3">
-                        <div className="card-header">Impuestos, tasas y estampillas</div>
-                        <div className="card-body text-dark">
-                            <div className="row">
-                                <div className="col">
+                    <div className="ew-group">
+                        <SectionSubheading>Impuestos, tasas y estampillas</SectionSubheading>
+                        <div>
+                            <div className="ew-form-grid ew-form-grid--five">
+                                <div>
                                     <label className="mt-1">Tratamiento</label>
                                     <select className="form-select" id="expedition_4" defaultValue={_GET_EXPEDITION_JSON('tmp').type ?? 'TD - Desarrollo'} >
                                         <option>SIN TRATAMIENTO</option>
@@ -386,19 +391,19 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                         <option>TCoA-2 - Para inmuebles de interes cultural del grupo arquitectonico individual</option>
                                     </select>
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Zona</label>
                                     <select className="form-select" id="expedition_16" defaultValue={_GET_EXPEDITION_JSON('tmp').zone ?? '0'} >
-                                        {zones}
+                                        {Children.toArray(zones)}
                                     </select>
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Eje</label>
                                     <select className="form-select" id="expedition_17" defaultValue={_GET_EXPEDITION_JSON('tmp').axis ?? '5'} >
-                                        {axis}
+                                        {axisVar.map((value, index) => <option key={index} value={index}>{value}</option>)}
                                     </select>
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Factura #</label>
                                     <input type="text" className="form-control" id="expedition_21"
                                         defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_4 ?? ''} />
@@ -407,19 +412,19 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                         </div>
                     </div>
 
-                    <div className="card border border-dark mb-3">
-                        <div className="card-header">Impuestos Municipales</div>
-                        <div className="card-body text-dark">
-                            <div className="row">
-                                <div className="col">
-                                    <label className="mt-1">Delineación y Urbanismo</label>
+                    <div className="ew-group">
+                        <SectionSubheading>Impuestos municipales</SectionSubheading>
+                        <div>
+                            <div className="ew-form-grid ew-form-grid--five">
+                                <div>
+                                    <label className="mt-1">Delineación y urbanismo</label>
                                     <input type="number" step={1} className="form-control" id="expedition_28" defaultValue={taxes.muni_deli || mun_1 || ''} />
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Uso y excavación subsuelo</label>
                                     <input type="number" step={1} className="form-control" id="expedition_29" defaultValue={taxes.muni_uso || (Math.ceil(mun_1 * mun_tax / 50) * 50).toFixed(0) || ''} />
                                 </div>
-                                <div className="col">
+                                <div>
                                     <label className="mt-1">Fondo de embellecimiento</label>
                                     <input type="number" step={1} className="form-control" id="expedition_30" defaultValue={taxes.muni_enb ?? ''} />
                                 </div>
@@ -428,12 +433,12 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                     </div>
                 </> : ''}
 
-                <div className="card border border-dark mb-3">
-                    <div className="card-header">Estampilla PRO-UIS (SI ESTRATO {'>'} 2)</div>
-                    <div className="card-body text-dark">
-                        <div className="row">
-                            <div className="col">
-                                <label className="mt-1">Area Intervenida</label>
+                <div className="ew-group">
+                    <SectionSubheading>Estampilla PRO-UIS (si estrato {'>'} 2)</SectionSubheading>
+                    <div>
+                        <div className="ew-form-grid ew-form-grid--five">
+                            <div>
+                                <label className="mt-1">Área intervenida</label>
                                 <div className="input-group">
                                     <EXP_CALC
                                         ranslation={translation} swaMsg={swaMsg} globals={globals}
@@ -445,24 +450,24 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                         defaultValue={_GET_EXPEDITION_JSON('tmp').uis ?? ''} />
                                 </div>
                             </div>
-                            <div className="col">
+                            <div>
                                 <label className="mt-1">Valor (COP)</label>
                                 <input type="number" className="form-control" id="expedition_9" min="0" step="1"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').uis ?? ''} />
                             </div>
-                            <div className="col">
-                                <label className="mt-1">Extra Valor (%)</label>
-                                <input type="text" className="form-control" id="expedition_22"
+                            <div>
+                                <label className="mt-1">Extra valor (%)</label>
+                                <input type="text" className="form-control ew-input-num" id="expedition_22"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_2_p ?? (_GLOBAL_ID == 'cb1' ? 0 : 10)} />
                             </div>
-                            <div className="col">
-                                <label className="mt-1">Documento Soporte #</label>
+                            <div>
+                                <label className="mt-1">Documento soporte #</label>
                                 <input type="text" className="form-control" id="expedition_19"
                                     defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_2 ?? ''} />
                             </div>
-                            <div className="col">
-                                <label className="mt-1">Fecha Documento</label>
-                                <input type="date" className="form-control" id="uis_date"
+                            <div>
+                                <label className="mt-1">Fecha documento</label>
+                                <DateInput className="form-control" id="uis_date"
                                     max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').uis_date ?? ''} />
                             </div>
                         </div>
@@ -473,25 +478,25 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 {_GLOBAL_ID === 'cb1' ?
                     <>
 
-                        <div className="card border border-dark mb-3">
-                            <div className="card-header">Deberes Urbanísticos (SI ESTRATO {'>'} 2)</div>
-                            <div className="card-body text-dark">
+                        <div className="ew-group">
+                            <SectionSubheading>Deberes urbanísticos (si estrato {'>'} 2)</SectionSubheading>
+                            <div>
 
-                                <div className="row">
-                                    <div className="col">
+                                <div className="ew-form-grid ew-form-grid--five">
+                                    <div>
                                         <label className="mt-1">Fecha</label>
-                                        <input type="date" className="form-control" id="expedition_10" max="2100-01-01"
+                                        <DateInput className="form-control" id="expedition_10" max="2100-01-01"
                                             defaultValue={currentRecord.date2 ?? ''} />
                                     </div>
-                                    <div className="col">
+                                    <div>
                                         <label className="mt-1">{infoCud.serials.end}</label>
                                         <div className="input-group">
                                             <input type="text" className="form-control" id="expedition_11"
                                                 defaultValue={currentRecord.cub2 || cubSelected2 || ""} />
-                                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('expedition_11')}>GENERAR</Button>
+                                            <Button type="button" size="sm" variant="outline" onClick={() => _GET_LAST_ID('expedition_11')}>Generar</Button>
                                         </div>
                                     </div>
-                                    <div className="col" >
+                                    <div>
                                         <label className="mt-1">{infoCud.serials.start}</label>
                                         <div className="input-group">
                                             <select className="form-select" id="vr_selected1" defaultValue={vrSelected2 || ""}>
@@ -504,30 +509,30 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="col-3">
+                                    <div>
                                         <label className="mt-2">Factura #</label>
                                         <input type="text" className="form-control" id="expedition_20"
                                             defaultValue={_GET_EXPEDITION_JSON('taxes').id_payment_3 ?? ''} />
                                     </div>
                                 </div>
 
-                                <div className="row">
-                                    <div className="col">
-                                        <label className="mt-1">Unidades Vivienda</label>
+                                <div className="ew-form-grid ew-form-grid--five">
+                                    <div>
+                                        <label className="mt-1">Unidades de vivienda</label>
                                         <input type="number" className="form-control" id="expedition_12" min="0" step="1"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').units || value35[2] || ''} />
                                     </div>
-                                    <div className="col">
-                                        <label className="mt-1">Áreas uso Comercio</label>
+                                    <div>
+                                        <label className="mt-1">Áreas uso comercio</label>
                                         <input type="number" className="form-control" id="expedition_13" min="0" step="0.01"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').comerce || value35[0] || ''} />
                                     </div>
-                                    <div className="col">
-                                        <label className="mt-1">Valor ZGU m2 (COP)</label>
+                                    <div>
+                                        <label className="mt-1">Valor ZGU m² (COP)</label>
                                         <input type="number" className="form-control" id="expedition_14" min="0" step="0.01"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').charge || json34.zugm || ''} />
                                     </div>
-                                    <div className="col-2">
+                                    <div>
                                         <label className="mt-1">ZGU</label>
                                         <input type="text" className="form-control" id="expedition_15"
                                             defaultValue={_GET_EXPEDITION_JSON('duty').zgu || json34.zgu || ''} />
@@ -542,28 +547,28 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
 
 
                 {_GLOBAL_ID === 'cp1' ? <>
-                    <div className="card border border-dark mb-3">
-                        <div className="card-header">Delineación Urbana</div>
-                        <div className="card-body text-dark">
-                            <div className="row">
+                    <div className="ew-group">
+                        <SectionSubheading>Delineación urbana</SectionSubheading>
+                        <div>
+                            <div className="ew-form-grid ew-form-grid--five">
 
-                                <div className="col-3">
+                                <div>
                                     <label className="mt-1">Valor (COP)</label>
                                     <div className="input-group">
-                                        <input type="text" className="form-control" id="del_4" defaultValue={taxes.muni_deli || mun_1 || ''} disabled />
+                                        <input type="text" className="form-control ew-input-num" id="del_4" defaultValue={taxes.muni_deli || mun_1 || ''} disabled />
                                     </div>
                                 </div>
-                                <div className="col-3">
-                                    <label className="mt-1">Valor Pagado (COP)</label>
+                                <div>
+                                    <label className="mt-1">Valor pagado (COP)</label>
                                     <div className="input-group">
-                                        <input type="text" className="form-control" id="del_pay" defaultValue={_GET_EXPEDITION_JSON('taxes').del_pay ?? ''} />
+                                        <input type="text" className="form-control ew-input-num" id="del_pay" defaultValue={_GET_EXPEDITION_JSON('taxes').del_pay ?? ''} />
                                     </div>
                                 </div>
-                                <div className="col-3">
-                                    <label className="mt-1">Fecha Factura</label>
-                                    <input type="date" className="form-control" id="del_date" max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').del_date ?? ''} />
+                                <div>
+                                    <label className="mt-1">Fecha factura</label>
+                                    <DateInput className="form-control" id="del_date" max="2100-01-01" defaultValue={_GET_EXPEDITION_JSON('taxes').del_date ?? ''} />
                                 </div>
-                                <div className="col-3">
+                                <div>
                                     <label className="mt-1">Factura #</label>
                                     <input type="text" className="form-control" id="del_number" defaultValue={_GET_EXPEDITION_JSON('taxes').del_number ?? ''} />
                                 </div>
@@ -645,16 +650,16 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
             formData.set('duty', JSONObjectParser(duty));
 
             await createVRxCUB_relation(cub1, cub2)
-            manage_exp();
+            return manage_exp();
         }
 
         let createVRxCUB_relation = async (cub_selected, cub_selected1) => {
             let cub1 = cub_selected;
             let cub2 = cub_selected1;
-            let vr1 = document.getElementById("vr_selected").value;
+            let vr1 = document.getElementById("vr_selected") ? document.getElementById("vr_selected").value : null;
             let vr2 = document.getElementById("vr_selected1") ? document.getElementById("vr_selected1").value : null;
 
-            let date1 = document.getElementById('expedition_1').value;
+            let date1 = document.getElementById('expedition_1') ? document.getElementById('expedition_1').value : null;
             let date2 = document.getElementById("vr_selected1") ? document.getElementById('expedition_10').value : null;
             const relationRequests = [];
 
@@ -737,19 +742,21 @@ function EXP_1({ translation, swaMsg, globals, currentItem, currentVersion, curr
                 });
         }
         return (
-            <div className="record_ph_gen container p-3">
-                <legend className="my-2 px-2 Collapsible text-center" id="nav_expedition_1">
-                    <label className="app-p lead fw-normal">INFORMACIÓN GENERAL</label>
-                </legend>
-                <form id="form_expedition" onSubmit={save_exp}>
+            <SectionCard
+                id="nav_expedition_1"
+                className="record_ph_gen"
+                title={`${step ? `${step}. ` : ''}Liquidación y pagos`}
+                meta={currentRecord.cub1
+                    ? <span className="ew-status-chip ew-status-chip--success">Acto de trámite <span className="ew-num font-mono">{currentRecord.cub1}</span></span>
+                    : <span className="ew-status-chip">Acto de trámite sin consecutivo</span>}
+            >
+                <form id="form_expedition" onSubmit={guard(save_exp, 'save_exp')}>
                     {_COMPONENT_GENERAL()}
-                    <div className="row text-center">
-                        <div className="col">
-                            <Button type="submit" size="sm" className="my-3"><Icon name="check-square" size={16} /> GUARDAR CAMBIOS </Button>
-                        </div>
+                    <div className="ew-actions">
+                        <Button type="submit" size="sm"><Icon name="check-square" size={16} /> Guardar cambios</Button>
                     </div>
                 </form>
-            </div >
+            </SectionCard>
         );
 }
 

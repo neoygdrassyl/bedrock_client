@@ -18,6 +18,7 @@ import { buildGeneratorContext, evaluateGenerator, generatorsBySection, getGener
 import { Icon } from '@/shared/components/icon';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { Button } from '@/shared/ui/button';
+import { SectionCard } from '@/shared/components/SectionCard';
 
 function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translation, globals, currentVersion }) {
         const [attachs, setAttachs] = useState(0);
@@ -229,7 +230,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
         let renderGenerators = (section) => {
             const ctx = buildGeneratorContext({ currentItem, currentVersion, requestUpdate });
             const baseProps = { translation, swaMsg, globals, currentItem, currentVersion };
-            return generatorsBySection(section).map((entry) => {
+            const rendered = generatorsBySection(section).map((entry) => {
                 const { visible, available } = evaluateGenerator(entry, ctx);
                 if (!visible || !available) return null;
                 const Generator = entry.component;
@@ -240,36 +241,46 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         </div>
                     </Collapsible>
                 </div>
-            });
+            }).filter(Boolean);
+            // Absence is stated, never an empty card.
+            if (!rendered.length) return <p className="m-0 text-sm text-muted-foreground">No hay documentos disponibles para esta solicitud.</p>;
+            return rendered;
         }
         return (
             <div>
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1" id="fund_11">
-                    <label className="mb-0 text-sm font-semibold text-foreground" id="fund_1">1 GESTIÓN DOCUMENTAL</label>
-                    <Button variant="outline" size="sm" disabled={!funVRList.length} onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
-                        <Icon name="file-csv" size={16} /> DESCARGAR CSV
-                    </Button>
-                </div>
+                <SectionCard
+                    id="fund_11"
+                    title={<span id="fund_1">1. Gestión documental</span>}
+                    actions={
+                        <Button variant="outline" size="sm" disabled={!funVRList.length} onClick={() => { generateCVSNegative(funVRList, currentItem.id_public) }}>
+                            <Icon name="file-csv" size={16} /> Descargar CSV
+                        </Button>
+                    }
+                >
+                    {currentItem != null
+                        ? <FUN_6_VIEW
+                            translation={translation}
+                            swaMsg={swaMsg}
+                            globals={globals}
+                            currentItem={currentItem}
+                            currentId={currentId}
+                            currentVersion={currentVersion}
+                            requestUpdate={requestUpdate}
+                            VREdit
+                            mergeVentanilla
+                            onVentanillaRowsChange={setFunVRList}
+                        />
+                        : <p className="m-0 py-8 text-center text-sm text-muted-foreground" role="status">Cargando información de la solicitud…</p>}
+                </SectionCard>
                 {currentItem != null ? <>
 
-                    <FUN_6_VIEW
-                        translation={translation}
-                        swaMsg={swaMsg}
-                        globals={globals}
-                        currentItem={currentItem}
-                        currentId={currentId}
-                        currentVersion={currentVersion}
-                        requestUpdate={requestUpdate}
-                        VREdit
-                        mergeVentanilla
-                        onVentanillaRowsChange={setFunVRList}
-                    />
+                    <SectionCard id="fund_4" title="2. Generar documentos automáticos">
+                        {renderGenerators(GENERATOR_SECTION_AUTOMATIC)}
+                    </SectionCard>
 
-                    <h3 className="text-center py-3" id="fund_4">3. GENERAR DOCUMENTOS AUTOMÁTICOS </h3>
-                    {renderGenerators(GENERATOR_SECTION_AUTOMATIC)}
-
-                    <h3 className="text-center py-3" id="fund_5">4. CONTROL DE DOCUMENTACIÓN ESPECIAL </h3>
-                    {renderGenerators(GENERATOR_SECTION_SPECIAL)}
+                    <SectionCard id="fund_5" title="3. Control de documentación especial">
+                        {renderGenerators(GENERATOR_SECTION_SPECIAL)}
+                    </SectionCard>
 
                     {/* <FUND_NAV currentItem={currentItem} /> */}
                     <FUN_MODULE_NAV
@@ -287,9 +298,7 @@ function FUN_DOCS({ NAVIGATION, NAVIGATION_VERSION, currentId, swaMsg, translati
                         NAVIGATION_VERSION={NAVIGATION_VERSION}
                         ON
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
-                </fieldset>}
+                </> : null}
 
             </div>
         );

@@ -38,8 +38,14 @@ vi.mock('@/shared/ui/dropdown-menu', () => ({
   DropdownMenuContent: ({ children }) => <div>{children}</div>,
   DropdownMenuLabel: ({ children }) => <div>{children}</div>,
   DropdownMenuSeparator: () => <hr />,
-  DropdownMenuCheckboxItem: ({ checked, onCheckedChange, children, ...props }) => (
-    <button type="button" aria-pressed={checked} onClick={() => onCheckedChange?.(!checked)} {...props}>
+  // Menus are rendered open so their items can be reached without driving the popover.
+  DropdownMenuItem: ({ onSelect, disabled, children }) => (
+    <button type="button" role="menuitem" disabled={disabled} onClick={() => onSelect?.()}>
+      {children}
+    </button>
+  ),
+  DropdownMenuCheckboxItem: ({ checked, onCheckedChange, disabled, children, className: _className, ...props }) => (
+    <button type="button" role="menuitemcheckbox" aria-checked={Boolean(checked)} disabled={disabled} onClick={() => onCheckedChange?.(!checked)} {...props}>
       {children}
     </button>
   ),
@@ -277,12 +283,13 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
     const navGroups = within(workspaceNav).getAllByRole('group');
 
-    expect(navGroups).toHaveLength(3);
+    expect(navGroups).toHaveLength(4);
     expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
-    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Tiempos',
-      'Informe P.H.',
-    ]);
+    const namesOf = (group) => within(group).getAllByRole('button').map((button) => button.getAttribute('aria-label'));
+    expect(navGroups[2]).toHaveAccessibleName('Evaluación');
+    expect(namesOf(navGroups[2])).toEqual(['Informe P.H.']);
+    expect(navGroups[3]).toHaveAccessibleName('Expedición');
+    expect(namesOf(navGroups[3])).toEqual(['Expedición P.H.']);
     expect(screen.getByRole('button', { name: /expedici[oó]n p\.h\./i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^expedici[oó]n$/i })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /informe p\.h\./i })).toHaveAttribute('aria-current', 'page');
@@ -324,7 +331,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(await screen.findByTestId('module-law')).toBeInTheDocument();
   });
 
-  it('renderiza tres grupos directos de ancho completo, elimina la subnavegación de informes y conserva el cambio de reporte activo', async () => {
+  it('agrupa los módulos en Consulta, Documentos, Evaluación y Expedición y conserva el cambio de reporte activo', async () => {
     const user = userEvent.setup();
 
     render(
@@ -340,33 +347,19 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     );
 
     const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
-    const navScroller = workspaceNav.firstElementChild;
     const navGroups = within(workspaceNav).getAllByRole('group');
+    // Accessible names: the visible text of a report may be its short form ("Jurídico").
+    const labelsOf = (group) => within(group).getAllByRole('button').map((button) => button.getAttribute('aria-label'));
 
     expect(screen.queryByRole('navigation', { name: /subnavegaci[oó]n de informes/i })).not.toBeInTheDocument();
-    expect(navScroller).toHaveClass('flex');
-    expect(navGroups).toHaveLength(3);
-    navGroups.forEach((group) => {
-      expect(group).toHaveClass('grid-flow-col', 'auto-cols-max');
+    expect(navGroups).toHaveLength(4);
+    ['Consulta', 'Documentos', 'Evaluación', 'Expedición'].forEach((label, index) => {
+      expect(navGroups[index]).toHaveAccessibleName(label);
     });
-    expect(within(navGroups[0]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Detalles',
-      'Actualizar',
-      'Documentos (new)',
-      'Documentos',
-      'Chequeo',
-      'Publicidad',
-    ]);
-    expect(within(navGroups[1]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Tiempos',
-      'Inf. Jur',
-      'Inf. Arq',
-      'Inf. Estr',
-    ]);
-    expect(within(navGroups[2]).getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
-      'Acta',
-      'Expedición',
-    ]);
+    expect(labelsOf(navGroups[0])).toEqual(['Detalles', 'Tiempos']);
+    expect(labelsOf(navGroups[1])).toEqual(['Documentos (nuevo)', 'Documentos', 'Actualizar', 'Chequeo', 'Publicidad']);
+    expect(labelsOf(navGroups[2])).toEqual(['Informe jurídico', 'Informe arquitectónico', 'Informe estructural']);
+    expect(labelsOf(navGroups[3])).toEqual(['Acta', 'Expedición']);
 
     expect(screen.getByRole('button', { name: /informe arquitectónico/i })).toHaveAttribute('aria-current', 'page');
     expect(await screen.findByTestId('module-arc')).toBeInTheDocument();
@@ -383,7 +376,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
   it('conserva Documentos new como módulo separado y permite volver al original', async () => {
     const user = userEvent.setup();
     render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="documentos-new" />);
-    expect(screen.getByRole('button', { name: 'Documentos (new)' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: 'Documentos (nuevo)' })).toHaveAttribute('aria-current', 'page');
     expect(await screen.findByTestId('module-documentos-new')).toBeInTheDocument();
     expect(screen.queryByTestId('module-documentos')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Documentos' }));
@@ -391,7 +384,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     expect(await screen.findByTestId('module-documentos')).toBeInTheDocument();
   });
 
-  it('usa una variante activa más visible y mantiene contraste fuerte en botones inactivos del workspace', () => {
+  it('marca solo el módulo activo con aria-current y nombra la región del módulo', () => {
     render(
       <FunExpedienteFullscreen
         expediente={expediente}
@@ -402,9 +395,14 @@ describe('FunExpedienteFullscreen bookmarks', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: /detalles/i })).toHaveClass('border-sky-400', 'bg-sky-200/95', 'text-sky-950');
-    expect(screen.getByRole('button', { name: /detalles/i })).not.toHaveClass('bg-sky-700', 'text-white');
-    expect(screen.getByRole('button', { name: 'Documentos' })).toHaveClass('text-slate-900', 'bg-white/80');
+    const workspaceNav = screen.getByRole('navigation', { name: /m[oó]dulos del expediente/i });
+    const current = within(workspaceNav).getAllByRole('button').filter((button) => button.getAttribute('aria-current') === 'page');
+    expect(current).toHaveLength(1);
+    expect(current[0]).toHaveAccessibleName('Detalles');
+    expect(screen.getByRole('button', { name: 'Documentos' })).not.toHaveAttribute('aria-current');
+    // No page heading repeats the module: the module area is the landmark that carries its name.
+    expect(screen.queryByRole('heading', { level: 1, name: 'Detalles' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Detalles' })).toBeInTheDocument();
   });
 
   it('renderiza la aprobación PH legacy al abrir Expedición P.H.', async () => {

@@ -64,7 +64,9 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
 
             const remainingDays = alarmData.remainingDays;
             const isOverdue = remainingDays < 0;
-            const suggestionKey = isOverdue ? 'vencido' : 'porVencer';
+            // Copy only: a binary activity already reported as overdue ("Vencida") uses the overdue suggestion.
+            const isBinaryOverdue = alarmData.isBinaryActivity === true && alarmData.severity === 'danger';
+            const suggestionKey = isOverdue || isBinaryOverdue ? 'vencido' : 'porVencer';
 
             const suggestionDef = (ALARM_SUGGESTIONS[state] && ALARM_SUGGESTIONS[state][type])
                 ? ALARM_SUGGESTIONS[state][type][suggestionKey]
@@ -104,7 +106,11 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                 state: alarmData.state,
                 remainingDays,
                 limitDate: limitMoment.format('DD/MM/YYYY'),
-                suggestion: suggestionDef ? suggestionDef.suggestion : null,
+                // A late event that already has its real date must not ask to register it again.
+                suggestion: alarmData.completedLate
+                    ? `El evento se registró ${Math.abs(remainingDays)} día(s) hábil(es) después del límite legal. Deja constancia del retraso si aplica.`
+                    : (suggestionDef ? suggestionDef.suggestion : null),
+                completedLate: alarmData.completedLate === true,
                 severity,
                 isBinaryActivity,
                 alarmType,
@@ -194,12 +200,17 @@ export const useAlarms = (manager, scheduleConfig, clocksToShow, systemDate) => 
                             eventName: clockDef.name,
                             limitDate: legalLimit,
                             remainingDays: -delayDays,
+                            completedLate: true,
                         });
                     }
                 } else {
                     // --- EVENTO PENDIENTE: VERIFICAR SI ESTÁ PRÓXIMO A VENCER ---
                     // CORRECCIÓN: Usar calcularDiasHabiles para consistencia
-                    const remaining = calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
+                    // Signed, same reference as the row (ClockRow): past the limit the alarm reports the overdue days
+                    // instead of 0 ("Vence hoy"). calcularDiasHabiles returns 0 when the end precedes the start.
+                    const remaining = today.isAfter(limitMoment, 'day')
+                        ? -calcularDiasHabiles(limitMoment.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'))
+                        : calcularDiasHabiles(today.format('YYYY-MM-DD'), limitMoment.format('YYYY-MM-DD'));
                     if (remaining <= ALARM_THRESHOLD_DAYS.legal) {
                         addAlarm({
                             state: clockDef.state,

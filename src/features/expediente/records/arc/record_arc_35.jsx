@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { Fragment, useCallback, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
@@ -272,7 +272,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
             let _LIST = parkingData;
             let _COMPONENT = [];
             for (var _JSON in _LIST) {
-                _COMPONENT.push(<option>{_JSON}</option>)
+                _COMPONENT.push(<option key={_COMPONENT.length}>{_JSON}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -515,13 +515,12 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '110px',
                     cell: row => <>
                         <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 px-2" onClick={() => setEditParking(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => delete_35_parking(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 px-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_35_parking(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>,
                 },
             ]
-            return <DataTable
+            return <DataTable pagination={false}
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -780,13 +779,12 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                     minWidth: '120px',
                     cell: row => <>
                         <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 px-2" onClick={() => setEditLocation(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 px-2" onClick={() => delete_35_location(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 px-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_35_location(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                     </>,
                 },
             ]
-            return <DataTable
+            return <DataTable pagination={false}
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -886,7 +884,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                 },
             ]
             return _LIST.map((item, i) => {
-                return <>
+                return <Fragment key={i}>
                     <div className="row border">
                         <div className="col">
                             <div className={item.className ?? ''}>
@@ -897,7 +895,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {item.items ?
                             <>  <div className='col-8'>
                                 {item.items.map((it, j) => {
-                                    return <>
+                                    return <Fragment key={j}>
                                         <div className='row'>
                                             <div className="col"><label>{it.desc}</label> </div>
                                             {it.v != undefined ?
@@ -907,7 +905,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                                                             <select className={_GET_SELECT_COLOR_VALUE(value35[it.v])}
                                                                 name="s_35_values_n" id={"s_35_values_n_" + it.v}
                                                                 onChange={() => save_ra_35()} defaultValue={value35[it.v]} >
-                                                                {it.options.map(op => <option className>{op}</option>)}
+                                                                {it.options.map((op, opIndex) => <option key={opIndex}>{op}</option>)}
                                                             </select>
                                                         </>
                                                         : <>
@@ -929,7 +927,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                                                 : ''}
                                         </div>
 
-                                    </>
+                                    </Fragment>
                                 })}
 
                             </div>
@@ -949,7 +947,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                             : ''}
                     </div>
 
-                </>
+                </Fragment>
             })
         }
         let _COMPONENT_CORRECTIONS = () => {
@@ -1312,7 +1310,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('')}
                         <div className="text-center">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> AÑADIR PARQUEADERO
+                                <Icon name="share-square" size={16} /> Añadir parqueadero
                             </Button>
                         </div>
                     </form>
@@ -1330,7 +1328,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1('_edit')}
                         <div className="text-center">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </form>
@@ -1349,7 +1347,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2()}
                         <div className="text-center">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> AÑADIR LOCALIZACION
+                                <Icon name="share-square" size={16} /> Añadir localizacion
                             </Button>
                         </div>
                     </form>
@@ -1367,7 +1365,7 @@ function RECORD_ARC_35({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_2_EDIT()}
                         <div className="text-center">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </form>

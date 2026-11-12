@@ -1,3 +1,4 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import { formsParser1 } from '../../../../../shared/config/customClasses/typeParse';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
@@ -137,7 +138,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
         let _GET_JSON = () => {
             let json = _GET_CHILD_LAW().report_data_pdf;
             if (!json) return {}
-            let object = JSON.parse(JSON.parse(json))
+            let object = parseLegacyJson(json, {}, 'fun_report_data_pdf:fun_law.report_data_pdf')
             return object
         }
 
@@ -557,7 +558,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                 FUN_SERVICE.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
@@ -575,7 +576,7 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                 FUN_SERVICE.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
@@ -615,12 +616,12 @@ function FUN_REPORT_DATA_PDF({ translation, swaMsg, globals, currentItem, curren
                     <div className="row text-center">
                         <div className="col">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                         <div className="col">
                             <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()}>
-                                <Icon name="file-pdf" size={16} /> GENERAR PDF
+                                <Icon name="file-pdf" size={16} /> Generar PDF
                             </Button>
                         </div>
                     </div>

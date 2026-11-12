@@ -1042,19 +1042,28 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
         //cell: row => _ADD_AREAS(row.units_a, ';'),
         //})
 
+        // Area columns: right-aligned tabular figures in m² (presentation only; the
+        // `cell` functions keep returning the raw values used for the row filter below).
+        const asAreaColumn = (column) => ({
+            ...column,
+            right: true,
+            format: column.format,
+            cell: column.cell,
+            cellView: (row) => <span className="ew-num">{column.cell(row)}</span>,
+        });
         const columns_archive = [
             {
                 name: 'Uso',
                 selector: row => row.use,
                 sortable: true,
                 filterable: true,
-                cell: row => row.use || 'otro',
+                cell: row => row.use === 'total' ? 'Total' : (row.use || 'otro'),
             },
             ...c_tagsH,
             ...types,
             ...totals,
             ...au,
-        ];
+        ].map((column, index) => index === 0 ? column : asAreaColumn(column));
 
         let uses = [];
         let usesRows = [];
@@ -1074,10 +1083,10 @@ export default function RECORD_ARC_AREAS_RESUME(props) {
 
         usesRows.push({ ...areas, use: 'total' })
 
-        return <DataTable
-            noDataComponent="NO HAY AREAS"
-            striped="true"
-            columns={columns_archive}
+        return <DataTable pagination={false}
+            noDataComponent="No hay áreas registradas"
+            columns={columns_archive.map(({ cellView, ...column }) => cellView ? { ...column, cell: cellView } : column)}
+            conditionalRowStyles={[{ when: row => row.use === 'total', classNames: 'ew-total-row' }]}
             data={usesRows}
             highlightOnHover
             className="data-table-component"

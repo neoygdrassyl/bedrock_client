@@ -1,8 +1,10 @@
 import { regexChecker_isPh, regexChecker_movTierra } from '../../../../../shared/config/customClasses/typeParse';
 import { Icon } from '@/shared/components/icon';
+import dayjs from 'dayjs';
+import { SectionCard } from '@/shared/components/SectionCard';
 //import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 
-function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign }) {
+function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id, textAlign, card = false }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
         const reviewStr = ['NO CUMPLE', 'CUMPLE', 'NO APLICA']
         // DATA GETTERS
@@ -106,10 +108,10 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         }
         let _GET_REVIEW = (_REVIEW, _REVIEW_CLOCK, REVIEWS) => {
             let res = {
-                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} style={{ fontSize: '125%' }} /></label>,
-                '0': <label className="fw-bold text-danger me-1"><Icon name="times-circle" size={16} style={{ fontSize: '125%' }} /></label>,
-                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} style={{ fontSize: '125%' }} /></label>,
-                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} style={{ fontSize: '125%' }} /></label>,
+                '-1': <label className=" me-1" title="Pendiente"><Icon name="dot-circle" size={16} style={{ fontSize: '125%' }} aria-hidden="true" /><span className="sr-only">Pendiente</span></label>,
+                '0': <label className="fw-bold text-danger me-1" title="No cumple"><Icon name="times-circle" size={16} style={{ fontSize: '125%' }} aria-hidden="true" /><span className="sr-only">No cumple</span></label>,
+                '1': <label className="fw-bold text-success  me-1" title="Cumple"><Icon name="check-circle" size={16} style={{ fontSize: '125%' }} aria-hidden="true" /><span className="sr-only">Cumple</span></label>,
+                '2': <label className="fw-bold text-warning  me-1" title="No aplica"><Icon name="stop-circle" size={16} style={{ fontSize: '125%' }} aria-hidden="true" /><span className="sr-only">No aplica</span></label>,
             }
 
             if (REVIEWS) {
@@ -124,10 +126,10 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
             }
             let revies = _REVIEW ?? [-1, -1]
             let res = {
-                '-1': <label className=" me-1"><Icon name="dot-circle" size={16} /></label>,
-                '0': <label className="fw-bold text-danger  me-1"><Icon name="times-circle" size={16} /></label>,
-                '1': <label className="fw-bold text-success  me-1"><Icon name="check-circle" size={16} /></label>,
-                '2': <label className="fw-bold text-warning  me-1"><Icon name="stop-circle" size={16} /></label>,
+                '-1': <label className=" me-1" title="Pendiente"><Icon name="dot-circle" size={16} aria-hidden="true" /><span className="sr-only">Pendiente</span></label>,
+                '0': <label className="fw-bold text-danger  me-1" title="No cumple"><Icon name="times-circle" size={16} aria-hidden="true" /><span className="sr-only">No cumple</span></label>,
+                '1': <label className="fw-bold text-success  me-1" title="Cumple"><Icon name="check-circle" size={16} aria-hidden="true" /><span className="sr-only">Cumple</span></label>,
+                '2': <label className="fw-bold text-warning  me-1" title="No aplica"><Icon name="stop-circle" size={16} aria-hidden="true" /><span className="sr-only">No aplica</span></label>,
             }
             if (REVIEWS) {
                 let asigns = REVIEWS.split(';');
@@ -351,66 +353,53 @@ function FUN_G_REPORTS({ translation, swaMsg, globals, currentItem, currentVersi
         // COMPONENT JSX
         let _TABLE = () => {
             let data = _TABLE_INFO();
-            const HEAD = <div className="row text-light">
-                <div className="col-2 border bg-primary text-primary-foreground text-center">
-                    <label className="fw-bold">INFORME</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">REVISOR</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">REVISIÓN</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">ASIGNACIÓN</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">REVISION</label>
-                </div>
-                <div className="col-1 border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">RES.</label>
-                </div>
-                <div className="col border bg-primary text-primary-foreground py-1 text-center">
-                    <label className="fw-bold">INFORMAR</label>
-                </div>
-            </div>
+            const shortDate = (value) => value
+                ? (dayjs(value).isValid() ? dayjs(value).format('DD/MM/YYYY') : value)
+                : <span className="text-muted-foreground">—</span>;
+            if (!data.length) return <p className="m-0 text-sm text-muted-foreground">Sin informes asignados.</p>;
 
-            const BODY = data.map((value, i) => {
-                return <div className="row" key={i}>
-                    <div className="col-2 border text-center">
-                        <h5 className="">{value.icon} {value.type}</h5>
-                    </div>
-                    <div className="col border text-center">
-                        <h5 className="fw-normal">{value.asign ||value.worker }</h5>
-                        {value.class == 'eng' && value.asign ? <small className="text-muted">Revisor estructural asignado</small> : ''}
-                    </div>
-                    <div className="col border text-center">
-                        <h5 className="fw-normal">{value.process}</h5>
-                    </div>
-                    <div className="col border text-center">
-                        <label className="">{value.asign_date}</label>
-                    </div>
-                    <div className="col border text-center">
-                        <label className="">{value.date}</label>
-                    </div>
-                    <div className="col-1 border text-center">
-                        <label className="">{value.class == 'eng' ?
-                            _GET_REVIEW_ENG(value.review, undefined, undefined, value.hasRegisteredReview)
-                            : _GET_REVIEW(value.review)}
-                        </label>
-                    </div>
-                    <div className="col border text-center">
-                        <label className="">{value.inform}</label>
-                    </div>
-                </div>
-            })
             return (
-                <div className="row">
-                    {HEAD}
-                    {BODY}
+                <div className="rdt_Table overflow-auto rounded-[var(--radius)] border border-border">
+                    <table className="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Informe</th>
+                                <th scope="col">Revisor</th>
+                                <th scope="col">Revisión</th>
+                                <th scope="col">Asignación</th>
+                                <th scope="col">Fecha revisión</th>
+                                <th scope="col">Resultado</th>
+                                <th scope="col">Informar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.map((value, i) => <tr key={i}>
+                                <td className="fw-bold text-nowrap">{value.icon}{value.type}</td>
+                                <td>
+                                    {value.asign || value.worker || <span className="text-muted-foreground">Sin asignar</span>}
+                                    {value.class == 'eng' && value.asign ? <small className="d-block text-muted">Revisor estructural asignado</small> : ''}
+                                </td>
+                                <td>{value.process}</td>
+                                <td className="ew-num">{shortDate(value.asign_date)}</td>
+                                <td className="ew-num">{shortDate(value.date)}</td>
+                                <td className="text-nowrap">{value.class == 'eng' ?
+                                    _GET_REVIEW_ENG(value.review, undefined, undefined, value.hasRegisteredReview)
+                                    : _GET_REVIEW(value.review)}
+                                </td>
+                                <td className="ew-num">{shortDate(value.inform)}</td>
+                            </tr>)}
+                        </tbody>
+                    </table>
                 </div>
             );
         }
+        // `card`: the caller lays out floating cards (Detalles). Without it the legacy heading is
+        // kept so the report still nests inside the caller's own section (records).
+        if (card) return (
+            <SectionCard id={id} className="fun_g_mix" title={`${nomenclature} Informes`}>
+                {_TABLE()}
+            </SectionCard>
+        );
         return (
             <div className="fun_g_mix">
 

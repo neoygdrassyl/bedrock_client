@@ -38,7 +38,7 @@ export function DovelaSelect({
         aria-describedby={ariaDescribedBy}
         aria-invalid={invalid ? 'true' : ariaInvalid}
         className={cn(
-          'rounded-[var(--input-radius)] border-input bg-background text-foreground shadow-[var(--input-shadow)]',
+          'rounded-[var(--input-radius)] border-input bg-background text-foreground shadow-[shadow:var(--input-shadow)]',
           'focus:ring-2 focus:ring-ring/20 focus:ring-offset-0',
           invalid && 'border-destructive focus:ring-destructive/20',
           DENSITY_CLASSES[density] || DENSITY_CLASSES.comfortable,

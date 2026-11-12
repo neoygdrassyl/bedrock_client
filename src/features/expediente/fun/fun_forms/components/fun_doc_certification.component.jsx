@@ -1,5 +1,8 @@
 
 import { useEffect, useState } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { Button } from '@/shared/ui/button';
 
 import SERVICE_CERTIFICATIONS from '../../../api/certifications.service';
@@ -125,7 +128,7 @@ export default function FUN_CERTIFICATION(props) {
             <div className='row mb-2'>
                 <div className="col">
                     <label>Fecha del documento</label>
-                    <input type="date" className="form-control" max='2100-01-01' id="genc_date_doc" required
+                    <DateInput className="form-control" max='2100-01-01' id="genc_date_doc" required
                         defaultValue={dayjs().format('YYYY-MM-DD')} />
                 </div>
 
@@ -236,7 +239,7 @@ export default function FUN_CERTIFICATION(props) {
             sortable: true,
             filterable: true,
             center: true,
-            cell: row => <h6 className='fw-normal'>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</h6>
+            cell: row => <h6 className='fw-normal'>{dayjs(row.createdAt).format('DD/MM/YYYY HH:mm')}</h6>
 
         },
         {
@@ -244,7 +247,7 @@ export default function FUN_CERTIFICATION(props) {
             center: true,
             maxWidth: '80px',
             cell: row => <Button onClick={() => gen_confirmDoc(row.id_public, getJSONFull(row.content))}
-            color="danger" size="sm" className='m-0 p-1 px-2'><Icon name="file-download" size={16} /></Button>
+            color="danger" size="sm" className='m-0 p-1 px-2' aria-label={`Descargar certificación ${row.id_public || ''}`.trim()} title="Descargar certificación"><Icon name="file-download" size={16} /></Button>
 
         },
     ]
@@ -261,11 +264,11 @@ export default function FUN_CERTIFICATION(props) {
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha y hora creación: </label></div>
-                        <div className='col'><label className='fw-bold'>{dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}</label></div>
+                        <div className='col'><label className='fw-bold'>{formatDisplayDate(data.createdAt, { withTime: true })}</label></div>
                     </div>
                     <div className='row'>
                         <div className='col'><label>Fecha documento: </label></div>
-                        <div className='col'><label className='fw-bold'>{content.date_doc}</label></div>
+                        <div className='col'><label className='fw-bold'>{formatDisplayDate(content.date_doc, { empty: '' })}</label></div>
                     </div>
                     <div className='row'>
                         <div className='col'><label>Radicado:</label></div>
@@ -362,6 +365,10 @@ export default function FUN_CERTIFICATION(props) {
     }
 
     function createCert() {
+
+        // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+        if (isRepeatedSubmit('fun_doc_certification.component:createCert')) return;
         let formData = new FormData();
         formData.set('description', 'CERTIFICACIÓN DE ACTUACIÓN URBANÍSTICA - ' + currentItem.id_public);
         formData.set('related', 'fun');
@@ -386,10 +393,10 @@ export default function FUN_CERTIFICATION(props) {
         formData.set('content', JSON.stringify(content));
 
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        SERVICE_CERTIFICATIONS.create(formData)
+        holdSubmit('fun_doc_certification.component:createCert', SERVICE_CERTIFICATIONS.create(formData)
             .then(response => {
                 if (response.data === 'OK') {
-                    swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                    swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                     setLoad(0);
                     setNewItem(false);
                 }
@@ -400,7 +407,7 @@ export default function FUN_CERTIFICATION(props) {
             .catch(e => {
                 console.log(e);
                 swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-            });
+            }));
 
     }
 
@@ -443,14 +450,14 @@ export default function FUN_CERTIFICATION(props) {
         <>
             <div className='row'>
                 <div className='col'>
-                    <Button variant={!newItem ? "outline" : "default"} size="sm" onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> NUEVA CERTIFICACIÓN</Button>
+                    <Button variant={!newItem ? "outline" : "default"} size="sm" onClick={() => setNewItem(!newItem)}><Icon name="plus" size={16} /> Nueva certificación</Button>
                 </div>
             </div>
             {newItem ? <>
                 <div className='border p-2'>
                     {_COMPONENT_NEW()}
                     <div className='text-center my-2'>
-                        <Button size="sm" className="rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> CREAR</Button>
+                        <Button size="sm" className="rounded-pill" onClick={() => createCert()}><Icon name="plus" size={16} /> Crear</Button>
                     </div>
                 </div>
             </> : ''}

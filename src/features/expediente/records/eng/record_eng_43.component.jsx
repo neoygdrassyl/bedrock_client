@@ -89,7 +89,7 @@ function RECORD_ENG_43(props) {
                     {COMPONENT_DESC()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> Guardar cambios</Button>
                         </div>
                     </div>
                 </form>

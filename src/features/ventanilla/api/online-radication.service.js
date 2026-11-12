@@ -37,6 +37,11 @@ const EXPECTED_CODES = new Set([
   "ONLINE_RADICATION_NOT_OPEN",
   "DOCUMENT_ENTRY_NOT_FOUND",
   "DOCUMENT_ENTRY_NOT_PENDING",
+  "LIQUIDATION_NOT_FOUND",
+  "LIQUIDATION_NO_RECEIPT",
+  "LIQUIDATION_RECEIPT_PENDING",
+  "LIQUIDATION_INVOICE_INVALID",
+  "LIQUIDATION_INVOICE_TOO_LARGE",
   ONLINE_RADICATION_UNAVAILABLE,
 ]);
 
@@ -206,7 +211,45 @@ class OnlineRadicationService {
    * resolves with `{ blob, contentType }`. The caller owns any object URL it creates.
    */
   async fetchEntryFile(id, entryId, index, { signal } = {}) {
-    const path = getEntryFileUrl(id, entryId, index);
+    return this.#fetchFile(getEntryFileUrl(id, entryId, index), { signal });
+  }
+
+  /** Liquidation of a request, or null when none was issued yet (404 LIQUIDATION_NOT_FOUND). */
+  async getLiquidation(id, { signal } = {}) {
+    try {
+      const data = await request(http.get(`/${route}/${requestId(id)}/liquidation`, { ...NO_AUTO_LOG, signal }), hasItem);
+      return data.item;
+    } catch (error) {
+      if (error?.code === "LIQUIDATION_NOT_FOUND") return null;
+      throw error;
+    }
+  }
+
+  /** Uploads (or replaces) the pre-liquidation invoice. `file` must be a PDF (max 10 MiB). */
+  async issueInvoice(id, file) {
+    const form = new FormData();
+    form.append("file", file, file.name);
+    return request(http.post(`/${route}/${requestId(id)}/liquidation/invoice`, form, NO_AUTO_LOG), hasItem).then((data) => data.item);
+  }
+
+  /** `reason` must have between 10 and 1000 characters. */
+  async rejectReceipt(id, { reason } = {}) {
+    return request(http.post(`/${route}/${requestId(id)}/liquidation/receipt/reject`, { reason }, JSON_BODY), hasItem).then((data) => data.item);
+  }
+
+  /** Approves the payment and radicates: same inputs as `radicate`. Resolves with the radicated Detail. */
+  async approvePayment(id, { funIdPublic, vr, date } = {}) {
+    const body = { funIdPublic, vr };
+    if (date) body.date = date;
+    return request(http.post(`/${route}/${requestId(id)}/liquidation/approve`, body, JSON_BODY), hasItem).then((data) => data.item);
+  }
+
+  /** `kind`: "invoice" | "receipt". Resolves with `{ blob, contentType }`. */
+  async fetchLiquidationFile(id, kind, { signal } = {}) {
+    return this.#fetchFile(`/${route}/${requestId(id)}/liquidation/${kind === "receipt" ? "receipt" : "invoice"}`, { signal });
+  }
+
+  async #fetchFile(path, { signal } = {}) {
     let response;
     try {
       response = await requestProtectedBlob(path, { ...NO_AUTO_LOG, signal });

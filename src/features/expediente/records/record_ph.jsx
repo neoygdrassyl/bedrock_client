@@ -18,6 +18,7 @@ import RECORD_LAW_DOCSCHECK from './law/record_law_docs_check';
 import FUN_6_VIEW from '../fun/fun_forms/fun_6.view';
 import RECORD_PH_GEN_REVIEW from './ph/record_ph_gen_arc_review.component';
 import RECORD_PH_CHECK_LIST from './ph/record_ph_check_list.component';
+import { SectionCard } from '@/shared/components/SectionCard';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 
 // RECORDS
@@ -205,10 +206,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                             ? <>
                                 <div>
 
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_1">
-                                        <label className="app-p lead fw-normal">1. ANÁLISIS JURÍDICO</label>
-                                    </legend>
+                                    <h2 className="ew-group-title ew-group-title--first" id="record_ph_1">1. Análisis jurídico</h2>
 
+                                    <SectionCard title="Inventario de información aportada" headingLevel="h3">
                                     <RECORD_LAW_DOCSCHECK
                                         _FUN_1={_GET_CHILD_1()}
                                         _FUN_6={_GET_CHILD_6()}
@@ -216,9 +216,8 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
                                     />
-                                    <legend className="my-2 px-3 bg-light" id="record_eng_411">
-                                        <label className="app-p lead fw-normal">DOCUMENTOS DIGITALIZADOS</label>
-                                    </legend>
+                                    </SectionCard>
+                                    <SectionCard id="record_eng_411" title="Documentos digitalizados" headingLevel="h3">
 
                                      <FUN_6_VIEW
                                         translation={translation}
@@ -231,7 +230,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         readOnly
                                         mergeVentanilla
                                     />
+                                    </SectionCard>
 
+                                    <SectionCard headingLevel="h3">
                                     <RECORD_PH_LAW
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         _FUN_1={_GET_CHILD_1()}
@@ -243,15 +244,12 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         currentVersionR={currentVersionR}
                                         requestUpdate={requestUpdate}
                                         requestUpdateRecord={requestUpdateRecord} />
+                                    </SectionCard>
 
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_2">
-                                        <label className="app-p lead fw-normal">2. ANÁLISIS ARQUITECTÓNICO</label>
-                                    </legend>
+                                    <h2 className="ew-group-title" id="record_ph_2">2. Análisis arquitectónico</h2>
                                     {_GLOBAL_ID == 'cb1' ?
                                         <>
-                                            <legend className="my-2 px-3 Collapsible" id="record_ph_21">
-                                                <label className="app-p lead fw-normal">2.1 INFORMACIÓN GENERAL</label>
-                                            </legend>
+                                            <SectionCard id="record_ph_21" title="2.1 Información general" headingLevel="h3">
                                             <RECORD_PH_BUILDING
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -269,10 +267,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 currentVersionR={currentVersionR}
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
+                                            </SectionCard>
 
-                                            <legend className="my-2 px-3 Collapsible" id="record_ph_22">
-                                                <label className="app-p lead fw-normal">2.2 DESCRIPCIÓN DEL PROYECTO</label>
-                                            </legend>
+                                            <SectionCard id="record_ph_22" title="2.2 Descripción del proyecto" headingLevel="h3">
                                             <RECORD_PH_PROFESIONALS
                                                 _FUN_52={_GET_CHILD_52()}
                                                 _FUN_6={_GET_CHILD_6()}
@@ -306,10 +303,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 currentVersionR={currentVersionR}
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
+                                            </SectionCard>
 
-                                            <legend className="my-2 px-3 Collapsible text-center" id="record_ph_2">
-                                                <label className="app-p lead fw-normal">2.3 Observaciones a la planimetria revisada. Formato de revisión e información de proyectos</label>
-                                            </legend>
+                                            <SectionCard id="record_ph_23" title="2.3 Observaciones a la planimetría revisada" meta="Formato de revisión e información de proyectos" headingLevel="h3">
                                             <RECORD_PH_CHECK_LIST
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -319,9 +315,11 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdateRecord={requestUpdateRecord}
                                                 requestUpdate={requestUpdate}
                                             />
+                                            </SectionCard>
 
                                         </> :
                                         <>
+                                            <SectionCard headingLevel="h3">
                                             <RECORD_PH_GEN_REVIEW
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -331,8 +329,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 requestUpdateRecord={requestUpdateRecord}
                                                 requestUpdate={requestUpdate}
                                             />
+                                            </SectionCard>
 
-                                            <hr />
+                                            <SectionCard headingLevel="h3">
                                             <RECORD_PH_BLUEPRINT
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -341,8 +340,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 currentVersionR={currentVersionR}
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
+                                            </SectionCard>
 
-                                            <hr />
+                                            <SectionCard headingLevel="h3">
                                             <RECORD_PH_FLOOR
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
@@ -351,11 +351,10 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                                 currentVersionR={currentVersionR}
                                                 requestUpdate={requestUpdate}
                                                 requestUpdateRecord={requestUpdateRecord} />
+                                            </SectionCard>
                                         </>}
 
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_ph_3">
-                                        <label className="app-p lead fw-normal">3. APROBACIÓN</label>
-                                    </legend>
+                                    <SectionCard id="record_ph_3" title="3. Aprobación">
 
                                     <RECORD_PH_REVIEW
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -367,21 +366,22 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                                         closeModal={closeModal}
                                         requestUpdateRecord={requestUpdateRecord}
                                         requestRefresh={retrieveItem} />
+                                    </SectionCard>
 
                                 </div>
                                 {/* {NAV_FUNA(_GET_CHILD_1())} */}
                             </> : <>
 
-                                <fieldset className="p-3">
-                                    <div className="text-center">
+                                <SectionCard title="Informe de propiedad horizontal" meta="Este expediente aún no tiene informe de P.H.">
+                                    <div className="ew-actions ew-actions--start">
                                         <Button size="sm" onClick={() => new_record_ph()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
-                                </fieldset>
+                                </SectionCard>
 
                             </>}
-                    </> : <div className="text-center">
-                        <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3>
-                    </div>}
+                    </> : <SectionCard>
+                        <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                    </SectionCard>}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentRecord}
@@ -396,9 +396,9 @@ function RECORD_PH({ translation, swaMsg, globals, currentVersion, currentId, re
                         FROM={"record_ph"}
                         NAVIGATION={NAVIGATION}
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                </SectionCard>}
             </div >
         );
 }

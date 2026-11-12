@@ -207,7 +207,12 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
       renderExpedition();
     });
 
-    expect(screen.getAllByText(/CARGANDO INFORMACION/i).length).toBeGreaterThanOrEqual(1);
+    // Behavior: while the item loads the module exposes a busy region with a status message
+    // (copy changed from "CARGANDO INFORMACION..." to sentence case in the redesign).
+    const status = screen.getAllByRole('status');
+    expect(status.length).toBeGreaterThanOrEqual(1);
+    expect(status[0]).toHaveTextContent(/cargando información/i);
+    expect(status[0].closest('[aria-busy="true"]')).not.toBeNull();
   });
 
   test('3. EXPEDITION_SERVICE.getRecord() se llama al montar', async () => {
@@ -252,7 +257,7 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/GENERAR EXPEDICION EN BLANCO/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /generar expedición en blanco/i })).toBeInTheDocument();
     });
   });
 
@@ -266,12 +271,14 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
       renderExpedition();
     });
 
-    const btnGenerar = await screen.findByText(/GENERAR EXPEDICION EN BLANCO/i);
+    const btnGenerar = await screen.findByRole('button', { name: /generar expedición en blanco/i });
     await act(async () => {
+      fireEvent.click(btnGenerar);
+      // A double click must create a single blank record.
       fireEvent.click(btnGenerar);
     });
 
-    expect(EXPEDITION_SERVICE.create).toHaveBeenCalled();
+    expect(EXPEDITION_SERVICE.create).toHaveBeenCalledTimes(1);
   });
 
   test('8. Con record existente, muestra secciones del expediente', async () => {
@@ -292,7 +299,8 @@ describe('EXPEDITION — Integración: Módulo Expedición', () => {
     expect(screen.getByTestId('exp-2')).toBeInTheDocument();
     expect(screen.getByTestId('exp-docs')).toBeInTheDocument();
     expect(screen.getByTestId('exp-clocks-link')).toBeInTheDocument();
-    expect(screen.getByText('Este registro se gestiona desde el submódulo de tiempos.')).toBeInTheDocument();
+    // The times card only links to the times submodule (copy updated in the redesign).
+    expect(screen.getByTestId('exp-clocks-link')).toHaveTextContent(/se gestionan desde el submódulo de tiempos/i);
     expect(screen.getByTestId('exp-lic')).toBeInTheDocument();
   });
 

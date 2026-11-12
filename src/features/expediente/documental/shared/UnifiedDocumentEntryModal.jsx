@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 import { toProtectedApiPath } from '@/shared/utils/pdfDownload';
 import { downloadProtectedFileWithFeedback } from '@/shared/utils/protectedDocumentAction';
 import { DOCUMENT_ORIGIN_META, DOCUMENT_ORIGIN_STATE } from './expediente-documental.constants';
-import { buildDocumentDownloadUrl, buildDocumentPreviewUrl } from './expediente-documental.utils';
+import { buildDocumentDownloadUrl, buildDocumentPreviewUrl, formatDocumentDisplayDate } from './expediente-documental.utils';
 
 const EMPTY_EVALUATION_TEXT = 'Evaluación documental pendiente de definir para esta entrada.';
 
@@ -153,18 +153,43 @@ function UnifiedDocumentEntryModal({
         }
     };
 
+    const titleId = useId();
+    const closeButtonRef = useRef(null);
+    const isOpen = Boolean(open && group);
+
+    // Hand-rolled dialog: focus moves in on open and returns to the opener on close; Escape closes
+    // the topmost layer (full-screen preview first). Skipped while a confirmation dialog is on top.
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const opener = document.activeElement;
+        closeButtonRef.current?.focus();
+        return () => { if (opener && typeof opener.focus === 'function' && document.contains(opener)) opener.focus(); };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const onKeyDown = (event) => {
+            if (event.key !== 'Escape' || event.defaultPrevented || savingEdit) return;
+            if ([...document.querySelectorAll('.swal2-container, [role="alertdialog"]')].some((layer) => layer.getClientRects().length)) return;
+            if (isPreviewFullscreen) setIsPreviewFullscreen(false);
+            else onClose?.();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [isOpen, isPreviewFullscreen, onClose, savingEdit]);
+
     if (!open || !group) {
         return null;
     }
 
-    return <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/45 px-4 py-5" role="dialog" aria-modal="true">
+    return <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/45 px-4 py-5" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="flex h-[min(90dvh,920px)] w-[min(96vw,1680px)] flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
             <div className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
                 <div>
-                    <p className="mb-0 text-base font-semibold text-foreground">{group.documentName}</p>
+                    <p id={titleId} className="mb-0 text-base font-semibold text-foreground">{group.documentName}</p>
                     <p className="mb-0 text-xs text-muted-foreground">{group.entryCount} entrada(s) · VR reciente: {group.latestVr || 'Sin VR'}</p>
                 </div>
-                <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Cerrar detalle documental">
+                <Button ref={closeButtonRef} type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Cerrar detalle documental">
                     <Icon name="times" size={14} />
                 </Button>
             </div>
@@ -190,7 +215,7 @@ function UnifiedDocumentEntryModal({
                                     const editable = canManage && entry.canEdit;
 
                                     return <tr key={entry.entryId} className={selected ? 'bg-primary/5' : 'bg-background'}>
-                                        <td className="px-3 py-2 text-xs font-mono">{entry.date || 'Sin fecha'} {entry.time || ''}</td>
+                                        <td className="px-3 py-2 text-xs font-mono">{formatDocumentDisplayDate(entry.date) || 'Sin fecha'} {entry.time || ''}</td>
                                         <td className="px-3 py-2 font-mono text-xs leading-snug" title={entry.vr || 'Sin VR'}>{entry.vr || 'Sin VR'}</td>
                                         <td className="px-3 py-2 text-xs font-mono">{entry.pages || 'Sin dato'}</td>
                                         <td className="px-3 py-2">
@@ -227,7 +252,7 @@ function UnifiedDocumentEntryModal({
                         <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
                             <span>VR: <b className="text-foreground">{selectedEntry?.vr || 'Sin VR'}</b></span>
                             <span>Folios: <b className="text-foreground">{selectedEntry?.pages || 'Sin dato'}</b></span>
-                            <span>Fecha: <b className="text-foreground">{selectedEntry?.date || 'Sin fecha'}</b></span>
+                            <span>Fecha: <b className="text-foreground">{formatDocumentDisplayDate(selectedEntry?.date) || 'Sin fecha'}</b></span>
                             <span>Origen: <b className="text-foreground">{selectedEntry?.originLabel || originMeta.label}</b></span>
                             <span>Medio de recepción: <b className="text-foreground">{selectedEntry?.receptionMediumLabel || 'Sin registrar'}</b></span>
                             <span>Fuente: <b className="text-foreground">{selectedEntry?.sourceLabel || selectedEntry?.sourceTable || 'Sin dato'}</b></span>

@@ -7,7 +7,7 @@ import {
     _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER, _FUN_101_PARSER, _FUN_102_PARSER, _FUN_24_PARSER, _FUN_25_PARSER
 } from '../../../../shared/config/customClasses/funCustomArrays'
 import { Icon } from '@/shared/components/icon';
-import { dateParser, dateParser_yearsPassed, regexChecker_isOA_2 } from '../../../../shared/config/customClasses/typeParse';
+import { regexChecker_isOA_2 } from '../../../../shared/config/customClasses/typeParse';
 import FUNG_CHECKLIST from './fun_g_checklist';
 import FUNG_NAV from './components/fun_g_nav';
 import FUN_MODULE_NAV from './components/fun_moduleNav';
@@ -22,21 +22,41 @@ import FUN_G_REPORT_MASTER from './components/fun_g_reportMaster.component';
 import FunChecklistWindowSwitcher from './components/FunChecklistWindowSwitcher';
 import ARCHIVE_FUN_VIEW from '../../../archive/arcXfun_view.component';
 import FUN_DUPLICATE from './components/fun_duplicate.component';
-import ObservationPanel from '../../../../shared/components/ObservationPanel';
 import { swalError } from '@/shared/utils/swalAdapter';
+import { useIsInsideExpedienteWorkspace } from '../../workspace/ExpedienteWorkspaceContext';
+import { SectionCard, SectionSubheading, DataGrid, DataField } from '@/shared/components/SectionCard';
+import IllustratedState from '@/shared/components/feedback/IllustratedState';
+import dayjs from 'dayjs';
 
-const asInputValue = (value) => value ?? '';
+// Technical dates read as dd/mm/yyyy; anything that is not a date is shown as stored.
+const formatShortDate = (value) => {
+    if (value === null || value === undefined || value === '' || value === false) return '';
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY') : String(value);
+};
+
+// Document-type key (tokens in index.css): color is always paired with the icon and the legend text.
+const DOC_KEY = {
+    identity: 'hsl(var(--doc-key-identity))',
+    registration: 'hsl(var(--doc-key-registration))',
+    validity: 'hsl(var(--doc-key-validity))',
+    resume: 'hsl(var(--doc-key-resume))',
+    postgraduate: 'hsl(var(--doc-key-postgraduate))',
+};
 
 
 function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION, NAVIGATION_VERSION, onDuplicateSuccess }) {
+    const insideWorkspace = useIsInsideExpedienteWorkspace();
     const [load, setLoad] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [showDuplicate, setShowDuplicate] = useState(false);
+    const [loadFailed, setLoadFailed] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
         setLoad(false);
+        setLoadFailed(false);
         setCurrentItem(null);
         setPqrsxfun(false);
         retrieveItem(currentId, { isCancelled: () => cancelled });
@@ -50,6 +70,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
         FUN_SERVICE.get(id)
             .then(response => {
                 if (isCancelled()) return;
+                setLoadFailed(false);
                 setCurrentItem(response.data);
                 setLoad(true);
                 retrievePQRSxFUN(response.data.id_public, { isCancelled });
@@ -57,6 +78,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             .catch(e => {
                 if (isCancelled()) return;
                 console.log(e);
+                setLoadFailed(true);
                 swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
             });
     };
@@ -154,31 +176,31 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             _COMPONENT.push(<span key="doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={DOC_KEY.identity} />
                 : ""}</span>)
 
             _COMPONENT.push(<span key="doc-1">{_array[1] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'DarkOrchid'} />
+                    icon={'FileText'} color={DOC_KEY.registration} />
                 : ""}</span>)
 
             _COMPONENT.push(<span key="doc-2">{_array[2] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'GoldenRod'} />
+                    icon={'FileText'} color={DOC_KEY.validity} />
                 : ""}</span>)
 
             _COMPONENT.push(<span key="doc-3">{_array[3] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'LimeGreen'} />
+                    icon={'FileText'} color={DOC_KEY.resume} />
                 : ""}</span>)
 
             _COMPONENT.push(<span key="doc-4">{_array[4] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[4]).path + "/" + _FIND_6(_array[4]).filename} apipath={'/files/'}
-                    icon={'FileText'} color={'tomato'} />
+                    icon={'FileText'} color={DOC_KEY.postgraduate} />
                 : ""}</span>)
 
             return <>{_COMPONENT}</>
@@ -216,12 +238,12 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             _COMPONENT.push(<span key="fun51-doc-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={DOC_KEY.identity} />
                 : ""}</span>)
 
             _COMPONENT.push(<span key="fun51-doc-1">{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'BadgeCheck'} color={'DarkOrchid'} />
+                    icon={'BadgeCheck'} color={DOC_KEY.registration} />
                 : ""}</span>)
 
             return <>{_COMPONENT}</>
@@ -238,37 +260,24 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             var _CHILD_LAW = _GET_CHILD_LAW();
             var _fun_0_type = { '0': 'SIN CATEGORIZAR', 'i': 'CATEGORIA I', 'ii': "CATEGORIA II", 'iii': "CATEGORIA III", 'iv': "CATEGORIA IV", 'oa': "OTRAS ACTUACIONES" }
             if (!_CHILD) _CHILD = "";
-            return <>
-                <div className="row py-2">
-                    <div className="col-6">
-                        <label>Fecha de Pago: </label>
-                        <label className="mx-3 fw-bold">{dateParser(_CHILD.date_start)}</label>
-                        {_CHILD_LAW.id6payment > 0
+            const paymentDate = formatShortDate(_CHILD.date_start);
+            const hasPaymentSupport = _CHILD_LAW.id6payment > 0;
+            return <DataGrid>
+                <DataField label="Fecha de pago" mono>
+                    {paymentDate || hasPaymentSupport ? <span className="inline-flex items-center gap-2">
+                        {paymentDate}
+                        {hasPaymentSupport
                             ?
                             <VIZUALIZER url={_FIND_6(_CHILD_LAW.id6payment).path + "/" + _FIND_6(_CHILD_LAW.id6payment).filename}
                                 apipath={'/files/'} />
 
                             : ""}
-                    </div>
-                    <div className="col-6">
-                        <label>Consecutivo de Pago: </label>
-                        <label className="mx-3 fw-bold">{currentItem.id_payment}</label>
-                    </div>
-                </div>
-                <div className="row my-2">
-                    <div className="col">
-                        <label>Categorización: <label className="fw-bold">{_fun_0_type[currentItem.type]}</label></label>
-
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        <label>Descripción del Proyecto</label>
-                        <textarea className="input-group" maxLength="2000" rows="4" disabled
-                            defaultValue={_GET_CHILD_1().description}></textarea>
-                    </div>
-                </div>
-            </>
+                    </span> : null}
+                </DataField>
+                <DataField label="Consecutivo de pago" mono value={currentItem.id_payment} />
+                <DataField label="Categorización" value={_fun_0_type[currentItem.type]} />
+                <DataField label="Descripción del proyecto" full prose value={_GET_CHILD_1().description} />
+            </DataGrid>
         }
         let _SET_CHILD_1 = () => {
             var _CHILD = currentItem.fun_1s;
@@ -301,64 +310,19 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     _CHILD_VARS.item_102 = _FUN_102_PARSER(_CHILD[_CURRENT_VERSION].regla_2);
                 }
             }
-            return <>
-                <div className="row">
-                    <div className="col-6">
-                        <label>1.1 Tipo de Solicitud</label>
-                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_1)} disabled></textarea>
-                    </div>
-                    <div className="col-6">
-                        <label>1.2 Objeto del Trámite</label>
-                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_2)} disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>1.3 Modalidad Licencia de Urbanización</label>
-                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_3)} disabled />
-                    </div>
-                    <div className="col-6">
-                        <label >1.4 Modalidad Licencia de Subdivisión</label>
-                        <input type="text" className="form-control" value={asInputValue(_CHILD_VARS.item_4)} disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>1.5 Modalidad Licencia de Construcción</label>
-                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_5)} disabled></textarea>
-                    </div>
-                    <div className="col-6">
-                        <label>1.6 Usos</label>
-                        <textarea className="form-control mb-3" rows="3" value={asInputValue(_CHILD_VARS.item_6)} disabled></textarea>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>1.7 Área Construida</label>
-                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_7)} disabled />
-                    </div>
-                    <div className="col-6">
-                        <label>1.8 Tipo de Vivienda</label>
-                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_8)} disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>1.9  Bien de Interés Cultural</label>
-                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_9)} disabled />
-                    </div>
-                    <div className="col-6">
-                        <label>1.10.2  Zonificación Climática</label>
-                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_101)} disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <label>1.10.1  Declaración de medidas de construcción sostenible</label>
-                        <input type="text" className="form-control  mb-3" value={asInputValue(_CHILD_VARS.item_102)} disabled />
-                    </div>
-                </div>
-            </>
+            return <DataGrid>
+                <DataField label="1.1 Tipo de solicitud" value={_CHILD_VARS.item_1} />
+                <DataField label="1.2 Objeto del trámite" value={_CHILD_VARS.item_2} />
+                <DataField label="1.3 Modalidad licencia de urbanización" value={_CHILD_VARS.item_3} emptyText="No aplica" />
+                <DataField label="1.4 Modalidad licencia de subdivisión" value={_CHILD_VARS.item_4} emptyText="No aplica" />
+                <DataField label="1.5 Modalidad licencia de construcción" value={_CHILD_VARS.item_5} emptyText="No aplica" />
+                <DataField label="1.6 Usos" value={_CHILD_VARS.item_6} />
+                <DataField label="1.7 Área construida" value={_CHILD_VARS.item_7} />
+                <DataField label="1.8 Tipo de vivienda" value={_CHILD_VARS.item_8} />
+                <DataField label="1.9 Bien de interés cultural" value={_CHILD_VARS.item_9} />
+                <DataField label="1.10.1 Declaración de medidas de construcción sostenible" value={_CHILD_VARS.item_102} />
+                <DataField label="1.10.2 Zonificación climática" value={_CHILD_VARS.item_101} />
+            </DataGrid>
         }
         let _SET_CHILD_2 = () => {
             var _CHILD = currentItem.fun_2;
@@ -396,96 +360,25 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 _CHILD_VARS.item_268 = _CHILD.manzana;
             }
             return <>
-                <div className="row">
-                    <div className="col-6">
-                        <label>2.1 Dirección o Nomenclatura actual</label>
-                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_211} disabled ></textarea>
-                    </div>
-                    <div className="col-6">
-                        <label>2.1 Dirección(es) Anterior(es)</label>
-                        <textarea type="text" className="form-control mb-3" rows="3" defaultValue={_CHILD_VARS.item_212} disabled ></textarea>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>2.2 No. Matrícula Inmobiliaria</label>
-                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_22} disabled />
-                    </div>
-                    <div className="col-6">
-                        <label>2.3 Identificación Catastral</label>
-                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>2.4 Clasificación del Suelo</label>
-                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_24} id="p_24" disabled />
-                    </div>
-                    <div className="col-6">
-                        <label>2.5 Planimetria del Lote</label>
-                        <input type="text" className="form-control mb-3" defaultValue={_CHILD_VARS.item_25} id="p_25" disabled />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12">
-                        <label>2.6 Información General</label>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Barrio o Urbanización
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_261} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Comuna
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_263} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Estrato
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_267} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Manzana No.
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_268} disabled />
-                        </div>
-                    </div>
-
-                    <div className="col-6">
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Vereda
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_262} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Sector
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_264} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Corregimiento
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_265} disabled />
-                        </div>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="map-marked-alt" size={16} />&nbsp;Lote No.
-                            </span>
-                            <input type="text" className="form-control" defaultValue={_CHILD_VARS.item_266} disabled />
-                        </div>
-                    </div>
-                </div>
+                <DataGrid>
+                    <DataField label="2.1 Dirección o nomenclatura actual" value={_CHILD_VARS.item_211} />
+                    <DataField label="2.1 Dirección(es) anterior(es)" value={_CHILD_VARS.item_212} />
+                    <DataField label="2.2 No. matrícula inmobiliaria" mono value={_CHILD_VARS.item_22} />
+                    <DataField label="2.3 Identificación catastral" mono value={_CHILD_VARS.item_232 || _CHILD_VARS.item_23} />
+                    <DataField label="2.4 Clasificación del suelo" value={_CHILD_VARS.item_24} />
+                    <DataField label="2.5 Planimetría del lote" value={_CHILD_VARS.item_25} />
+                </DataGrid>
+                <SectionSubheading>2.6 Información general</SectionSubheading>
+                <DataGrid>
+                    <DataField label="Barrio o urbanización" value={_CHILD_VARS.item_261} />
+                    <DataField label="Vereda" value={_CHILD_VARS.item_262} />
+                    <DataField label="Comuna" value={_CHILD_VARS.item_263} />
+                    <DataField label="Sector" value={_CHILD_VARS.item_264} />
+                    <DataField label="Estrato" mono value={_CHILD_VARS.item_267} />
+                    <DataField label="Corregimiento" value={_CHILD_VARS.item_265} />
+                    <DataField label="Manzana No." mono value={_CHILD_VARS.item_268} />
+                    <DataField label="Lote No." mono value={_CHILD_VARS.item_266} />
+                </DataGrid>
             </>
         }
         let _SET_CHILD_3 = () => {
@@ -515,7 +408,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.longitud, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <span className="text-sm">{row.longitud}</span>
+                    cell: row => <span className="ew-num text-sm">{row.longitud}</span>
                 },
                 {
                     name: 'COLINDA CON',
@@ -524,9 +417,8 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                 },
             ]
             return <DataTable
-                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                noDataComponent="No hay Items"
-                striped="true"
+                paginationComponentOptions={{ rowsPerPageText: 'Filas por página', rangeSeparatorText: 'de' }}
+                noDataComponent="Sin linderos registrados"
                 columns={columns_4}
                 data={_LIST}
                 highlightOnHover
@@ -554,7 +446,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.type}</span>
                 },
@@ -563,7 +454,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
@@ -572,15 +462,13 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{row.id_number}</span>
+                    cell: row => <span className="ew-num text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'NOMBRE REP. LEGAL',
                     selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
@@ -589,39 +477,32 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
-                    cell: row => <span className="text-sm">{row.rep_id_number}</span>
+                    cell: row => <span className="ew-num text-sm">{row.rep_id_number}</span>
                 },
                 {
                     name: 'TELÉFONO/ CELULAR',
                     selector: row => row.nunber, // FIX: react-data-table v7→v8
-                    center: true,
-                    cell: row => <label >{row.nunber}</label>
+                    cell: row => <span className="ew-num text-sm">{row.nunber}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'ROL',
                     selector: row => row.role, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'DOCUMENTOS',
                     button: true,
-                    center: true,
-                    center: true,
                     cell: row => <> {_GET_DOCS_BTNS_FUN51(row.docs)}</>
                 },
             ]
             return <DataTable
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns_51}
                 data={_LIST}
                 highlightOnHover
@@ -646,7 +527,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.surname, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
@@ -655,21 +535,18 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <span className="text-sm">{row.id_number}</span>
+                    cell: row => <span className="ew-num text-sm">{row.id_number}</span>
                 },
                 {
                     name: 'TELÉFONO/ CELULAR',
                     selector: row => row.number, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <span className="text-sm">{row.number}</span>
+                    cell: row => <span className="ew-num text-sm">{row.number}</span>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.email}</span>
                 },
@@ -678,41 +555,35 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     selector: row => row.role, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'MATRICULA',
                     selector: row => row.registration, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <span className="text-sm">{row.registration}</span>
+                    cell: row => <span className="ew-num text-sm">{row.registration}</span>
                 },
                 {
                     name: 'EXP. MATRICULA',
                     selector: row => row.registration_date, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <span className="text-sm">{dateParser(row.registration_date)}</span>
+                    cell: row => <span className="ew-num text-sm">{formatShortDate(row.registration_date)}</span>
                 },
                 {
                     name: 'EXPERIENCIA',
                     selector: row => row.expirience, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '150px',
-                    cell: row => <label>{Math.trunc(row.expirience / 12)} año(s)</label>
+                    cell: row => <span className="ew-num text-sm">{Math.trunc(row.expirience / 12)} año(s)</span>
                 },
                 {
                     name: '¿SANCIONADO?',
                     selector: row => row.sanction, // FIX: react-data-table v7→v8
-                    center: true,
-                    cell: row => <span className="text-sm">{row.sanction ? <label className="text-danger fw-bold">SI</label> : "NO"}</span>
+                    cell: row => <span className="text-sm">{row.sanction ? <span className="ew-text-danger font-semibold">Sí</span> : "No"}</span>
                 },
                 {
                     name: 'SUPERVISIÓN',
                     selector: row => row.supervision, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <span className="text-sm">{row.supervision}</span>
                 },
                 {
@@ -724,7 +595,6 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
             ]
             return <DataTable
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns_52}
                 data={_LIST}
                 highlightOnHover
@@ -734,55 +604,33 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
         }
         let _SET_CHILD_53 = () => {
             var _CHILD_VARS = _GET_CHILD_53();
+            const fullName = [_CHILD_VARS.item_5311, _CHILD_VARS.item_5312].filter(Boolean).join(' ');
+            const missingDocument = <span className="ew-text-warning font-medium">Sin documento</span>;
             return <>
-                <div className="row mx-2 px-2">
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">5.3.1 Nombre y Apellido(s)</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_5311 + " " + _CHILD_VARS.item_5312}</label>
-                    </div>
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">5.3.2 Cédula</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_532}</label>
-                    </div>
-                </div>
-                <div className="row mx-2 px-2">
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">3.5.3 NÚmero de Contacto</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_534}</label>
-                    </div>
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">3.5.4 Correo Electrónico</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_535}</label>
-                    </div>
-                </div>
-                <div className="row mx-2 px-2">
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">3.5.5 Dirección de Correspondencia</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_536}</label>
-                    </div>
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">5.3.6 En calidad de:</label>
-                        <label className="mx-3 fw-bold">{_CHILD_VARS.item_533}</label>
-                    </div>
-                </div>
-                <div className="row m-2 py-2">
-                    <label>3.5.7 Documentos</label>
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">Documentos de Identidad: </label>
+                <DataGrid>
+                    <DataField label="5.3.1 Nombre y apellido(s)" value={fullName} />
+                    <DataField label="5.3.2 Cédula" mono value={_CHILD_VARS.item_532} />
+                    <DataField label="5.3.3 Número de contacto" mono value={_CHILD_VARS.item_534} />
+                    <DataField label="5.3.4 Correo electrónico" value={_CHILD_VARS.item_535} />
+                    <DataField label="5.3.5 Dirección de correspondencia" value={_CHILD_VARS.item_536} />
+                    <DataField label="5.3.6 En calidad de" value={_CHILD_VARS.item_533} />
+                </DataGrid>
+                <SectionSubheading>5.3.7 Documentos</SectionSubheading>
+                <DataGrid>
+                    <DataField label="Documento de identidad">
                         {_GET_DOC_VALUE(0) > 0
                             ? <VIZUALIZER url={_FIND_6(_GET_DOC_VALUE(0)).path + "/" + _FIND_6(_GET_DOC_VALUE(0)).filename}
                                 apipath={'/files/'} />
-                            : <label className="text-warning fw-bold">SIN DOCUMENTO</label>}
-                    </div>
-                    <div className="col-6 border p-2">
-                        <label className="mx-3">Poder o autorización: </label>
+                            : missingDocument}
+                    </DataField>
+                    <DataField label="Poder o autorización">
                         {_GET_DOC_VALUE(1) > 0
                             ?
                             <VIZUALIZER url={_FIND_6(_GET_DOC_VALUE(1)).path + "/" + _FIND_6(_GET_DOC_VALUE(1)).filename} apipath={'/files/'}
                             />
-                            : <label className="text-warning fw-bold">SIN DOCUMENTO</label>}
-                    </div>
-                </div>
+                            : missingDocument}
+                    </DataField>
+                </DataGrid>
             </>
         }
         let _SET_CHILD_6 = () => {
@@ -822,198 +670,87 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     _CHILD_VARS.item_c9 = _CHILD[_CURRENT_VERSION].legal_date;
                 }
             }
+            // Same loose comparisons the read-only radios used (the stored value may be a number, a string or a boolean).
+            let conditionLabel = '';
+            if (_CHILD_VARS.item_c3 == '1') conditionLabel = 'Radicación en legal y debida forma';
+            else if (_CHILD_VARS.item_c3 == '0') conditionLabel = 'Radicación incompleta';
+            const actorLabels = { A: 'Solicitante', B: 'Apoderado', C: 'Mandatario' };
             return <>
-                <legend className="my-2 px-3 bg-light" id="fung_c1"><h4 className="mt-2">C.1 IDENTIFICACIÓN DEL ENCARGADO DE LA REVISION</h4></legend>
-                <div className="row">
-                    <div className="col-6">
-                        <label>Nombre Encargado de Revision</label>
-                        <input type="text" className="form-control mb-3" id="c_31" disabled
-                            value={asInputValue(_CHILD_VARS.item_c1)} />
-                    </div>
-                    <div className="col-6">
-                        <label>No. Radicado</label>
-                        <input type="text" className="form-control mb-3" id="c_33" disabled
-                            value={asInputValue(currentItem.id_public)} />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>Fecha de Revision</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="c_32" disabled
-                            value={asInputValue(_CHILD_VARS.item_c2)} />
-                    </div>
-                </div>
+                <SectionSubheading id="fung_c1" className="ew-subheading--first">C.1 Encargado de la revisión</SectionSubheading>
+                <DataGrid>
+                    <DataField label="Nombre del encargado de revisión" value={_CHILD_VARS.item_c1} />
+                    <DataField label="No. radicado" mono value={currentItem.id_public} />
+                    <DataField label="Fecha de revisión" mono value={formatShortDate(_CHILD_VARS.item_c2)} />
+                </DataGrid>
 
-                <legend className="my-2 px-3 bg-light" id="fung_c2"><h4 className="mt-2">C.2 CONDICIÓN DE LA RADICACIÓN</h4></legend>
-                <div className="row  mb-3">
-                    <div className="col-6">
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="1" name="c_41" readOnly
-                                checked={_CHILD_VARS.item_c3 == '1' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckDefault">
-                                RADICACIÓN EN LEGAL Y DEBIDA FORA
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="0" name="c_41" readOnly
-                                checked={_CHILD_VARS.item_c3 == '0' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                RADICACIÓN INCOMPLETA
-                            </label>
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <label>Actuador</label>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="A" name="c_42" readOnly
-                                checked={_CHILD_VARS.item_c8 == 'A' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckDefault">
-                                SOLICITANTE
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="B" name="c_42" readOnly
-                                checked={_CHILD_VARS.item_c8 == 'B' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                APODERADO
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" value="C" name="c_42" readOnly
-                                checked={_CHILD_VARS.item_c8 == 'C' ? true : false} />
-                            <label className="form-check-label" htmlFor="flexCheckChecked">
-                                MANDATARIO
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>Nombre</label>
-                        <input type="text" className="form-control mb-3" id="c_43" disabled
-                            value={asInputValue(_CHILD_VARS.item_c5)} />
-                    </div>
-                    <div className="col-6">
-                        <label>Fecha incompleto</label>
-                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={asInputValue(_CHILD_VARS.item_c6)} />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-6">
-                        <label>CC/NIT</label>
-                        <input type="text" className="form-control mb-3" id="c_45" disabled
-                            value={asInputValue(_CHILD_VARS.item_c7)} />
-                    </div>
-                    <div className="col-6">
-                        <label>Fecha legal y debida forma</label>
-                        <input type="date" className="form-control mb-3" id="c_44" max='2100-01-01' disabled
-                            value={asInputValue(_CHILD_VARS.item_c9)} />
-                    </div>
-                    <div className="col-12">
-                        <ObservationPanel
-                            title="Observaciones"
-                            textareaProps={{
-                                className: 'form-control mb-3',
-                                rows: '3',
-                                id: 'c_46',
-                                disabled: true,
-                                value: asInputValue(_CHILD_VARS.item_c4),
-                            }}
-                        />
-                    </div>
-                </div>
-
+                <SectionSubheading id="fung_c2">C.2 Condición de la radicación</SectionSubheading>
+                <DataGrid>
+                    <DataField label="Condición" value={conditionLabel} />
+                    <DataField label="Actuador" value={actorLabels[_CHILD_VARS.item_c8]} />
+                    <DataField label="Nombre" value={_CHILD_VARS.item_c5} />
+                    <DataField label="CC/NIT" mono value={_CHILD_VARS.item_c7} />
+                    <DataField label="Fecha incompleto" mono value={formatShortDate(_CHILD_VARS.item_c6)} />
+                    <DataField label="Fecha legal y debida forma" mono value={formatShortDate(_CHILD_VARS.item_c9)} />
+                    <DataField label="Observaciones" full prose value={_CHILD_VARS.item_c4} emptyText="Sin observaciones" />
+                </DataGrid>
+                <div className="mt-4" />
             </>
         }
 
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
         return (
-            <div className="py-3">
+            <div>
                 {currentItem != null ? <>
-                    <h2 className="text-center">RESUMEN DE LA SOLICITUD</h2>
-                    <fieldset className="p-3" id="fung_0">
-                        <legend className="my-2 px-3 bg-success">
-                            <label className="app-p lead fw-normal text-light">0. Metadatos de la Solicitud</label>
-                        </legend>
+                    {insideWorkspace ? null : <h2 className="text-center">RESUMEN DE LA SOLICITUD</h2>}
+                    <SectionCard id="fung_0" title="0. Metadatos de la solicitud">
                         {_SET_CHILD_0()}
-                        <legend className="my-2 px-3 bg-light" id="fun_arch">
-                            <label className="app-p lead fw-normal">ARCHIVO</label>
-                        </legend>
+                        <SectionSubheading id="fun_arch">Archivo</SectionSubheading>
                         <ARCHIVE_FUN_VIEW
                             translation={translation}
                             swaMsg={swaMsg}
                             globals={globals}
                             currentItem={currentItem}
                         />
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_1">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead fw-normal">1. Identificación de la Solicitud</label>
-                        </legend>
+                    </SectionCard>
+                    <SectionCard id="fung_1" title="1. Identificación de la solicitud">
                         {_SET_CHILD_1()}
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_2">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead text-center fw-normal">2. Información del Predio</label>
-                        </legend>
+                    </SectionCard>
+                    <SectionCard id="fung_2" title="2. Información del predio">
                         {_SET_CHILD_2()}
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_3">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead fw-normal">3. Información de Vecinos Colindantes</label>
-                        </legend>
+                    </SectionCard>
+                    <SectionCard id="fung_3" title="3. Información de vecinos colindantes">
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
                             _FUN_6={_SET_CHILD_6()}
                         />
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_4">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead text-center fw-normal">4. Linderos, Dimensiones y Áreas</label>
-                        </legend>
+                    </SectionCard>
+                    <SectionCard id="fung_4" title="4. Linderos, dimensiones y áreas">
                         {_SET_CHILD_4()}
-                    </fieldset>
-                    <legend className="my-2 px-3 Collapsible" id="fun_pdf">
-                        <label>5 Titulares y profesionales responsables </label>
-                    </legend>
-                    <fieldset className="p-3" id="fung_51">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead text-center fw-normal">5.1 Titular(es) de la Licencia</label>
-                        </legend>
+                    </SectionCard>
+                    <h2 className="ew-group-title" id="fun_pdf">5. Titulares y profesionales responsables</h2>
+                    <SectionCard id="fung_51" title="5.1 Titular(es) de la licencia" headingLevel="h3">
                         {_SET_CHILD_51()}
-                        <div className="border p-2 m-2">
-                            <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><Icon name="id-card" size={16} style={{ color: "DeepSkyBlue" }} /> : Documento de Identidad,</label>
-                            <label className="me-2"><Icon name="id-badge" size={16} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
-                        </div>
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_52">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead text-center fw-normal">5.2 Profesionales Responsables</label>
-                        </legend>
+                        <ul className="ew-key" aria-label="Leyenda de documentos">
+                            <li><Icon name="id-card" size={16} style={{ color: DOC_KEY.identity }} aria-hidden="true" /> Documento de identidad</li>
+                            <li><Icon name="id-badge" size={16} style={{ color: DOC_KEY.registration }} aria-hidden="true" /> Certificado de existencia y representación legal</li>
+                        </ul>
+                    </SectionCard>
+                    <SectionCard id="fung_52" title="5.2 Profesionales responsables" headingLevel="h3">
                         {_SET_CHILD_52()}
-                        <div className="border p-2 m-2">
-                            <label className="me-2">LEYENDA:</label>
-                            <label className="me-2"><a><Icon name="id-card" size={16} style={{ "color": "DeepSkyBlue" }} /></a> : C.C.,</label>
-                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "DarkOrchid" }} /></a> : Matrícula,</label>
-                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "GoldenRod" }} /></a> : Vigencia Matricular,</label>
-                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "LimeGreen" }} /></a> : Hoja de vida y Certificados</label>
-                            <label className="me-2"><a><Icon name="file-alt" size={16} style={{ "color": "tomato" }} /></a> : Estudios de postgrado</label>
-                        </div>
-                    </fieldset>
-                    <fieldset className="p-3" id="fung_53">
-                        <legend className="my-2 px-3 Collapsible">
-                            <label className="app-p lead text-center fw-normal">5.3 Responsable de la Solicitud</label>
-                        </legend>
+                        <ul className="ew-key" aria-label="Leyenda de documentos">
+                            <li><Icon name="id-card" size={16} style={{ color: DOC_KEY.identity }} aria-hidden="true" /> C.C.</li>
+                            <li><Icon name="file-alt" size={16} style={{ color: DOC_KEY.registration }} aria-hidden="true" /> Matrícula</li>
+                            <li><Icon name="file-alt" size={16} style={{ color: DOC_KEY.validity }} aria-hidden="true" /> Vigencia matricular</li>
+                            <li><Icon name="file-alt" size={16} style={{ color: DOC_KEY.resume }} aria-hidden="true" /> Hoja de vida y certificados</li>
+                            <li><Icon name="file-alt" size={16} style={{ color: DOC_KEY.postgraduate }} aria-hidden="true" /> Estudios de postgrado</li>
+                        </ul>
+                    </SectionCard>
+                    <SectionCard id="fung_53" title="5.3 Responsable de la solicitud" headingLevel="h3">
                         {_SET_CHILD_53()}
-                    </fieldset>
+                    </SectionCard>
 
-                    <fieldset className="p-3" id="fung_c">
-                        <legend className="my-2 px-3 bg-success text-white">
-                            <label className="app-p lead text-center fw-normal">Lista de Checkeo</label>
-                        </legend>
+                    <SectionCard id="fung_c" title="Lista de chequeo">
                         {_SET_CHILD_C()}
                         <FunChecklistWindowSwitcher
                             translation={translation}
@@ -1024,7 +761,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                             requestUpdate={retrieveItem}
                             LegacyChecklistComponent={FUNG_CHECKLIST}
                         />
-                    </fieldset>
+                    </SectionCard>
 
                     <FUN_G_MIX
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1037,6 +774,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         currentItem={currentItem}
                         currentVersion={currentVersion}
                         nomenclature={'9.'}
+                        card
                         noArc={conOA()}
                         noEng={conOA() || rules[1] == 1}
                     />
@@ -1049,17 +787,21 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                     />
 
                     {/* Duplicate project section */}
-                    <fieldset className="p-3">
-                        <div className="text-center mb-3">
+                    <SectionCard
+                        title="Duplicar proyecto"
+                        meta="Crea un expediente nuevo a partir de los datos de este."
+                        actions={
                             <Button
                                 variant="outline"
                                 size="sm"
+                                aria-expanded={showDuplicate}
                                 onClick={() => setShowDuplicate(prev => !prev)}
                             >
                                 <Icon name={showDuplicate ? 'times' : 'copy'} size={16} className="me-2" />
                                 {showDuplicate ? 'Cerrar duplicación' : 'Duplicar proyecto'}
                             </Button>
-                        </div>
+                        }
+                    >
                         {showDuplicate && (
                             <FUN_DUPLICATE
                                 swaMsg={swaMsg}
@@ -1067,7 +809,7 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                                 onDuplicateSuccess={onDuplicateSuccess}
                             />
                         )}
-                    </fieldset>
+                    </SectionCard>
 
                     {/* <FUNG_NAV
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -1089,9 +831,11 @@ function FUNG({ translation, swaMsg, globals, currentVersion, currentId, NAVIGAT
                         NAVIGATION_VERSION={NAVIGATION_VERSION}
                         ON
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    {loadFailed
+                        ? <IllustratedState variant="load-error" onRetry={() => { setLoadFailed(false); retrieveItem(currentId); }} />
+                        : <p className="m-0 py-8 text-center text-sm text-muted-foreground" role="status">Cargando información de la solicitud…</p>}
+                </SectionCard>}
             </div>
         );
 }

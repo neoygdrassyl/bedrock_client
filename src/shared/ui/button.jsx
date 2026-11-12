@@ -33,12 +33,37 @@ const buttonVariants = cva(
   }
 )
 
+// Accessible-name fallback for icon-only buttons (legacy action columns render
+// <Button><Icon name="edit" /></Button> with no text). Only applies when the single
+// child is an icon with a known name and the caller gave no aria-label / title.
+const ICON_ONLY_LABELS = {
+  edit: "Editar", pencil: "Editar", pen: "Editar", Pencil: "Editar",
+  "trash-alt": "Eliminar", trash: "Eliminar", Trash2: "Eliminar",
+  search: "Consultar", eye: "Ver", Eye: "Ver",
+  download: "Descargar", "cloud-download-alt": "Descargar", Download: "Descargar",
+  plus: "Añadir", "plus-circle": "Añadir", Plus: "Añadir",
+  times: "Cerrar", "times-circle": "Cerrar", X: "Cerrar",
+  MoreHorizontal: "Más acciones", MoreVertical: "Más acciones",
+  "chevron-left": "Anterior", "chevron-right": "Siguiente",
+}
+
+function getIconOnlyLabel(children) {
+  const items = React.Children.toArray(children)
+  if (items.length !== 1 || !React.isValidElement(items[0])) return undefined
+  const iconName = items[0].props?.name
+  return typeof iconName === "string" ? ICON_ONLY_LABELS[iconName] : undefined
+}
+
 const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "button"
+  const hasAccessibleName = props["aria-label"] || props["aria-labelledby"] || props.title
+  const iconOnlyLabel = asChild || hasAccessibleName ? undefined : getIconOnlyLabel(props.children)
   return (
     <Comp
       className={cn(buttonVariants({ variant, size, className }))}
       ref={ref}
+      aria-label={iconOnlyLabel}
+      title={iconOnlyLabel}
       {...props} />
   );
 })

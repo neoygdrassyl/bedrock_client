@@ -8,35 +8,41 @@ import USER_SERVICE from '../../../../../shared/api/users.service'
 import { Icon } from '@/shared/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
+// Display only: ISO dates read dd/mm/yyyy like the rest of the Tiempos module.
+const formatEventDate = (value) => {
+    const match = typeof value === 'string' ? value.match(/^(\d{4})-(\d{2})-(\d{2})/) : null;
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : (value || '');
+};
+
 export default function FUN_CLOCK_EVENTS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;
 
     const search = ['date_start', 'desc', 'name'];
     const columns = [
         {
-            name: 'DE:',
+            name: 'De',
             selector: row => row.name.split(';')[0],
             maxWidth: '150px',
             cell: row => <h6 className='fw-normal'>{(row.name.split(';')[0])}</h6>
         },
         {
-            name: 'PARA:',
+            name: 'Para',
             selector: row => row.name.split(';')[1],
             maxWidth: '150px',
             cell: row => <h6 className='fw-normal'>{(row.name.split(';')[1])}</h6>
         },
         {
-            name: 'FECHA',
+            name: 'Fecha',
             selector: row => row.date_start,
-            maxWidth: '90px',
-            cell: row => <h6 className='fw-normal'>{(row.date_start)}</h6>
+            maxWidth: '110px',
+            cell: row => <span className="font-mono tabular-nums">{formatEventDate(row.date_start)}</span>
         },
         {
-            name: 'EVENTO',
+            name: 'Evento',
             cell: row => <h6 className='fw-normal'>{(row.desc)}</h6>
         },
         {
-            name: 'ACCIÓN',
+            name: 'Acción',
             maxWidth: '90px',
             omit: !(window.user.roleId == 1 || window.user.roleId == 3 || window.user.roleId == 2),
             cell: row => <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => deleteEvent(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
@@ -169,7 +175,7 @@ export default function FUN_CLOCK_EVENTS(props) {
             })
             .catch(e => {
                 console.log(e);
-                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, intentelo nuevamente." });
+                swalError({ title: "ERROR AL CARGAR", text: "No ha sido posible cargar este item, inténtelo nuevamente." });
             });
     }
 
@@ -220,7 +226,7 @@ export default function FUN_CLOCK_EVENTS(props) {
         }).then(SweetAlertResult => {
             if (SweetAlertResult.isConfirmed) {
                 if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-                FUN_SERVICE.delete_clock(id)
+                FUN_SERVICE.delete_clock(id, currentItem.id)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });

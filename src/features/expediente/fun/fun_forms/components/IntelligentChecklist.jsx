@@ -83,7 +83,7 @@ function FragmentSection({ section, readOnly, onEvaluationChange, onManage }) {
   return (
     <>
       <tr className="border-t border-border bg-muted/40">
-        <td colSpan={4} className="px-3 py-2 text-sm font-bold uppercase tracking-wide text-foreground">
+        <td colSpan={4} className="px-3 py-2 text-sm font-semibold text-foreground">
           {section.title}
         </td>
       </tr>

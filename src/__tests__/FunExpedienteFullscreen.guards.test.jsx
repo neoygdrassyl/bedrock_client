@@ -1,6 +1,6 @@
 import React, { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const { getSummaryByIdPublicMock, getLegalGuideByPhaseMock } = vi.hoisted(() => ({
@@ -42,8 +42,14 @@ vi.mock('@/shared/ui/dropdown-menu', () => ({
   DropdownMenuContent: ({ children }) => <div>{children}</div>,
   DropdownMenuLabel: ({ children }) => <div>{children}</div>,
   DropdownMenuSeparator: () => <hr />,
-  DropdownMenuCheckboxItem: ({ checked, onCheckedChange, children, ...props }) => (
-    <button type="button" aria-pressed={checked} onClick={() => onCheckedChange?.(!checked)} {...props}>
+  // Menus are rendered open so their items can be reached without driving the popover.
+  DropdownMenuItem: ({ onSelect, disabled, children }) => (
+    <button type="button" role="menuitem" disabled={disabled} onClick={() => onSelect?.()}>
+      {children}
+    </button>
+  ),
+  DropdownMenuCheckboxItem: ({ checked, onCheckedChange, disabled, children, className: _className, ...props }) => (
+    <button type="button" role="menuitemcheckbox" aria-checked={Boolean(checked)} disabled={disabled} onClick={() => onCheckedChange?.(!checked)} {...props}>
       {children}
     </button>
   ),
@@ -113,6 +119,7 @@ vi.mock('../features/expediente/records/records_binnacles.component', () => ({
 }));
 
 import { FunExpedienteFullscreen } from '../features/expediente/fun/fun_forms/components/FunExpedienteFullscreen';
+import { __resetDockStoreForTests, addToDock, getDockSnapshot } from '../features/expediente/dock/expedienteDockStore';
 
 const expediente = {
   id: 123,
@@ -147,9 +154,11 @@ describe('FunExpedienteFullscreen runtime guards', () => {
       </StrictMode>
     );
 
+    // The workspace is a landmark of the page (it lives inside the app shell), not a modal dialog.
     await waitFor(() => {
-      expect(screen.getByRole('dialog', { name: /detalle del expediente/i })).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: /detalle del expediente/i })).toBeInTheDocument();
     });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     expect(getSummaryByIdPublicMock).not.toHaveBeenCalled();
   });
@@ -203,13 +212,10 @@ describe('FunExpedienteFullscreen runtime guards', () => {
     expect(screen.getByTestId('module-law')).toHaveAttribute('data-hide-inline-binnacles', 'true');
     expect(screen.queryAllByTestId('records-binnacle-inline')).toHaveLength(0);
     const panel = screen.getByRole('complementary', { name: /bitácoras profesionales/i });
-    const toolbar = panel.firstElementChild;
-    const toggle = screen.getByRole('button', { name: /ocultar panel de bitácoras/i });
-    expect(panel).toHaveClass('w-[26rem]', 'max-w-[38vw]');
-    expect(toolbar).toHaveClass('h-14');
-    expect(toolbar).toContainElement(toggle);
-    expect(toggle).toHaveClass('static');
-    expect(toggle).not.toHaveClass('absolute', '-left-4', 'left-2', 'top-3');
+    const toggle = screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' });
+    // The single panel toggle lives in the "Más" menu of the workspace, not inside the panel.
+    expect(panel).not.toContainElement(toggle);
+    expect(toggle).toBeChecked();
 
     expect(screen.queryByText(/Estado y términos/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Bitácora operativa/i)).not.toBeInTheDocument();
@@ -236,10 +242,8 @@ describe('FunExpedienteFullscreen runtime guards', () => {
     });
 
     expect(screen.queryAllByTestId('records-binnacle')).toHaveLength(0);
-    expect(screen.getByRole('button', { name: /mostrar panel de bitácoras/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /ocultar panel de bitácoras/i })).not.toBeInTheDocument();
-    expect(screen.getByTestId('icon-ChevronLeft')).toBeInTheDocument();
-    expect(screen.queryByTestId('icon-ChevronRight')).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' })).not.toBeChecked();
+    expect(screen.queryByRole('complementary', { name: /bitácoras profesionales/i })).not.toBeInTheDocument();
   });
 
   it('abre el panel lateral al navegar desde un modulo cerrado hacia Inf. Jur', async () => {
@@ -269,8 +273,85 @@ describe('FunExpedienteFullscreen runtime guards', () => {
       expect(screen.getAllByTestId('records-binnacle')).toHaveLength(3);
     });
 
-    expect(screen.getByRole('button', { name: /ocultar panel de bitácoras/i })).toBeInTheDocument();
-    expect(screen.getByTestId('icon-ChevronRight')).toBeInTheDocument();
-    expect(screen.queryByTestId('icon-ChevronLeft')).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' })).toBeChecked();
+    expect(screen.getByRole('complementary', { name: /bitácoras profesionales/i })).toBeInTheDocument();
+  });
+
+  it('reports section changes so the route can sync the URL', async () => {
+    const user = userEvent.setup();
+    const onSectionChange = vi.fn();
+    render(
+      <FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} onSectionChange={onSectionChange} />
+    );
+
+    expect(onSectionChange).toHaveBeenLastCalledWith('detalles');
+    await user.click(screen.getByRole('button', { name: 'Tiempos' }));
+    expect(onSectionChange).toHaveBeenLastCalledWith('tiempos');
+    // The module area is the landmark named after the active module (there is no page heading).
+    expect(await screen.findByTestId('module-tiempos')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Tiempos' })).toContainElement(screen.getByTestId('module-tiempos'));
+    expect(screen.getByRole('button', { name: 'Tiempos' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('minimiza el expediente a una ventana del dock y cierra el workspace', async () => {
+    const user = userEvent.setup();
+    window.localStorage.clear();
+    __resetDockStoreForTests();
+    const onClose = vi.fn();
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={onClose} />);
+
+    expect(getDockSnapshot().activeWorkspace).toBe('2026-00123');
+    await user.click(within(screen.getByRole('group', { name: 'Ventana del expediente' })).getByRole('button', { name: 'Minimizar' }));
+
+    expect(getDockSnapshot().items).toEqual([expect.objectContaining({ radicado: '2026-00123', open: true })]);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('cierra el workspace desde el control Cerrar de la ventana', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={onClose} />);
+
+    const windowControls = screen.getByRole('group', { name: 'Ventana del expediente' });
+    expect(within(windowControls).getByRole('button', { name: /expedientes abiertos/i })).toBeInTheDocument();
+    await user.click(within(windowControls).getByRole('button', { name: 'Cerrar' }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('oculta y vuelve a mostrar las bitácoras desde Panel de bitácoras', async () => {
+    const user = userEvent.setup();
+    render(
+      <FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} initialSection="juridico" />
+    );
+
+    const toggle = screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' });
+    await waitFor(() => expect(screen.getAllByTestId('records-binnacle')).toHaveLength(3));
+    // The module is lazy: wait for it before toggling the panel.
+    expect(await screen.findByTestId('module-law')).toBeInTheDocument();
+    expect(toggle).toBeChecked();
+
+    await user.click(toggle);
+
+    expect(screen.queryByRole('complementary', { name: /bitácoras profesionales/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' })).not.toBeChecked();
+    // The module stays mounted while the panel is hidden.
+    expect(screen.getByTestId('module-law')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('menuitemcheckbox', { name: 'Panel de bitácoras' }));
+
+    expect(screen.getByRole('complementary', { name: /bitácoras profesionales/i })).toBeInTheDocument();
+  });
+
+  it('minimiza la ventana rápida del mismo expediente al abrir el workspace', () => {
+    window.localStorage.clear();
+    __resetDockStoreForTests();
+    addToDock('2026-00123', { open: true });
+
+    const { unmount } = render(<FunExpedienteFullscreen expediente={expediente} translation={{}} globals={{}} swaMsg={{}} onClose={vi.fn()} />);
+    expect(getDockSnapshot().items[0].open).toBe(false);
+
+    unmount();
+    expect(getDockSnapshot().activeWorkspace).toBeNull();
   });
 });

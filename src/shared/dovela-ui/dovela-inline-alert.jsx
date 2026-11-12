@@ -36,7 +36,7 @@ export function DovelaInlineAlert({
       data-dovela-ui="inline-alert"
       data-tone={tone}
       className={cn(
-        'flex items-start justify-between gap-[var(--alert-gap)] rounded-[var(--alert-radius)] border px-[var(--alert-padding-x)] py-[var(--alert-padding-y)] text-sm leading-5 shadow-[var(--alert-shadow)]',
+        'flex items-start justify-between gap-[var(--alert-gap)] rounded-[var(--alert-radius)] border px-[var(--alert-padding-x)] py-[var(--alert-padding-y)] text-sm leading-5 shadow-[shadow:var(--alert-shadow)]',
         TONE_CLASSES[tone] || TONE_CLASSES.info,
         className
       )}

@@ -1,11 +1,18 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import dayjs from 'dayjs';
 
 import { useClocksManager, useScheduleConfig } from './hooks/useClocksManager';
 import { generateClocks } from './config/clocks.definitions';
-import { ClockRow, ClockTableHeader, DEFAULT_CLOCK_COLUMN_VISIBILITY, getClockTableWidth } from './components/ClockRow';
-import { SidebarInfo } from './components/SidebarInfo';
+import { ClockRow, ClockTableHeader, DEFAULT_CLOCK_COLUMN_VISIBILITY, formatClockDate, getClockColumnCount, getClockGridTemplate, getClockTableWidth } from './components/ClockRow';
+import { buildClockGroups, diffVisibleClockRows, filterClocksAfterDesist, flattenClockRows } from './utils/clockRows';
+import { Collapse, DisclosureCard } from './components/Disclosure';
+import { NotificationRouteControl, describeRouteSaved } from './components/NotificationRouteControl';
+import { PendingChecklist } from './components/PendingChecklist';
+import { getFinishedPendingStatus } from '../workspace/expedientePendingStatus';
+import { logError } from '@/shared/observability/logger';
+import { SidebarInfo, openDaysBreakdownModal, openPhaseDetailModal } from './components/SidebarInfo';
+import { TermStrip } from './components/TermStrip';
 import { HolidayCalendar } from './components/HolidayCalendar';
 import { ControlBar } from './components/ControlBar';
 import { ScheduleModal } from './components/ScheduleModal';
@@ -15,7 +22,8 @@ import { useAlarms } from './hooks/useAlarms';
 import { calcularDiasHabiles, sumarDiasHabiles } from './hooks/useClocksManager';
 import { getIconSvg } from '../../../shared/utils/iconSvgString';
 import { buildSchedulePayload, calculateLegalLimit } from './utils/scheduleUtils';
-import { GanttModal } from './components/gantt/GanttModal';
+import { GanttLegend, GanttModal } from './components/gantt/GanttModal';
+import { GanttChart, useGanttSeries } from './components/gantt/GanttChart';
 
 import FUN_SERVICE from '../api/fun.service';
 
@@ -24,12 +32,29 @@ import './gantt.css';
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 import { getLicenseCompletionClock } from '../documental/shared/processClosure.helpers';
 
 import { swalLoading, swalSuccess, swalError, swalConfirm, swalClose, swalFormDialog, Swal } from '../../../shared/utils/swalAdapter';
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
 const getClockEditKey = (value, rowIndex) => `${String(value?.state ?? 'none')}::${String(value?.version ?? 'base')}::${rowIndex}`;
+
+// Groups that carry the notification route of an act (stored in the `phase_options` clock, state 1001).
+const ROUTE_GROUPS = {
+  'Estudio y Observaciones': { phaseKey: 'phase_estudio', actLabel: 'acta de observaciones' },
+  'Revisión y Viabilidad': { phaseKey: 'phase_correcciones', actLabel: 'acto de viabilidad' },
+};
+const DEFAULT_ROUTE = { notificationType: 'notificar', byAviso: false };
+
+// View state of the module per expediente (collapsed groups, optional columns, open cards,
+// table scroll). It outlives the component: switching tabs unmounts the events table.
+const viewStateByExpediente = new Map();
+const readViewState = (expedienteId) => viewStateByExpediente.get(expedienteId) || {};
+const writeViewState = (expedienteId, patch) => {
+  if (expedienteId === undefined || expedienteId === null) return;
+  viewStateByExpediente.set(expedienteId, { ...readViewState(expedienteId), ...patch });
+};
 
 const OPTIONAL_CLOCK_COLUMNS = [
   { key: 'nextStep', label: 'Siguiente paso' },
@@ -39,9 +64,9 @@ const OPTIONAL_CLOCK_COLUMNS = [
 
 export default function EXP_CLOCKS(props) {
   const { swaMsg, currentItem, currentVersion, outCodes } = props;
-  const [clocksData, setClocksData] = useState([]);
+  // Seeded from the item so the table is complete on the first render (the effect below keeps it in sync).
+  const [clocksData, setClocksData] = useState(() => currentItem?.fun_clocks || []);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [sidebarHeight, setSidebarHeight] = useState('auto');
 
   const [showTimeTravel, setShowTimeTravel] = useState(false);
   const [showAlarms, setShowAlarms] = useState(false); // Cerrado por defecto; se abre desde el botón flotante.
@@ -50,18 +75,86 @@ export default function EXP_CLOCKS(props) {
   const [systemDate, setSystemDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   // Estado para secciones colapsables (Acordeón)
-  const [collapsedSections, setCollapsedSections] = useState({});
+  const expedienteId = currentItem?.id;
+  const [collapsedSections, setCollapsedSections] = useState(() => readViewState(expedienteId).collapsed || {});
 
   // ID fase activa para el resaltado
   const [activePhaseId, setActivePhaseId] = useState(null);
   const [showGanttModal, setShowGanttModal] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState(() => ({ ...DEFAULT_CLOCK_COLUMN_VISIBILITY }));
+  const [ganttOpen, setGanttOpen] = useState(() => readViewState(expedienteId).ganttOpen ?? true);
+  const [closureOpen, setClosureOpen] = useState(() => readViewState(expedienteId).closureOpen ?? true);
+  const [visibleColumns, setVisibleColumns] = useState(() => ({ ...DEFAULT_CLOCK_COLUMN_VISIBILITY, ...readViewState(expedienteId).visibleColumns }));
+  // Notification route: one save at a time (both phases live in the same stored clock).
+  const [routeSave, setRouteSave] = useState({ phaseKey: null, busy: false, feedback: null });
+  const [routeConfirm, setRouteConfirm] = useState(null);
+  const routeSavingRef = useRef(false);
+  const dateSavesInFlightRef = useRef(new Map());
+  const [flashedRow, setFlashedRow] = useState(null);
+  const flashTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    writeViewState(expedienteId, { collapsed: collapsedSections, ganttOpen, closureOpen, visibleColumns });
+  }, [expedienteId, collapsedSections, ganttOpen, closureOpen, visibleColumns]);
   const [pendingDateEdits, setPendingDateEdits] = useState({});
   const [isSavingPendingDates, setIsSavingPendingDates] = useState(false);
   const [archiveDate, setArchiveDate] = useState('');
 
-  const sidebarRef = useRef(null);
-  
+
+  // Events table + side panel fill the screen height left below the term strip, down to
+  // the footer status bar: `--tc-fit-h` on the layout (CSS decides where it applies).
+  // Measured, not guessed: the shell header, the module tabs and the strip vary in height
+  // (summary card, binnacle panel, fullscreen). Recomputed on resize of the scroll box, of
+  // its content and of the module; written to the DOM directly, no React render.
+  const layoutRef = useRef(null);
+  // How many pending records the panel lists before "Ver todos": what fits beside the
+  // stepper and the phase detail at this height. Changes only when crossing a step.
+  const [pendingRows, setPendingRows] = useState(2);
+  useLayoutEffect(() => {
+    const layout = layoutRef.current;
+    if (!layout) return undefined;
+    const isScrollable = (el) => /(auto|scroll)/.test(getComputedStyle(el).overflowY);
+    let viewport = layout.parentElement;
+    while (viewport && viewport !== document.body && !isScrollable(viewport)) viewport = viewport.parentElement;
+    const useWindow = !viewport || viewport === document.body;
+    let frame = 0;
+    let timer = 0;
+    const measure = () => {
+      if (frame) cancelAnimationFrame(frame);
+      if (timer) clearTimeout(timer);
+      frame = 0;
+      timer = 0;
+      const layoutRect = layout.getBoundingClientRect();
+      const viewTop = useWindow ? 0 : viewport.getBoundingClientRect().top;
+      const viewHeight = useWindow ? window.innerHeight : viewport.clientHeight;
+      const scrollTop = useWindow ? window.scrollY : viewport.scrollTop;
+      const offsetInContent = layoutRect.top - viewTop + scrollTop;
+      const fit = Math.max(420, Math.floor(viewHeight - offsetInContent - 12));
+      const next = `${fit}px`;
+      if (layout.style.getPropertyValue('--tc-fit-h') !== next) layout.style.setProperty('--tc-fit-h', next);
+      setPendingRows(fit >= 820 ? 3 : fit >= 600 ? 2 : 1);
+    };
+    // Next frame, with a timer behind it: frames do not run while the tab is occluded.
+    const schedule = () => {
+      if (frame || timer) return;
+      frame = requestAnimationFrame(measure);
+      timer = setTimeout(measure, 150);
+    };
+    measure();
+    const ro = new ResizeObserver(schedule);
+    if (!useWindow) {
+      ro.observe(viewport);
+      if (viewport.firstElementChild) ro.observe(viewport.firstElementChild);
+    }
+    ro.observe(layout.parentElement);
+    window.addEventListener('resize', schedule);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      if (timer) clearTimeout(timer);
+      ro.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, []);
+
   // --- NUEVO: Refs para sincronización de scroll ---
   const tableScrollRef = useRef(null);
   const topScrollRef = useRef(null);
@@ -150,6 +243,20 @@ export default function EXP_CLOCKS(props) {
   }, []);
 
 
+  // The table scroll survives a tab switch (the table unmounts) like the collapsed groups do.
+  useLayoutEffect(() => {
+    const tableEl = tableScrollRef.current;
+    if (!tableEl) return undefined;
+    const saved = readViewState(expedienteId).scroll;
+    if (saved) {
+      tableEl.scrollTop = saved.top;
+      tableEl.scrollLeft = saved.left;
+    }
+    // Stored on the way out, not on every scroll event: the browser reports a scroll of
+    // its own when the table is laid out again.
+    return () => writeViewState(expedienteId, { scroll: { top: tableEl.scrollTop, left: tableEl.scrollLeft } });
+  }, [expedienteId]);
+
   // SOLUCIÓN: useEffect mejorado para sincronizar estado desde las props.
   // Esta es ahora la principal fuente de verdad para clocksData.
   useEffect(() => {
@@ -173,7 +280,27 @@ export default function EXP_CLOCKS(props) {
     }
   }, [clocksData]);
 
-  const manager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
+  const liveManager = useClocksManager(currentItem, clocksData, currentVersion, systemDate, phaseOptions);
+  // The hook returns a new object (and new helper closures) on every render. Its helpers
+  // only read `clocksData` / `currentItem`, so while every data field below is unchanged
+  // an earlier object is equivalent: keeping it lets the clock list, the alarms and the
+  // memoized rows skip unrelated renders (dialogs, polls, layout). No value is recomputed.
+  const manager = useMemo(() => liveManager, [
+    liveManager.clocksData,
+    liveManager.systemDate,
+    liveManager.currentItem,
+    liveManager.phaseOptions,
+    liveManager.processPhases,
+    liveManager.curaduriaDetails,
+    liveManager.suspensionPreActa,
+    liveManager.suspensionPostActa,
+    liveManager.extension,
+    liveManager.totalSuspensionDays,
+    liveManager.viaTime,
+    liveManager.canAddSuspension,
+    liveManager.canAddExtension,
+    liveManager.availableSuspensionTypes,
+  ]);
   const completionClock = useMemo(
     () => getLicenseCompletionClock({ ...currentItem, fun_clocks: clocksData }),
     [currentItem, clocksData]
@@ -182,13 +309,13 @@ export default function EXP_CLOCKS(props) {
   const conGI = _GLOBAL_ID === 'cb1';
   const namePayment = conGI ? 'Impuestos Municipales' : 'Impuesto Delineacion';
 
-  const clocksToShowRaw = generateClocks({
+  const clocksToShowRaw = useMemo(() => generateClocks({
     ...manager,
     currentItem,
     namePayment,
     conGI,
     phaseOptions
-  });
+  }), [manager, currentItem, namePayment, conGI, phaseOptions]);
 
   // CAMBIO: Usamos el nuevo formato de retorno del hook
   const { notificationAlarms, processAlarms, allAlarms } = useAlarms(
@@ -197,23 +324,6 @@ export default function EXP_CLOCKS(props) {
     clocksToShowRaw, 
     systemDate
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (sidebarRef.current) {
-        setSidebarHeight(sidebarRef.current.offsetHeight - 44);
-      }
-    };
-
-    handleResize();
-    const timer = setTimeout(handleResize, 200);
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [clocksData, manager.canAddExtension, manager.canAddSuspension, systemDate, allAlarms]);
 
   // Estado para rastrear eliminaciones recientes y evitar re-sincronización inmediata
   const [recentDeletions, setRecentDeletions] = useState(new Set());
@@ -321,44 +431,17 @@ export default function EXP_CLOCKS(props) {
     setArchiveDate(getClock(101)?.date_start || '');
   }, [currentItem?.id, clocksData]);
 
-  const filterAfterDesist = (items) => {
-    if (!manager.isDesisted) return items;
-
-    let skip = false;
-    let inDesistBlock = false;
-    const res = [];
-
-    items.forEach((item) => {
-      const titleUpper = (item.title || '').toUpperCase();
-
-      if (titleUpper.includes('EJECUTORIA')) {
-        skip = false;
-        inDesistBlock = false;
-        res.push(item);
-        return;
-      }
-
-      if (titleUpper.includes('DESIST')) {
-        skip = false;
-        inDesistBlock = true;
-        res.push(item);
-        return;
-      }
-
-      if (item.title && !titleUpper.includes('DESIST')) {
-        if (inDesistBlock) {
-          skip = true;
-          inDesistBlock = false;
-        }
-      }
-
-      if (!skip) res.push(item);
-    });
-
-    return res;
-  };
-
-  const clocksToShow = filterAfterDesist(clocksToShowRaw);
+  const clocksToShow = useMemo(() => filterClocksAfterDesist(clocksToShowRaw, manager.isDesisted), [clocksToShowRaw, manager.isDesisted]);
+  // The definitions as the table lays them out (groups and their rows), and from them the
+  // presentation status "process finished with pending records".
+  const clockGroups = useMemo(() => buildClockGroups(clocksToShow, manager), [clocksToShow, manager]);
+  const eventRows = useMemo(() => flattenClockRows(clockGroups), [clockGroups]);
+  const pendingStatus = useMemo(() => getFinishedPendingStatus({
+    expedienteState: currentItem?.state,
+    processPhases: manager.processPhases,
+    isDesisted: manager.isDesisted,
+    eventRows,
+  }), [currentItem?.state, manager.processPhases, manager.isDesisted, eventRows]);
 
   const toggleSection = (title) => {
     setCollapsedSections(prev => ({
@@ -366,6 +449,33 @@ export default function EXP_CLOCKS(props) {
       [title]: !prev[title]
     }));
   };
+
+  const groupTitles = useMemo(() => clockGroups.map((group) => group.title), [clockGroups]);
+  const anyGroupExpanded = groupTitles.some((title) => !collapsedSections[title]);
+  const toggleAllSections = () => {
+    setCollapsedSections(anyGroupExpanded ? Object.fromEntries(groupTitles.map((title) => [title, true])) : {});
+  };
+
+  // "Ir al evento": opens the group of the row, brings the row into view and marks it briefly.
+  const goToEvent = useCallback((item) => {
+    if (!item) return;
+    if (item.groupTitle) setCollapsedSections((prev) => (prev[item.groupTitle] ? { ...prev, [item.groupTitle]: false } : prev));
+    setFlashedRow(item.index);
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    flashTimeoutRef.current = setTimeout(() => setFlashedRow(null), 2400);
+    // After the group has been laid out open.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const row = document.getElementById(`tc-row-${item.index}`);
+      if (!row) return;
+      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      row.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+      (row.querySelector('input[type="date"]') || row.querySelector('button'))?.focus({ preventScroll: true });
+    }));
+  }, []);
+
+  useEffect(() => () => {
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+  }, []);
   
   const applyLocalClockChange = (state, changes, version) => {
     setClocksData(prev => {
@@ -387,27 +497,92 @@ export default function EXP_CLOCKS(props) {
   };
 
   // SOLUCIÓN: save_clock ahora puede recibir valor explícito desde el botón global o leer el DOM en blur.
-  const save_clock = (value, i, dateOverride) => {
+  const save_clock = (value, i, dateOverride, { triggerUpdate = true } = {}) => {
     if (value.state === false || value.state == null) return Promise.resolve(false);
-    
+
     const dateInput = document.getElementById("clock_exp_date_" + i);
     const dateVal = dateOverride !== undefined
       ? String(dateOverride || '').trim()
       : dateInput ? String(dateInput.value || '').trim() : '';
-    
+
     // Obtener el valor actual del clock para comparar
     const currentClock = value.version !== undefined
       ? getClockVersion(value.state, value.version)
       : getClock(value.state);
     const currentDate = currentClock?.date_start ?? '';
-    
+
+    // One save per event at a time. Until the first answer arrives the row still holds its
+    // old date, so the reference for "no change" is the latest saved/queued date of this
+    // event, not the stored one (a revert to the stored date while a save is pending must
+    // still be sent). A different date is queued behind the pending save (only the latest
+    // queued value is kept) so two dates never reach the backend out of order and an event
+    // with no stored clock is never created twice.
+    const saveKey = `${value.state}::${value.version ?? ''}`;
+    const inFlight = dateSavesInFlightRef.current.get(saveKey);
+    const referenceDate = inFlight ? inFlight.latestDate : currentDate;
+
     // SOLUCIÓN: Solo guardar si hay un cambio real en la fecha
-    if (dateVal === currentDate) {
+    if (dateVal === referenceDate) {
+      if (inFlight) return inFlight.promise;
       console.log('⏭️ save_clock: Sin cambios, omitiendo guardado');
       clearPendingDateEdit(value, i);
       return Promise.resolve(false);
     }
-    
+
+    if (inFlight) {
+      inFlight.latestDate = dateVal;
+      inFlight.queuedDate = dateVal;
+      inFlight.triggerUpdate = inFlight.triggerUpdate || triggerUpdate;
+      return inFlight.promise;
+    }
+
+    const entry = { latestDate: dateVal, queuedDate: undefined, triggerUpdate, promise: null };
+    const runSaves = async () => {
+      let child = currentClock?.id ? currentClock : null;
+      let saved = await manage_clock(false, value.state, value.version, buildClockFormData(value, dateVal), triggerUpdate, child);
+      while (saved && entry.queuedDate !== undefined) {
+        const nextDate = entry.queuedDate;
+        entry.queuedDate = undefined;
+        // The first save created the clock: the follow-up must update it, never create again.
+        if (!child) child = await findStoredClock(value.state, value.version);
+        if (!child) {
+          saved = false;
+          break;
+        }
+        saved = await manage_clock(false, value.state, value.version, buildClockFormData(value, nextDate), entry.triggerUpdate, child);
+      }
+      return saved;
+    };
+
+    const promise = runSaves()
+      .then((saved) => {
+        if (saved) clearPendingDateEdit(value, i);
+        return saved;
+      })
+      .finally(() => {
+        if (dateSavesInFlightRef.current.get(saveKey) === entry) dateSavesInFlightRef.current.delete(saveKey);
+      });
+    entry.promise = promise;
+    dateSavesInFlightRef.current.set(saveKey, entry);
+    return promise;
+  };
+
+  // Stored clock of an event, read back after its creation (the create answer carries no id).
+  const findStoredClock = async (state, version) => {
+    try {
+      const response = await FUN_SERVICE.get(currentItem.id);
+      const clocks = response?.data?.fun_clocks || [];
+      return clocks
+        .filter((clock) => clock?.id && String(clock.state) === String(state)
+          && (version === undefined || String(clock.version) === String(version)))
+        .reduce((latest, clock) => (!latest || Number(clock.id) > Number(latest.id) ? clock : latest), null);
+    } catch (error) {
+      console.error('Error leyendo el reloj recién creado:', error);
+      return null;
+    }
+  };
+
+  const buildClockFormData = (value, dateVal) => {
     var formDataClock = new FormData();
 
     if (dateVal) formDataClock.set('date_start', dateVal);
@@ -445,16 +620,12 @@ export default function EXP_CLOCKS(props) {
 
     formDataClock.set('desc', descBase);
     formDataClock.set('name', value.name);
-    
-    return manage_clock(false, value.state, value.version, formDataClock, true)
-      .then((saved) => {
-        if (saved) clearPendingDateEdit(value, i);
-        return saved;
-      });
+    return formDataClock;
   };
 
-  const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false) => {
-    var _CHILD = getClockVersion(findOne, version) || getClock(findOne);
+  // `child` (optional) is the stored clock to update, for callers that already know it.
+  const manage_clock = (useMySwal, findOne, version, formDataClock, triggerUpdate = false, child) => {
+    var _CHILD = child?.id ? child : (getClockVersion(findOne, version) || getClock(findOne));
     formDataClock.set('fun0Id', currentItem.id);
 
     if (useMySwal) swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
@@ -561,51 +732,77 @@ export default function EXP_CLOCKS(props) {
 
   const renderProcessClosurePanel = () => {
     const processState = Number(currentItem?.state || 0);
-    const canCloseProcess = Boolean(completionClock.dateStart) && processState < 100;
-    const canArchiveProcess = Boolean(completionClock.dateStart) && processState === 100;
+    const hasCompletion = Boolean(completionClock.dateStart);
+    const canCloseProcess = hasCompletion && processState < 100;
+    const canArchiveProcess = hasCompletion && processState === 100;
     const isArchivedProcess = processState === 101;
+    const dangerOutline = 'border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive';
 
-    if (!completionClock.dateStart && !isArchivedProcess) return null;
+    let statusText;
+    if (isArchivedProcess) statusText = 'La solicitud ya se encuentra archivada.';
+    else if (hasCompletion) statusText = null;
+    else statusText = 'Sin datos de cierre: aún no se registra la fecha que finaliza el trámite, por eso no es posible cerrarlo ni archivarlo.';
+
+    const closureSummary = isArchivedProcess
+      ? 'Solicitud archivada'
+      : hasCompletion
+        ? (processState >= 100 ? 'Proceso finalizado' : 'Listo para finalizar')
+        : 'Sin datos de cierre';
 
     return (
-      <div className="border-t border-border bg-muted/30 px-4 py-3">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">Cierre y archivo</p>
-            <p className="text-xs text-muted-foreground">
-              {isArchivedProcess
-                ? 'La solicitud ya se encuentra archivada.'
-                : `${completionClock.label}: ${completionClock.dateStart}`}
+      <DisclosureCard
+        title="Cierre y archivo"
+        summary={closureSummary}
+        open={closureOpen}
+        onOpenChange={setClosureOpen}
+        headingId="tc-closure-title"
+      >
+        <div className="flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0 space-y-1">
+            <p className="m-0 text-xs text-muted-foreground">
+              {statusText ?? (
+                <>
+                  {completionClock.label}: <span className="font-mono text-foreground">{formatClockDate(completionClock.dateStart)}</span>
+                </>
+              )}
             </p>
+            {isArchivedProcess && archiveDate ? (
+              <p className="m-0 text-xs text-muted-foreground">
+                Fecha de archivo: <span className="font-mono text-foreground">{formatClockDate(archiveDate)}</span>
+              </p>
+            ) : null}
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            {canCloseProcess && (
-              <Button type="button" variant="destructive" size="sm" onClick={closeProcess}>
-                <Icon name="unlock-alt" size={16} />
-                Finalizar proceso
-              </Button>
-            )}
-
-            {canArchiveProcess && (
-              <>
-                <input
-                  type="date"
-                  className="form-control h-9 min-w-[170px] text-sm"
-                  max="2100-01-01"
-                  value={archiveDate}
-                  onChange={(event) => setArchiveDate(event.target.value)}
-                  aria-label="Fecha de archivación"
-                />
-                <Button type="button" size="sm" onClick={archiveProcess}>
-                  <Icon name="file-archive" size={16} />
-                  Archivar solicitud
+          {canCloseProcess || canArchiveProcess ? (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {canCloseProcess && (
+                <Button type="button" variant="outline" size="sm" className={dangerOutline} onClick={closeProcess}>
+                  <Icon name="unlock-alt" size={16} />
+                  Finalizar proceso
                 </Button>
-              </>
-            )}
-          </div>
+              )}
+
+              {canArchiveProcess && (
+                <>
+                  <label htmlFor="tc-archive-date" className="m-0 whitespace-nowrap text-xs font-medium text-muted-foreground">Fecha de archivación</label>
+                  <input
+                    id="tc-archive-date"
+                    type="date"
+                    className="form-control h-9 min-w-[170px] font-mono text-sm"
+                    max="2100-01-01"
+                    value={archiveDate}
+                    onChange={(event) => setArchiveDate(event.target.value)}
+                  />
+                  <Button type="button" variant="outline" size="sm" className={dangerOutline} onClick={archiveProcess}>
+                    <Icon name="file-archive" size={16} />
+                    Archivar solicitud
+                  </Button>
+                </>
+              )}
+            </div>
+          ) : null}
         </div>
-      </div>
+      </DisclosureCard>
     );
   };
 
@@ -616,11 +813,13 @@ export default function EXP_CLOCKS(props) {
     setIsSavingPendingDates(true);
     try {
       const results = await Promise.all(
-        pendingChanges.map((change) => save_clock(change.value, change.rowIndex, change.dateValue))
+        pendingChanges.map((change) => save_clock(change.value, change.rowIndex, change.dateValue, { triggerUpdate: false }))
       );
       const savedCount = results.filter(Boolean).length;
 
       if (savedCount > 0) {
+        // One reload for the whole batch instead of one per saved date.
+        props.requestUpdate(currentItem.id);
         swalSuccess({
           title: 'Cambios guardados',
           text: `${savedCount} fecha${savedCount !== 1 ? 's' : ''} sincronizada${savedCount !== 1 ? 's' : ''}.`,
@@ -697,6 +896,14 @@ export default function EXP_CLOCKS(props) {
       }
     });
   };
+
+  // Stable row callbacks (latest handlers through refs) so `memo(ClockRow)` holds.
+  const saveClockRef = useRef(save_clock);
+  saveClockRef.current = save_clock;
+  const deleteClockRef = useRef(delete_clock);
+  deleteClockRef.current = delete_clock;
+  const handleRowSave = useCallback((...args) => saveClockRef.current(...args), []);
+  const handleRowDelete = useCallback((...args) => deleteClockRef.current(...args), []);
 
   // Limpiar timeout al desmontar
   useEffect(() => {
@@ -918,41 +1125,88 @@ export default function EXP_CLOCKS(props) {
     });
   };
 
-  const handleOptionChange = (phaseKey, option, value) => {
-    let allOptions = { ...(phaseOptions || {}) };
+  const buildRouteOptions = (phaseKey, patch) => {
+    const current = { ...DEFAULT_ROUTE, ...(phaseOptions?.[phaseKey] || {}) };
+    const next = { ...current, ...patch };
+    // "Por aviso" only exists for a personal notification.
+    if (next.notificationType === 'comunicar') next.byAviso = false;
+    return { current, next, all: { ...(phaseOptions || {}), [phaseKey]: next } };
+  };
 
-    if (!allOptions[phaseKey]) allOptions[phaseKey] = {};
+  // Stores the route in the `phase_options` clock (state 1001). Shown at once, then
+  // confirmed against the server: the data is reloaded before the control accepts another
+  // change, and a failed save puts the previous route back.
+  const commitRouteChange = async ({ phaseKey, next, all, change }) => {
+    if (routeSavingRef.current) return;
+    routeSavingRef.current = true;
+    setRouteConfirm(null);
+    setRouteSave({ phaseKey, busy: true, feedback: null });
 
-    let phaseSpecificOptions = { ...allOptions[phaseKey], [option]: value };
-
-    if (option === 'notificationType' && value === 'comunicar') {
-      phaseSpecificOptions.byAviso = false;
-    }
-
-    const newAllOptions = { ...allOptions, [phaseKey]: phaseSpecificOptions };
-    const newDesc = JSON.stringify(newAllOptions);
-
+    const previousClock = getClock('1001');
+    const newDesc = JSON.stringify(all);
     applyLocalClockChange('1001', { name: 'phase_options', desc: newDesc }, undefined);
 
     const formData = new FormData();
     formData.set('name', 'phase_options');
     formData.set('desc', newDesc);
     formData.set('state', '1001');
-    manage_clock(false, '1001', undefined, formData, true);
+
+    let saved = false;
+    try {
+      saved = await manage_clock(false, '1001', undefined, formData, false);
+    } catch (error) {
+      saved = false;
+    }
+
+    if (saved) {
+      try {
+        await props.requestUpdate(currentItem.id);
+      } catch (error) {
+        // The save went through; the next refresh brings the stored clock.
+      }
+      setRouteSave({ phaseKey, busy: false, feedback: { tone: 'success', text: describeRouteSaved(next, change) } });
+    } else {
+      setClocksData((prev) => (
+        previousClock
+          ? (prev || []).map((clock) => (String(clock.state) === '1001' ? { ...clock, name: previousClock.name, desc: previousClock.desc } : clock))
+          : (prev || []).filter((clock) => String(clock.state) !== '1001')
+      ));
+      logError('ui_action_failed', new Error('No se pudo guardar la vía de notificación'), { component: 'Tiempos', action: 'phase_options', phaseKey });
+      setRouteSave({ phaseKey, busy: false, feedback: { tone: 'error', text: 'No se pudo guardar. Se restauró la vía anterior; inténtalo de nuevo.' } });
+    }
+    routeSavingRef.current = false;
   };
 
-  const _FIND_6 = (id) => (currentItem.fun_6s || []).find(f => f.id == id) || null;
-  const _CHILD_6_SELECT = () => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>);
+  const handleRouteChange = (phaseKey, patch) => {
+    if (routeSavingRef.current) return;
+    const { current, next, all } = buildRouteOptions(phaseKey, patch);
+    if (current.notificationType === next.notificationType && Boolean(current.byAviso) === Boolean(next.byAviso)) return;
 
-  const getNewestDate = (states) => {
-    let newDate = null;
-    states.forEach((element) => {
-      const date = getClock(element)?.date_start;
-      if (!newDate && date) newDate = date;
-      else if (date && dayjs(date).isAfter(newDate)) newDate = date;
-    });
-    return newDate;
+    // What the table would show with the new route (same definitions, other options).
+    const nextGroups = buildClockGroups(
+      filterClocksAfterDesist(generateClocks({ ...manager, currentItem, namePayment, conGI, phaseOptions: all }), manager.isDesisted),
+      manager,
+    );
+    const change = diffVisibleClockRows(clockGroups, nextGroups);
+    const request = { phaseKey, next, all, change };
+
+    // Only a change that takes registered dates out of sight asks first.
+    if (change.hiddenDated.length || change.relabeledDated.length) {
+      setRouteSave({ phaseKey, busy: false, feedback: null });
+      setRouteConfirm(request);
+      return;
+    }
+    commitRouteChange(request);
   };
+
+  const _FIND_6 = useCallback((id) => (currentItem.fun_6s || []).find(f => f.id == id) || null, [currentItem]);
+  const _CHILD_6_SELECT = useCallback(() => (currentItem.fun_6s || []).map(f => <option key={f.id} value={f.id}>{f.description}</option>), [currentItem]);
+
+  // Helpers handed to every row: one object per data change, not per render.
+  const rowHelpers = useMemo(
+    () => ({ ...manager, currentItem, clocksData, clocksToShow }),
+    [manager, currentItem, clocksData, clocksToShow]
+  );
 
   const handleDateChange = (newDate) => {
     setSystemDate(newDate);
@@ -966,134 +1220,117 @@ export default function EXP_CLOCKS(props) {
     setSystemDate(dayjs().format('YYYY-MM-DD'));
   };
 
-  const renderClockList = () => {
-    let isCurrentGroupCollapsed = false;
+  const columnCount = getClockColumnCount(visibleColumns);
+  const pendingIndexes = useMemo(() => new Set(pendingStatus.items.map((item) => item.index)), [pendingStatus]);
 
+  const renderClockList = () => {
     const activePhase = (manager.processPhases || []).find(p => p.id === activePhaseId);
     const activeRelatedStates = activePhase ? (activePhase.relatedStates || []) : [];
+    const today = dayjs(systemDate);
 
-    const renderOptionsRibbon = (phaseKey) => {
-      const phaseSpecificOptions = phaseOptions[phaseKey] || {};
-      const notificationType = phaseSpecificOptions.notificationType || 'notificar';
-      const byAviso = phaseSpecificOptions.byAviso === true;
+    return clockGroups.map((group) => {
+      const isCollapsed = Boolean(collapsedSections[group.title]);
+      const route = ROUTE_GROUPS[group.title];
+      const visibleRows = group.rows.filter((row) => !row.hidden);
+      const datedRows = visibleRows.filter((row) => row.hasDate).length;
+      // Same conditions the rows use for "Vencido" / "Vencida".
+      const overdueRows = visibleRows.filter((row) => {
+        if (row.hasDate) return false;
+        if (row.state === 504) return Boolean(getClock(70)?.date_start);
+        if (row.state === 34 && getClock(35)?.date_start) return false;
+        return Boolean(row.limitDate) && today.isAfter(dayjs(row.limitDate), 'day');
+      }).length;
+      const pendingRows = visibleRows.filter((row) => pendingIndexes.has(row.index)).length;
+      const isSectionInActivePhase = group.rows.some((row) => row.state !== false && row.state !== undefined && activeRelatedStates.includes(row.state));
+      const headId = `tc-group-${group.index}`;
+      const panelId = `tc-group-panel-${group.index}`;
+      const groupStatus = visibleRows.length === 0
+        ? 'Sin eventos'
+        : datedRows === visibleRows.length ? 'Completo' : `${datedRows} de ${visibleRows.length} con fecha`;
 
       return (
-        <div className="section-options" onClick={(e) => e.stopPropagation()}>
-          <div className="compact-radio-group">
-            <div className="form-check">
-              <input
-                type="radio"
-                className="form-check-input"
-                name={`notificationType_${phaseKey}`}
-                id={`type_notificar_${phaseKey}`}
-                value="notificar"
-                checked={notificationType === 'notificar'}
-                onChange={() => handleOptionChange(phaseKey, 'notificationType', 'notificar')}
-              />
-              <label className="form-check-label" htmlFor={`type_notificar_${phaseKey}`}>Notificar</label>
-            </div>
-            <div className="form-check">
-              <input
-                type="radio"
-                className="form-check-input"
-                name={`notificationType_${phaseKey}`}
-                id={`type_comunicar_${phaseKey}`}
-                value="comunicar"
-                checked={notificationType === 'comunicar'}
-                onChange={() => handleOptionChange(phaseKey, 'notificationType', 'comunicar')}
-              />
-              <label className="form-check-label" htmlFor={`type_comunicar_${phaseKey}`}>Comunicar</label>
+        <div role="rowgroup" key={`group-${group.index}`} className="tc-group">
+          <div role="row" className="tc-group-head">
+            <div role="cell" aria-colspan={columnCount}>
+              <button
+                type="button"
+                id={headId}
+                className="tc-group-toggle"
+                aria-expanded={!isCollapsed}
+                aria-controls={panelId}
+                onClick={() => toggleSection(group.title)}
+              >
+                <span className="tc-group-main">
+                  <span className="tc-row-slot" aria-hidden="true">
+                    <Icon name="chevron-down" size={16} className="tc-chevron" />
+                  </span>
+                  <span className="tc-group-title">{group.title}</span>
+                </span>
+                <span className="tc-group-summary">
+                  <span className={cn('tc-group-status', visibleRows.length > 0 && datedRows === visibleRows.length && 'is-done')}>{groupStatus}</span>
+                  {pendingStatus.pending ? (
+                    pendingRows > 0 ? (
+                      <span className="tc-group-flag is-warning">
+                        <Icon name="Hourglass" size={12} aria-hidden="true" />
+                        {pendingRows} pendiente{pendingRows === 1 ? '' : 's'}
+                      </span>
+                    ) : null
+                  ) : overdueRows > 0 ? (
+                    <span className="tc-group-flag is-danger">
+                      <Icon name="AlertCircle" size={12} aria-hidden="true" />
+                      {overdueRows} vencido{overdueRows === 1 ? '' : 's'}
+                    </span>
+                  ) : null}
+                  {isSectionInActivePhase ? <span className="tc-group-tag">Fase seleccionada</span> : null}
+                </span>
+              </button>
             </div>
           </div>
 
-          {notificationType === 'notificar' && (
-            <div className="compact-sub-option">
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id={`checkByAviso_${phaseKey}`}
-                  checked={byAviso}
-                  onChange={(e) => handleOptionChange(phaseKey, 'byAviso', e.target.checked)}
-                />
-                <label className="form-check-label" htmlFor={`checkByAviso_${phaseKey}`}>Por Aviso</label>
+          <Collapse id={panelId} open={!isCollapsed}>
+            {route ? (
+              <div role="row" className="tc-group-options">
+                <div role="cell" aria-colspan={columnCount}>
+                  <NotificationRouteControl
+                    actLabel={route.actLabel}
+                    options={phaseOptions?.[route.phaseKey]}
+                    busy={routeSave.busy}
+                    feedback={routeSave.phaseKey === route.phaseKey ? routeSave.feedback : null}
+                    confirm={routeConfirm?.phaseKey === route.phaseKey ? { next: routeConfirm.next, ...routeConfirm.change } : null}
+                    onChange={(patch) => handleRouteChange(route.phaseKey, patch)}
+                    onConfirm={() => commitRouteChange(routeConfirm)}
+                    onCancel={() => setRouteConfirm(null)}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            ) : null}
+
+            {group.rows.map((row) => (
+              <ClockRow
+                // No `refreshTrigger` / `systemDate` in the key: both reach the row as props
+                // (helpers, scheduleConfig, systemDate), so it updates without being remounted.
+                key={`row-${row.index}-${row.state ?? 'no-state'}-${row.version ?? 'no-version'}`}
+                value={row.value}
+                i={row.index}
+                clock={row.clock}
+                onSave={handleRowSave}
+                onDelete={handleRowDelete}
+                outCodes={outCodes}
+                _CHILD_6_SELECT={_CHILD_6_SELECT}
+                _FIND_6={_FIND_6}
+                helpers={rowHelpers}
+                scheduleConfig={scheduleConfig}
+                systemDate={systemDate}
+                isHighlighted={activeRelatedStates.includes(row.state)}
+                visibleColumns={visibleColumns}
+                onDateDraftChange={updatePendingDateEdit}
+                processFinished={pendingStatus.finished}
+                isPendingRecord={pendingIndexes.has(row.index)}
+                isFlashed={flashedRow === row.index}
+              />
+            ))}
+          </Collapse>
         </div>
-      );
-    };
-
-    return clocksToShow.map((value, i) => {
-      const clock = value.version !== undefined
-        ? getClockVersion(value.state, value.version)
-        : getClock(value.state);
-
-      // TITULOS / SECCIONES
-      if (value.title) {
-        if (value.show === false) {
-          isCurrentGroupCollapsed = true;
-          return null;
-        }
-
-        const isCollapsed = collapsedSections[value.title];
-        isCurrentGroupCollapsed = isCollapsed;
-
-        const isEstudioValla = value.title === 'Estudio y Observaciones';
-        const isRevisionCorrecciones = value.title === 'Revisión y Viabilidad';
-
-        // Determinar si la sección está activa
-        const sectionStates = [];
-        for (let j = i + 1; j < clocksToShow.length; j++) {
-            if (clocksToShow[j].title) break;
-            if (clocksToShow[j].state !== false && clocksToShow[j].state !== undefined) {
-                sectionStates.push(clocksToShow[j].state);
-            }
-        }
-        const isSectionInActivePhase = activeRelatedStates.some(st => sectionStates.includes(st));
-        const titleClassName = `fw-normal ${isSectionInActivePhase ? 'title-highlight' : ''}`;
-        const BlockClassName = `exp-section-header ${isSectionInActivePhase ? 'active-title-container' : ''}`;
-
-        return (
-          <div
-            key={`section-${i}`}
-            className={BlockClassName}
-            onClick={() => toggleSection(value.title)}
-          >
-            <div className="d-flex align-items-center">
-              <Icon name={isCollapsed ? 'chevron-right' : 'chevron-down'} size={16} className="me-1 text-muted" />
-              <span className={titleClassName}>{value.title}</span>
-            </div>
-
-            {!isCollapsed && isEstudioValla && renderOptionsRibbon('phase_estudio')}
-            {!isCollapsed && isRevisionCorrecciones && renderOptionsRibbon('phase_correcciones')}
-          </div>
-        );
-      }
-
-      if (isCurrentGroupCollapsed) return null;
-
-      const isRowInActivePhase = activeRelatedStates.includes(value.state);
-
-      return (
-        <ClockRow
-          key={`row-${i}-${value.state ?? 'no-state'}-${value.version ?? 'no-version'}-${refreshTrigger}-${systemDate}`}
-          value={value}
-          i={i}
-          clock={clock}
-          onSave={save_clock}
-          onDelete={delete_clock}
-          outCodes={outCodes}
-          _CHILD_6_SELECT={_CHILD_6_SELECT}
-          _FIND_6={_FIND_6}
-          helpers={{ getClock, getNewestDate, ...manager, currentItem, clocksData, clocksToShow }}
-          scheduleConfig={scheduleConfig}
-          systemDate={systemDate}
-          isHighlighted={isRowInActivePhase}
-          visibleColumns={visibleColumns}
-          onDateDraftChange={updatePendingDateEdit}
-        />
       );
     });
   };
@@ -1119,7 +1356,7 @@ export default function EXP_CLOCKS(props) {
             setShowCalendar(prev => !prev);
             break;
         case 'breakdown':
-            if(manager.curaduriaDetails) manager.curaduriaDetails.showDaysDetailsModal();
+            openDaysBreakdownModal(manager);
             break;
         default:
             break;
@@ -1128,25 +1365,60 @@ export default function EXP_CLOCKS(props) {
 
 
   const radDate = currentItem?.date;
+  // One Gantt series for the inline card, the dialog and the legend.
+  const ganttSeries = useGanttSeries({
+    phases: manager.processPhases,
+    radDate,
+    manager,
+    scheduleConfig,
+    suspensionPreActa: manager.suspensionPreActa,
+    suspensionPostActa: manager.suspensionPostActa,
+    extension: manager.extension,
+    processPending: pendingStatus.pending,
+  });
   const totalTableWidth = getClockTableWidth(visibleColumns);
   const pendingDateCount = Object.keys(pendingDateEdits).length;
-  const normalizedSidebarHeight = Number.isFinite(sidebarHeight) ? Math.min(Math.max(sidebarHeight, 420), 720) : 520;
-  const tableScrollHeight = `min(${normalizedSidebarHeight}px, calc(100vh - 18rem))`;
+  const isEmulatedDate = systemDate !== dayjs().format('YYYY-MM-DD');
+  const toggleAlarms = useCallback(() => setShowAlarms((open) => !open), []);
+  const closeGanttModal = useCallback(() => {
+    setShowGanttModal(false);
+    // Opened from the tools menu its menu item is gone by now: hand focus back to the menu trigger.
+    requestAnimationFrame(() => {
+      if (document.activeElement === document.body) document.querySelector('[data-tiempos-tools-trigger]')?.focus();
+    });
+  }, []);
+  const closeCalendar = useCallback(() => setShowCalendar(false), []);
+  const openPhaseDetail = useCallback(
+    (phase) => openPhaseDetailModal(phase, { finished: pendingStatus.pending }),
+    [pendingStatus.pending]
+  );
 
   return (
-    <div className="exp-wrapper">
+    <div className="exp-wrapper tc-root">
+      <TermStrip
+        manager={manager}
+        alarmCount={notificationAlarms.length}
+        pending={pendingStatus}
+        alarmsOpen={showAlarms}
+        onToggleAlarms={toggleAlarms}
+        emulatedDate={isEmulatedDate ? systemDate : null}
+        tools={(
+          <ToolsMenu
+            onAction={handleToolAction}
+            canAddSuspension={manager.canAddSuspension}
+            canAddExtension={manager.canAddExtension}
+            isDesisted={manager.isDesisted}
+          />
+        )}
+      />
+
       {showAlarms && (
         <AlarmsWidget
-          alarms={notificationAlarms} // CAMBIO: Solo alarmas de notificación
+          alarms={notificationAlarms} // Solo alarmas de notificación (legal + programadas)
+          pending={pendingStatus}
+          onGoToEvent={goToEvent}
           onClose={() => setShowAlarms(false)}
         />
-      )}
-
-      {!showAlarms && notificationAlarms.length > 0 && ( // CAMBIO: Referencia a notificationAlarms
-        <button className="alarms-fab" onClick={() => setShowAlarms(true)} title="Mostrar Alertas">
-          <Icon name="bell" size={16} />
-          <span className="fab-badge">{notificationAlarms.length}</span>
-        </button>
       )}
 
       {showTimeTravel && (
@@ -1165,99 +1437,132 @@ export default function EXP_CLOCKS(props) {
 
       <GanttModal
         isOpen={showGanttModal}
-        onClose={() => setShowGanttModal(false)}
-        phases={manager.processPhases}
-        radDate={currentItem?.date}
-        suspensionPreActa={manager.suspensionPreActa}
-        suspensionPostActa={manager.suspensionPostActa}
-        extension={manager.extension}
+        onClose={closeGanttModal}
+        series={ganttSeries}
         currentItem={currentItem}
-        scheduleConfig={scheduleConfig} // PASAMOS LA CONFIGURACIÓN DE HORARIOS
-        manager={manager} // PASAMOS EL MANAGER COMPLETO
-      />
-      
-      <ToolsMenu 
-        onAction={handleToolAction}
-        canAddSuspension={manager.canAddSuspension}
-        canAddExtension={manager.canAddExtension}
-        isDesisted={manager.isDesisted}
       />
 
-      <div className="exp-container">
-        <div className="exp-main-content">
-          <div className="card exp-card">
-            {/* --- NUEVA ESTRUCTURA DE SCROLL SUPERIOR --- */}
-            <div ref={topScrollRef} className="top-scroll-wrapper">
-              <div className="top-scroll-content" style={{ width: `${totalTableWidth}px` }}></div>
-            </div>
-            
-            <div ref={tableScrollRef} className="exp-scroll" style={{ height: tableScrollHeight, maxHeight: tableScrollHeight }}>
-               <div ref={contentRef} style={{ minWidth: `${totalTableWidth}px` }}>
-                  <ClockTableHeader visibleColumns={visibleColumns} />
-                  {renderClockList()}
-               </div>
-            </div>
-
-            {renderProcessClosurePanel()}
-
-            <div className="clock-table-footer-tools" aria-label="Herramientas de guardado y columnas de la tabla de tiempos">
-              <div className="clock-save-group">
-                <Button
-                  type="button"
-                  size="sm"
-                  className="h-8"
-                  disabled={pendingDateCount === 0 || isSavingPendingDates}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={savePendingDateChanges}
-                >
-                  <Icon name={isSavingPendingDates ? 'Loader2' : 'Save'} size={14} className={isSavingPendingDates ? 'animate-spin' : ''} />
-                  Guardar cambios
-                </Button>
-                <span className="clock-save-status" aria-live="polite">
-                  {pendingDateCount > 0
-                    ? `${pendingDateCount} fecha${pendingDateCount !== 1 ? 's' : ''} pendiente${pendingDateCount !== 1 ? 's' : ''}`
-                    : 'Sin cambios pendientes'}
-                </span>
-              </div>
-
-              <div className="clock-column-selector" aria-label="Columnas opcionales">
-                <span className="clock-column-selector-label">Mostrar columnas</span>
-                {OPTIONAL_CLOCK_COLUMNS.map((column) => {
-                  const checkboxId = `clock-column-${column.key}`;
-                  return (
-                    <div className="clock-column-toggle" key={column.key}>
-                      <Checkbox
-                        id={checkboxId}
-                        checked={visibleColumns[column.key]}
-                        onCheckedChange={() => toggleOptionalColumn(column.key)}
-                      />
-                      <label htmlFor={checkboxId}>{column.label}</label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="exp-sidebar" ref={sidebarRef}>
+      <div ref={layoutRef} className="tc-layout">
+        <div className="tc-aside">
+          <PendingChecklist pending={pendingStatus} onGoToEvent={goToEvent} visibleCount={pendingRows} />
           <SidebarInfo
             manager={manager}
-            // Las acciones ahora se gestionan a través de ToolsMenu, por lo que el prop `actions` se puede eliminar.
             onActivePhaseChange={setActivePhaseId}
-            activePhaseId={activePhaseId}
-            onExpandGantt={() => setShowGanttModal(true)} 
-            radDate={radDate}
+            pending={pendingStatus}
           />
           {/* El calendario se muestra condicionalmente y flotante */}
           {showCalendar && (
-            <HolidayCalendar 
-              isFloating={true} 
-              onClose={() => setShowCalendar(false)} 
+            <HolidayCalendar
+              isFloating={true}
+              onClose={closeCalendar}
             />
           )}
         </div>
+
+        <section className="tc-card tc-main" aria-labelledby="tc-events-title">
+          <div className="tc-card-header">
+            <h3 id="tc-events-title" className="tc-card-title">Eventos del proceso</h3>
+            <div className="clock-column-selector" role="group" aria-label="Columnas opcionales">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="tc-toolbar-btn"
+                onClick={toggleAllSections}
+                disabled={groupTitles.length === 0}
+              >
+                <Icon name={anyGroupExpanded ? 'ChevronsDownUp' : 'ChevronsUpDown'} size={14} aria-hidden="true" />
+                {anyGroupExpanded ? 'Contraer todo' : 'Expandir todo'}
+              </Button>
+              <span className="tc-toolbar-divider" aria-hidden="true" />
+              <span className="clock-column-selector-label">Mostrar columnas</span>
+              {OPTIONAL_CLOCK_COLUMNS.map((column) => {
+                const checkboxId = `clock-column-${column.key}`;
+                return (
+                  <label className="clock-column-toggle" key={column.key} htmlFor={checkboxId}>
+                    <Checkbox
+                      id={checkboxId}
+                      checked={visibleColumns[column.key]}
+                      onCheckedChange={() => toggleOptionalColumn(column.key)}
+                    />
+                    <span>{column.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* --- SCROLL HORIZONTAL SUPERIOR SINCRONIZADO --- */}
+          <div ref={topScrollRef} className="top-scroll-wrapper" aria-hidden="true">
+            <div className="top-scroll-content" style={{ width: `${totalTableWidth}px` }}></div>
+          </div>
+
+          <div ref={tableScrollRef} className="tc-scroll">
+            <div
+              ref={contentRef}
+              role="table"
+              aria-labelledby="tc-events-title"
+              aria-colcount={columnCount}
+              className="tc-table"
+              style={{ minWidth: `${totalTableWidth}px`, '--tc-cols': getClockGridTemplate(visibleColumns) }}
+            >
+              <ClockTableHeader visibleColumns={visibleColumns} />
+              {renderClockList()}
+            </div>
+          </div>
+
+          <div className="clock-table-footer-tools">
+            <p className="tc-autosave-note">
+              <Icon name="Save" size={14} aria-hidden="true" />
+              Los cambios se guardan automáticamente al salir de cada fecha.
+            </p>
+            <div className="clock-save-group">
+              <span className="clock-save-status" aria-live="polite">
+                {pendingDateCount > 0
+                  ? `${pendingDateCount} fecha${pendingDateCount !== 1 ? 's' : ''} sin guardar`
+                  : 'Sin cambios pendientes'}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8"
+                disabled={pendingDateCount === 0 || isSavingPendingDates}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={savePendingDateChanges}
+              >
+                <Icon name={isSavingPendingDates ? 'Loader2' : 'Save'} size={14} className={isSavingPendingDates ? 'animate-spin' : ''} />
+                Guardar cambios
+              </Button>
+            </div>
+          </div>
+        </section>
       </div>
+
+      <DisclosureCard
+        title="Diagrama de Gantt"
+        summary="Eje en días hábiles desde la radicación, con su fecha."
+        open={ganttOpen}
+        onOpenChange={setGanttOpen}
+        headingId="tc-gantt-title"
+        actions={(
+          <Button type="button" variant="ghost" size="sm" className="tc-toolbar-btn" onClick={() => setShowGanttModal(true)}>
+            <Icon name="expand-alt" size={14} aria-hidden="true" />
+            Ampliar
+          </Button>
+        )}
+      >
+        <div className="tc-gantt-body">
+          <GanttChart
+            series={ganttSeries}
+            activePhaseId={activePhaseId}
+            onPhaseClick={openPhaseDetail}
+          />
+          <GanttLegend className="tc-gantt-legend" series={ganttSeries} />
+        </div>
+      </DisclosureCard>
+
+      {renderProcessClosurePanel()}
     </div>
   );
 }

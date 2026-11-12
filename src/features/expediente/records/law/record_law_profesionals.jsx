@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 
 import { dateParser_yearsPassed } from '../../../../shared/config/customClasses/typeParse';
 
@@ -82,9 +83,9 @@ function RECORD_LAW_PROFESIONALS(props) {
         let COMPONENT_PROFESIONAL_RULES = (_roles) => {
             let _COMPONENT = [];
             for (var i = 0; i < _roles.length; i++) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={_COMPONENT.length}>
                     <li className="list-group-item">{_PROFESIONAL_JSX(_roles[i])}</li>
-                </>)
+                </Fragment>)
             }
             return <>{_COMPONENT}</>
         }

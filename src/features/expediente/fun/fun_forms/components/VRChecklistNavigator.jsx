@@ -1,6 +1,13 @@
 import { useRef } from 'react';
 import { Button } from '@/shared/ui/button';
 
+// VR dates arrive as AAAA-MM-DD; they read dd/mm/aaaa like every other date of the expediente.
+function formatVrDate(value) {
+  const text = String(value || '').trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(text);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : text;
+}
+
 function getVrLabel(vr) {
   return vr?.id_public || vr?.vr_id_public || `VR ${vr?.id || ''}`.trim();
 }
@@ -20,7 +27,7 @@ export default function VRChecklistNavigator({ vrs, selectedVrId, onSelect }) {
   });
 
   const options = [{ id: null, label: 'Último relacionado', date: '', mode: 'latest' }].concat(
-    items.map((vr) => ({ id: getVrId(vr), label: getVrLabel(vr), date: vr.date || 'sin fecha', mode: 'vr' }))
+    items.map((vr) => ({ id: getVrId(vr), label: getVrLabel(vr), date: formatVrDate(vr.date) || 'sin fecha', mode: 'vr' }))
   );
 
   const activeIndex = Math.max(0, options.findIndex((option) => option.id === selectedVrId));

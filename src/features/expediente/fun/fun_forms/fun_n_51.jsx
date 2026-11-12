@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { Button } from '@/shared/ui/button';
 import FUNService from '../../api/fun.service'
 import DataTable from '@/shared/components/data-table-bridge';
@@ -92,12 +93,12 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             _COMPONENT.push(<Fragment key="document-0">{_array[0] > 0
                 ?
                 <VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
-                    icon={'IdCard'} color={'DeepSkyBlue'} />
+                    icon={'IdCard'} color={'hsl(var(--doc-key-identity))'} />
                 : ""}</Fragment>)
 
             _COMPONENT.push(<Fragment key="document-1">{_array[1] > 0
                 ? <VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
-                    icon={'BadgeCheck'} color={'DarkOrchid'} />
+                    icon={'BadgeCheck'} color={'hsl(var(--doc-key-registration))'} />
                 : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
@@ -421,7 +422,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.type, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '150px',
                     cell: row => <span className="text-sm">{row.type}</span>
                 },
@@ -430,7 +430,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.name + " " + row.surname}</span>
                 },
@@ -439,7 +438,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     cell: row => <span className="text-sm">{row.id_number}</span>
                 },
                 {
@@ -447,7 +445,6 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.rep_name, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.rep_name}</span>
                 },
@@ -456,32 +453,27 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     selector: row => row.rep_id_number, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    center: true,
                     cell: row => <span className="text-sm">{row.rep_id_number}</span>
                 },
                 {
                     name: 'TELEFONO/ CELULAR',
                     selector: row => row.nunber, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <label >{row.nunber}</label>
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email, // FIX: react-data-table v7→v8
-                    center: true,
                     cell: row => <span className="text-sm">{row.email}</span>
                 },
                 {
                     name: 'TIPO TITULAR',
                     selector: row => row.role, // FIX: react-data-table v7→v8
-                    center: true,
                     minWidth: '200px',
                     cell: row => <span className="text-sm">{row.role}</span>
                 },
                 {
                     name: 'DOCUMENTOS',
                     button: true,
-                    center: true,
                     center: true,
                     cell: row => <> {_GET_DOCS_BTNS(row.docs)}</>
                 },
@@ -490,7 +482,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     button: true,
                     cell: row =>
                         <div className="form-check form-switch">
-                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_51(row)} />
+                            <input className="form-check-input" type="checkbox" defaultChecked={row.active == 1 ? true : false} onChange={() => setActive_51(row)} aria-label={`Titular activo: ${[row.name, row.surname].filter(Boolean).join(' ') || 'sin nombre'}`} />
                         </div>
                 },
                 {
@@ -502,7 +494,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground m-0 p-2" 
+                                aria-label="Modificar ítem"
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-muted m-0 p-2"
                                 onClick={() => setEdit(row)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEdit(row); }}
                                 style={{cursor: 'pointer'}}>
@@ -512,7 +505,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             <span 
                                 role="button" 
                                 tabIndex={0} 
-                                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 m-0 p-2" 
+                                aria-label="Eliminar ítem"
+                                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-destructive/40 bg-background text-destructive hover:bg-destructive/10 m-0 ms-1 p-2"
                                 onClick={() => delete_51(row.id)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') delete_51(row.id); }}
                                 style={{cursor: 'pointer'}}>
@@ -522,9 +516,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     </>
                 },
             ]
-            return <DataTable
-                noDataComponent="No hay Items"
-                striped="true"
+            return <DataTable pagination={false}
+                noDataComponent="Sin registros"
                 columns={columns_51}
                 data={_LIST}
                 highlightOnHover
@@ -535,6 +528,8 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
 
         // FUNCTIONS AND APIS
         let new_51 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_51:new_51')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             let fun0Id = null;
             formData = new FormData();
@@ -569,10 +564,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('docs', docs.join());
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.create_fun51(formData)
+            holdSubmit('fun_n_51:new_51', FUNService.create_fun51(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         document.getElementById('form_fun_51_new').reset();
                     } else {
@@ -582,9 +577,11 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
         let edit_51 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_51:edit_51')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
 
@@ -619,10 +616,10 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
             formData.set('docs', docs.join());
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.update_51(edit.id, formData)
+            holdSubmit('fun_n_51:edit_51', FUNService.update_51(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         document.getElementById('form_fun_51_edit').reset();
                         setEdit(false);
@@ -633,7 +630,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
         let delete_51 = (id) => {
             swalConfirm({
@@ -647,7 +644,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     FUNService.delete_51(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id);
                                 setEdit(false);
                             } else {
@@ -697,7 +694,7 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                             {_COMPONENT_NEW()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                 </div>
                             </div>
                         </form>
@@ -705,19 +702,18 @@ function FUNN51({ translation, swaMsg, globals, currentItem, currentVersion, req
                     : ""}
 
                 {_CHILD_51_LIST()}
-                <div className="border p-2 m-2">
-                    <label className="me-2">LEYENDA:</label>
-                    <label className="me-2"><Icon name="id-card" size={16} style={{ color: "DeepSkyBlue" }} /> : Documento de Identidad,</label>
-                    <label className="me-2"><Icon name="id-badge" size={16} style={{ color: 'DarkOrchid' }} />: Certificado de Existencia y Representación Legal</label>
-                </div>
+                <ul className="ew-key" aria-label="Leyenda de documentos">
+                    <li><Icon name="id-card" size={16} style={{ color: 'hsl(var(--doc-key-identity))' }} aria-hidden="true" /> Documento de identidad</li>
+                    <li><Icon name="id-badge" size={16} style={{ color: 'hsl(var(--doc-key-registration))' }} aria-hidden="true" /> Certificado de existencia y representación legal</li>
+                </ul>
                 {edit
                     ? <>
                         <form id="form_fun_51_edit" onSubmit={edit_51}>
-                            <h3 className="my-3 text-center">Actualizar Titular</h3>
+                            <h3 className="ew-subheading">Actualizar titular</h3>
                             {_COMPONENT_EDIT()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                 </div>
                             </div>
                         </form>

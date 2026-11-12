@@ -205,7 +205,7 @@ export const axis = <>
 export const zonesTable = ACTIVE_INFO.zonesTable
 export const zonesVar = ACTIVE_INFO.zonesVar
 export const zones = <>
-    {zonesVar.map((value, index) => <option value={index}>{value}</option>)}
+    {zonesVar.map((value, index) => <option key={index} value={index}>{value}</option>)}
 </>
 
 export const nomens = ACTIVE_INFO.nomen

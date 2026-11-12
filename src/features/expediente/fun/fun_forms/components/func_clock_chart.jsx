@@ -1010,7 +1010,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
                         <div className="input-group my-1 ">
                             <div className="input-group-append">
                                 <div className="input-group-text">
-                                    <label>TIMEPO DE OBSERVACIONES {_GET_TIME_BETWEEN_TWO_STATES(5, 31)}</label>
+                                    <label>TIEMPO DE OBSERVACIONES {_GET_TIME_BETWEEN_TWO_STATES(5, 31)}</label>
                                 </div>
                             </div>
                             <div className="input-group-append">
@@ -1022,7 +1022,7 @@ function FUN_CLOCK_CHART({ currentItem }) {
                         <div className="input-group my-1 ">
                             <div className="input-group-append">
                                 <div className="input-group-text">
-                                    <label>TIMEPO DE CORRECCIONES {_GET_TIME_BETWEEN_TWO_STATES(32, 32)}</label>
+                                    <label>TIEMPO DE CORRECCIONES {_GET_TIME_BETWEEN_TWO_STATES(32, 32)}</label>
                                 </div>
                             </div>
                             <div className="input-group-append">

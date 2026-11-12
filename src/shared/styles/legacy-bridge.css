@@ -1578,3 +1578,2053 @@
   font-size: 0.6875rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Expediente workspace — visual governance layer
+   ──────────────────────────────────────────────────────────────────────
+   The expediente workspace renders outside #main-content, so none of the
+   rules above reach it. This block is the single place that brings the
+   legacy Bootstrap markup of its modules (FUN, records, clocks, expeditions)
+   to the Dovela tokens. Everything is scoped to `.expediente-workspace`
+   (set by FunExpedienteFullscreen on the module content region).
+
+   Conventions:
+   - Class selectors are `.expediente-workspace :where(...)` → specificity
+     (0,1,0), the same as one Bootstrap class. This file loads after Bootstrap
+     and before the lazy module stylesheets, so module-level classes still win.
+   - Element selectors are `:where(.expediente-workspace) h3` → (0,0,1): they
+     beat Bootstrap's reboot but lose to any class (Tailwind utilities included).
+   - Bootstrap 5.3 component variables (--bs-btn-*, --bs-table-*, …) are
+     preferred over property overrides: Bootstrap's own state selectors then
+     pick the tokens up.
+   - `!important` appears only where Bootstrap utilities use it themselves
+     (bg-*, text-*, border-*, fw-*, spacing/rounded utilities on legends).
+     Those rules double the scope class (`.expediente-workspace.expediente-workspace`,
+     specificity (0,2,0)): clocks/centralClocks.css redeclares `.bg-*` / `.text-*`
+     globally with `!important` and loads lazily AFTER this file, so a (0,1,0)
+     rule would lose to it as soon as "Tiempos" has been opened once.
+   - State colors keep their meaning (success / warning / danger); only brand
+     and neutral blocks used as headings are calmed down.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.expediente-workspace {
+  /* Surface tones */
+  --ew-info: hsl(var(--primary));
+  --ew-success: hsl(var(--accent));
+  --ew-warning: hsl(var(--warning));
+  --ew-danger: hsl(var(--destructive));
+  /* Text tones: mixed toward the foreground so they pass AA in every palette and theme */
+  --ew-info-text: color-mix(in srgb, hsl(var(--primary)) 62%, hsl(var(--foreground)));
+  --ew-success-text: color-mix(in srgb, hsl(var(--accent)) 58%, hsl(var(--foreground)));
+  --ew-warning-text: color-mix(in srgb, hsl(var(--warning)) 56%, hsl(var(--foreground)));
+  --ew-danger-text: color-mix(in srgb, hsl(var(--destructive)) 84%, hsl(var(--foreground)));
+  --ew-heading-accent: hsl(var(--muted-foreground) / 0.55);
+  --ew-control-font-size: 0.875rem;
+  --ew-control-font-size-sm: 0.8125rem;
+
+  /* Bootstrap globals consumed by components inside the scope */
+  --bs-body-color: hsl(var(--foreground));
+  --bs-body-bg: hsl(var(--card));
+  --bs-border-color: hsl(var(--border));
+  --bs-secondary-color: hsl(var(--muted-foreground));
+  --bs-secondary-bg: hsl(var(--muted));
+  --bs-tertiary-bg: hsl(var(--muted) / 0.5);
+  --bs-link-color: var(--ew-info-text);
+  --bs-link-hover-color: var(--ew-info-text);
+  --bs-border-radius: var(--radius);
+  --bs-heading-color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
+  /* Operating density: legacy labels and cells inherit 14px instead of Bootstrap 16px body. */
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ── Typography rhythm ────────────────────────────────────────────── */
+:where(.expediente-workspace) :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+.expediente-workspace :where(.h1, .h2, .h3, .h4, .h5, .h6) {
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+.expediente-workspace :where(.h1) { font-size: 1.375rem; }
+.expediente-workspace :where(.h2) { font-size: 1.125rem; }
+.expediente-workspace :where(.h3) { font-size: 0.9375rem; }
+.expediente-workspace :where(.h4) { font-size: 0.875rem; }
+.expediente-workspace :where(.h5) { font-size: 0.8125rem; }
+.expediente-workspace :where(.h6) { font-size: 0.75rem; }
+.expediente-workspace :where(.lead) { font-size: 0.9375rem; font-weight: 400; }
+.expediente-workspace :where(.app-p) { font-size: 0.875rem; }
+.expediente-workspace.expediente-workspace :where(.fw-bold, .fw-bolder) { font-weight: 600 !important; }
+.expediente-workspace :where(.text-uppercase) { letter-spacing: 0.04em; }
+.expediente-workspace :where(.form-text) { color: hsl(var(--muted-foreground)); }
+
+/* ── Text tones (Bootstrap utilities are !important) ──────────────── */
+.expediente-workspace.expediente-workspace :where(.text-primary, .text-info) { color: var(--ew-info-text) !important; }
+.expediente-workspace.expediente-workspace :where(.text-success) { color: var(--ew-success-text) !important; }
+.expediente-workspace.expediente-workspace :where(.text-warning) { color: var(--ew-warning-text) !important; }
+.expediente-workspace.expediente-workspace :where(.text-danger) { color: var(--ew-danger-text) !important; }
+.expediente-workspace.expediente-workspace :where(.text-muted, .text-secondary, .text-body-secondary) { color: hsl(var(--muted-foreground)) !important; }
+.expediente-workspace.expediente-workspace :where(.text-dark, .text-black, .text-body) { color: hsl(var(--foreground)) !important; }
+
+/* ── Borders: no hard black frames ────────────────────────────────── */
+/* Plain .border / .border-* sides already follow --bs-border-color (set on the scope). */
+.expediente-workspace.expediente-workspace :where(.border-dark, .border-black, .border-secondary, .border-light) {
+  border-color: hsl(var(--border)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.border-primary, .border-info) { border-color: hsl(var(--primary) / 0.45) !important; }
+.expediente-workspace.expediente-workspace :where(.border-success) { border-color: hsl(var(--accent) / 0.5) !important; }
+.expediente-workspace.expediente-workspace :where(.border-warning) { border-color: hsl(var(--warning) / 0.55) !important; }
+.expediente-workspace.expediente-workspace :where(.border-danger) { border-color: hsl(var(--destructive) / 0.5) !important; }
+:where(.expediente-workspace) hr { border-color: hsl(var(--border)); opacity: 1; }
+
+/* ── Contextual backgrounds ───────────────────────────────────────────
+   Default: the block keeps its tone, now from the tokens and with the
+   matching foreground. Headings, grid headers and input addons are calmed
+   down further below (later rules, same specificity). */
+.expediente-workspace.expediente-workspace :where(.bg-primary, .bg-info) {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-success) {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-warning) {
+  background-color: hsl(var(--warning)) !important;
+  color: hsl(var(--warning-foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-danger) {
+  background-color: hsl(var(--destructive)) !important;
+  color: hsl(var(--destructive-foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-secondary, .bg-light, .bg-body-secondary, .bg-body-tertiary) {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-dark) {
+  background-color: hsl(var(--foreground)) !important;
+  color: hsl(var(--background)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.bg-white, .bg-body) { background-color: hsl(var(--card)) !important; }
+
+/* ── Section headings ─────────────────────────────────────────────────
+   One heading system: foreground semibold text, a small accent marker in
+   the semantic tone and a hairline below. Replaces the saturated legend
+   pills, full-width title bars and colored card headers. */
+/* A section is one unit: the fieldset is the card and its legend is the heading
+   INSIDE it. `float: left` takes the legend out of the native "rendered legend"
+   slot (the one that sits on the fieldset border), as Bootstrap's reboot does. */
+.expediente-workspace :where(fieldset) {
+  min-width: 0;
+  margin: 0 0 1rem;
+  border-radius: var(--card-radius);
+}
+.expediente-workspace :where(fieldset:last-child) { margin-bottom: 0; }
+/* Nested sections are sub-groups of the card, not cards inside cards. */
+.expediente-workspace.expediente-workspace :where(fieldset fieldset) {
+  margin: 1rem 0 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+}
+.expediente-workspace :where(legend) + * { clear: both; }
+.expediente-workspace.expediente-workspace :where(legend) {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  float: left;
+  width: 100%;
+  margin: 0 0 0.75rem !important;
+  padding: 0 0 0.5rem !important;
+  border-bottom: 1px solid hsl(var(--border));
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+.expediente-workspace :where(legend)::before {
+  content: '';
+  flex: none;
+  width: 3px;
+  height: 1.1em;
+  border-radius: 999px;
+  background-color: var(--ew-heading-accent);
+}
+.expediente-workspace :where(legend.bg-primary, legend.bg-info)::before { background-color: var(--ew-info); }
+.expediente-workspace :where(legend.bg-success)::before { background-color: var(--ew-success); }
+.expediente-workspace :where(legend.bg-warning)::before { background-color: var(--ew-warning); }
+.expediente-workspace :where(legend.bg-danger)::before { background-color: var(--ew-danger); }
+.expediente-workspace.expediente-workspace :where(legend) :where(label, span, p, b, strong, h1, h2, h3, h4, h5, h6) {
+  margin: 0 !important;
+  color: inherit !important;
+  font-size: inherit;
+  font-weight: inherit !important;
+  line-height: inherit;
+}
+/* Nested sections step down instead of repeating the same weight. */
+.expediente-workspace.expediente-workspace :where(fieldset fieldset legend) {
+  padding-bottom: 0.25rem !important;
+  border-bottom-color: hsl(var(--border) / 0.6);
+  font-size: 0.8125rem;
+}
+
+/* Full-width title bars: <div class="bg-primary … h5 text-center">Título</div> */
+.expediente-workspace.expediente-workspace :where(div, p, label):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark):where(.h1, .h2, .h3, .h4, .h5, .h6) {
+  border-bottom: 1px solid hsl(var(--border));
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.9375rem;
+  text-align: left !important;
+}
+
+/* Grid "tables" built with .row/.col: header rows and header cells */
+.expediente-workspace.expediente-workspace :where(.row, .col, [class*='col-']):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark) {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+  font-weight: 600;
+}
+.expediente-workspace.expediente-workspace :where(.row, .col, [class*='col-']):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark) :where(label, p, b, strong, h1, h2, h3, h4, h5, h6, .text-white, .text-light) {
+  color: inherit !important;
+}
+
+/* ── Buttons (.btn → DovelaButton) ────────────────────────────────── */
+.expediente-workspace :where(.btn) {
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-font-weight: 500;
+  --bs-btn-line-height: 1.5;
+  --bs-btn-padding-x: 1rem;
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-border-radius: var(--button-radius);
+  --bs-btn-box-shadow: var(--button-shadow);
+  --bs-btn-disabled-opacity: 0.65;
+  /* neutral tone by default */
+  --bs-btn-color: hsl(var(--foreground));
+  --bs-btn-bg: hsl(var(--card));
+  --bs-btn-border-color: hsl(var(--input));
+  --bs-btn-hover-color: hsl(var(--foreground));
+  --bs-btn-hover-bg: hsl(var(--muted));
+  --bs-btn-hover-border-color: hsl(var(--input));
+  --bs-btn-active-color: hsl(var(--foreground));
+  --bs-btn-active-bg: hsl(var(--muted));
+  --bs-btn-active-border-color: hsl(var(--input));
+  --bs-btn-disabled-color: hsl(var(--foreground));
+  --bs-btn-disabled-bg: hsl(var(--card));
+  --bs-btn-disabled-border-color: hsl(var(--input));
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.expediente-workspace :where(.btn-sm) {
+  --bs-btn-font-size: 0.8125rem;
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-padding-y: 0.4375rem;
+  --bs-btn-border-radius: var(--button-radius);
+}
+.expediente-workspace :where(.btn-lg) {
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-padding-x: 1.25rem;
+  --bs-btn-padding-y: 0.625rem;
+  --bs-btn-border-radius: var(--button-radius);
+}
+.expediente-workspace :where(.btn):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+.expediente-workspace :where(.btn):disabled,
+.expediente-workspace :where(.btn).disabled {
+  cursor: not-allowed;
+}
+/* Solid tones */
+.expediente-workspace :where(.btn-primary, .btn-info) {
+  --bs-btn-color: hsl(var(--primary-foreground));
+  --bs-btn-bg: hsl(var(--primary));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: hsl(var(--primary-foreground));
+  --bs-btn-hover-bg: hsl(var(--primary) / 0.9);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: hsl(var(--primary-foreground));
+  --bs-btn-active-bg: hsl(var(--primary) / 0.85);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--primary-foreground));
+  --bs-btn-disabled-bg: hsl(var(--primary));
+  --bs-btn-disabled-border-color: transparent;
+}
+.expediente-workspace :where(.btn-success) {
+  --bs-btn-color: hsl(var(--accent-foreground));
+  --bs-btn-bg: hsl(var(--accent));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: hsl(var(--accent-foreground));
+  --bs-btn-hover-bg: hsl(var(--accent) / 0.9);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: hsl(var(--accent-foreground));
+  --bs-btn-active-bg: hsl(var(--accent) / 0.85);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--accent-foreground));
+  --bs-btn-disabled-bg: hsl(var(--accent));
+  --bs-btn-disabled-border-color: transparent;
+}
+.expediente-workspace :where(.btn-danger) {
+  --bs-btn-color: hsl(var(--destructive-foreground));
+  --bs-btn-bg: hsl(var(--destructive));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: hsl(var(--destructive-foreground));
+  --bs-btn-hover-bg: hsl(var(--destructive) / 0.9);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: hsl(var(--destructive-foreground));
+  --bs-btn-active-bg: hsl(var(--destructive) / 0.85);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--destructive-foreground));
+  --bs-btn-disabled-bg: hsl(var(--destructive));
+  --bs-btn-disabled-border-color: transparent;
+}
+.expediente-workspace :where(.btn-warning) {
+  --bs-btn-color: hsl(var(--warning-foreground));
+  --bs-btn-bg: hsl(var(--warning));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: hsl(var(--warning-foreground));
+  --bs-btn-hover-bg: hsl(var(--warning) / 0.9);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: hsl(var(--warning-foreground));
+  --bs-btn-active-bg: hsl(var(--warning) / 0.85);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--warning-foreground));
+  --bs-btn-disabled-bg: hsl(var(--warning));
+  --bs-btn-disabled-border-color: transparent;
+}
+/* .btn-secondary / .btn-light / .btn-outline-secondary / .btn-outline-dark → neutral (the .btn default above).
+   .btn-dark keeps a strong neutral. */
+.expediente-workspace :where(.btn-dark) {
+  --bs-btn-color: hsl(var(--background));
+  --bs-btn-bg: hsl(var(--foreground));
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: hsl(var(--background));
+  --bs-btn-hover-bg: hsl(var(--foreground) / 0.9);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: hsl(var(--background));
+  --bs-btn-active-bg: hsl(var(--foreground) / 0.85);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--background));
+  --bs-btn-disabled-bg: hsl(var(--foreground));
+  --bs-btn-disabled-border-color: transparent;
+}
+/* Outline tones: neutral surface, toned text and border */
+.expediente-workspace :where(.btn-outline-primary, .btn-outline-info) {
+  --bs-btn-color: var(--ew-info-text);
+  --bs-btn-border-color: hsl(var(--primary) / 0.45);
+  --bs-btn-hover-color: var(--ew-info-text);
+  --bs-btn-hover-bg: hsl(var(--primary) / 0.1);
+  --bs-btn-hover-border-color: hsl(var(--primary) / 0.6);
+  --bs-btn-active-color: var(--ew-info-text);
+  --bs-btn-active-bg: hsl(var(--primary) / 0.16);
+  --bs-btn-active-border-color: hsl(var(--primary) / 0.6);
+  --bs-btn-disabled-color: var(--ew-info-text);
+  --bs-btn-disabled-border-color: hsl(var(--primary) / 0.45);
+}
+.expediente-workspace :where(.btn-outline-success) {
+  --bs-btn-color: var(--ew-success-text);
+  --bs-btn-border-color: hsl(var(--accent) / 0.5);
+  --bs-btn-hover-color: var(--ew-success-text);
+  --bs-btn-hover-bg: hsl(var(--accent) / 0.1);
+  --bs-btn-hover-border-color: hsl(var(--accent) / 0.65);
+  --bs-btn-active-color: var(--ew-success-text);
+  --bs-btn-active-bg: hsl(var(--accent) / 0.16);
+  --bs-btn-active-border-color: hsl(var(--accent) / 0.65);
+  --bs-btn-disabled-color: var(--ew-success-text);
+  --bs-btn-disabled-border-color: hsl(var(--accent) / 0.5);
+}
+.expediente-workspace :where(.btn-outline-danger) {
+  --bs-btn-color: var(--ew-danger-text);
+  --bs-btn-border-color: hsl(var(--destructive) / 0.5);
+  --bs-btn-hover-color: var(--ew-danger-text);
+  --bs-btn-hover-bg: hsl(var(--destructive) / 0.1);
+  --bs-btn-hover-border-color: hsl(var(--destructive) / 0.65);
+  --bs-btn-active-color: var(--ew-danger-text);
+  --bs-btn-active-bg: hsl(var(--destructive) / 0.16);
+  --bs-btn-active-border-color: hsl(var(--destructive) / 0.65);
+  --bs-btn-disabled-color: var(--ew-danger-text);
+  --bs-btn-disabled-border-color: hsl(var(--destructive) / 0.5);
+}
+.expediente-workspace :where(.btn-outline-warning) {
+  --bs-btn-color: var(--ew-warning-text);
+  --bs-btn-border-color: hsl(var(--warning) / 0.55);
+  --bs-btn-hover-color: var(--ew-warning-text);
+  --bs-btn-hover-bg: hsl(var(--warning) / 0.12);
+  --bs-btn-hover-border-color: hsl(var(--warning) / 0.7);
+  --bs-btn-active-color: var(--ew-warning-text);
+  --bs-btn-active-bg: hsl(var(--warning) / 0.18);
+  --bs-btn-active-border-color: hsl(var(--warning) / 0.7);
+  --bs-btn-disabled-color: var(--ew-warning-text);
+  --bs-btn-disabled-border-color: hsl(var(--warning) / 0.55);
+}
+/* Ghost */
+.expediente-workspace :where(.btn-link) {
+  --bs-btn-color: var(--ew-info-text);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: var(--ew-info-text);
+  --bs-btn-hover-bg: hsl(var(--muted));
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: var(--ew-info-text);
+  --bs-btn-active-bg: hsl(var(--muted));
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: hsl(var(--muted-foreground));
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: transparent;
+  --bs-btn-box-shadow: none;
+  text-decoration: none;
+}
+.expediente-workspace :where(.btn-group) > :where(.btn) { --bs-btn-box-shadow: none; }
+
+/* ── Form controls ────────────────────────────────────────────────── */
+.expediente-workspace :where(.form-control, .form-select) {
+  border-color: hsl(var(--input));
+  border-radius: var(--input-radius);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: var(--input-shadow);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+/* Font size steps aside when the control carries its own Tailwind text size. */
+.expediente-workspace :where(.form-control, .form-select):where(:not([class*='text-xs'], [class*='text-sm'], [class*='text-base'], [class*='text-['])) {
+  font-size: var(--ew-control-font-size);
+  line-height: 1.5;
+}
+.expediente-workspace :where(.form-control-sm, .form-select-sm):where(:not([class*='text-xs'], [class*='text-sm'], [class*='text-base'], [class*='text-['])) {
+  font-size: var(--ew-control-font-size-sm);
+}
+.expediente-workspace :where(.form-control)::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
+}
+.expediente-workspace :where(.form-control, .form-select):focus {
+  border-color: hsl(var(--ring));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+}
+/* Disabled / read-only fields read as data, not as broken inputs */
+.expediente-workspace :where(.form-control, .form-select):disabled,
+.expediente-workspace :where(.form-control)[readonly] {
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.45);
+  color: hsl(var(--foreground));
+  -webkit-text-fill-color: hsl(var(--foreground));
+  box-shadow: none;
+  opacity: 1;
+  cursor: default;
+}
+.expediente-workspace :where(.form-control)[readonly]:focus {
+  border-color: hsl(var(--border));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+.expediente-workspace :where(textarea.form-control) { resize: vertical; }
+.expediente-workspace :where(textarea.form-control):disabled,
+.expediente-workspace :where(textarea.form-control)[readonly] {
+  resize: none;
+}
+.expediente-workspace :where(.form-label, .col-form-label) {
+  margin-bottom: 0.25rem;
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.expediente-workspace :where(.form-check-label) {
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+}
+.expediente-workspace :where(.form-check-input) {
+  border-color: hsl(var(--input));
+  background-color: hsl(var(--background));
+}
+.expediente-workspace :where(.form-check-input):checked {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary));
+}
+.expediente-workspace :where(.form-check-input):focus-visible {
+  border-color: hsl(var(--ring));
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+.expediente-workspace :where(.form-check-input):disabled { opacity: 0.6; }
+.expediente-workspace :where(.form-check-input):disabled ~ :where(.form-check-label) {
+  color: hsl(var(--foreground));
+  opacity: 0.75;
+}
+/* Input groups: the addon is a quiet label, not a color block */
+.expediente-workspace :where(.input-group-text) {
+  border-color: hsl(var(--input));
+  border-radius: var(--input-radius);
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.expediente-workspace :where(.input-group-sm) > :where(.input-group-text) { font-size: 0.75rem; }
+.expediente-workspace.expediente-workspace :where(.input-group-text):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark, .bg-light) {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ── Tables (.table → unified data table look) ────────────────────── */
+.expediente-workspace :where(.table) {
+  --bs-table-color: hsl(var(--foreground));
+  --bs-table-bg: transparent;
+  --bs-table-border-color: hsl(var(--border));
+  --bs-table-striped-color: hsl(var(--foreground));
+  --bs-table-striped-bg: hsl(var(--muted) / 0.3);
+  --bs-table-hover-color: hsl(var(--foreground));
+  --bs-table-hover-bg: hsl(var(--muted) / 0.5);
+  --bs-table-active-bg: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  font-size: 0.875rem;
+}
+.expediente-workspace :where(.table) > :not(caption) > * > * {
+  padding: 0.5rem 0.75rem;
+  vertical-align: middle;
+}
+.expediente-workspace :where(.table-sm) > :not(caption) > * > * {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+.expediente-workspace :where(.table) > :where(thead) > tr > * {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground) / 0.8);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.expediente-workspace :where(.table-light, .table-secondary, .table-primary, .table-info) {
+  --bs-table-color: hsl(var(--foreground));
+  --bs-table-bg: hsl(var(--muted));
+  --bs-table-border-color: hsl(var(--border));
+}
+.expediente-workspace :where(.table-success) {
+  --bs-table-color: hsl(var(--foreground));
+  --bs-table-bg: hsl(var(--accent) / 0.12);
+  --bs-table-border-color: hsl(var(--accent) / 0.3);
+}
+.expediente-workspace :where(.table-warning) {
+  --bs-table-color: hsl(var(--foreground));
+  --bs-table-bg: hsl(var(--warning) / 0.14);
+  --bs-table-border-color: hsl(var(--warning) / 0.35);
+}
+.expediente-workspace :where(.table-danger) {
+  --bs-table-color: hsl(var(--foreground));
+  --bs-table-bg: hsl(var(--destructive) / 0.1);
+  --bs-table-border-color: hsl(var(--destructive) / 0.3);
+}
+
+/* ── Tabs (.nav-tabs / .nav-pills → shadcn Tabs segmented look) ───── */
+.expediente-workspace :where(.nav-tabs, .nav-pills) {
+  --bs-nav-link-padding-x: 0.75rem;
+  --bs-nav-link-padding-y: 0.375rem;
+  --bs-nav-link-font-size: 0.875rem;
+  --bs-nav-link-font-weight: 500;
+  --bs-nav-link-color: hsl(var(--muted-foreground));
+  --bs-nav-link-hover-color: hsl(var(--foreground));
+  --bs-nav-link-disabled-color: hsl(var(--muted-foreground) / 0.6);
+  --bs-nav-tabs-border-width: 0px;
+  --bs-nav-tabs-border-radius: calc(var(--radius) - 2px);
+  --bs-nav-tabs-link-active-color: hsl(var(--foreground));
+  --bs-nav-tabs-link-active-bg: hsl(var(--background));
+  --bs-nav-pills-border-radius: calc(var(--radius) - 2px);
+  --bs-nav-pills-link-active-color: hsl(var(--foreground));
+  --bs-nav-pills-link-active-bg: hsl(var(--background));
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 100%;
+  padding: 0.25rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.25rem);
+  background-color: hsl(var(--muted) / 0.5);
+}
+.expediente-workspace :where(.nav-tabs, .nav-pills) .nav-link {
+  margin: 0;
+  min-height: 2rem;
+  border: 0;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: transparent;
+  line-height: 1.25rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.expediente-workspace :where(.nav-tabs, .nav-pills) .nav-link:where(.active, [aria-selected='true']) {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  box-shadow: 0 0 0 1px hsl(var(--border)), var(--card-shadow);
+}
+.expediente-workspace :where(.nav-tabs, .nav-pills) .nav-link:where(:not(.active, [aria-selected='true'])):hover {
+  background-color: hsl(var(--background) / 0.6);
+}
+.expediente-workspace :where(.nav-tabs, .nav-pills) .nav-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* ── Badges (.badge → DovelaBadge) ────────────────────────────────── */
+.expediente-workspace :where(.badge) {
+  --bs-badge-padding-x: var(--badge-padding-x);
+  --bs-badge-padding-y: var(--badge-padding-y);
+  --bs-badge-font-size: var(--badge-font-size);
+  --bs-badge-font-weight: 500;
+  --bs-badge-color: hsl(var(--foreground));
+  --bs-badge-border-radius: var(--badge-radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.75);
+  line-height: 1;
+}
+.expediente-workspace.expediente-workspace :where(.badge):where(.bg-primary, .bg-info) {
+  border-color: hsl(var(--primary) / 0.25);
+  background-color: hsl(var(--primary) / 0.1) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.badge):where(.bg-success) {
+  border-color: hsl(var(--accent) / 0.3);
+  background-color: hsl(var(--accent) / 0.1) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.badge):where(.bg-warning) {
+  border-color: hsl(var(--warning) / 0.35);
+  background-color: hsl(var(--warning) / 0.1) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.badge):where(.bg-danger) {
+  border-color: hsl(var(--destructive) / 0.3);
+  background-color: hsl(var(--destructive) / 0.1) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace :where(.badge):where(.bg-secondary, .bg-light, .bg-dark) {
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.75) !important;
+  color: hsl(var(--foreground)) !important;
+}
+/* An empty badge is a status dot (traffic light): it keeps its solid tone. */
+.expediente-workspace.expediente-workspace :where(.badge:empty):where(.bg-primary, .bg-info) { border-color: transparent; background-color: hsl(var(--primary)) !important; }
+.expediente-workspace.expediente-workspace :where(.badge:empty):where(.bg-success) { border-color: transparent; background-color: hsl(var(--accent)) !important; }
+.expediente-workspace.expediente-workspace :where(.badge:empty):where(.bg-warning) { border-color: transparent; background-color: hsl(var(--warning)) !important; }
+.expediente-workspace.expediente-workspace :where(.badge:empty):where(.bg-danger) { border-color: transparent; background-color: hsl(var(--destructive)) !important; }
+
+/* ── Alerts (.alert → DovelaInlineAlert) ──────────────────────────── */
+.expediente-workspace :where(.alert) {
+  --bs-alert-padding-x: var(--alert-padding-x);
+  --bs-alert-padding-y: var(--alert-padding-y);
+  --bs-alert-margin-bottom: 0.75rem;
+  --bs-alert-border-radius: var(--alert-radius);
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--muted) / 0.5);
+  --bs-alert-border-color: hsl(var(--border));
+  --bs-alert-link-color: hsl(var(--foreground));
+  /* Restated as properties: clocks/centralClocks.css sets them on `.alert-*` globally. */
+  border-color: var(--bs-alert-border-color);
+  border-radius: var(--bs-alert-border-radius);
+  background-color: var(--bs-alert-bg);
+  color: var(--bs-alert-color);
+  box-shadow: var(--alert-shadow);
+  font-size: 0.875rem;
+}
+.expediente-workspace :where(.alert-primary, .alert-info) {
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--primary) / 0.08);
+  --bs-alert-border-color: hsl(var(--primary) / 0.25);
+}
+.expediente-workspace :where(.alert-success) {
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--accent) / 0.1);
+  --bs-alert-border-color: hsl(var(--accent) / 0.3);
+}
+.expediente-workspace :where(.alert-warning) {
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--warning) / 0.12);
+  --bs-alert-border-color: hsl(var(--warning) / 0.4);
+}
+.expediente-workspace :where(.alert-danger) {
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--destructive) / 0.08);
+  --bs-alert-border-color: hsl(var(--destructive) / 0.3);
+}
+.expediente-workspace :where(.alert-secondary, .alert-light, .alert-dark) {
+  --bs-alert-color: hsl(var(--foreground));
+  --bs-alert-bg: hsl(var(--muted) / 0.5);
+  --bs-alert-border-color: hsl(var(--border));
+}
+
+/* ── Cards and list groups ────────────────────────────────────────── */
+.expediente-workspace :where(.card) {
+  --bs-card-color: hsl(var(--card-foreground));
+  --bs-card-bg: hsl(var(--card));
+  --bs-card-border-color: hsl(var(--border));
+  --bs-card-border-radius: var(--card-radius);
+  --bs-card-inner-border-radius: calc(var(--card-radius) - 1px);
+  --bs-card-cap-color: hsl(var(--foreground));
+  --bs-card-cap-bg: hsl(var(--muted) / 0.5);
+  --bs-card-spacer-x: var(--card-padding);
+  --bs-card-spacer-y: var(--card-padding-compact);
+  --bs-card-cap-padding-x: var(--card-padding);
+  --bs-card-cap-padding-y: 0.625rem;
+  box-shadow: var(--card-shadow);
+}
+.expediente-workspace :where(.card-header, .card-title) {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.expediente-workspace.expediente-workspace :where(.card-header):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark, .bg-light) {
+  background-color: hsl(var(--muted) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace :where(.list-group) {
+  --bs-list-group-color: hsl(var(--foreground));
+  --bs-list-group-bg: transparent;
+  --bs-list-group-border-color: hsl(var(--border));
+  --bs-list-group-border-radius: var(--card-radius);
+  --bs-list-group-item-padding-x: 0.75rem;
+  --bs-list-group-item-padding-y: 0.5rem;
+  --bs-list-group-action-hover-bg: hsl(var(--muted) / 0.6);
+  --bs-list-group-active-color: hsl(var(--foreground));
+  --bs-list-group-active-bg: hsl(var(--primary) / 0.1);
+  --bs-list-group-active-border-color: hsl(var(--primary) / 0.3);
+  font-size: 0.875rem;
+}
+/* list-group-item-primary/secondary are used as header rows of lists */
+.expediente-workspace :where(.list-group-item-primary, .list-group-item-secondary, .list-group-item-info, .list-group-item-light, .list-group-item-dark) {
+  --bs-list-group-color: hsl(var(--foreground));
+  --bs-list-group-bg: hsl(var(--muted));
+  --bs-list-group-border-color: hsl(var(--border));
+  font-weight: 600;
+}
+.expediente-workspace :where(.list-group-item-success) {
+  --bs-list-group-color: hsl(var(--foreground));
+  --bs-list-group-bg: hsl(var(--accent) / 0.1);
+  --bs-list-group-border-color: hsl(var(--accent) / 0.3);
+}
+.expediente-workspace :where(.list-group-item-warning) {
+  --bs-list-group-color: hsl(var(--foreground));
+  --bs-list-group-bg: hsl(var(--warning) / 0.12);
+  --bs-list-group-border-color: hsl(var(--warning) / 0.4);
+}
+.expediente-workspace :where(.list-group-item-danger) {
+  --bs-list-group-color: hsl(var(--foreground));
+  --bs-list-group-bg: hsl(var(--destructive) / 0.08);
+  --bs-list-group-border-color: hsl(var(--destructive) / 0.3);
+}
+
+/* ── Collapsibles ─────────────────────────────────────────────────────
+   shared/components/Collapsible.jsx (data-legacy-collapsible) and the global
+   `.Collapsible` class from index.css: a calm disclosure row instead of a
+   saturated bar — hairline frame, foreground label, chevron, hover and focus. */
+.expediente-workspace.expediente-workspace :where([data-legacy-collapsible]) {
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius);
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  text-align: left !important;
+}
+.expediente-workspace :where(.legacy-collapsible__trigger) {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+.expediente-workspace :where(.legacy-collapsible__trigger):hover { background-color: hsl(var(--muted) / 0.6); }
+.expediente-workspace :where(.legacy-collapsible__trigger):focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px hsl(var(--ring));
+}
+.expediente-workspace :where(.legacy-collapsible__trigger) > :where(label) {
+  flex: 1;
+  margin: 0;
+  cursor: pointer;
+}
+.expediente-workspace.expediente-workspace :where(.legacy-collapsible__trigger) :where(label, span, b, strong) {
+  color: hsl(var(--foreground)) !important;
+  font-weight: inherit !important;
+  text-align: left !important;
+}
+.expediente-workspace.expediente-workspace :where(.legacy-collapsible__chevron) {
+  display: block !important;
+  flex: none;
+  margin-left: auto;
+  color: hsl(var(--muted-foreground));
+  transition: transform 0.2s ease;
+}
+.expediente-workspace :where([data-legacy-collapsible][data-open='true']) > :where(.legacy-collapsible__trigger) {
+  border-bottom: 1px solid hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.4);
+}
+.expediente-workspace :where([data-legacy-collapsible][data-open='true']) > :where(.legacy-collapsible__trigger) > :where(.legacy-collapsible__chevron) {
+  transform: rotate(180deg);
+}
+.expediente-workspace :where([data-legacy-collapsible]) > :where(.collapsible-grid-wrapper[data-open='true']) > :where(.collapsible-grid-inner) {
+  padding: 0.75rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .expediente-workspace.expediente-workspace :where(.legacy-collapsible__chevron) { transition: none; }
+}
+/* `.Collapsible` used as a plain heading class on non-legend elements. */
+.expediente-workspace.expediente-workspace :where(.Collapsible:not(legend)) {
+  border-bottom: 1px solid hsl(var(--border));
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Centered in-module titles (<h2|h3 class="text-center">) join the section-heading language. */
+.expediente-workspace.expediente-workspace :where(h2, h3):where(.text-center) {
+  margin-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  font-size: 0.9375rem;
+  text-align: left !important;
+}
+
+/* ── Semantic text tones for Tailwind-native modules ──────────────────
+   AA-safe on card / muted / tinted surfaces (the plain `text-accent`,
+   `text-warning` tokens are surface colors and fail 4.5:1 as text).
+   Inside the workspace they resolve to the --ew-*-text mixes; elsewhere
+   they fall back to the same mix computed from the tokens. */
+.ew-text-info { color: var(--ew-info-text, color-mix(in srgb, hsl(var(--primary)) 62%, hsl(var(--foreground)))); }
+.ew-text-success { color: var(--ew-success-text, color-mix(in srgb, hsl(var(--accent)) 58%, hsl(var(--foreground)))); }
+.ew-text-warning { color: var(--ew-warning-text, color-mix(in srgb, hsl(var(--warning)) 56%, hsl(var(--foreground)))); }
+.ew-text-danger { color: var(--ew-danger-text, color-mix(in srgb, hsl(var(--destructive)) 84%, hsl(var(--foreground)))); }
+
+/* Bare textareas (no .form-control): same field language as the rest of the form. */
+.expediente-workspace :where(textarea:not(.form-control):not([class*='rounded'])) {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: var(--input-radius);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: var(--input-shadow);
+  font-size: var(--ew-control-font-size);
+  line-height: 1.5;
+  resize: vertical;
+}
+.expediente-workspace :where(textarea:not(.form-control):not([class*='rounded'])):focus {
+  border-color: hsl(var(--ring));
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+}
+.expediente-workspace :where(textarea:not(.form-control):not([class*='rounded'])):where(:disabled, [readonly]) {
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--muted) / 0.45);
+  -webkit-text-fill-color: hsl(var(--foreground));
+  box-shadow: none;
+  opacity: 1;
+  resize: none;
+}
+
+/* "Actualizar" section legends (FunUpdateSectionLegend.css, lazy module stylesheet):
+   drop the boxed, side-striped variant so every legend uses the heading system above. */
+.expediente-workspace.expediente-workspace :where(.fun-update-section-legend) {
+  min-height: 0;
+  border: 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.expediente-workspace.expediente-workspace :where(.fun-update-section-legend__step) {
+  display: inline;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+/* Tailwind `text-accent` is a surface token (3.1:1 on white): as text it takes the AA-safe mix. */
+.expediente-workspace.expediente-workspace :where(.text-accent) { color: var(--ew-success-text); }
+.expediente-workspace.expediente-workspace :where(.text-destructive) { color: var(--ew-danger-text); }
+
+/* Unclassed <button>s keep the browser's `buttontext` (black) → unreadable in dark. */
+:where(.expediente-workspace) button { color: inherit; }
+/* Native widgets (date picker indicator, select popup, scrollbars) follow the theme. */
+.dark .expediente-workspace { color-scheme: dark; }
+
+/* ── Tailwind border colors on bordered elements ──────────────────────
+   Tailwind's `border` and Bootstrap's `.border` are the same class name, and
+   Bootstrap's sets `border: … var(--bs-border-color) !important`, so a Tailwind
+   `border-<token>` on the same element lost its color inside the workspace.
+   These rules give the token color back, only on elements that carry both
+   classes; legacy markup (`.border` alone, `.border-primary`, `.border-dark`…)
+   keeps the rules above. `border-primary` / `border-warning` without opacity
+   are Bootstrap names too and stay with the softened legacy tone. */
+.expediente-workspace.expediente-workspace :where(.border.border-border) { border-color: hsl(var(--border)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-border\/50) { border-color: hsl(var(--border) / 0.5) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-border\/60) { border-color: hsl(var(--border) / 0.6) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-border\/70) { border-color: hsl(var(--border) / 0.7) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-border\/80) { border-color: hsl(var(--border) / 0.8) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-input) { border-color: hsl(var(--input)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-muted) { border-color: hsl(var(--muted)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-transparent) { border-color: transparent !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/15) { border-color: hsl(var(--primary) / 0.15) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/20) { border-color: hsl(var(--primary) / 0.2) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/25) { border-color: hsl(var(--primary) / 0.25) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/30) { border-color: hsl(var(--primary) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/40) { border-color: hsl(var(--primary) / 0.4) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-primary\/50) { border-color: hsl(var(--primary) / 0.5) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-destructive) { border-color: hsl(var(--destructive)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-destructive\/20) { border-color: hsl(var(--destructive) / 0.2) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-destructive\/25) { border-color: hsl(var(--destructive) / 0.25) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-destructive\/30) { border-color: hsl(var(--destructive) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-destructive\/40) { border-color: hsl(var(--destructive) / 0.4) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-warning\/20) { border-color: hsl(var(--warning) / 0.2) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-warning\/30) { border-color: hsl(var(--warning) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-warning\/35) { border-color: hsl(var(--warning) / 0.35) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-warning\/40) { border-color: hsl(var(--warning) / 0.4) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-accent\/20) { border-color: hsl(var(--accent) / 0.2) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-accent\/25) { border-color: hsl(var(--accent) / 0.25) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-accent\/30) { border-color: hsl(var(--accent) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-accent\/40) { border-color: hsl(var(--accent) / 0.4) !important; }
+/* Per-side colors and state variants in use. */
+.expediente-workspace.expediente-workspace :where(.border.border-t-primary) { border-top-color: hsl(var(--primary)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-r-primary) { border-right-color: hsl(var(--primary)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-b-primary) { border-bottom-color: hsl(var(--primary)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-l-primary) { border-left-color: hsl(var(--primary)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-l-primary\/30) { border-left-color: hsl(var(--primary) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-t-transparent) { border-top-color: transparent !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-b-transparent) { border-bottom-color: transparent !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-l-transparent) { border-left-color: transparent !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-r-border) { border-right-color: hsl(var(--border)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.border-b-border\/60) { border-bottom-color: hsl(var(--border) / 0.6) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-border:hover) { border-color: hsl(var(--border)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-primary\/20:hover) { border-color: hsl(var(--primary) / 0.2) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-primary\/30:hover) { border-color: hsl(var(--primary) / 0.3) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-primary\/40:hover) { border-color: hsl(var(--primary) / 0.4) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-primary\/50:hover) { border-color: hsl(var(--primary) / 0.5) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-destructive\/25:hover) { border-color: hsl(var(--destructive) / 0.25) !important; }
+.expediente-workspace.expediente-workspace :where(.border.hover\:border-b-border:hover) { border-bottom-color: hsl(var(--border)) !important; }
+.expediente-workspace.expediente-workspace :where(.border.focus\:border-primary:focus) { border-color: hsl(var(--primary)) !important; }
+
+/* ── Hover of token-native solid buttons ──────────────────────────────
+   `.bg-primary` / `.bg-warning` are Bootstrap names as well: the contextual
+   background rules above are `!important` and froze the Tailwind hover of
+   `bg-primary hover:bg-primary/90` buttons. Legacy blocks never carry a
+   `hover:` class, so they are unaffected. */
+.expediente-workspace.expediente-workspace :where(.bg-primary.hover\:bg-primary\/80:hover) { background-color: hsl(var(--primary) / 0.8) !important; }
+.expediente-workspace.expediente-workspace :where(.bg-primary.hover\:bg-primary\/90:hover) { background-color: hsl(var(--primary) / 0.9) !important; }
+.expediente-workspace.expediente-workspace :where(.bg-warning.hover\:bg-warning\/90:hover) { background-color: hsl(var(--warning) / 0.9) !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Card-stack modules (`data-layout='stack'` on the module region)
+   ──────────────────────────────────────────────────────────────────────
+   Detalles, Documentos, Actualizar, Chequeo and Publicidad render as a stack
+   of floating cards on the page background, like "Tiempos": one concept per
+   card, a calm heading row and a 16px rhythm. FunExpedienteFullscreen drops
+   the single module card for them and sets the attribute.
+
+   - `.ew-card` is the card for new markup; a top-level legacy <fieldset> gets
+     the same surface, so untouched forms join the stack without JSX changes.
+   - `.ew-dl` is the label/value grid for display-only data.
+   - `.ew-*` component classes are unscoped (0,1,0) so the same markup also renders
+     in the legacy pages that mount these modules outside the workspace.
+   ══════════════════════════════════════════════════════════════════════ */
+.expediente-workspace {
+  /* Muted text that keeps 4.5:1 on card, muted and tinted surfaces. */
+  --ew-muted-text: color-mix(in srgb, hsl(var(--muted-foreground)) 78%, hsl(var(--foreground)));
+}
+.expediente-workspace[data-layout='stack'] { container-type: inline-size; }
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(.text-muted-foreground, .text-muted, .form-text) {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground))) !important;
+}
+
+/* ── Card surface ─────────────────────────────────────────────────── */
+.ew-card,
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(fieldset:not(fieldset fieldset, .ew-card fieldset)) {
+  display: block;
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: 1rem 1.25rem 1.25rem !important;
+  border: 1px solid hsl(var(--border) / 0.7) !important;
+  border-radius: 1rem;
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: var(--card-shadow);
+}
+.ew-card:last-child { margin-bottom: 0; }
+/* A fieldset inside a card is a sub-group, never a second card. */
+.ew-card fieldset {
+  margin: 1rem 0 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.ew-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  min-height: 2rem;
+  margin-bottom: 0.875rem;
+}
+.ew-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: hsl(var(--foreground));
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  text-align: left !important;
+  text-wrap: balance;
+}
+.ew-card__title::before {
+  content: '';
+  flex: none;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background-color: hsl(var(--primary));
+}
+.ew-card__meta {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.ew-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+/* Sub-heading inside a card: steps down from the card title, hairline above the group. */
+.ew-subheading {
+  display: block;
+  float: none;
+  width: 100%;
+  margin: 1.25rem 0 0.75rem !important;
+  padding: 0.875rem 0 0 !important;
+  border: 0;
+  border-top: 1px solid hsl(var(--border) / 0.7);
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left !important;
+}
+.ew-subheading::before { content: none; }
+/* First group of a card: the card title already separates it. */
+.ew-subheading.ew-subheading--first {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0;
+}
+.ew-card__header:last-child { margin-bottom: 0; }
+/* Group title between cards (e.g. "5. Titulares y profesionales"). */
+.ew-group-title {
+  margin: 1.5rem 0 0.625rem;
+  padding: 0 0.25rem;
+  border: 0;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left !important;
+}
+
+/* Legacy legends inside a stack card speak the same heading language. */
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(legend) {
+  min-height: 2rem;
+  margin: 0 0 0.875rem !important;
+  padding: 0 !important;
+  border-bottom: 0;
+}
+.expediente-workspace[data-layout='stack'] :where(legend)::before {
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: hsl(var(--primary));
+}
+/* Later legends of the same card are sub-headings. */
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(legend ~ legend, legend ~ * legend, .ew-card legend, fieldset fieldset legend) {
+  min-height: 0;
+  margin: 1.25rem 0 0.75rem !important;
+  padding: 0.875rem 0 0 !important;
+  border-top: 1px solid hsl(var(--border) / 0.7);
+  font-size: 0.8125rem;
+}
+.expediente-workspace[data-layout='stack'] :where(legend ~ legend, legend ~ * legend, .ew-card legend, fieldset fieldset legend)::before { content: none; }
+/* Section titles written in capitals keep their text (search, tests) and read as sentence-weight headings. */
+.expediente-workspace[data-layout='stack'] :where(h3.text-center) {
+  margin-top: 0;
+  padding: 0 0.25rem 0.5rem !important;
+  border-bottom: 0;
+}
+
+/* ── Definition grid (display-only data) ──────────────────────────── */
+.ew-dl {
+  display: grid;
+  /* At most four columns; reflows to 3 / 2 / 1 as the module narrows. */
+  grid-template-columns: repeat(auto-fill, minmax(max(13.5rem, calc((100% - 4.5rem) / 4)), 1fr));
+  gap: 0.875rem 1.5rem;
+  margin: 0;
+}
+.ew-dl--wide {
+  grid-template-columns: repeat(auto-fill, minmax(max(18rem, calc((100% - 1.5rem) / 2)), 1fr));
+}
+.ew-dl__item { min-width: 0; }
+.ew-dl__item--full { grid-column: 1 / -1; }
+.ew-dl :where(dt) {
+  margin: 0 0 0.125rem;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.ew-dl :where(dd) {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.ew-dl :where(dd[data-empty='true']) {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-weight: 400;
+}
+.ew-prose {
+  max-width: 90ch;
+  font-weight: 400;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+.ew-dl + .ew-dl { margin-top: 0.875rem; }
+
+/* ── Tables inside the stack: 40px rows, hairlines, no zebra ──────── */
+.expediente-workspace[data-layout='stack'] :where(.rdt_Table) { border-radius: 0.75rem; }
+.expediente-workspace[data-layout='stack'] :where(.rdt_TableRow, .rdt_TableHeadRow) {
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+}
+.expediente-workspace[data-layout='stack'] :where(.rdt_TableRow:last-child) { border-bottom: 0; }
+.expediente-workspace[data-layout='stack'] :where(.rdt_TableCell) { height: 2.5rem; }
+.expediente-workspace[data-layout='stack'] :where(.rdt_TableCell) :where(label) { margin: 0; }
+.ew-num {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+/* ── Action rows: one alignment, one primary ──────────────────────── */
+.ew-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.ew-actions--start { justify-content: flex-start; }
+
+/* ── Document-type key ────────────────────────────────────────────── */
+.ew-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 1rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  line-height: 1.4;
+  list-style: none;
+}
+.ew-key > :where(li) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* ── Compact fields in forms of the stack (36px, labels above) ────── */
+.expediente-workspace[data-layout='stack'] :where(.form-control:not(textarea), .form-select) {
+  min-height: var(--input-height-compact);
+  padding-top: 0.3125rem;
+  padding-bottom: 0.3125rem;
+}
+/* Only labels that sit above a control: grid "tables" built with .row/.col keep their cell text. */
+.expediente-workspace[data-layout='stack'] :where(.row > [class*='col'] > label:not(.form-check-label):not([class*='fw-bold']):first-child:has(~ :is(input, select, textarea, .input-group, .form-check, .dv-date))) {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.expediente-workspace[data-layout='stack'] :where(.form-check) { min-height: 1.5rem; margin-bottom: 0.25rem; }
+
+/* ── Checklist grid (fun_g_checklist: .row > .col-9 + three .col-1) ───
+   Reads as one table: hairline rows, a quiet header per group, the three
+   answer columns centered under SI / NO / N/A. */
+.ew-checklist {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+.ew-checklist > .row {
+  align-items: center;
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0.375rem 0.25rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+}
+.ew-checklist > .row:last-child { border-bottom: 0; }
+.ew-checklist > .row:hover { background-color: hsl(var(--muted) / 0.4); }
+.ew-checklist > .row > [class*='col'] { padding-top: 0; padding-bottom: 0; }
+.ew-checklist > .row > .col-1 { text-align: center; }
+.ew-checklist > .row :where(ul) { margin: 0; padding: 0; list-style: none; }
+.ew-checklist > .row :where(label) { margin: 0; }
+.ew-checklist > .row :where(label.app-p) { font-size: 0.75rem; }
+/* Group header rows carry the bold group title. */
+.ew-checklist > .row:has(label.fw-bold) {
+  min-height: 2.25rem;
+  background-color: hsl(var(--muted) / 0.6);
+}
+.ew-checklist > .row:has(label.fw-bold) :where(label) {
+  color: hsl(var(--foreground));
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.ew-checklist .form-check-input { margin-top: 0; }
+.ew-checklist :where(small, .small, h6, label[style]) { font-size: 0.75rem !important; }
+@container (max-width: 640px) {
+  .ew-checklist > .row > .col-9 { flex: 0 0 100%; max-width: 100%; margin-bottom: 0.25rem; }
+  .ew-checklist > .row > .col-1 { flex: 1 0 0; max-width: none; }
+}
+
+/* ── Action cells of legacy grid rows (.row > .col-1 holding buttons) ──
+   The cell is never narrower than its buttons: on a narrow work area the
+   neighbours give up the room (or the cell wraps) instead of the buttons
+   hanging outside the row. No effect while 1/12 of the row is enough. */
+.expediente-workspace .row > .col-1:has(> button, > a, > .btn) {
+  min-width: max-content;
+}
+
+/* ── Disclosure lists inside a stack card ─────────────────────────── */
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where([data-legacy-collapsible]) {
+  margin-bottom: 0.5rem;
+  border-color: hsl(var(--border) / 0.8) !important;
+  border-radius: 0.75rem;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(.legacy-collapsible__trigger) :where(label, span, b, strong) {
+  font-weight: 500 !important;
+}
+
+/* Legacy single-action rows (<div class="row text-center"><div class="col-12"><button>): the
+   action sits at the end of the form, like `.ew-actions`. */
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(.row.text-center:has(> [class*='col'] > button:only-child)) {
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  text-align: right !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(.row.text-center > [class*='col'] > button.my-3:only-child) {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* Unchecked boxes and radios stay visible as controls (>= 3:1 against the card). */
+.expediente-workspace[data-layout='stack'] :where(.form-check-input:not(:checked)) {
+  border-color: hsl(var(--muted-foreground) / 0.75);
+}
+
+/* Form actions that follow several cards: a slim bar of their own. */
+.ew-card.ew-card--actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+/* Grid "tables" (.row/.col) header rows read like table heads. */
+.expediente-workspace.expediente-workspace[data-layout='stack'] :where(.row):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark) :where(label) {
+  margin: 0.375rem 0 !important;
+  font-size: 0.6875rem;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ew-checklist :where(.text-xs, [class*='text-[10'], [style*='font-size']) { font-size: 0.75rem !important; }
+/* Notes written as a whole-line <sup>: a helper line, not a superscript. */
+.ew-checklist > .row > [class*='col-12'] > sup {
+  position: static;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  vertical-align: baseline;
+}
+
+/* Unclassed links: Bootstrap 5.3 colors them from --bs-link-color-rgb, which the scope
+   cannot express with a color-mix; give them the AA-safe info text tone (both themes). */
+:where(.expediente-workspace[data-layout='stack']) a:where(:not([class])) {
+  color: var(--ew-info-text);
+  text-underline-offset: 0.15em;
+}
+
+/* ── Narrow module (phone, or a docked panel taking the room) ─────────
+   Legacy forms use fixed .col-N halves and thirds: below 640px of MODULE width each
+   field takes the row. Grid "tables" (bordered or tinted .row/.col) keep their columns. */
+@container (max-width: 640px) {
+  .ew-card,
+  .expediente-workspace.expediente-workspace[data-layout='stack'] :where(fieldset:not(fieldset fieldset, .ew-card fieldset)) {
+    padding: 0.875rem 0.875rem 1rem !important;
+    border-radius: 0.75rem;
+  }
+  .expediente-workspace[data-layout='stack'] :where(.row:not(.border, [class*='bg-'], :has(> .border))) > :where(.col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9):where(:not(.ew-checklist *)) {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+  .ew-card__actions { margin-left: 0; }
+  .ew-actions { justify-content: stretch; }
+  .ew-actions > :where(button) { flex: 1 1 auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Group B — Evaluación (report modules: Jurídico, Arquitectónico,
+   Estructural, P.H.)
+   ──────────────────────────────────────────────────────────────────────
+   The reports join the card stack (FunExpedienteFullscreen adds their
+   sections to CARD_STACK_SECTIONS). Rules here only reach those sections
+   through `data-section`, so the group A modules are untouched.
+   ══════════════════════════════════════════════════════════════════════ */
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) {
+  --ew-report-row: 2.5rem;
+}
+/* Report roots are Bootstrap `.container`s: the module column already sets the width. */
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.container, .container-xl, .container-lg, .container-md, .container-fluid) {
+  max-width: none;
+  margin-right: 0;
+  margin-left: 0;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+.ew-group-title.ew-group-title--first { margin-top: 0; }
+
+/* Toolbar above a table: counts on the left, secondary actions on the right. */
+.ew-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+.ew-toolbar__meta {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+.ew-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* A single autosaving switch with its consequence spelled out. */
+.ew-toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background-color: hsl(var(--muted) / 0.45);
+}
+.ew-toggle-row :where(.form-check-label) {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.ew-toggle-row__hint {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+/* Inventory / documentary file switcher: the panel is a quiet table well. */
+.ew-review-workspace__panel {
+  border: 1px solid hsl(var(--border) / 0.8);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  scrollbar-gutter: stable;
+}
+.ew-review-workspace__panel:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* ── Legacy grid "tables" of the reports (.row.border/.row.bg-*) ──────
+   Header banners read as table heads (muted, foreground text) instead of
+   royal-blue bars; body rows get 40px height and hairlines. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.row):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark, .bg-light) {
+  margin-right: 0;
+  margin-left: 0;
+  border-color: hsl(var(--border)) !important;
+  border-width: 1px !important;
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.row):where(.bg-primary, .bg-info, .bg-secondary, .bg-dark, .bg-light) :where(label, span, b, strong, h5, h6) {
+  color: hsl(var(--foreground)) !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.row.border:not([class*='bg-'])) {
+  align-items: center;
+  min-height: var(--ew-report-row, 2.5rem);
+  margin-right: 0;
+  margin-left: 0;
+  border-color: hsl(var(--border) / 0.8) !important;
+  border-width: 1px !important;
+  font-size: 0.875rem;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.row.border + .row.border) {
+  border-top-width: 0 !important;
+}
+
+/* Legacy section titles inside report cards (h3.py-3, centered h3/h5) become sub-headings. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(h3, h4, h5):where(.py-3, .text-center, .fw-bold, .my-3):where(:not([class*='ew-'])) {
+  margin: 1.25rem 0 0.75rem !important;
+  padding: 0.875rem 0 0 !important;
+  border-top: 1px solid hsl(var(--border) / 0.7);
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left !important;
+}
+
+/* ── Evaluation controls: one look for CUMPLE / NO CUMPLE / NO APLICA ──
+   The selects keep their element and handlers; the outcome tints the
+   control (semantic badge look) from the class the legacy code already sets. */
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(select.form-select, select.form-control) {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(select):where(.text-success, .ew-text-success) {
+  border-color: hsl(var(--accent) / 0.45);
+  background-color: hsl(var(--accent) / 0.08);
+  font-weight: 600;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(select):where(.text-danger, .text-destructive, .ew-text-danger) {
+  border-color: hsl(var(--destructive) / 0.45);
+  background-color: hsl(var(--destructive) / 0.06);
+  font-weight: 600;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(select):where(.text-warning, .ew-text-warning) {
+  border-color: hsl(var(--warning) / 0.5);
+  background-color: hsl(var(--warning) / 0.08);
+  font-weight: 600;
+}
+/* Options render in the native list: they take the list's own text color. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(select) :where(option) {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  font-weight: 400;
+}
+
+/* Wide report tables scroll inside their own container. */
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(table) {
+  font-variant-numeric: tabular-nums;
+}
+/* Bootstrap rows placed straight in a card would bleed into its padding (negative gutters). */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset, .container) > :where(.row) {
+  margin-right: 0;
+  margin-left: 0;
+}
+/* Totals rows of report tables: semibold with a hairline above, no tint. */
+.ew-total-row,
+.ew-total-row > :where(td, th, div) {
+  font-weight: 600;
+}
+.ew-total-row > :where(td, th, div) {
+  border-top: 1px solid hsl(var(--border));
+}
+/* "Añadir nuevo …" toggles: aligned with the card content (the legacy ms-5 indent overflowed the card). */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.form-check.ms-5) {
+  margin-left: 0 !important;
+}
+/* Evaluation selects inside table cells keep their whole label ("NO CUMPLE"). */
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.rdt_TableCell) :where(select.form-select, select.form-control) {
+  min-width: 8.75rem;
+}
+/* Observation blocks inside a report card are sub-groups, never a second floating card. */
+.expediente-workspace[data-layout='stack'] :where(.ew-card, fieldset) .op__static-card {
+  border-radius: 0.75rem;
+  box-shadow: none;
+}
+.expediente-workspace[data-layout='stack'] :where(.ew-card, fieldset) .op__panel { margin: 0.75rem 0; }
+/* Estructural: step statements ("Paso 3: …") are sub-headings with a readable measure. */
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='estructural'] :where(label.app-p.fw-bold) {
+  display: block;
+  max-width: 100ch;
+  margin: 0.75rem 0 0.5rem !important;
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 600 !important;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.expediente-workspace[data-layout='stack']:is([data-section='estructural'], [data-section='ph']) :where(.ew-card) :where(hr) {
+  margin: 1rem 0;
+  border-color: hsl(var(--border));
+  opacity: 0.7;
+}
+/* Hard black cell borders of the legacy calculation grids become hairlines. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.border-dark, .border-black) {
+  border-color: hsl(var(--border)) !important;
+}
+/* P.H. report mounted under "Expedición" (still a single module card): its sections stay flat there. */
+.expediente-workspace:not([data-layout='stack']) :where(.record_ph) .ew-card {
+  margin-bottom: 1.5rem;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(form) > :where(.row),
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(.row.mx-5) {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+/* P.H. and Estructural: block titles written as bold "lead" labels are sub-headings of the card.
+   The capitals stay in the source (search, PDFs); on screen they read in sentence case. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='ph'], [data-section='estructural'], [data-section='juridico']) :where(.ew-card) :where(.app-p.lead.fw-bold) {
+  display: block;
+  width: 100%;
+  margin: 1.25rem 0 0.75rem !important;
+  padding: 0.875rem 0 0 !important;
+  border-top: 1px solid hsl(var(--border) / 0.7);
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: lowercase;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='ph'], [data-section='estructural'], [data-section='juridico']) :where(.ew-card) :where(.app-p.lead.fw-bold)::first-letter {
+  text-transform: uppercase;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='ph'], [data-section='estructural'], [data-section='juridico']) :where(.ew-card__header + * .app-p.lead.fw-bold:first-child, .ew-card__header + .app-p.lead.fw-bold) {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0;
+}
+/* A .row whose parent is not a column has no gutter to compensate: no negative margins inside cards. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(div:not(.row, [class*='col']), section, form) > :where(.row) {
+  margin-right: 0;
+  margin-left: 0;
+}
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.small, small) {
+  font-size: 0.75rem;
+}
+.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.ew-card, fieldset) :where(label) {
+  overflow-wrap: anywhere;
+}
+/* Outcome chips of a section ("Cumple 12 · No cumple 1"). */
+.ew-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  background-color: hsl(var(--muted) / 0.5);
+  color: hsl(var(--foreground));
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.ew-status-chip--success {
+  border-color: hsl(var(--accent) / 0.4);
+  background-color: hsl(var(--accent) / 0.1);
+  color: var(--ew-success-text, hsl(var(--foreground)));
+}
+.ew-status-chip--danger {
+  border-color: hsl(var(--destructive) / 0.4);
+  background-color: hsl(var(--destructive) / 0.08);
+  color: var(--ew-danger-text, hsl(var(--foreground)));
+}
+/* Inactive tabs of the report modules keep 4.5:1 on the page background too. */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='juridico'], [data-section='arquitectonico'], [data-section='estructural'], [data-section='ph']) :where(.nav-tabs, .nav-pills) .nav-link:where(:not(.active, [aria-selected='true'])) {
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Group C — Expedición (Acta de observaciones, Expedición)
+   ──────────────────────────────────────────────────────────────────────
+   Both modules join the card stack (FunExpedienteFullscreen adds `acta`
+   and `expedicion` to CARD_STACK_SECTIONS). Rules that reach legacy markup
+   are scoped through `data-section`; the `.ew-*` primitives below are
+   opt-in classes used by the JSX of this group.
+   ══════════════════════════════════════════════════════════════════════ */
+/* Module roots are Bootstrap `.container`s: the module column already sets the width. */
+.expediente-workspace[data-layout='stack']:is([data-section='acta'], [data-section='expedicion']) :where(.container, .container-fluid) {
+  max-width: none;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 0 !important;
+}
+
+/* ── Form grid: labels above 36px fields, up to four columns ─────────
+   Columns follow the module width (container query units via auto-fill),
+   so a docked panel or a phone reflows the form without breakpoints. */
+.ew-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(13.5rem, calc((100% - 4.5rem) / 4)), 1fr));
+  gap: 0.75rem 1.5rem;
+  align-items: start;
+}
+.ew-form-grid--pairs {
+  grid-template-columns: repeat(auto-fill, minmax(max(13.5rem, calc((100% - 3rem) / 3)), 1fr));
+}
+.ew-form-grid--five {
+  grid-template-columns: repeat(auto-fill, minmax(max(11rem, calc((100% - 6rem) / 5)), 1fr));
+}
+.ew-form-grid + .ew-form-grid { margin-top: 0.75rem; }
+.ew-form-grid > :where(div) { min-width: 0; }
+.ew-form-grid__wide { grid-column: span 2; }
+.ew-form-grid__full { grid-column: 1 / -1; }
+.ew-form-grid > :where(div) > :where(label:first-child) {
+  display: block;
+  margin: 0 0 0.25rem !important;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.ew-form-grid :where(.form-control:not(textarea), .form-select) {
+  min-height: var(--input-height-compact);
+  padding-top: 0.3125rem;
+  padding-bottom: 0.3125rem;
+}
+.ew-form-grid :where(.input-group) { margin: 0 !important; flex-wrap: nowrap; }
+.ew-form-grid :where(.input-group) > :where(button) {
+  height: auto;
+  min-height: var(--input-height-compact);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.ew-field-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+/* Money, areas, counts: tabular numerals (the app's `.font-mono` is Inter + tnum), right-aligned. */
+.ew-form-grid :where(input[type='number']),
+.ew-input-num {
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: right;
+}
+.ew-form-grid :where(input[type='date']) { font-variant-numeric: tabular-nums; }
+
+/* ── Options of a generated document (plain checkboxes, nothing is saved) ── */
+.ew-option-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 1.5rem;
+}
+.ew-option-row > :where(.form-check) { margin: 0; }
+.ew-option-row :where(.form-check-label) { font-size: 0.875rem; }
+
+/* ── Inline notices: a state of the process said calmly ───────────── */
+.ew-notice {
+  max-width: 90ch;
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  background-color: hsl(var(--muted) / 0.45);
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.ew-notice--success {
+  border-color: hsl(var(--accent) / 0.4);
+  background-color: hsl(var(--accent) / 0.08);
+  color: var(--ew-success-text, hsl(var(--foreground)));
+}
+.ew-notice--danger {
+  border-color: hsl(var(--destructive) / 0.4);
+  background-color: hsl(var(--destructive) / 0.06);
+  color: var(--ew-danger-text, hsl(var(--foreground)));
+}
+.ew-notice--warning {
+  border-color: hsl(var(--warning) / 0.45);
+  background-color: hsl(var(--warning) / 0.08);
+  color: var(--ew-warning-text, hsl(var(--foreground)));
+}
+.ew-status-chip--warning {
+  border-color: hsl(var(--warning) / 0.45);
+  background-color: hsl(var(--warning) / 0.1);
+  color: var(--ew-warning-text, hsl(var(--foreground)));
+}
+.ew-status-chip--info {
+  border-color: hsl(var(--primary) / 0.35);
+  background-color: hsl(var(--primary) / 0.08);
+  color: var(--ew-info-text, hsl(var(--foreground)));
+}
+.ew-card__meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.375rem; }
+
+/* ── Empty step: what is missing and the one action that starts it ── */
+.ew-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+.ew-empty__title {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.ew-empty__text {
+  max-width: 70ch;
+  margin: 0 0 0.25rem;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ── Editable grids as one table ──────────────────────────────────────
+   Header and rows share the table's own column grid; fields are quiet at
+   rest (no box) and show their border on hover / focus. Never paginated:
+   the rows hold uncontrolled inputs that are read from the DOM on save. */
+.ew-table-scroll {
+  overflow-x: auto;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  scrollbar-width: thin;
+}
+.ew-table-scroll:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.expediente-workspace .ew-grid-table { width: 100%; margin: 0; border-collapse: collapse; }
+.expediente-workspace .ew-grid-table--fixed { min-width: 44rem; table-layout: fixed; }
+.expediente-workspace .ew-grid-table > * > tr > * {
+  height: 2.625rem;
+  padding: 0.25rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  background-color: transparent;
+  box-shadow: none;
+  text-align: left;
+  vertical-align: middle;
+}
+.expediente-workspace .ew-grid-table > thead > tr > * {
+  height: 2.25rem;
+  border-bottom-color: hsl(var(--border));
+  background-color: hsl(var(--muted));
+  white-space: nowrap;
+}
+.expediente-workspace .ew-grid-table > tbody > tr:last-child > * { border-bottom: 0; }
+.expediente-workspace .ew-grid-table > tbody > tr:hover > * { background-color: hsl(var(--muted) / 0.35); }
+.expediente-workspace .ew-grid-table > tbody > tr > th {
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.expediente-workspace .ew-grid-table > tbody > tr > th > :where(svg) { margin-right: 0.25rem; vertical-align: -0.2em; }
+.expediente-workspace .ew-grid-table > * > tr > :where(.text-center) { text-align: center; }
+.expediente-workspace .ew-grid-table > * > tr > :where(.text-end, .ew-cell-num) { text-align: right; }
+.expediente-workspace .ew-grid-table :where(.form-control:not(textarea), .form-select) {
+  min-height: 2rem;
+  height: 2rem;
+  padding: 0.1875rem 0.5rem;
+  border-color: transparent;
+  background-color: transparent;
+  box-shadow: none;
+  font-size: 0.8125rem;
+}
+.expediente-workspace .ew-grid-table :where(.form-select) { padding-right: 1.75rem; }
+.expediente-workspace .ew-grid-table :where(textarea.form-control) {
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
+  border-color: transparent;
+  background-color: transparent;
+  box-shadow: none;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+.expediente-workspace .ew-grid-table > tbody > tr:hover :where(.form-control, .form-select):where(:not(:disabled)),
+.expediente-workspace .ew-grid-table :where(.form-control, .form-select):where(:hover:not(:disabled)) {
+  border-color: hsl(var(--input));
+  background-color: hsl(var(--background));
+}
+.expediente-workspace .ew-grid-table :where(.form-control, .form-select):focus {
+  border-color: hsl(var(--ring));
+  background-color: hsl(var(--background));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.25);
+}
+.expediente-workspace .ew-grid-table :where(.form-control, .form-select):disabled {
+  border-color: transparent;
+  background-color: transparent;
+  padding-left: 0;
+}
+.expediente-workspace .ew-grid-table :where(.form-check-input) { margin: 0; vertical-align: middle; }
+.expediente-workspace .ew-grid-table :where(label) { margin: 0; }
+/* A row that names the next block of rows ("Si requiere acta de correcciones"). */
+.expediente-workspace .ew-grid-table > tbody > tr.ew-grid-table__group > * {
+  height: 2rem;
+  background-color: hsl(var(--muted) / 0.6);
+  color: hsl(var(--foreground));
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.expediente-workspace .ew-grid-table > * > tr > :where(.ew-sticky-col) {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: hsl(var(--card));
+}
+.expediente-workspace .ew-grid-table > thead > tr > :where(.ew-sticky-col) { background-color: hsl(var(--muted)); }
+
+/* ── Disclosures inside the cards of this group: plain rows, no tinted boxes ── */
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='acta'], [data-section='expedicion']) :where([data-legacy-collapsible]) {
+  background-color: transparent !important;
+  text-align: left !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack']:is([data-section='acta'], [data-section='expedicion']) :where(.legacy-collapsible__trigger) :where(label) {
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.expediente-workspace[data-layout='stack']:is([data-section='acta'], [data-section='expedicion']) :where(.ew-card) > :where([data-legacy-collapsible]:last-child) { margin-bottom: 0; }
+/* Small print stays at 12px or above. */
+.expediente-workspace[data-layout='stack']:is([data-section='acta'], [data-section='expedicion']) :where(.small, small) {
+  font-size: 0.75rem;
+}
+/* Field text lines up with its column header: the field's own padding hangs into the cell gutter. */
+.expediente-workspace .ew-grid-table > tbody > tr > :where(td:not(.text-center, .text-end, .ew-cell-num)) > :where(.form-control, .form-select):where(:not(:disabled)) {
+  width: calc(100% + 0.5rem);
+  margin-left: -0.5rem;
+}
+.expediente-workspace .ew-grid-table :where(.form-control:not(textarea), .form-select) { font-size: 0.875rem; }
+
+/* ── Step index of a multi-step module: numbered jumps to its cards ── */
+.ew-steps { margin: 0 0 1rem; }
+.ew-steps > :where(ol) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ew-steps__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.375rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out;
+}
+.ew-steps__item:hover { border-color: hsl(var(--section-expedicion-strong) / 0.5); background-color: hsl(var(--section-expedicion-soft)); }
+.ew-steps__item:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.ew-steps__number {
+  display: inline-grid;
+  place-items: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 999px;
+  background-color: hsl(var(--section-expedicion-soft));
+  color: hsl(var(--section-expedicion-foreground));
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) { .ew-steps__item { transition: none; } }
+
+/* ── Disclosure row (token-native button + shadcn Collapsible content) ── */
+.ew-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid hsl(var(--border) / 0.8);
+  border-radius: 0.75rem;
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  transition: background-color 150ms ease-out;
+}
+.ew-disclosure:hover { background-color: hsl(var(--muted) / 0.6); }
+.ew-disclosure:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.ew-disclosure[aria-expanded='true'] { background-color: hsl(var(--muted) / 0.45); }
+.ew-disclosure__chevron { flex: none; color: var(--ew-muted-text, hsl(var(--muted-foreground))); }
+.ew-disclosure-list :where(fieldset) { margin: 0 0 1rem; padding: 0.25rem 0.875rem 0.5rem !important; }
+@media (prefers-reduced-motion: reduce) { .ew-disclosure { transition: none; } }
+
+/* ── Sub-groups of a form card ─────────────────────────────────────── */
+.ew-group + .ew-group { margin-top: 0; }
+/* Columns that are themselves groups (a heading and its rows). */
+.ew-form-grid--groups {
+  grid-template-columns: repeat(auto-fill, minmax(max(15rem, calc((100% - 4rem) / 3)), 1fr));
+  gap: 0 2rem;
+}
+.ew-form-grid--groups > :where(div) > :where(.ew-subheading) { margin-bottom: 0.5rem !important; }
+/* One field per line: label left, compact field right. */
+.ew-inline-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 9rem);
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+}
+.ew-inline-field:last-child { border-bottom: 0; }
+.ew-inline-field > :where(label) {
+  margin: 0;
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+.ew-inline-field :where(.form-control) { min-height: 2rem; height: 2rem; padding: 0.1875rem 0.5rem; }
+.ew-inline-field :where(input[type='number']) { font-variant-numeric: tabular-nums lining-nums; text-align: right; }
+
+/* ── Editable document lists (desist acts): header row + grid table ── */
+.ew-doc-list { margin-top: 1rem; }
+.ew-doc-list__header { margin-bottom: 0.5rem; }
+.ew-doc-list__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ew-doc-list__toggle:hover { background-color: hsl(var(--muted) / 0.6); }
+.ew-doc-list__toggle:focus-visible,
+.ew-toggle-btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.ew-doc-list__hint {
+  margin: 0.5rem 0 0;
+  color: var(--ew-muted-text, hsl(var(--muted-foreground)));
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.ew-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.375rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.ew-toggle-btn:hover { background-color: hsl(var(--muted)); }
+.ew-toggle-btn[aria-pressed='true'] {
+  border-color: hsl(var(--primary) / 0.45);
+  background-color: hsl(var(--primary) / 0.08);
+  color: var(--ew-info-text, hsl(var(--foreground)));
+}
+.ew-table-scroll--tall { max-height: 60vh; overflow-y: auto; }
+.expediente-workspace .ew-grid-table > thead.ew-grid-table__sticky-head > tr > * {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.expediente-workspace .ew-grid-table > tbody > tr.row-muted > * { color: var(--ew-muted-text, hsl(var(--muted-foreground))); }
+.expediente-workspace .ew-grid-table > tbody > tr.row-muted :where(.form-control) { color: var(--ew-muted-text, hsl(var(--muted-foreground))); }
+.expediente-workspace .ew-grid-table > tbody > tr > :where(td.text-center) > :where(.form-control) { text-align: center; }
+
+/* ── PDF layout options (pdf-config): flat groups, never a card in a card ── */
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='expedicion'] :where(.pdf-config, .pdf-config .card, .ew-card .card) {
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='expedicion'] :where(.pdf-config) {
+  margin-top: 1rem;
+  padding: 0.875rem 0 0 !important;
+  border-top: 1px solid hsl(var(--border) / 0.7) !important;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='expedicion'] :where(.pdf-config) :where(h5, h6, .card-title) {
+  margin: 0 0 0.5rem;
+  color: hsl(var(--foreground));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: left !important;
+}
+/* Legacy bold captions inside the acts ("PRIMERO", "MOTIVO DE DESISTIMIENTO") read as field-group labels. */
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='expedicion'] :where(.ew-card) :where(label.fw-bold, strong, label > b) {
+  font-size: 0.8125rem;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+.expediente-workspace.expediente-workspace[data-layout='stack'][data-section='expedicion'] :where(.ew-card) :where(.row.mx-5, .row.mx-2) {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+.expediente-workspace .ew-grid-table :where(.form-check) { min-height: 0; margin: 0; padding: 0; vertical-align: middle; }
+.expediente-workspace .ew-grid-table :where(.form-check) > :where(.form-check-input) { float: none; margin: 0; }
+/* Dark: danger chips and notices keep 4.5:1 on their tinted surface. */
+.dark .ew-status-chip--danger,
+.dark .ew-notice--danger {
+  color: color-mix(in srgb, hsl(var(--destructive)) 50%, hsl(var(--foreground)));
+}

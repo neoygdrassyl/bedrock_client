@@ -66,12 +66,12 @@ function normalizeEvaluation(value) {
 
 function selectClass(value, kind) {
   if (kind === 'verification') {
-    if (value === 'DILIGENCIADO') return 'text-emerald-700';
-    if (value === 'NO APLICA') return 'text-amber-700';
+    if (value === 'DILIGENCIADO') return 'ew-text-success';
+    if (value === 'NO APLICA') return 'ew-text-warning';
     return 'text-destructive';
   }
-  if (value === '1') return 'text-emerald-700';
-  if (value === '2') return 'text-amber-700';
+  if (value === '1') return 'ew-text-success';
+  if (value === '2') return 'ew-text-warning';
   return 'text-destructive';
 }
 
@@ -136,10 +136,9 @@ export default function PropertyInformationDataGrid({ currentItem, currentRecord
     }
   };
 
-  return <section className="mt-3 rounded-lg border border-border bg-card p-3" aria-label="Tabla consolidada de información sobre el predio">
-    <div className="mb-3">
-      <h3 className="mb-1 text-sm font-semibold">2. Información sobre el predio</h3>
-      <p className="mb-0 text-xs text-muted-foreground">Información consolidada para consulta y verificación.</p>
+  return <section className="ew-card" aria-label="Tabla consolidada de información sobre el predio">
+    <div className="ew-card__header">
+      <h3 className="ew-card__title">2. Información sobre el predio</h3>
     </div>
     {error ? <p className="mb-2 text-xs text-destructive" role="alert">{error}</p> : null}
     {!canPersist ? <p className="mb-2 text-xs text-muted-foreground" role="status">La verificación estará disponible cuando se cargue el informe jurídico.</p> : null}

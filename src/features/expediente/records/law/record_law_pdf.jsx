@@ -444,7 +444,7 @@ function RECORD_LAW_PDF(props) {
                             <label>Revision</label>
                             <div className="input-group my-1">
                                 <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
-                                    {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
+                                    {CLOCKS_R.map((op, i) => <option key={i} value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
@@ -470,16 +470,16 @@ function RECORD_LAW_PDF(props) {
                             <br />
                             <div className="form-check">
                                 <input type="checkbox" className="form-check-input" id="record_law_pending" />
-                                <label className="form-check-label" htmlFor="exampleCheck1">Pendiente</label>
+                                <label className="form-check-label" htmlFor="record_law_pending">Pendiente</label>
                             </div>
                         </div>
                     </div>
-                    <div className="row mb-3 text-center">
-                        <div className="col" hidden={noReport}>
-                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
+                    <div className="ew-actions">
+                        <div hidden={noReport}>
+                            <Button size="sm" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> Descargar informe</Button>
                         </div>
-                        <div className="col">
-                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
+                        <div>
+                            <Button variant="outline" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> Descargar chequeo</Button>
                         </div>
                     </div>
                 </div>

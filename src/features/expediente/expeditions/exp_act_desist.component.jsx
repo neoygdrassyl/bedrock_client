@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
@@ -5,6 +6,7 @@ import SubmitService from '../../ventanilla/api/submit.service';
 import { inventoryBlocker } from '../documental/documentaryInventoryModel';
 import { useDocumentaryInventory } from '../documental/hooks/useDocumentaryInventory';
 import Collapsible from '../../../shared/components/Collapsible';
+import { useActionGuard } from './useActionGuard';
 
 
 import EXPEDITION_SERVICE from '../api/expedition.service';
@@ -23,6 +25,7 @@ const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_ACT_DESIST(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
+    const guard = useActionGuard();
 
       // ========================= Utilities =========================
   const ensureArray = (val) => {
@@ -196,7 +199,8 @@ export default function EXP_ACT_DESIST(props) {
           setListDocuments(remoteNorm);
         }
       } catch (err) {
-        console.error("Error en getListDocuments:", err);
+        // An unavailable documentary inventory is an expected state already reported by the inventory notice.
+        if (!isCanonicalList) console.error("Error en getListDocuments:", err);
       }
     })();
   }, [currentItem.id_public, fetchRemoteListDocs]);
@@ -294,10 +298,7 @@ const restoreDocs = useCallback(() => {
 //   }, [listDocsOpen, docsOpen, showHiddenDocs, showHiddenLD]);
 
   // ========================= UI helpers =========================
-  const thBtn = { background: "transparent", border: 0, padding: 0, font: "inherit", cursor: "pointer", width: "100%", textAlign: "center" };
-  const tightInput = { width: "100%", height: 28, padding: "2px 6px", lineHeight: 1.1, borderRadius: 4 };
-  const tightChk = { transform: "scale(0.95)", cursor: "pointer" };
-  const tableTight = { fontSize: "0.86rem" };
+  const thBtn = { background: "transparent", border: 0, padding: 0, font: "inherit", color: "inherit", letterSpacing: "inherit", textTransform: "inherit", cursor: "pointer", width: "100%", textAlign: "inherit" };
   const sortIcon = (active, dir) => <Icon name={!active ? "sort" : dir === "asc" ? "sort-up" : "sort-down"} size={14} className="ms-1" />;
 
   const confirmRestore = (msg, action) => {
@@ -523,7 +524,7 @@ const restoreDocs = useCallback(() => {
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Modalidad</label>
-                        <input type="text" className="form-control" id="expedition_doc_res_1"
+                        <input type="text" className="form-control" id="expedition_doc_des_1"
                             defaultValue={type} />
                     </div>
                 </div>
@@ -531,28 +532,28 @@ const restoreDocs = useCallback(() => {
                     <div className="col">
                         <label className="mt-1">Fecha Radicación</label>
                         <div className="input-group">
-                            <input type="date" className="form-control" id="expedition_doc_res_2_des"
+                            <DateInput className="form-control" id="expedition_doc_res_2_des"
                                 defaultValue={reso_date_dv} readOnly />
                         </div>
                     </div>
                     <div className="col-3">
                         <label className="mt-1">Consecutivo</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" id="expedition_doc_res_id"
-                                defaultValue={currentRecord.id_public} readOnly/>
+                            <input type="text" className="form-control" id="expedition_doc_des_id"
+                                defaultValue={currentRecord.id_public ?? ''} readOnly/>
                         </div>
                     </div>
                     <div className="col">
                         <label className="mt-1">POT</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" id="expedition_doc_res_pot" required
+                            <input type="text" className="form-control" id="expedition_doc_des_pot" required
                                 defaultValue={reso_pot_dv} />
                         </div>
                     </div>
                     <div className="col">
-                        <label className="mt-1"># Radicacion</label>
+                        <label className="mt-1">N.° de radicación</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" id="expedition_doc_res_3" disabled
+                            <input type="text" className="form-control" id="expedition_doc_des_3" disabled
                                 value={currentItem.id_public} readOnly />
                         </div>
                     </div>
@@ -562,20 +563,17 @@ const restoreDocs = useCallback(() => {
                     {/* ======================= Documentos del expediente ======================= */}
                     <div className="row mt-4">
                         <div className="col">
-                        <div className="docs-expediente card shadow-sm border-0">
-                            <button
-                            type="button"
-                            className="section-toggle"
-                            onClick={toggleListDocs}
-                            aria-expanded={listDocsOpen}
-                            aria-controls="ldocsCollapse"
-                            >
-                            <span className="title">Documentos del expediente</span>
-                            <span className="actions">
+                        <div className="ew-doc-list">
+                            <div className="ew-toolbar ew-doc-list__header">
+                            <button type="button" className="ew-doc-list__toggle" onClick={toggleListDocs} aria-expanded={listDocsOpen} aria-controls="ldocsCollapse">
+                                <Icon name={listDocsOpen ? "ChevronDown" : "ChevronRight"} size={16} aria-hidden="true" />
+                                <span className="title">Documentos del expediente</span>
+                            </button>
+                            <span className="ew-toolbar__actions">
                                 {listDocsOpen ? (
                                 <>
                                     <button type="button"
-                                    className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenLD ? "info" : "light"}`}
+                                    className="ew-toggle-btn" aria-pressed={showHiddenLD}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenLD((v) => !v);
@@ -588,7 +586,7 @@ const restoreDocs = useCallback(() => {
                                     </span>
                                     </button>
 
-                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
+                                    <Button type="button" variant="outline" size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                         {
@@ -605,7 +603,7 @@ const restoreDocs = useCallback(() => {
                                     <span className="d-none d-sm-inline">Restaurar</span>
                                     </Button>
 
-                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
+                                    <Button type="button" variant="outline" size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
                                         e.stopPropagation();
                                         const uid = `new_${Date.now()}`;
                                         setListDocuments((prev) => [
@@ -631,24 +629,19 @@ const restoreDocs = useCallback(() => {
                                     </Button>
                                 </>
                                 ) : null}
-                                <Icon name={listDocsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
                             </span>
-                            </button>
+                            </div>
 
                             <div
                             id="ldocsCollapse"
-                            className={`collapse ${listDocsOpen ? "show" : ""}`}
+                            hidden={!listDocsOpen}
                             style={{ overflowAnchor: "none" }}
                             >
                             <div
-                                className="table-responsive tableFixHead"
-                                style={{ maxHeight: "60vh", overflowY: "auto" }}
+                                className="ew-table-scroll ew-table-scroll--tall" tabIndex={0}
                             >
-                                <table className="table table-sm table-hover table-bordered align-middle mb-0">
-                                <thead
-                                    className="bg-light small"
-                                    style={{ position: "sticky", top: 0, zIndex: 1 }}
-                                >
+                                <table className="table mb-0 ew-grid-table ew-grid-table--fixed">
+                                <thead className="ew-grid-table__sticky-head">
                                     <tr>
                                     <th style={{ width: "38%" }} className="text-start">
                                         <button
@@ -728,19 +721,18 @@ const restoreDocs = useCallback(() => {
                                     </tr>
                                 </thead>
 
-                                <tbody style={tableTight}>
+                                <tbody>
                                     {rowsLD.map((row) => {
                                     const id = row.uid;
                                     const isVisible = row?.show !== false;
                                     return (
                                         <tr key={id} className={isVisible ? "" : "row-muted"}>
-                                        <td className="text-start p-1">
+                                        <td>
                                             <input
                                             id={`ldoc_${id}_name`}
                                             type="text"
-                                            className="form-control form-control-sm"
+                                            className="form-control"
                                             aria-label="Nombre del documento"
-                                            style={{ ...tightInput, textAlign: "left" }}
                                             value={row?.name ?? ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -755,13 +747,13 @@ const restoreDocs = useCallback(() => {
                                             <span className="ms-2 badge rounded-pill bg-secondary-subtle text-secondary border">oculto</span>
                                             )} */}
                                         </td>
-                                        <td className="text-center p-1">
+                                        <td className="text-center">
                                             <input
                                             id={`ldoc_${id}_vr`}
                                             type="text"
-                                            className="form-control form-control-sm"
+                                            className="form-control"
                                             aria-label="VR (id_public)"
-                                            style={{ ...tightInput, textAlign: "center" }}
+                                            style={{ textAlign: "center" }}
                                             value={row?.id_public ?? currentItem?.id_public ?? ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -773,13 +765,12 @@ const restoreDocs = useCallback(() => {
                                             }}
                                             />
                                         </td>
-                                        <td className="text-center p-1">
-                                            <input
+                                        <td className="text-center">
+                                            <DateInput
                                             id={`ldoc_${id}_fecha`}
-                                            type="date"
-                                            className="form-control form-control-sm"
+                                            className="form-control"
                                             aria-label="Fecha del documento"
-                                            style={{ ...tightInput, textAlign: "center" }}
+                                            style={{ textAlign: "center" }}
                                             value={row?.date ?? ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -791,14 +782,14 @@ const restoreDocs = useCallback(() => {
                                             }}
                                             />
                                         </td>
-                                        <td className="text-center p-1">
+                                        <td className="text-center">
                                             <input
                                             id={`ldoc_${id}_folios`}
                                             type="text"
-                                            className="form-control form-control-sm"
+                                            className="form-control"
                                             inputMode="numeric"
                                             aria-label="Número de folios"
-                                            style={{ ...tightInput, textAlign: "center" }}
+                                            style={{ textAlign: "center" }}
                                             value={row?.pages ?? row?.page ?? ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -812,14 +803,13 @@ const restoreDocs = useCallback(() => {
                                             }}
                                             />
                                         </td>
-                                        <td className="text-center p-1">
+                                        <td className="text-center">
                                             <div className="form-check d-inline-flex justify-content-center">
                                             <input
                                                 id={`ldoc_${id}_show`}
                                                 className="form-check-input"
                                                 type="checkbox"
                                                 aria-label="Incluir documento en el PDF"
-                                                style={tightChk}
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
                                                 const checked = e.target.checked;
@@ -838,10 +828,10 @@ const restoreDocs = useCallback(() => {
                                 </tbody>
                                 </table>
                             </div>
-                            <div className="card-footer bg-body-secondary py-2 small text-muted">
+                            <p className="ew-doc-list__hint">
                                 Diligencia Folios para incluir el documento en el PDF. Desmarca
                                 Incluir si deseas excluirlo manualmente.
-                            </div>
+                            </p>
                             </div>
                         </div>
                         </div>
@@ -853,20 +843,17 @@ const restoreDocs = useCallback(() => {
                     {model === "delete" ? (
                         <div className="row mt-4">
                         <div className="col">
-                            <div className="docs-expediente card shadow-sm border-0">
-                            <button
-                                type="button"
-                                className="section-toggle"
-                                onClick={toggleDocs}
-                                aria-expanded={docsOpen}
-                                aria-controls="docsCollapse"
-                            >
+                            <div className="ew-doc-list">
+                            <div className="ew-toolbar ew-doc-list__header">
+                            <button type="button" className="ew-doc-list__toggle" onClick={toggleDocs} aria-expanded={docsOpen} aria-controls="docsCollapse">
+                                <Icon name={docsOpen ? "ChevronDown" : "ChevronRight"} size={16} aria-hidden="true" />
                                 <span className="title">Soportes de la curaduría</span>
-                                <span className="actions">
+                            </button>
+                            <span className="ew-toolbar__actions">
                                 {docsOpen ? (
                                     <>
                                     <button type="button"
-                                        className={`btn btn-sm d-inline-flex align-items-center gap-2 me-2 btn-${showHiddenDocs ? "info" : "light"}`}
+                                        className="ew-toggle-btn" aria-pressed={showHiddenDocs}
                                         onClick={(e) => {
                                         e.stopPropagation();
                                         setShowHiddenDocs((v) => !v);
@@ -879,7 +866,7 @@ const restoreDocs = useCallback(() => {
                                         </span>
                                     </button>
 
-                                    <Button variant="outline" size="sm" className="d-inline-flex align-items-center gap-2 me-2" onClick={(e) => {
+                                    <Button type="button" variant="outline" size="sm" className="d-inline-flex align-items-center gap-2" onClick={(e) => {
                                         e.stopPropagation();
                                         confirmRestore(
                                             {
@@ -896,32 +883,26 @@ const restoreDocs = useCallback(() => {
                                         <span className="d-none d-sm-inline">Restaurar</span>
                                     </Button>
 
-                                    <Button size="sm" className="d-inline-flex align-items-center gap-2" onClick={addNewDoc}
+                                    <Button type="button" variant="outline" size="sm" className="d-inline-flex align-items-center gap-2" onClick={addNewDoc}
                                         title="Agregar documento">
                                         <Icon name="plus" size={16} />
                                         <span className="d-none d-sm-inline">Agregar</span>
                                     </Button>
                                     </>
                                 ) : null}
-
-                                <Icon name={docsOpen ? "ChevronUp" : "ChevronDown"} size={14} />
-                                </span>
-                            </button>
+                            </span>
+                            </div>
 
                             <div
                                 id="docsCollapse"
-                                className={`collapse ${docsOpen ? "show" : ""}`}
-                                style={{ overflowAnchor: "none" }}
+                                hidden={!docsOpen}
+                            style={{ overflowAnchor: "none" }}
                             >
                                 <div
-                                className="table-responsive tableFixHead"
-                                style={{ maxHeight: "60vh", overflowY: "auto" }}
+                                className="ew-table-scroll ew-table-scroll--tall" tabIndex={0}
                                 >
-                                <table className="table table-sm table-hover table-bordered align-middle mb-0">
-                                    <thead
-                                    className="bg-light small"
-                                    style={{ position: "sticky", top: 0, zIndex: 1 }}
-                                    >
+                                <table className="table mb-0 ew-grid-table ew-grid-table--fixed">
+                                    <thead className="ew-grid-table__sticky-head">
                                     <tr>
                                         <th style={{ width: "45%" }} className="text-start">
                                         <button
@@ -986,18 +967,17 @@ const restoreDocs = useCallback(() => {
                                     </tr>
                                     </thead>
 
-                                    <tbody style={tableTight}>
+                                    <tbody>
                                     {rowsDocs.map(([id, doc]) => {
                                         const isVisible = doc?.show !== false;
                                         return (
                                         <tr key={id} className={isVisible ? "" : "row-muted"}>
-                                            <td className="fw-medium text-start py-1">
+                                            <td>
                                             <input
                                                 id={`doc_${id}_name`}
                                                 type="text"
-                                                className="form-control form-control-sm"
+                                                className="form-control"
                                                 aria-label="Nombre del documento"
-                                                style={tightInput}
                                                 value={doc?.name ?? ""}
                                                 onChange={(e) => {
                                                 const value = e.target.value;
@@ -1012,13 +992,11 @@ const restoreDocs = useCallback(() => {
                                             )} */}
                                             </td>
 
-                                            <td className="text-center py-1">
-                                            <input
+                                            <td className="text-center">
+                                            <DateInput
                                                 id={`doc_${id}_fecha`}
-                                                type="date"
-                                                className="form-control form-control-sm"
+                                                className="form-control"
                                                 aria-label="Fecha del documento"
-                                                style={tightInput}
                                                 value={doc?.date ?? ""}
                                                 onChange={(e) => {
                                                 const value = e.target.value;
@@ -1030,14 +1008,13 @@ const restoreDocs = useCallback(() => {
                                             />
                                             </td>
 
-                                            <td className="text-center py-1">
+                                            <td className="text-center">
                                             <input
                                                 id={`doc_${id}_folios`}
                                                 type="text"
-                                                className="form-control form-control-sm"
+                                                className="form-control"
                                                 inputMode="numeric"
                                                 aria-label="Número de folios"
-                                                style={tightInput}
                                                 value={doc?.pages ?? ""}
                                                 onChange={(e) => {
                                                 const value = e.target.value;
@@ -1049,13 +1026,12 @@ const restoreDocs = useCallback(() => {
                                             />
                                             </td>
 
-                                            <td className="text-center py-1">
+                                            <td className="text-center">
                                             <div className="form-check d-inline-flex justify-content-center">
                                                 <input
                                                 className="form-check-input"
                                                 type="checkbox"
                                                 aria-label="Incluir documento en el PDF"
-                                                style={tightChk}
                                                 checked={!!isVisible}
                                                 onChange={(e) => {
                                                     const checked = e.target.checked;
@@ -1074,10 +1050,10 @@ const restoreDocs = useCallback(() => {
                                 </table>
                                 </div>
 
-                                <div className="card-footer bg-body-secondary py-2 small text-muted">
+                                <p className="ew-doc-list__hint">
                                 Diligencia Folios para incluir el documento en el PDF. Desmarca
                                 Incluir si deseas excluirlo manualmente.
-                                </div>
+                                </p>
                             </div>
                             </div>
                         </div>
@@ -1090,7 +1066,7 @@ const restoreDocs = useCallback(() => {
                 { canSave ?
                     <div className="row text-center">
                         <div className="col">
-                            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                            <Button type="button" size="sm" className="my-3" onClick={guard(save_exp_res, 'save_exp_res')}><Icon name="share-square" size={16} /> Guardar cambios</Button>
                         </div>
                     </div>
                     : ''}
@@ -1116,19 +1092,19 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <div className="fields vertical">
                 <div className="field">
                 <label className="field_label">Superior</label>
-                <input type="number" defaultValue={1.2} className="form-control form-control-sm" id="record_maring_top_desist" />
+                <input type="number" defaultValue={1.2} className="form-control" id="record_maring_top_desist" />
                 </div>
                 <div className="field">
                 <label className="field_label">Inferior</label>
-                <input type="number" defaultValue={1.2} className="form-control form-control-sm" id="record_maring_bot_desist" />
+                <input type="number" defaultValue={1.2} className="form-control" id="record_maring_bot_desist" />
                 </div>
                 <div className="field">
                 <label className="field_label">Izquierdo</label>
-                <input type="number" defaultValue={1.9} className="form-control form-control-sm" id="record_maring_left_desist" />
+                <input type="number" defaultValue={1.9} className="form-control" id="record_maring_left_desist" />
                 </div>
                 <div className="field">
                 <label className="field_label">Derecho</label>
-                <input type="number" defaultValue={1.9} className="form-control form-control-sm" id="record_maring_right_desist" />
+                <input type="number" defaultValue={1.9} className="form-control" id="record_maring_right_desist" />
                 </div>
             </div>
             </section>
@@ -1148,7 +1124,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                     <input
                         type="number"
                         defaultValue={6}
-                        className="form-control form-control-sm"
+                        className="form-control"
                         id="record_header_spacing_desist"
                     />
                 </div>
@@ -1161,7 +1137,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                     <input
                         type="number"
                         defaultValue={14}
-                        className="form-control form-control-sm"
+                        className="form-control"
                         id="record_font_size_body_desist"
                     />
                 </div>
@@ -1174,7 +1150,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
                 <input
                     type="number"
                     defaultValue={10}
-                    className="form-control form-control-sm"
+                    className="form-control"
                     id="record_font_size_header_desist"
                 />
                 </div>
@@ -1188,30 +1164,30 @@ let _COMPONENT_DOC_RES_PDF = () => {
             <div className="fields vertical">
                 <div className="field">
                     <label className="field_label">Mostrar logo</label>
-                    <select size={1} className="form-select form-select-sm" id="logo_pages_desist">
+                    <select size={1} className="form-select form-select-sm" id="logo_pages_desist" defaultValue="all">
                         <option value="impar">Pág Impares</option>
                         <option value="par">Pág Pares</option>
-                        <option value="all" selected>Todas las pág.</option>
+                        <option value="all">Todas las pág.</option>
                         <option value="none">No mostrar</option>
                     </select>
                 </div>
 
                 <div className="field">
                     <label className="field_label">Espaciado horizontal</label>
-                    <input type="number" defaultValue={55} className="form-control form-control-sm" id="distance_icon_x_desist" />
+                    <input type="number" defaultValue={55} className="form-control" id="distance_icon_x_desist" />
                 </div>
 
                 <div className="field">
                     <label className="field_label">Espaciado vertical</label>
-                    <input type="number" defaultValue={66} className="form-control form-control-sm" id="distance_icon_y_desist" />
+                    <input type="number" defaultValue={66} className="form-control" id="distance_icon_y_desist" />
                 </div>
 
                 <div className="field">
                     <label className="field_label">Autenticidad</label>
-                    <select size={1} className="form-select form-select-sm" id="autenticidad_desist">
+                    <select size={1} className="form-select form-select-sm" id="autenticidad_desist" defaultValue="Vacio">
                         <option value="Original">Original</option>
                         <option value="Copia">Copia</option>
-                        <option value="Vacio" selected>Vacío</option>
+                        <option value="Vacio">Vacío</option>
                     </select>
                 </div>
             </div>
@@ -1227,11 +1203,11 @@ let _COMPONENT_DOC_RES_PDF = () => {
     <hr />
     <div className="row text-center">
         <div className="col">
-            <Button size="sm" className="my-3" onClick={save_exp_res}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+            <Button type="button" size="sm" className="my-3" onClick={guard(save_exp_res, 'save_exp_res')}><Icon name="share-square" size={16} /> Guardar cambios</Button>
         </div>
         <div className="col">
             {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                <Button size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
+                <Button type="button" size="sm" className="my-3" onClick={guard(() => pdf_gen_res(true), 'pdf_gen_res')}>
                     <Icon name="edit" size={16} className="me-2" />
                     Editar PDF
                 </Button>
@@ -1254,16 +1230,16 @@ let _COMPONENT_DOC_RES_PDF = () => {
         return <>
             <div className="row">
                 <div className="col">
-                    <label className="mt-2">ACTO</label>
+                    <label className="mt-2">Acto</label>
                     <div className="input-group">
-                        <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model(e.target.value)}}>
+                        <select className="form-select" id="expedition_doc_des_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
                                 if (model.group)
-                                    return <optgroup label={model.group}>
-                                        {model.items.map(m => <option value={m.value}>{m.label}</option>)}
+                                    return <optgroup key={model.group} label={model.group}>
+                                        {model.items.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                                     </optgroup>
-                                else return <option value={model.value}>{model.label}</option>
+                                else return <option key={model.value} value={model.value}>{model.label}</option>
                             })}
                         </select>
                     </div>
@@ -1356,7 +1332,6 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
             formData.set('r_pages',  getCheck('record_rew_pages')); // Si hay paginacion o no
 
-            console.log('[applyPdfFormData] formData final:', Array.from(formData.entries()));
         }
 
         applyPdfFormData(formData, 'desist');
@@ -1535,7 +1510,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
         
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
-        EXPEDITION_SERVICE.gen_doc_res(formData)
+        return EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
                 if (response.data.status  === 'OK') {
                     if (editDocument) {
@@ -1880,11 +1855,10 @@ let _COMPONENT_DOC_RES_PDF = () => {
 
             formData.set('r_pages',  getCheck('record_rew_pages')); // Si hay paginacion o no
 
-            console.log('[applyPdfFormData] formData final:', Array.from(formData.entries()));
         }
 
         applyPdfFormData(formData, 'desist');
-        manage_exp();
+        return manage_exp();
 
     }
     let update_model = (model) => {
@@ -1894,7 +1868,7 @@ let _COMPONENT_DOC_RES_PDF = () => {
     }
     let manage_exp = () => {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        EXPEDITION_SERVICE.update(currentRecord.id, formData)
+        return EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
                     swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });

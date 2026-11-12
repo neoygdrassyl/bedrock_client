@@ -17,7 +17,7 @@ export function DovelaCard({ as: Component = Card, tone = 'default', className, 
       data-dovela-ui="card"
       data-tone={tone}
       className={cn(
-        'rounded-[var(--card-radius)] border shadow-[var(--card-shadow)]',
+        'rounded-[var(--card-radius)] border shadow-[shadow:var(--card-shadow)]',
         TONE_CLASSES[tone] || TONE_CLASSES.default,
         className
       )}

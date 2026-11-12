@@ -1,5 +1,6 @@
 import http from "../../../shared/api/http-common";
 import { cachedGet, dedupeGet } from "../../../shared/api/requestCache";
+import { afterClockWrite } from "./clockWriteEvents";
 
 const route = "fun"
 
@@ -84,21 +85,23 @@ class UserslDataService {
   get_fun1(id_public) {
     return http.get(`/${route}/get/fun1/${id_public}`);
   }
-  get_fun_IdPublic(id_public, config) {
+  // `options.force`: do not join a GET already in flight (a reload after a write must not
+  // receive a response read before it).
+  get_fun_IdPublic(id_public, config, options) {
     const logMode = config?.skipErrorLog ? 'silent' : 'default';
     return dedupeGet(`${route}:get_fun_IdPublic:${id_public}:${logMode}`, () => (
       config
         ? http.get(`/${route}/get/idpublic/${id_public}`, config)
         : http.get(`/${route}/get/idpublic/${id_public}`)
-    ));
+    ), { force: options?.force === true });
   }
-  getSummaryByIdPublic(id_public, config) {
+  getSummaryByIdPublic(id_public, config, options) {
     const logMode = config?.skipErrorLog ? 'silent' : 'default';
     return dedupeGet(`${route}:getSummaryByIdPublic:${id_public}:${logMode}`, () => (
       config
         ? http.get(`/${route}/get/summary/${id_public}`, config)
         : http.get(`/${route}/get/summary/${id_public}`)
-    ));
+    ), { force: options?.force === true });
   }
   loadMacro(date_start, date_end) {
     return http.get(`/${route}/loadMacro/${date_start}&${date_end}`);
@@ -259,8 +262,9 @@ class UserslDataService {
   create_sign(data) {
     return http.post(`/${route}/sign`, data);
   }
+  // Clock writes are published (clockWriteEvents) so the workspace header follows them.
   create_clock(data) {
-    return http.post(`/${route}/createclock`, data);
+    return afterClockWrite(http.post(`/${route}/createclock`, data), data);
   }
   create_archive(data) {
     return http.post(`/${route}/createarchive`, data);
@@ -312,7 +316,7 @@ class UserslDataService {
     return http.put(`/${route}/funrA/${id}`, data);
   }
   update_clock(id, data) {
-    return http.put(`/${route}/updateclock/${id}`, data);
+    return afterClockWrite(http.put(`/${route}/updateclock/${id}`, data), data);
   }
 
   update_law(id, data) {
@@ -354,8 +358,9 @@ class UserslDataService {
   delete_6_h(id) {
     return http.delete(`/${route}/fun6hd/${id}`);
   }
-  delete_clock(id) {
-    return http.delete(`/${route}/clock/${id}`);
+  // `fun0Id` (optional) tells the workspace which expediente the deleted clock belonged to.
+  delete_clock(id, fun0Id) {
+    return afterClockWrite(http.delete(`/${route}/clock/${id}`), fun0Id != null ? { fun0Id } : null);
   }
 
   deleteAll() {

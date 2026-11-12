@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { isCanonicalExpediente } from '../../documental/expedienteMode';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/features/expediente/api/documentaryOperations.service';
 import { Button } from '@/shared/ui/button';
@@ -1120,6 +1121,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         }
 
         let new_1 = () => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_n_1:new_1')) return;
             formData = new FormData();
             const fun1Id = currentFun1?.id;
             let version = currentVersion;
@@ -1280,10 +1285,10 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             appendDocumentarySourceCommand(formData, currentItem);
 
             if (currentFun1 == null) {
-                FUNService.create_fun1(formData)
+                holdSubmit('fun_n_1:new_1', FUNService.create_fun1(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -1293,12 +1298,12 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             } else {
-                FUNService.update_1(fun1Id, formData)
+                holdSubmit('fun_n_1:new_1', FUNService.update_1(fun1Id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -1308,7 +1313,7 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                         if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:requestUpdate,notify:swalError})) return;
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             }
 
         }
@@ -1340,13 +1345,9 @@ const FUNN1 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     onPersistedChange={handlePersistedChange}
                     onDelete={handleDeleteChangeLogEntry}
                 />
-                <div className="row mb-3 text-center">
-                    <div className="col-6">
-                        <Button size="sm" className="my-3" onClick={() => new_1()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
-                    </div>
-                    <div className="col-6">
-                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => { _RESET_FORM_1(); handlePreviewFormChange(); }}><Icon name="eraser" size={16} /> LIMPIAR </Button>
-                    </div>
+                <div className="ew-actions">
+                    <Button variant="outline" size="sm" onClick={() => { _RESET_FORM_1(); handlePreviewFormChange(); }}><Icon name="eraser" size={16} /> Limpiar</Button>
+                    <Button size="sm" onClick={() => new_1()}><Icon name="file-alt" size={16} /> Actualizar</Button>
                 </div>
             </fieldset>
         </>);

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import DataTable from '@/shared/components/data-table-bridge';
 import { getJSON_Simple } from '../../../../shared/config/customClasses/typeParse';
@@ -264,7 +264,7 @@ export default function RECORD_ARC_37(props) {
         return <>
             <div className='row border'>
                 <div className='col my-1'>
-                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>NUEVO GRUPO</Button>
+                    <Button variant="outline" size="sm" className="rounded-pill me-1" onClick={() => setRow(newRow[data.id] ? {} : { [data.id]: true })}>Nuevo grupo</Button>
                 </div>
             </div>
 
@@ -305,7 +305,7 @@ export default function RECORD_ARC_37(props) {
                             {newEdit['main_group_' + data.id + i] ?
                                 <select className="form-select form-select-sm" name={'main_group_' + data.id} id={'main_group_' + data.id + i}
                                     defaultValue={main_group} onBlur={() => add_grp_37(data.id)}>
-                                    {GROUPS.map(g => <option>{g.name}</option>)}
+                                    {GROUPS.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                                 </select>
                                 :
                                 <label name={'main_group_' + data.id} id={'main_group_' + data.id + i} onDoubleClick={() => setEdit({ ['main_group_' + data.id + i]: true })}>{main_group}</label>
@@ -315,7 +315,7 @@ export default function RECORD_ARC_37(props) {
                             {newEdit['sub_group_' + data.id + i] ?
                                 <select className="form-select form-select-sm" name={'sub_group_' + data.id} id={'sub_group_' + data.id + i}
                                     defaultValue={sub_group} onBlur={() => add_grp_37(data.id)}>
-                                    {subgroup.map(g => <option>{g.name}</option>)}
+                                    {subgroup.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                                 </select>
                                 :
                                 <label name={'sub_group_' + data.id} id={'sub_group_' + data.id + i} onDoubleClick={() => setEdit({ ['sub_group_' + data.id + i]: true })}>{sub_group}</label>
@@ -359,12 +359,12 @@ export default function RECORD_ARC_37(props) {
                     <div className='col-3'>
                         <select className="form-select form-select-sm" name={'main_group_' + data.id} id={'main_group_' + data.id + subItems.length}
                             onChange={(e) => _SET_SUBGROUP(e.target.value)} defaultValue={grp}>
-                            {GROUPS.map(g => <option>{g.name}</option>)}
+                            {GROUPS.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                         </select>
                     </div>
                     <div className='col-3'>
                         <select className="form-select form-select-sm" name={'sub_group_' + data.id} id={'sub_group_' + data.id + subItems.length}>
-                            {subgr.map(sg => <option>{sg.name}</option>)}
+                            {subgr.map((sg, sgIndex) => <option key={sgIndex}>{sg.name}</option>)}
                         </select>
                     </div>
                     <div className='col'>
@@ -373,7 +373,7 @@ export default function RECORD_ARC_37(props) {
                     <div className='col'>
                         <input className='form-select form-select-sm' list="index_37" name={'index_' + data.id} id={'index_' + data.id + subItems.length} />
                         <datalist id="index_37">
-                            {ind.map(i => <option>{i}</option>)}
+                            {ind.map((i, iIndex) => <option key={iIndex}>{i}</option>)}
                         </datalist>
                     </div>
                     <div className='col'>
@@ -401,7 +401,7 @@ export default function RECORD_ARC_37(props) {
                 <div className='col text-center border fw-bold'><label>OCUPACION REAL</label></div>
             </div>
             {areas.map((area, i) => {
-                return <div className='row'>
+                return <div className='row' key={i}>
 
                     <div className='col-1 text-end'> <input className="form-check-input" type="checkbox" defaultChecked={true} name="import_checks" /> </div>
                     <div className='col border'>
@@ -409,10 +409,10 @@ export default function RECORD_ARC_37(props) {
                     </div>
                     <div className='col border'><select className="form-select form-select-sm" name="import_main_group"
                         onChange={(e) => _SET_SUBGROUP_IMPORT(e.target.value, i)}>
-                        {GROUPS.map(g => <option>{g.name}</option>)}
+                        {GROUPS.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                     </select></div>
                     <div className='col border'><select className="form-select form-select-sm" name="import_sub_group" id={'import_sub_group_' + i}>
-                        {GROUPS.map(g => <option>{g.name}</option>)}
+                        {GROUPS.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                     </select></div>
                     <div className='col border'>
                         <input type="number" min={0} className="form-control form-control-sm" name={'import_anet'} defaultValue={_GET_NET_INDEX(area.build, area.destroy, area.historic_areas)} />
@@ -424,7 +424,7 @@ export default function RECORD_ARC_37(props) {
             <div className='row my-2'>
                 <div className='col-1'></div>
                 <div className='col text-center'>
-                    <Button size="sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> IMPORTAR</Button>
+                    <Button size="sm" onClick={() => import_37()}><Icon name="file-upload" size={16} /> Importar</Button>
                 </div>
             </div>
         </>
@@ -484,14 +484,14 @@ export default function RECORD_ARC_37(props) {
         ]
 
         return LIST.map((list, i) => {
-            return <div className="row border text-center ">
+            return <div className="row border text-center " key={i}>
                 <div className='col'>
                     {list.title ? <label className='fw-bold'>{list.title}</label> : ''}
                 </div>
                 {list.items.length ?
                     <div className='col-7'>
                         {list.items.map((item, j) => {
-                            if (!item.text) return <>
+                            if (!item.text) return <Fragment key={j}>
                                 <div className='row border text-start'>
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'><select className={_GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[item.v])}
@@ -502,8 +502,8 @@ export default function RECORD_ARC_37(props) {
                                         <option className="text-warning">NA</option>
                                     </select></div>
                                 </div>
-                            </>
-                            else return <>
+                            </Fragment>
+                            else return <Fragment key={j}>
                                 <div className='row border text-start'>
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'>
@@ -512,7 +512,7 @@ export default function RECORD_ARC_37(props) {
                                             defaultValue={_VALUE_ARRAY[item.v]} onBlur={() => save_ra_37(false)} />
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         })}
                     </div>
                     : ''}
@@ -601,13 +601,12 @@ export default function RECORD_ARC_37(props) {
                 minWidth: '110px',
                 cell: row => <>
                     <Button variant="outline" size="sm" className="px-2 me-1" onClick={() => edit37 ? set37(false) : set37(row)}><Icon name="edit" size={16} /></Button>
-                    <Button variant="destructive" size="sm" className="px-2" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></Button>
+                    <Button variant="outline" size="sm" className="px-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_37(row.id)}><Icon name="trash-alt" size={16} /></Button>
                 </>,
             },
         ]
-        return <DataTable
+        return <DataTable pagination={false}
             noDataComponent="No hay Items"
-            striped="true"
             columns={columns}
             data={[..._LIST].sort((a, b) => array_sort(a, b))}
             highlightOnHover
@@ -632,14 +631,14 @@ export default function RECORD_ARC_37(props) {
                         <label>Grupo</label>
                         <select className="form-select form-select-sm" id={"r_a_37_2" + edit}
                             onChange={(e) => _SET_SUBGROUP(e.target.value)}>
-                            {GROUPS.map(g => <option>{g.name}</option>)}
+                            {GROUPS.map((g, gIndex) => <option key={gIndex}>{g.name}</option>)}
                         </select>
                     </div>
                     <div className="col p-1">
                         <label>Subgrupo</label>
                         <select className="form-select form-select-sm" id={"r_a_37_3" + edit}
                             onChange={(e) => _SET_INDEX(e.target.value)}>
-                            {subgr.map(sg => <option>{sg.name}</option>)}
+                            {subgr.map((sg, sgIndex) => <option key={sgIndex}>{sg.name}</option>)}
                         </select>
                     </div>
                     <div className="col p-1">
@@ -652,7 +651,7 @@ export default function RECORD_ARC_37(props) {
                         <input className='form-select form-select-sm' list="index_37" id={"r_a_37_4" + edit}
                             defaultValue={''} />
                         <datalist id="index_37">
-                            {ind.map(i => <option>{i}</option>)}
+                            {ind.map((i, iIndex) => <option key={iIndex}>{i}</option>)}
                         </datalist>
                     </div>
                     <div className="col p-1">
@@ -1080,7 +1079,7 @@ export default function RECORD_ARC_37(props) {
                     </div>
                 </div>
                 <div className='col text-end'>
-                    <Button variant={!newImport ? "outline" : "default"} size="sm" onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> IMPORTAR DE CUADRO DE AREAS</Button>
+                    <Button variant={!newImport ? "outline" : "default"} size="sm" onClick={() => setImport(!newImport)}><Icon name="table" size={16} /> Importar del cuadro de áreas</Button>
                 </div>
             </div>
 
@@ -1089,7 +1088,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('', false)}
                     <div className="text-center">
                         <Button size="sm" className="my-2">
-                            <Icon name="share-square" size={16} /> AÑADIR ELEMENTOS
+                            <Icon name="share-square" size={16} /> Añadir elementos
                         </Button>
                     </div>
                 </form>
@@ -1102,7 +1101,7 @@ export default function RECORD_ARC_37(props) {
                     {_COMPONENT_37('_edit', edit37)}
                     <div className="text-center">
                         <Button size="sm" className="my-2">
-                            <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                            <Icon name="share-square" size={16} /> Guardar cambios
                         </Button>
                     </div>
                 </form>

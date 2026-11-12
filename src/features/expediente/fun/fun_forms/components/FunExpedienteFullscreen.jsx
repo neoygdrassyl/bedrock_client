@@ -1,5 +1,16 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  BellRing,
+  ClipboardList,
+  ChevronsUpDown,
+  Layers,
+  Loader2,
+  Minus,
+  MoreHorizontal,
+  Search,
+  X,
+} from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import {
@@ -9,13 +20,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/shared/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { Icon } from '@/shared/components/icon';
+import { isOffCanvasTier, useShellTier } from '@/shared/hooks/use-mobile';
 import { Z_CLASS } from '@/shared/lib/layers';
+import { enterWorkspaceMode, useShellHeaderActionsSlot, useShellHeaderBreadcrumbSlot, useShellWorkspaceSlot } from '@/shared/lib/shellWorkspace';
 import { cn } from '@/shared/lib/utils';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import FUNService from '../../../api/fun.service';
 import legalGuideService from '../../../api/legalGuide.service';
-import { calcularDiasHabiles, sumarDiasHabiles, FUN_0_TYPE_TIME } from '../../../clocks/hooks/useClocksManager';
+import { onClockWritten } from '../../../api/clockWriteEvents';
+import { formatPhaseDate } from '../../../clocks/utils/phaseTerm';
 import { useAlarms } from '../hooks/useAlarms';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
 import { useBookmarks } from '../hooks/useBookmarks';
@@ -23,6 +49,26 @@ import { formsParser1, regexChecker_isOA_2 } from '../../../../../shared/config/
 import RecordsBinnacleStack from '../../../records/RecordsBinnacleStack';
 import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
 import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';
+import {
+  EXPEDIENTE_NAV_GROUPS,
+  EXPEDIENTE_SECTION_IDS,
+  findNavSection,
+  getExpedienteNavGroups,
+  getNavToneClasses,
+} from '../../../workspace/expedienteNavConfig';
+import { getShortRadicado } from '../../../workspace/expedienteStatus';
+import { useExpedienteTerm } from '../../../workspace/useExpedienteTerm';
+import { publishComputedTerm } from '../../../dock/computedTermStore';
+import { ExpedienteHeaderBreadcrumb } from '../../../workspace/ExpedienteHeaderBreadcrumb';
+import { ExpedienteSideNav } from '../../../workspace/ExpedienteSideNav';
+import { ExpedienteTopNav } from '../../../workspace/ExpedienteTopNav';
+import { ExpedienteWorkspaceContext } from '../../../workspace/ExpedienteWorkspaceContext';
+import { useIsWideViewport, useNodeMinWidth, useNodeWidthFlags } from '../../../workspace/useExpedienteNavLayout';
+import { addToDock, minimize as minimizeDockWindow, setActiveWorkspace, useExpedienteDock } from '../../../dock';
+import { ExpedienteDockSwitcher } from '../../../dock/ExpedienteDockSwitcher';
+
+// Trailing delay that coalesces a burst of clock writes into one detail reload.
+const CLOCK_WRITE_REFRESH_DELAY_MS = 200;
 
 const FUNG = React.lazy(() => import('../fun_g'));
 const FUNC = React.lazy(() => import('../fun_c'));
@@ -39,75 +85,8 @@ const RECORD_REVIEW = React.lazy(() => import('../../../records/record_review'))
 const RECORD_PH = React.lazy(() => import('../../../records/record_ph'));
 const EXPEDITION = React.lazy(() => import('../../../expeditions/expedition.page'));
 
-const SECTION_GROUPS = [
-  {
-    id: 'principal',
-    tone: 'sky',
-    items: [
-      { id: 'detalles', label: 'Detalles', icon: 'FolderOpen' },
-      { id: 'actualizar', label: 'Actualizar', icon: 'RefreshCw', requiresEdit: true },
-      { id: 'documentos-new', label: 'Documentos (new)', icon: 'Files' },
-      { id: 'documentos', label: 'Documentos', icon: 'Archive' },
-      { id: 'chequeo', label: 'Chequeo', icon: 'CheckSquare' },
-      { id: 'publicidad', label: 'Publicidad', icon: 'Megaphone', requiresPublicidad: true },
-    ],
-  },
-  {
-    id: 'informes',
-    tone: 'violet',
-    items: [
-      { id: 'tiempos', label: 'Tiempos', icon: 'Clock' },
-      { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
-      { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
-      { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
-    ],
-  },
-  {
-    id: 'cierre',
-    tone: 'amber',
-    items: [
-      { id: 'acta', label: 'Acta', icon: 'FileCheck' },
-      { id: 'expedicion', label: 'Expedición', icon: 'FileOutput' },
-    ],
-  },
-];
-
-const SECTION_ITEMS = SECTION_GROUPS.flatMap((group) => group.items);
-
-const STANDARD_REPORT_ITEMS = [
-  { id: 'juridico', label: 'Inf. Jur', ariaLabel: 'Informe Jurídico', icon: 'Scale' },
-  { id: 'arquitectonico', label: 'Inf. Arq', ariaLabel: 'Informe Arquitectónico', icon: 'Building' },
-  { id: 'estructural', label: 'Inf. Estr', ariaLabel: 'Informe Estructural', icon: 'Cog' },
-];
-
-const PH_REPORT_ITEM = { id: 'ph', label: 'Informe P.H.', icon: 'PenTool' };
-
-const REPORT_ITEMS = [...STANDARD_REPORT_ITEMS, PH_REPORT_ITEM];
-
-const STATUS_META = {
-  EN_TERMINO: {
-    label: 'En término',
-    badgeClass: 'border-accent/30 bg-accent/10 text-accent',
-    barClass: 'bg-accent',
-  },
-  PRONTO_A_VENCER: {
-    label: 'Pronto a vencer',
-    badgeClass: 'border-warning/30 bg-warning/10 text-warning',
-    barClass: 'bg-warning',
-  },
-  ALERTA_VENCIMIENTO: {
-    label: 'Alerta de vencimiento',
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    barClass: 'bg-destructive',
-  },
-  VENCIDO: {
-    label: 'Vencido',
-    badgeClass: 'border-destructive/30 bg-destructive/10 text-destructive',
-    barClass: 'bg-destructive',
-  },
-};
-
-const STATUS_FALLBACK = STATUS_META.EN_TERMINO;
+const REPORT_ITEMS = EXPEDIENTE_NAV_GROUPS.find((group) => group.id === 'informes').items;
+const STANDARD_REPORT_ITEMS = REPORT_ITEMS.filter((item) => item.standardReport);
 
 function ModuleLoadingFallback() {
   return (
@@ -146,9 +125,24 @@ const TERM_META = {
     badgeClass: 'border-accent/30 bg-accent/10 text-accent',
     barClass: 'bg-accent',
   },
+  // Process finished with records left to register (workspace/expedientePendingStatus).
+  pending: {
+    label: 'Pendientes por registrar',
+    description: 'El proceso finalizó; no corre ningún término legal.',
+    icon: 'Hourglass',
+    badgeClass: 'border-warning/30 bg-warning/10 text-warning',
+    barClass: 'bg-warning/60',
+  },
+  finished: {
+    label: 'Proceso cerrado',
+    description: 'Todas las fases del trámite están completas.',
+    icon: 'CheckCircle',
+    badgeClass: 'border-accent/30 bg-accent/10 text-accent',
+    barClass: 'bg-accent',
+  },
   unknown: {
     label: 'Sin término calculado',
-    description: 'El backend no entregó días límite para este expediente.',
+    description: 'Tiempos no tiene un término en curso para este expediente.',
     icon: 'CircleHelp',
     badgeClass: 'border-border bg-muted text-muted-foreground',
     barClass: 'bg-muted-foreground/40',
@@ -175,33 +169,8 @@ function formatDisplayDate(value) {
   }
 }
 
-function toSafeNumber(value, fallback = 0) {
-  if (value == null || value === '') {
-    return fallback;
-  }
-
-  const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
-}
-
 function getFirstValue(...values) {
   return values.find((value) => value !== undefined && value !== null && value !== '');
-}
-
-function normalizeTypeKey(value) {
-  if (!value) return null;
-  const normalized = String(value).trim().toLowerCase();
-  if (['i', 'ii', 'iii', 'iv', 'oa'].includes(normalized)) return normalized;
-  if (normalized.includes('obra') || normalized.includes('oa')) return 'oa';
-  if (normalized.includes('iv') || normalized.includes('4')) return 'iv';
-  if (normalized.includes('iii') || normalized.includes('3')) return 'iii';
-  if (normalized.includes('ii') || normalized.includes('2')) return 'ii';
-  if (normalized.includes('i') || normalized.includes('1')) return 'i';
-  return null;
-}
-
-function getExpedienteTypeKey(expediente) {
-  return normalizeTypeKey(getFirstValue(expediente?.tipo, expediente?.type, expediente?.categoria, expediente?.m_lic));
 }
 
 function hasSeededLegalSummary(expediente, currentPublic) {
@@ -231,104 +200,42 @@ function normalizePhaseCode(value) {
   return code;
 }
 
-function getClockDate(expediente, states) {
-  const clocks = Array.isArray(expediente?.fun_clocks) ? expediente.fun_clocks : [];
-  const stateList = Array.isArray(states) ? states : [states];
-  const match = clocks.find((clock) => stateList.some((state) => String(clock?.state) === String(state)) && clock?.date_start);
-  return match?.date_start ?? null;
-}
-
-function deriveFallbackLegalTerms(expediente) {
-  if (!expediente) return null;
-
-  const existingLimit = toSafeNumber(expediente?.dias_habiles_limite, 0);
-  const existingUsed = toSafeNumber(expediente?.dias_habiles_usados, 0);
-  if (existingLimit > 0 && (existingUsed > 0 || expediente?.fecha_limite)) {
-    return null;
-  }
-
-  const startDate = getClockDate(expediente, [5, '5']) || expediente?.fecha_radicacion || expediente?.date_start || expediente?.createdAt;
-  if (!startDate) return null;
-
-  const typeKey = getExpedienteTypeKey(expediente) || 'iv';
-  const limitDays = FUN_0_TYPE_TIME[typeKey] ?? 45;
-  const usedDays = calcularDiasHabiles(startDate, new Date(), false);
-  const progress = limitDays > 0 ? Math.min(Math.round((usedDays / limitDays) * 100), 100) : 0;
-  const fechaLimite = sumarDiasHabiles(startDate, limitDays);
-  const remaining = limitDays - usedDays;
-
-  return {
-    fase_actual: 'EST',
-    fase_label: 'Estudio y observaciones',
-    responsable: 'Curaduría',
-    dias_habiles_usados: Math.max(usedDays, 0),
-    dias_habiles_limite: limitDays,
-    porcentaje_avance: progress,
-    fecha_limite: fechaLimite,
-    status: remaining < 0 ? 'VENCIDO' : remaining <= 3 ? 'ALERTA_VENCIMIENTO' : remaining <= 8 ? 'PRONTO_A_VENCER' : 'EN_TERMINO',
-    sugerencia: 'Cálculo mínimo desde el submódulo de tiempos mientras el resumen legal individual termina de responder.',
-    term_source: 'clocks-fallback',
-  };
-}
-
+/**
+ * Metadata of the expediente (applicant, category, dates) from the route payload and the
+ * backend legal summary. The legal TERM never comes from here: it is computed by the
+ * Tiempos engine (`useExpedienteTerm`), see `workspace/expedienteTerm`.
+ */
 function mergeLegalSummary(base, liveSummary) {
-  const combined = { ...base, ...liveSummary };
-  const fallbackTerms = deriveFallbackLegalTerms(combined) || {};
-  const fallbackSource = fallbackTerms.term_source;
-  const sourceLabel = fallbackSource
-    ? fallbackSource
-    : liveSummary
-      ? 'summary-endpoint'
-      : 'payload';
-  return {
-    ...base,
-    ...liveSummary,
-    ...fallbackTerms,
-    fase_actual: getFirstValue(liveSummary?.fase_actual, fallbackTerms.fase_actual, base?.fase_actual),
-    fase_label: getFirstValue(liveSummary?.fase_label, fallbackTerms.fase_label, base?.fase_label),
-    responsable: getFirstValue(liveSummary?.responsable, fallbackTerms.responsable, base?.responsable, base?.actor_actual),
-    dias_habiles_usados: getFirstValue(liveSummary?.dias_habiles_usados, fallbackTerms.dias_habiles_usados, base?.dias_habiles_usados),
-    dias_habiles_limite: getFirstValue(liveSummary?.dias_habiles_limite, fallbackTerms.dias_habiles_limite, base?.dias_habiles_limite),
-    porcentaje_avance: getFirstValue(liveSummary?.porcentaje_avance, fallbackTerms.porcentaje_avance, base?.porcentaje_avance),
-    fecha_limite: getFirstValue(liveSummary?.fecha_limite, fallbackTerms.fecha_limite, base?.fecha_limite),
-    status: getFirstValue(liveSummary?.status, fallbackTerms.status, base?.status),
-    sugerencia: getFirstValue(liveSummary?.sugerencia, liveSummary?.suggestion, fallbackTerms.sugerencia, base?.sugerencia, base?.suggestion),
-    term_source: getFirstValue(fallbackSource, liveSummary?.term_source, base?.term_source, sourceLabel),
-  };
+  return liveSummary ? { ...base, ...liveSummary } : base;
 }
 
-function getSummaryStatusMeta(status) {
-  return STATUS_META[status] || STATUS_FALLBACK;
-}
-
-function getTermMeta({ summary, usedDays, limitDays, remainingDays }) {
-  if (summary?.status === 'VENCIDO' || usedDays > limitDays && limitDays > 0) {
-    return TERM_META.overdue;
-  }
-
-  if (!limitDays) {
-    return TERM_META.unknown;
-  }
-
-  if (remainingDays <= 3 || summary?.status === 'ALERTA_VENCIMIENTO') {
-    return TERM_META.critical;
-  }
-
-  if (remainingDays <= 8 || summary?.status === 'PRONTO_A_VENCER') {
-    return TERM_META.warning;
-  }
-
+/** Icon and wording of the term box of the expanded summary, from the term view-model. */
+function getTermMetaFromView(termView) {
+  if (termView.pending) return TERM_META.pending;
+  if (termView.status === 'FINALIZADO' || termView.status === 'DESISTIDO') return TERM_META.finished;
+  if (termView.overdue) return TERM_META.overdue;
+  if (!termView.known) return TERM_META.unknown;
+  if (termView.status === 'PRONTO_A_VENCER') return TERM_META.critical;
+  if (termView.status === 'PAUSADO') return TERM_META.warning;
   return TERM_META.stable;
 }
 
-function getProgressPercent(summary, usedDays, limitDays) {
-  return Math.max(
-    0,
-    Math.min(
-      toSafeNumber(summary?.porcentaje_avance, limitDays > 0 ? Math.round((usedDays / limitDays) * 100) : 0),
-      100
-    )
-  );
+const normalizePhaseLabel = (value) => String(value ?? '')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/\bde\b/g, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+/**
+ * The backend suggestion is written for the phase the backend inferred. It is shown only
+ * when that phase is the one Tiempos reports as current, so it never advises on another one.
+ */
+function getPhaseSuggestion(summary, termView) {
+  const suggestion = summary?.sugerencia || summary?.suggestion || summary?.recomendacion;
+  if (!suggestion || !termView.phaseTitle) return null;
+  return normalizePhaseLabel(summary?.fase_label) === normalizePhaseLabel(termView.phaseTitle) ? suggestion : null;
 }
 
 function getAlarmSeverityMeta(alarm) {
@@ -543,11 +450,6 @@ function isPropertyHorizontalExpediente(expediente, version) {
   return matchesLegacyPropertyHorizontal(getPropertyHorizontalClassifierText(expediente, version));
 }
 
-function getReportItemsForExpediente(expediente, version, tone) {
-  const items = isPropertyHorizontalExpediente(expediente, version) ? [PH_REPORT_ITEM] : STANDARD_REPORT_ITEMS;
-  return items.map((item) => ({ ...item, accent: tone || item.accent }));
-}
-
 function isEditableLegacyExpediente(expediente) {
   if (typeof expediente?.state !== 'number') {
     return false;
@@ -572,48 +474,11 @@ function canShowLegacyPublicidad(expediente, version) {
 }
 
 function getVisibleSectionGroups(expediente, version) {
-  const showActualizar = isEditableLegacyExpediente(expediente);
-  const showPublicidad = canShowLegacyPublicidad(expediente, version);
-  const isPH = isPropertyHorizontalExpediente(expediente, version);
-
-  return SECTION_GROUPS
-    .map((group) => {
-      if (group.id === 'principal') {
-        return {
-          ...group,
-          items: group.items
-            .filter((item) => {
-              if (item.requiresPublicidad) return showPublicidad;
-              if (item.requiresEdit) return showActualizar;
-              return true;
-            })
-            .map((item) => ({ ...item, accent: group.tone })),
-        };
-      }
-
-      if (group.id === 'informes') {
-        const [tiemposItem] = group.items;
-        return {
-          ...group,
-          items: [
-            { ...tiemposItem, accent: group.tone },
-            ...getReportItemsForExpediente(expediente, version, group.tone),
-          ],
-        };
-      }
-
-      return {
-        ...group,
-        items: group.items
-          .filter((item) => !(isPH && item.id === 'acta'))
-          .map((item) => ({
-            ...item,
-            label: isPH && item.id === 'expedicion' ? 'Expedición P.H.' : item.label,
-            accent: group.tone,
-          })),
-      };
-    })
-    .filter((group) => group.items.length > 0);
+  return getExpedienteNavGroups({
+    canEdit: isEditableLegacyExpediente(expediente),
+    canShowPublicidad: canShowLegacyPublicidad(expediente, version),
+    isPropertyHorizontal: isPropertyHorizontalExpediente(expediente, version),
+  });
 }
 
 function normalizeBitacoraEntries(expediente) {
@@ -675,38 +540,6 @@ function SummaryItem({ icon, label, value }) {
   );
 }
 
-function SectionButton({ item, active, onClick, tone = 'sky' }) {
-  const isLongLabel = item.label.length > 10;
-  const toneClass = {
-    sky: active
-      ? 'border-sky-400 bg-sky-200/95 text-sky-950 shadow-sm shadow-sky-950/10'
-      : 'border-sky-100/80 bg-white/80 text-slate-900 hover:border-sky-300 hover:bg-sky-100 hover:text-sky-950',
-    violet: active
-      ? 'border-violet-400 bg-violet-200/95 text-violet-950 shadow-sm shadow-violet-950/10'
-      : 'border-violet-100/80 bg-white/80 text-slate-900 hover:border-violet-300 hover:bg-violet-100 hover:text-violet-950',
-    amber: active
-      ? 'border-amber-400 bg-amber-200/95 text-amber-950 shadow-sm shadow-amber-950/10'
-      : 'border-amber-100/80 bg-white/80 text-slate-900 hover:border-amber-300 hover:bg-amber-100 hover:text-amber-950',
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={() => onClick(item.id)}
-      aria-label={item.ariaLabel || item.label}
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-medium leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        isLongLabel ? 'w-[clamp(9rem,10vw,11rem)]' : 'w-[clamp(7rem,7.5vw,8.75rem)]',
-        toneClass[tone] || toneClass.sky
-      )}
-    >
-      <Icon name={item.icon} size={12} className="shrink-0" />
-      <span className="min-w-0 truncate">{item.label}</span>
-    </button>
-  );
-}
-
 function SupportCard({ title, children, action }) {
   return (
     <section className="rounded-xl border border-border bg-card/80 p-3 shadow-sm">
@@ -719,49 +552,123 @@ function SupportCard({ title, children, action }) {
   );
 }
 
-function PanelToggleButton({ open, onToggle, docked = false }) {
+const TOP_BAR_TOOLTIP_CLASS = 'rounded-lg px-2.5 py-1 text-xs';
+const TOP_BAR_BUTTON_CLASS = 'relative inline-flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border-0 bg-transparent outline-none transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-muted aria-expanded:text-foreground';
+// Width (px) of the shell header from which each optional piece of the expediente
+// identity fits next to the search and the window controls (the shell shows the search
+// as a field from 1120px, `app/layouts/HeaderBar`; `trail` and `category` assume it).
+const HEADER_MIN_WIDTH = Object.freeze({
+  fullRadicado: 440,
+  status: 520,
+  version: 600,
+  list: 700,
+  fullTerm: 900,
+  phase: 1180,
+  trail: 1270,
+  category: 1400,
+});
+// The binnacle panel docks beside the module only while the module keeps ~840px
+// (panel 416 + gap 8); below that it opens over the work area instead.
+const WORK_AREA_DOCKED_ASIDE_MIN_WIDTH = 1264;
+// Shell event that opens the global search (kept as a literal: features do not import the shell).
+const OPEN_SEARCH_EVENT = 'dovela:open-search';
+// Window controls of the workspace header: one tight group of square ghost buttons.
+const WINDOW_CONTROL_CLASS = 'relative inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-muted-foreground outline-none transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-muted aria-expanded:text-foreground';
+const WINDOW_CLOSE_CLASS = 'hover:bg-destructive hover:text-destructive-foreground';
+const TOUCH_CONTROL_CLASS = 'h-10 w-10';
+const FLOATING_CARD_CLASS = 'rounded-2xl border border-border/70 bg-card shadow-[shadow:var(--elevation-floating)]';
+
+/** Icon-only top bar button: accessible name + tooltip. */
+function TopBarIconButton({ label, onClick, children, active = false, disabled = false, className, ...props }) {
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon"
-      onClick={onToggle}
-      className={cn(
-        'h-10 w-10 rounded-full border-border bg-background/95 text-muted-foreground shadow-lg transition-all duration-150 hover:bg-card hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        docked ? 'static shrink-0' : 'absolute z-20',
-        !docked && (open ? 'left-2 top-3' : '-left-10 top-4')
-      )}
-      aria-label={open ? 'Ocultar panel de bitácoras' : 'Mostrar panel de bitácoras'}
-      aria-expanded={open}
-      title={open ? 'Ocultar bitácoras' : 'Mostrar bitácoras'}
-    >
-      <Icon name={open ? 'ChevronRight' : 'ChevronLeft'} size={16} strokeWidth={2.25} aria-hidden="true" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          aria-label={label}
+          className={cn(TOP_BAR_BUTTON_CLASS, 'w-8 text-muted-foreground', active && 'bg-muted text-foreground', className)}
+          {...props}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6} className={TOP_BAR_TOOLTIP_CLASS}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
-function LegalStatusCard({ summary, legalGuide, legalGuideLoading, summaryStatus, termMeta, usedDays, limitDays, progressPercent, remainingDays }) {
-  const responsable = summary?.responsable || summary?.actor_actual || 'Responsable sin definir';
-  const suggestion = summary?.sugerencia || summary?.suggestion || summary?.recomendacion;
+/**
+ * Labeled top bar action (icon + text + optional counter). When the bar is narrow the
+ * text hides and the tooltip carries the name; `label` is always the accessible name.
+ */
+function TopBarAction({ label, text, icon, showText = true, count = 0, className, ...props }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={count ? `${label}: ${count}` : label}
+          className={cn(
+            TOP_BAR_BUTTON_CLASS,
+            'gap-1.5 text-[13px] font-medium',
+            showText ? 'px-2 text-foreground' : 'w-8 text-muted-foreground',
+            className,
+          )}
+          {...props}
+        >
+          <span className={cn('inline-flex shrink-0', showText && 'text-muted-foreground')}>{icon}</span>
+          {showText ? <span>{text}</span> : null}
+          {count ? (
+            <span
+              className={cn(
+                'inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-mono text-[10px] font-semibold leading-none text-destructive-foreground',
+                !showText && 'absolute -right-0.5 -top-0.5',
+              )}
+              aria-hidden="true"
+            >
+              {count}
+            </span>
+          ) : null}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6} className={TOP_BAR_TOOLTIP_CLASS}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+function TopBarDivider({ className }) {
+  return <span className={cn('mx-1 h-5 w-px shrink-0 bg-border', className)} aria-hidden="true" />;
+}
+
+/**
+ * Expanded summary: the legal term exactly as Tiempos states it (`termView`, see
+ * workspace/expedienteTerm). Read-only.
+ */
+function LegalStatusCard({ summary, termView, legalGuide, legalGuideLoading }) {
+  const termMeta = getTermMetaFromView(termView);
+  const statusMeta = termView.statusMeta;
+  const suggestion = getPhaseSuggestion(summary, termView);
   const guideTerm = getFirstValue(legalGuide?.terminoDias, legalGuide?.termino_dias);
   const guideActor = legalGuide?.actor;
   const guideNorm = legalGuide?.norma;
-  const sourceLabel = summary?.term_source === 'clocks-fallback'
-    ? 'Calculado desde tiempos'
-    : summary?.term_source === 'summary-endpoint'
-      ? 'Resumen legal backend'
-      : 'Payload del expediente';
+  const showsDays = termView.ratioText && !termView.pending;
 
   return (
     <SupportCard title="Estado y términos">
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">{summary?.fase_label || 'Fase por confirmar'}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">{responsable}{guideActor ? ` · guía ${guideActor}` : ''}</p>
+            <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">{termView.phaseTitle || 'Sin fase en curso'}</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">{termView.responsible || 'Responsable sin definir'}{guideActor ? ` · guía ${guideActor}` : ''}</p>
           </div>
-          <Badge className={cn('shrink-0 border text-[10px] font-semibold', summaryStatus.badgeClass)}>
-            {summaryStatus.label}
+          <Badge className={cn('shrink-0 border text-[10px] font-semibold', statusMeta.badgeClass)}>
+            {statusMeta.label}
           </Badge>
         </div>
 
@@ -776,30 +683,30 @@ function LegalStatusCard({ summary, legalGuide, legalGuideLoading, summaryStatus
                 <p className="truncate text-[11px] text-muted-foreground">{termMeta.description}</p>
               </div>
             </div>
-            {remainingDays != null ? (
-              <span className="shrink-0 font-mono text-xs font-semibold text-foreground">{remainingDays}d</span>
+            {termView.known ? (
+              <span className={cn('shrink-0 font-mono text-xs font-semibold', termView.overdue ? 'text-destructive' : 'text-foreground')}>{termView.shortText}</span>
             ) : null}
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
               className={cn('h-full rounded-full transition-all duration-300', termMeta.barClass)}
-              style={{ width: `${progressPercent}%` }}
+              style={{ width: `${termView.barPercent}%` }}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-            <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles</span>
-            <span>{progressPercent}%</span>
+          <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+            {showsDays ? <span className="font-mono">{termView.usedDays}/{termView.totalDays} días hábiles</span> : <span>Sin término en curso</span>}
+            <span className={cn('truncate', termView.overdue && 'font-semibold text-destructive')}>{termView.text}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <div className="rounded-lg border border-border/70 bg-background/70 p-2">
-            <p className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">Límite</p>
-            <p className="mt-0.5 truncate font-medium text-foreground">{formatDisplayDate(summary?.fecha_limite)}</p>
+            <p className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">Límite legal</p>
+            <p className="mt-0.5 truncate font-medium text-foreground">{termView.limitDate ? formatPhaseDate(termView.limitDate) : 'Sin fecha'}</p>
           </div>
           <div className="rounded-lg border border-border/70 bg-background/70 p-2">
             <p className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">Fuente</p>
-            <p className="mt-0.5 truncate font-medium text-foreground">{sourceLabel}</p>
+            <p className="mt-0.5 truncate font-medium text-foreground">Módulo Tiempos</p>
           </div>
         </div>
 
@@ -961,7 +868,7 @@ function RecentActivityCard({ events }) {
 function AlertsDialog({ open, onOpenChange, alarms, currentPublic }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent overlayClassName="!z-[10000]" className="!z-[10010] max-h-[82vh] max-w-2xl overflow-hidden p-0">
+      <DialogContent overlayClassName="!z-[10060]" className="!z-[10070] max-h-[82vh] max-w-2xl overflow-hidden p-0">
         <DialogHeader className="border-b border-border px-6 py-5 pr-12">
           <DialogTitle className="flex items-center gap-2 text-base">
             <Icon name="BellRing" size={18} className="text-primary" />
@@ -1017,7 +924,7 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent overlayClassName="!z-[10000]" className="!z-[10010] max-h-[82vh] max-w-3xl overflow-hidden p-0">
+      <DialogContent overlayClassName="!z-[10060]" className="!z-[10070] max-h-[82vh] max-w-3xl overflow-hidden p-0">
         <DialogHeader className="border-b border-border px-6 py-5 pr-12">
           <DialogTitle className="flex items-center gap-2 text-base">
             <Icon name="ClipboardList" size={18} className="text-primary" />
@@ -1072,6 +979,11 @@ function BitacoraDialog({ open, onOpenChange, entries, groups, currentPublic }) 
     </Dialog>
   );
 }
+
+// Modules that lay out their own stack of floating cards on the page background
+// instead of living inside the single module card (see the `data-layout='stack'`
+// block of shared/styles/legacy-bridge.css).
+const CARD_STACK_SECTIONS = new Set(['tiempos', 'detalles', 'documentos', 'actualizar', 'chequeo', 'publicidad', 'juridico', 'arquitectonico', 'estructural', 'ph', 'acta', 'expedicion']);
 
 function renderModuleContent(activeSection, moduleProps, options = {}) {
   const { isPropertyHorizontal = false, isSubdivision = false, expediente } = options;
@@ -1131,7 +1043,7 @@ function normalizeInitialSection(section, report, isPropertyHorizontal = false) 
     return 'juridico';
   }
 
-  return SECTION_ITEMS.some((item) => item.id === section) ? section : 'detalles';
+  return EXPEDIENTE_SECTION_IDS.includes(section) ? section : 'detalles';
 }
 
 function normalizeInitialReport(report) {
@@ -1148,6 +1060,7 @@ export function FunExpedienteFullscreen({
   initialSection = 'detalles',
   initialReport = 'juridico',
   defaultRightPanelOpen,
+  onSectionChange,
 }) {
   const initialIsPropertyHorizontal = isPropertyHorizontalExpediente(expediente, getExpedienteVersion(expediente));
   const normalizedInitialSection = useMemo(
@@ -1157,12 +1070,70 @@ export function FunExpedienteFullscreen({
   const resolvedDefaultRightPanelOpen = defaultRightPanelOpen ?? isBinnaclePanelDefaultOpen(normalizedInitialSection);
   const [summary, setSummary] = useState(expediente);
   const [activeSection, setActiveSection] = useState(normalizedInitialSection);
+  const isCardStackSection = CARD_STACK_SECTIONS.has(activeSection);
   const [currentId, setCurrentId] = useState(getExpedienteId(expediente));
   const [currentVersion, setCurrentVersion] = useState(getExpedienteVersion(expediente));
   const [currentPublic, setCurrentPublic] = useState(getExpedienteRadicado(expediente));
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [headerExpanded, setHeaderExpanded] = useState(false);
+  const [navSheetOpen, setNavSheetOpen] = useState(false);
+  const isWideViewport = useIsWideViewport();
+  // One subscription per field: a slot registering does not re-render for the others.
+  const shellSlot = useShellWorkspaceSlot();
+  const headerBreadcrumbSlot = useShellHeaderBreadcrumbSlot();
+  const headerActionsSlot = useShellHeaderActionsSlot();
+  // Portal target: once a shell slot has been seen in this mount it is kept even if the
+  // store reports null transiently, so the whole workspace is never remounted onto <body>.
+  const seenShellSlotRef = useRef(null);
+  if (shellSlot) seenShellSlotRef.current = shellSlot;
+  const portalSlot = shellSlot || seenShellSlotRef.current;
+  // Density follows the real header width (it changes with the app sidebar), not the
+  // viewport: the shell header when there is one, the self-contained bar otherwise.
+  const [localBar, setLocalBar] = useState(null);
+  const shellHeader = useMemo(
+    () => headerBreadcrumbSlot?.closest('header') || null,
+    [headerBreadcrumbSlot]
+  );
+  // Booleans per threshold (not the pixel width): one re-render per crossing.
+  const headerFits = useNodeWidthFlags(shellHeader || localBar, HEADER_MIN_WIDTH);
+  // Shell tier (viewport): decides the off-canvas pieces and the 40px touch targets.
+  const tier = useShellTier();
+  const touchTier = isOffCanvasTier(tier);
+  const mobileTier = tier === 'mobile';
   const [rightPanelOpen, setRightPanelOpen] = useState(defaultRightPanelOpen);
+  // Binnacle panel: docked beside the module while there is room; otherwise it is an
+  // overlay the user opens on demand (it never opens by itself over the module).
+  const [workArea, setWorkArea] = useState(null);
+  const asideDocked = useNodeMinWidth(workArea, WORK_AREA_DOCKED_ASIDE_MIN_WIDTH);
+  const [asideOverlayOpen, setAsideOverlayOpen] = useState(false);
+  // Crossing the docking width with the panel open keeps it open in its other form (docked
+  // <-> overlay): the same panel instance stays mounted, so an unsaved binnacle draft is
+  // not lost. The first measurement after mounting is not a crossing: the overlay never
+  // opens by itself over the module.
+  const dockSettledRef = useRef(false);
+  useEffect(() => {
+    if (!workArea) return undefined;
+    const timeout = window.setTimeout(() => { dockSettledRef.current = true; }, 500);
+    return () => window.clearTimeout(timeout);
+  }, [workArea]);
+  const [prevAsideDocked, setPrevAsideDocked] = useState(asideDocked);
+  if (prevAsideDocked !== asideDocked) {
+    setPrevAsideDocked(asideDocked);
+    const wasVisible = prevAsideDocked ? Boolean(rightPanelOpen) : asideOverlayOpen;
+    if (dockSettledRef.current && wasVisible) {
+      if (asideDocked) setRightPanelOpen(true);
+      else setAsideOverlayOpen(true);
+    }
+  }
+  const asideRef = useRef(null);
+  const contentRegionRef = useRef(null);
+  const moreToolsRef = useRef(null);
+  const windowMenuRef = useRef(null);
+  const navSheetNavigated = useRef(false);
+  const sectionsTriggerRef = useRef(null);
+  const focusAsideOnMenuClose = useRef(false);
+  const pendingSwitcherOpen = useRef(false);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const [alertsDialogOpen, setAlertsDialogOpen] = useState(false);
   const [bitacoraDialogOpen, setBitacoraDialogOpen] = useState(false);
   const [liveLegalSummary, setLiveLegalSummary] = useState(null);
@@ -1204,6 +1175,7 @@ export function FunExpedienteFullscreen({
   const activateSection = useCallback((nextSection) => {
     setActiveSection(nextSection);
     setRightPanelOpen(isBinnaclePanelDefaultOpen(nextSection));
+    setAsideOverlayOpen(false);
   }, []);
 
   useEffect(() => {
@@ -1217,6 +1189,11 @@ export function FunExpedienteFullscreen({
     };
   }, [currentPublic]);
 
+  // Ask the app shell for the content area (header/footer hidden, sidebar as a rail).
+  useLayoutEffect(() => enterWorkspaceMode(), []);
+
+  // The body class is still the contract for legacy modals and floating widgets that
+  // must stack above the workspace (legacy-modal.jsx, centralClocks.css).
   useEffect(() => {
     const { overflow } = document.body.style;
     document.body.classList.add('workspace-fullscreen-open');
@@ -1257,6 +1234,28 @@ export function FunExpedienteFullscreen({
     };
   }, [currentPublic, seededLegalSummary]);
 
+  // Last expediente detail merged into `summary` (the clocks the header term is computed from).
+  const lastAppliedDetailRef = useRef(null);
+  // Every detail GET takes a ticket when it starts; a response is merged only if no later
+  // GET was merged before it, so a response read before a write never overwrites a newer one.
+  const detailTicketRef = useRef(0);
+  const appliedDetailTicketRef = useRef(0);
+  const currentPublicRef = useRef(currentPublic);
+  currentPublicRef.current = currentPublic;
+  // Clock-write reloads are coalesced (see the `onClockWritten` effect below).
+  const clockRefreshTimerRef = useRef(null);
+  const takeDetailTicket = () => {
+    detailTicketRef.current += 1;
+    return detailTicketRef.current;
+  };
+  const canApplyDetail = (ticket, data) => {
+    if (!data || ticket < appliedDetailTicketRef.current) return false;
+    appliedDetailTicketRef.current = ticket;
+    if (data === lastAppliedDetailRef.current) return false;
+    lastAppliedDetailRef.current = data;
+    return true;
+  };
+
   const refreshSummary = useCallback(
     async (radicadoOverride) => {
       const radicado = radicadoOverride ?? currentPublic;
@@ -1265,10 +1264,17 @@ export function FunExpedienteFullscreen({
       }
 
       setIsRefreshing(true);
+      // A reload requested by a module follows a write: never join a GET started before it.
+      const ticket = takeDetailTicket();
+      if (radicado === currentPublicRef.current && clockRefreshTimerRef.current) {
+        // This GET starts after the pending clock writes, so it already covers them.
+        clearTimeout(clockRefreshTimerRef.current);
+        clockRefreshTimerRef.current = null;
+      }
       try {
         const [detailResult, summaryResult] = await Promise.allSettled([
-          FUNService.get_fun_IdPublic(radicado),
-          FUNService.getSummaryByIdPublic(radicado),
+          FUNService.get_fun_IdPublic(radicado, undefined, { force: true }),
+          FUNService.getSummaryByIdPublic(radicado, undefined, { force: true }),
         ]);
 
         const detailData = detailResult.status === 'fulfilled'
@@ -1284,12 +1290,13 @@ export function FunExpedienteFullscreen({
         }
 
         if (nextData) {
-          setSummary((prev) => mergeExpedienteSummary(prev, nextData));
+          // Merged once, and never over a detail read after this one started.
+          if (detailData ? canApplyDetail(ticket, detailData) : ticket >= appliedDetailTicketRef.current) {
+            setSummary((prev) => mergeExpedienteSummary(prev, nextData));
+          }
           setCurrentId(getExpedienteId(nextData));
           setCurrentVersion(getExpedienteVersion(nextData));
           setCurrentPublic(getExpedienteRadicado(nextData));
-        } else {
-          setSummary((prev) => mergeLegalSummary(prev, null));
         }
       } catch (error) {
         console.error(error);
@@ -1300,6 +1307,11 @@ export function FunExpedienteFullscreen({
     [currentPublic]
   );
 
+  // Latest `onRefresh` through a ref: an inline parent callback must not change the
+  // identity of `requestUpdate` (and with it every module prop).
+  const onRefreshRef = useRef(onRefresh);
+  onRefreshRef.current = onRefresh;
+
   const requestUpdate = useCallback(
     async (id) => {
       const targetId = id ?? currentId;
@@ -1308,24 +1320,72 @@ export function FunExpedienteFullscreen({
       }
 
       try {
-        const response = await FUNService.get(targetId);
-        const data = response?.data ?? null;
-        const radicado = data?.id_public ?? currentPublic;
+        // Same expediente: its radicado is known and `refreshSummary` reloads the detail
+        // (`GET /fun/get/idpublic`, which carries the same FUN_0 and clocks as `GET /fun/:id`),
+        // so the extra `GET /fun/:id` is only needed to resolve another id.
+        const knownPublic = currentPublic && currentPublic !== 'Sin radicado' ? currentPublic : null;
+        let radicado = knownPublic;
+        if (!knownPublic || currentId == null || String(targetId) !== String(currentId)) {
+          const response = await FUNService.get(targetId);
+          const data = response?.data ?? null;
+          radicado = data?.id_public ?? currentPublic;
 
-        if (data) {
-          setCurrentId(data.id ?? targetId);
-          setCurrentVersion(getExpedienteVersion(data));
-          setCurrentPublic(radicado);
+          if (data) {
+            setCurrentId(data.id ?? targetId);
+            setCurrentVersion(getExpedienteVersion(data));
+            setCurrentPublic(radicado);
+          }
         }
 
         await refreshSummary(radicado);
-        await Promise.resolve(onRefresh?.());
+        await Promise.resolve(onRefreshRef.current?.());
       } catch (error) {
         console.error(error);
       }
     },
-    [currentId, currentPublic, onRefresh, refreshSummary]
+    [currentId, currentPublic, refreshSummary]
   );
+
+  // Reloads only the expediente detail (its clocks), after clock writes made by modules that
+  // do not notify the workspace. Always a fresh GET: joining one started before the write
+  // would bring back the old term.
+  const refreshDetail = useCallback(() => {
+    const radicado = currentPublic;
+    if (!radicado || radicado === 'Sin radicado') return Promise.resolve();
+    const ticket = takeDetailTicket();
+    return Promise.resolve()
+      .then(() => FUNService.get_fun_IdPublic(radicado, undefined, { force: true }))
+      .then((response) => {
+        const data = response?.data?.data ?? response?.data ?? null;
+        // The workspace may have switched to another expediente while this GET was pending.
+        if (!data || getExpedienteRadicado(data) !== radicado || currentPublicRef.current !== radicado) return;
+        if (!canApplyDetail(ticket, data)) return;
+        setSummary((prev) => mergeExpedienteSummary(prev, data));
+      })
+      // The HTTP client already logs failed requests; the header keeps the last term.
+      .catch(() => {});
+  }, [currentPublic]);
+
+  // Any clock written for this expediente (Tiempos, Chequeo, the discipline reviews, the
+  // Tiempos table inside Jurídico, Expedición, ...) reloads the detail, so the header term
+  // follows the change without a manual reload (api/clockWriteEvents). A burst of writes (a
+  // batch save, a module writing several clocks) is coalesced into one trailing reload, and
+  // a module reload (`requestUpdate`) started after the writes cancels it (it covers them).
+  useEffect(() => {
+    const unsubscribe = onClockWritten(({ fun0Id }) => {
+      if (fun0Id != null && currentId != null && String(fun0Id) !== String(currentId)) return;
+      if (clockRefreshTimerRef.current) clearTimeout(clockRefreshTimerRef.current);
+      clockRefreshTimerRef.current = setTimeout(() => {
+        clockRefreshTimerRef.current = null;
+        refreshDetail();
+      }, CLOCK_WRITE_REFRESH_DELAY_MS);
+    });
+    return () => {
+      unsubscribe();
+      if (clockRefreshTimerRef.current) clearTimeout(clockRefreshTimerRef.current);
+      clockRefreshTimerRef.current = null;
+    };
+  }, [currentId, refreshDetail]);
 
   const handleLegacyNavigation = useCallback((item, nextSection) => {
     if (item) {
@@ -1398,12 +1458,20 @@ export function FunExpedienteFullscreen({
   const legalSummary = useMemo(() => mergeLegalSummary(summary, liveLegalSummary), [liveLegalSummary, summary]);
   const currentPhaseCode = normalizePhaseCode(legalSummary?.fase_actual);
   const shouldLoadLegalGuide = false;
-  const summaryStatus = getSummaryStatusMeta(legalSummary?.status);
-  const usedDays = toSafeNumber(legalSummary?.dias_habiles_usados);
-  const limitDays = toSafeNumber(legalSummary?.dias_habiles_limite);
-  const progressPercent = getProgressPercent(legalSummary, usedDays, limitDays);
-  const remainingDays = limitDays > 0 ? Math.max(limitDays - usedDays, 0) : null;
-  const termMeta = getTermMeta({ summary: legalSummary, usedDays, limitDays, remainingDays });
+  // Legal term: ONE source of truth, the Tiempos engine run on this expediente's clocks
+  // (workspace/expedienteTerm). The header, the side nav and the expanded summary render
+  // this view-model; the Tiempos strip renders the same selector. It is recomputed when a
+  // refresh brings new clocks. The backend summary is never used for the term.
+  const term = useExpedienteTerm(summary);
+  const isPendingProcess = term.pending;
+  const summaryStatus = term.statusMeta;
+  const termRepeatsStatus = term.textRepeatsStatus;
+
+  // "Expedientes abiertos" and the dock show this same value once the expediente is minimized.
+  useEffect(() => {
+    publishComputedTerm(currentPublic, term);
+  }, [currentPublic, term]);
+
   useEffect(() => {
     let ignore = false;
 
@@ -1474,6 +1542,7 @@ export function FunExpedienteFullscreen({
   );
 
   const noop = useCallback(() => {}, []);
+  const canManage = isEditableLegacyExpediente(summary);
 
   const moduleProps = useMemo(
     () => ({
@@ -1483,7 +1552,7 @@ export function FunExpedienteFullscreen({
       currentId,
       currentPublic,
       currentVersion,
-      canManage: isEditableLegacyExpediente(summary),
+      canManage,
       requestUpdate,
       requesRefresh: () => requestUpdate(currentId),
       closeModal: noop,
@@ -1491,7 +1560,7 @@ export function FunExpedienteFullscreen({
       NAVIGATION_VERSION: handleVersionNavigation,
       hideInlineBinnacles: true,
     }),
-    [currentId, currentPublic, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, summary, swaMsg, translation]
+    [canManage, currentId, currentPublic, currentVersion, globals, handleLegacyNavigation, handleVersionNavigation, noop, requestUpdate, swaMsg, translation]
   );
 
   const visibleSectionGroups = useMemo(
@@ -1537,65 +1606,332 @@ export function FunExpedienteFullscreen({
       return undefined;
     }
 
+    // [Expedición P.H.] The approval card is rendered by a lazy module after its data arrives, so it does not
+    // exist yet on the first frame: wait for it (up to ~8 s) and land once it has settled. Any user
+    // scroll/keyboard interaction cancels the pending landing.
+    let cancelled = false;
+    let timer = null;
+    let attempts = 0;
+    let lastTop = null;
+    let stableReads = 0;
+    const cancel = () => { cancelled = true; };
     const scrollToApprovalSection = () => {
-      document.getElementById('record_ph_3')?.scrollIntoView({ block: 'start' });
+      if (cancelled) return;
+      attempts += 1;
+      const target = document.getElementById('record_ph_3');
+      if (target) {
+        const top = Math.round(target.getBoundingClientRect().top);
+        stableReads = top === lastTop ? stableReads + 1 : 0;
+        lastTop = top;
+        target.scrollIntoView({ block: 'start' });
+        if (stableReads >= 2) return;
+      }
+      if (attempts < 40) timer = window.setTimeout(scrollToApprovalSection, 200);
     };
+    const interactionEvents = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+    interactionEvents.forEach((name) => window.addEventListener(name, cancel, { passive: true, once: true }));
+    timer = window.setTimeout(scrollToApprovalSection, 0);
 
-    if (typeof window.requestAnimationFrame === 'function') {
-      const frame = window.requestAnimationFrame(scrollToApprovalSection);
-      return () => window.cancelAnimationFrame(frame);
-    }
-
-    const timeout = window.setTimeout(scrollToApprovalSection, 0);
-    return () => window.clearTimeout(timeout);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      interactionEvents.forEach((name) => window.removeEventListener(name, cancel));
+    };
   }, [activeSection, isPropertyHorizontal]);
 
-  const moduleContent = renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem });
+  // Keep `?section=` in sync with the active module (replace: no extra history entries).
+  const onSectionChangeRef = useRef(onSectionChange);
+  onSectionChangeRef.current = onSectionChange;
+  useEffect(() => {
+    onSectionChangeRef.current?.(activeSection);
+  }, [activeSection]);
 
-  const content = (
-    <div
-      className={cn('expediente-fullscreen fixed inset-0 bg-background text-foreground flex flex-col overflow-hidden', Z_CLASS.workspace)}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Detalle del expediente"
+  // Dock integration: the workspace owns its radicado while open; a quick window of
+  // the same expediente is minimized so the two views never overlap.
+  const hasDockableRadicado = Boolean(currentPublic && currentPublic !== 'Sin radicado');
+  useEffect(() => {
+    if (!hasDockableRadicado) return undefined;
+    setActiveWorkspace(currentPublic);
+    minimizeDockWindow(currentPublic);
+    return () => setActiveWorkspace(null);
+  }, [currentPublic, hasDockableRadicado]);
+
+  useEffect(() => {
+    if (isWideViewport) setNavSheetOpen(false);
+  }, [isWideViewport]);
+
+  const handleMinimizeToWindow = useCallback(() => {
+    if (hasDockableRadicado) addToDock(currentPublic, { open: true });
+    onClose?.();
+  }, [currentPublic, hasDockableRadicado, onClose]);
+
+  const handleNavSelect = useCallback((nextSection) => {
+    handleSectionChange(nextSection);
+    setNavSheetOpen(false);
+  }, [handleSectionChange]);
+
+  // After picking a module from a menu or the sheet, focus lands on the module region.
+  const focusContentRegion = useCallback(() => {
+    contentRegionRef.current?.focus?.({ preventScroll: true });
+  }, []);
+
+  const handleSheetNavSelect = useCallback((nextSection) => {
+    navSheetNavigated.current = true;
+    handleNavSelect(nextSection);
+  }, [handleNavSelect]);
+
+  const asideVisible = asideDocked ? Boolean(rightPanelOpen) : asideOverlayOpen;
+  const toggleAside = useCallback(() => {
+    if (asideDocked) {
+      setRightPanelOpen((value) => !value);
+      return;
+    }
+    focusAsideOnMenuClose.current = !asideOverlayOpen;
+    setAsideOverlayOpen(!asideOverlayOpen);
+  }, [asideDocked, asideOverlayOpen]);
+  const closeAsideOverlay = useCallback(() => {
+    setAsideOverlayOpen(false);
+    moreToolsRef.current?.focus?.();
+  }, []);
+
+  // An open "Expedientes abiertos" popover never survives a tier change.
+  useEffect(() => {
+    setSwitcherOpen(false);
+  }, [tier]);
+
+  const { items: dockItems, activeWorkspace: dockActiveWorkspace } = useExpedienteDock();
+  const otherOpenCount = dockItems.filter((item) => item.radicado !== dockActiveWorkspace).length;
+
+  const activeNavEntry = findNavSection(visibleSectionGroups, activeSection);
+  const categoryLabel = isPropertyHorizontal
+    ? 'Propiedad horizontal'
+    : legalSummary?.categoria ? `Categoría ${legalSummary.categoria}` : null;
+  const termBarClass = term.overdue ? 'bg-destructive' : summaryStatus.barClass;
+  const termDotClass = term.overdue ? 'bg-destructive' : summaryStatus.dotClass;
+  const navIdentity = {
+    radicado: currentPublic,
+    version: currentVersion,
+    typeLabel: categoryLabel,
+    statusLabel: summaryStatus.label,
+    statusClass: summaryStatus.badgeClass,
+    barClass: termBarClass,
+    remainingDays: term.remainingDays,
+    progressPercent: Math.round(term.barPercent),
+    termText: term.text,
+    termShortText: term.shortText,
+    termRatioText: term.ratioText || '—',
+  };
+
+  const showFullRadicado = headerFits.fullRadicado;
+  const showVersion = headerFits.version;
+  const showStatusBadge = headerFits.status;
+  const showListCrumb = headerFits.list;
+  const showTrail = headerFits.trail;
+  const showFullTerm = headerFits.fullTerm;
+  const showPhase = headerFits.phase && Boolean(term.phaseTitle) && !isPendingProcess;
+  const showCategory = Boolean(categoryLabel) && headerFits.category;
+
+  const inShell = Boolean(portalSlot);
+  const activeTone = getNavToneClasses(activeNavEntry?.group.tone);
+  const activeItemLabel = activeNavEntry?.item.ariaLabel || activeNavEntry?.item.label || 'Expediente';
+
+  // Header content. Inside the shell it is portaled into the header card (breadcrumb
+  // area and actions area); without a shell it fills the self-contained bar below.
+  const headerBreadcrumb = (
+    <ExpedienteHeaderBreadcrumb
+      radicado={currentPublic}
+      shortRadicado={showFullRadicado ? undefined : getShortRadicado(currentPublic)}
+      onClose={onClose}
+      showTrail={showTrail}
+      showList={showListCrumb}
     >
-      {/* ── Header compacto ──────────────────────────────────────────── */}
-      <header className="shrink-0 border-b border-border bg-background/98 backdrop-blur">
-        {/* Fila principal compacta */}
-        <div className="w-full flex flex-wrap items-center gap-2 px-3 py-2 sm:px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            onClick={onClose}
-            aria-label="Volver"
+      {showVersion ? (
+        <span
+          className="shrink-0 rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[11px] font-semibold leading-none text-muted-foreground"
+          aria-label={`Versión ${currentVersion}`}
+        >
+          v{currentVersion}
+        </span>
+      ) : null}
+      {showStatusBadge ? (
+        <DovelaBadge tone={summaryStatus.tone} className="shrink-0 whitespace-nowrap">
+          <span className={cn('size-1.5 shrink-0 rounded-full', summaryStatus.dotClass)} aria-hidden="true" />
+          {summaryStatus.label}
+        </DovelaBadge>
+      ) : null}
+      {showCategory ? (
+        <span className="shrink-0 truncate text-xs text-muted-foreground">{categoryLabel}</span>
+      ) : null}
+      {/* Legal term, display-only: plain text (no control, nothing editable). It is the
+          Tiempos term (workspace/expedienteTerm); `title` explains the figures. */}
+      {termRepeatsStatus && showStatusBadge ? null : showFullTerm ? (
+        <div
+          className="flex min-w-0 shrink-0 items-center gap-2 border-l border-border pl-2.5"
+          title={term.description}
+          data-testid="expediente-term-indicator"
+          data-term-status={term.status}
+        >
+          {showPhase ? (
+            <span className="max-w-[14rem] truncate text-xs text-muted-foreground" data-testid="expediente-term-phase">{term.phaseTitle}</span>
+          ) : term.phaseTitle && !isPendingProcess ? (
+            <span className="sr-only">Fase actual: {term.phaseTitle}.</span>
+          ) : null}
+          <span className={cn('whitespace-nowrap text-xs', term.overdue ? 'font-semibold text-destructive' : 'text-foreground/80')} data-testid="expediente-term-text">{term.text}</span>
+          {isPendingProcess || !term.ratioText ? null : (
+            <>
+              <div
+                className="h-1 w-16 overflow-hidden rounded-full bg-muted"
+                role="progressbar"
+                aria-label="Avance del término legal"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(term.barPercent)}
+                aria-valuetext={`${term.usedDays} de ${term.totalDays} días hábiles`}
+              >
+                <div
+                  className={cn('h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none', termBarClass)}
+                  style={{ width: `${term.barPercent}%` }}
+                />
+              </div>
+              <span className="font-mono text-[11px] tabular-nums text-muted-foreground" data-testid="expediente-term-ratio">{term.ratioText}</span>
+            </>
+          )}
+        </div>
+      ) : (
+        // Narrow headers keep the legal term visible as a compact figure. When the status
+        // badge does not fit either, this one dot stands for the status too (no second dot).
+        <span
+          title={term.description}
+          className="inline-flex shrink-0 items-center gap-1 rounded-md px-1 font-mono text-[11px] font-semibold tabular-nums text-foreground"
+          data-testid="expediente-term-indicator"
+          data-term-status={term.status}
+        >
+          <span className={cn('size-1.5 shrink-0 rounded-full', termDotClass)} aria-hidden="true" />
+          <span aria-hidden="true">{term.shortText}</span>
+          <span className="sr-only">
+            {[
+              showStatusBadge || termRepeatsStatus ? null : `Estado: ${summaryStatus.label}.`,
+              term.phaseTitle && !isPendingProcess ? `Fase actual: ${term.phaseTitle}.` : null,
+              term.known ? `${term.text} (${term.usedDays} de ${term.totalDays} días hábiles)` : term.text,
+            ].filter(Boolean).join(' ')}
+          </span>
+        </span>
+      )}
+    </ExpedienteHeaderBreadcrumb>
+  );
+
+  const controlSizeClass = touchTier ? TOUCH_CONTROL_CLASS : null;
+  const menuItemClass = cn('cursor-pointer text-[13px]', touchTier && 'min-h-10');
+
+  // Window controls, always the last thing in the header: open expedientes, minimize,
+  // close. Phones keep "close" and fold the rest (and the search) into one menu.
+  const windowControls = (
+    <div key={tier} role="group" aria-label="Ventana del expediente" className="flex shrink-0 items-center gap-0.5" data-testid="expediente-window-controls">
+      {mobileTier ? (
+        <span className="relative inline-flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                ref={windowMenuRef}
+                type="button"
+                aria-label={otherOpenCount ? `Más opciones de ventana. Expedientes abiertos: ${otherOpenCount}` : 'Más opciones de ventana'}
+                className={cn(WINDOW_CONTROL_CLASS, controlSizeClass)}
+              >
+                <MoreHorizontal className="size-4" aria-hidden="true" />
+                {otherOpenCount ? (
+                  <span className="absolute right-0.5 top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-semibold leading-none text-primary-foreground" aria-hidden="true">
+                    {otherOpenCount}
+                  </span>
+                ) : null}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={6}
+              collisionPadding={8}
+              className="min-w-[14rem]"
+              onCloseAutoFocus={(event) => {
+                if (!pendingSwitcherOpen.current) return;
+                // Open the popover once the menu is gone, so focus is not pulled back out of it.
+                pendingSwitcherOpen.current = false;
+                event.preventDefault();
+                setSwitcherOpen(true);
+              }}
+            >
+              <DropdownMenuItem
+                className={menuItemClass}
+                onSelect={() => window.dispatchEvent(new CustomEvent(OPEN_SEARCH_EVENT))}
+              >
+                <Search aria-hidden="true" />
+                Buscar
+              </DropdownMenuItem>
+              <DropdownMenuItem className={menuItemClass} onSelect={() => { pendingSwitcherOpen.current = true; }}>
+                <Layers aria-hidden="true" />
+                Expedientes abiertos{otherOpenCount ? ` (${otherOpenCount})` : ''}
+              </DropdownMenuItem>
+              <DropdownMenuItem className={menuItemClass} disabled={!hasDockableRadicado} onSelect={handleMinimizeToWindow}>
+                <Minus aria-hidden="true" />
+                Minimizar expediente
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <ExpedienteDockSwitcher anchorOnly open={switcherOpen} onOpenChange={setSwitcherOpen} returnFocusRef={windowMenuRef} />
+        </span>
+      ) : (
+        <>
+          <ExpedienteDockSwitcher open={switcherOpen} onOpenChange={setSwitcherOpen} triggerClassName={controlSizeClass} />
+          <TopBarIconButton
+            label="Minimizar"
+            onClick={handleMinimizeToWindow}
+            disabled={!hasDockableRadicado}
+            className={cn(WINDOW_CONTROL_CLASS, controlSizeClass)}
           >
-            <Icon name="ArrowLeft" size={15} />
-          </Button>
+            <Minus className="size-4" aria-hidden="true" />
+          </TopBarIconButton>
+        </>
+      )}
+      <TopBarIconButton
+        label="Cerrar"
+        onClick={onClose}
+        className={cn(WINDOW_CONTROL_CLASS, WINDOW_CLOSE_CLASS, controlSizeClass)}
+      >
+        <X className="size-4" aria-hidden="true" />
+      </TopBarIconButton>
+    </div>
+  );
 
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
-            <span className="font-mono text-sm font-semibold truncate max-w-[160px] sm:max-w-xs">
-              {currentPublic}
-            </span>
-            <Badge className={cn('border text-[10px] font-semibold shrink-0', summaryStatus.badgeClass)}>
-              {summaryStatus.label}
-            </Badge>
-            {remainingDays != null ? (
-              <Badge variant="outline" className="font-mono text-[10px] shrink-0">
-                {remainingDays}d restantes
-              </Badge>
-            ) : null}
-            <Badge variant="secondary" className="font-mono text-[10px] shrink-0">
-              v{currentVersion}
-            </Badge>
-          </div>
-
-          {/* Acciones + toggle detalle + cerrar */}
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+  // Tools of the expediente, at the end of its nav card. `mode` comes from the card's
+  // fit: 'labels' (Alertas and Bitácora with text), 'icons', or 'menu' (all inside "Más").
+  const renderExpedienteTools = (mode) => {
+    const collapsed = mode === 'menu';
+    const showText = mode === 'labels';
+    return (
+      <div key={tier} role="group" aria-label="Herramientas del expediente" className="ml-auto flex shrink-0 items-center gap-0.5 pl-1" data-testid="expediente-tools" data-mode={mode}>
+        {collapsed ? null : (
+          <>
+            <TopBarAction
+              label="Alertas del expediente"
+              text="Alertas"
+              icon={<BellRing className="h-4 w-4" aria-hidden="true" />}
+              showText={showText}
+              count={currentAlarms.length}
+              aria-haspopup="dialog"
+              className={controlSizeClass && !showText ? 'h-10 w-10' : undefined}
+              onClick={() => setAlertsDialogOpen(true)}
+            />
+            <TopBarAction
+              label="Bitácora del expediente"
+              text="Bitácora"
+              icon={<ClipboardList className="h-4 w-4" aria-hidden="true" />}
+              showText={showText}
+              aria-haspopup="dialog"
+              className={controlSizeClass && !showText ? 'h-10 w-10' : undefined}
+              onClick={() => setBitacoraDialogOpen(true)}
+            />
             <BookmarkQuickMenu
               rowId={currentId || currentPublic || 'actual'}
               bookmarkState={bookmarkState}
-              triggerClassName="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent bg-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              triggerClassName={cn(TOP_BAR_BUTTON_CLASS, 'w-8 text-muted-foreground', touchTier && 'h-10 w-10')}
               triggerTestIdPrefix="fullscreen-bookmark-menu-trigger"
               menuTestIdPrefix="fullscreen-bookmark-menu"
               align="end"
@@ -1603,144 +1939,292 @@ export function FunExpedienteFullscreen({
               onToggleScope={handleToggleBookmarkScope}
             />
             {bookmarkError ? (
-              <span title="No se pudieron sincronizar los marcajes" className="inline-flex h-7 w-7 items-center justify-center rounded-md text-warning">
-                <Icon name="AlertCircle" size={13} />
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    role="img"
+                    tabIndex={0}
+                    aria-label="No se pudieron sincronizar los marcajes"
+                    className="inline-flex h-8 w-6 items-center justify-center rounded-lg text-warning outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Icon name="AlertCircle" size={13} />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6} className={TOP_BAR_TOOLTIP_CLASS}>
+                  No se pudieron sincronizar los marcajes
+                </TooltipContent>
+              </Tooltip>
             ) : null}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden h-7 text-xs sm:flex"
-              onClick={() => refreshSummary()}
-              disabled={isRefreshing}
-            >
-              <Icon name="RefreshCw" size={12} className={cn(isRefreshing && 'animate-spin')} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setHeaderExpanded(p => !p)}
-              aria-label={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
-              title={headerExpanded ? 'Colapsar datos' : 'Expandir datos'}
-            >
-              <Icon name={headerExpanded ? 'ChevronUp' : 'ChevronDown'} size={14} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={onClose}
-              aria-label="Cerrar"
-            >
-              <Icon name="X" size={15} />
-            </Button>
-          </div>
-        </div>
+          </>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <TopBarAction
+              ref={moreToolsRef}
+              label="Más acciones"
+              text="Más"
+              showText={false}
+              count={collapsed ? currentAlarms.length : 0}
+              aria-busy={isRefreshing || undefined}
+              className={touchTier ? 'h-10 w-10' : undefined}
+              icon={isRefreshing
+                ? <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                : <MoreHorizontal className="h-4 w-4" aria-hidden="true" />}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={6}
+            collisionPadding={8}
+            className="min-w-[14rem]"
+            onCloseAutoFocus={(event) => {
+              if (!focusAsideOnMenuClose.current) return;
+              // The overlay panel was just opened from this menu: focus goes into it.
+              focusAsideOnMenuClose.current = false;
+              event.preventDefault();
+              asideRef.current?.focus?.({ preventScroll: true });
+            }}
+          >
+            {collapsed ? (
+              <>
+                <DropdownMenuItem className={menuItemClass} onSelect={() => setAlertsDialogOpen(true)}>
+                  <BellRing aria-hidden="true" />
+                  Alertas{currentAlarms.length ? ` (${currentAlarms.length})` : ''}
+                </DropdownMenuItem>
+                <DropdownMenuItem className={menuItemClass} onSelect={() => setBitacoraDialogOpen(true)}>
+                  <ClipboardList aria-hidden="true" />
+                  Bitácora
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="py-1 text-xs font-medium text-muted-foreground">Destacar expediente</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem
+                  className={menuItemClass}
+                  disabled={!currentId}
+                  checked={Boolean(bookmarkState?.personal)}
+                  onCheckedChange={(checked) => handleToggleBookmarkScope('personal', Boolean(checked))}
+                >
+                  Solo para mí
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  className={menuItemClass}
+                  disabled={!currentId}
+                  checked={Boolean(bookmarkState?.team)}
+                  onCheckedChange={(checked) => handleToggleBookmarkScope('team', Boolean(checked))}
+                >
+                  Para el equipo
+                </DropdownMenuCheckboxItem>
+                {bookmarkError ? (
+                  <p className="m-0 flex items-center gap-2 px-2 py-1.5 text-xs text-warning" role="status">
+                    <Icon name="AlertCircle" size={13} aria-hidden="true" />
+                    No se pudieron sincronizar los marcajes
+                  </p>
+                ) : null}
+                <DropdownMenuSeparator />
+              </>
+            ) : null}
+            <DropdownMenuCheckboxItem className={menuItemClass} checked={asideVisible} onCheckedChange={toggleAside}>
+              Panel de bitácoras
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuItem className={menuItemClass} onSelect={() => setHeaderExpanded((value) => !value)}>
+              <Icon name={headerExpanded ? 'ChevronUp' : 'ChevronDown'} size={15} aria-hidden="true" />
+              {headerExpanded ? 'Ocultar resumen' : 'Mostrar resumen'}
+            </DropdownMenuItem>
+            <DropdownMenuItem className={menuItemClass} disabled={isRefreshing} onSelect={() => { refreshSummary(); }}>
+              <Icon name="RefreshCw" size={15} aria-hidden="true" />
+              {isRefreshing ? 'Recargando…' : 'Recargar'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
 
-        {/* Franja de progreso siempre visible (fina) */}
-        <div className="w-full h-0.5 bg-muted">
-          <div
-            className={cn('h-full transition-all duration-300', summaryStatus.barClass)}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+  // Stable element: workspace-only state (alarms poll, dialogs, header width, panels)
+  // re-renders this component but React skips the module subtree while the element is the same.
+  const moduleContent = useMemo(
+    () => renderModuleContent(activeSection, moduleProps, { isPropertyHorizontal, isSubdivision, expediente: binnaclePanelItem }),
+    [activeSection, binnaclePanelItem, isPropertyHorizontal, isSubdivision, moduleProps]
+  );
 
-        {/* Detalle expandible */}
-        {headerExpanded && (
-          <div className="border-t border-border/60">
-            <div className="w-full px-3 py-3 sm:px-4">
-              <p className="mb-2 text-xs text-muted-foreground">
-                {legalSummary?.fase_label || 'Fase por confirmar'} &nbsp;·&nbsp;
-                <span className="font-mono">{usedDays}/{limitDays || 0} días hábiles ({progressPercent}%)</span>
-              </p>
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
-                <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
-                <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
-                <SummaryItem icon="CalendarDays" label="Fecha límite" value={legalSummary?.fecha_limite || 'Sin fecha límite'} />
-              </div>
-            </div>
+  const content = (
+    <section
+      className={cn(
+        'expediente-fullscreen flex min-h-0 flex-col overflow-hidden bg-background text-foreground',
+        // Inside the app shell the workspace is a regular flex child of the content area;
+        // without a shell it falls back to a fixed overlay.
+        inShell ? 'min-w-0 flex-1' : cn('fixed inset-0', Z_CLASS.workspace),
+      )}
+      aria-label="Detalle del expediente"
+      data-testid="expediente-workspace"
+    >
+      <TooltipProvider delayDuration={200}>
+        {/* ── Header: shared with the shell (portals) or self-contained ─── */}
+        {inShell ? (
+          <>
+            {headerBreadcrumbSlot ? createPortal(headerBreadcrumb, headerBreadcrumbSlot) : null}
+            {headerActionsSlot ? createPortal(windowControls, headerActionsSlot) : null}
+          </>
+        ) : (
+          <div className="shrink-0 px-2 pt-2">
+            <header
+              ref={setLocalBar}
+              className={cn(FLOATING_CARD_CLASS, 'flex h-16 min-w-0 items-center gap-1.5 overflow-hidden px-2.5 short:h-12')}
+            >
+              <nav aria-label="Breadcrumb" className="flex min-w-0 flex-1 items-center gap-0.5 overflow-hidden text-[13px]">
+                {headerBreadcrumb}
+              </nav>
+              <TopBarDivider />
+              {windowControls}
+            </header>
           </div>
         )}
-      </header>
 
-        {/* ── Navegación de submódulos ─────────────────────────────────── */}
-      <div className="shrink-0 border-b border-border bg-muted/50">
-        <div className="w-full px-2 sm:px-4">
-          <nav aria-label="Módulos del expediente" className="py-2">
-            <div className="flex min-w-0 flex-wrap items-center justify-center gap-2 overflow-x-hidden max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto">
-              {visibleSectionGroups.map((group) => (
-                <fieldset
-                  key={group.id}
-                  aria-label={`Grupo ${group.id} del expediente`}
+        {/* ── Section navigation: one floating card, a color per group ──── */}
+        <div className="relative z-10 shrink-0 px-2 pt-2">
+          <div
+            className={cn(FLOATING_CARD_CLASS, 'flex h-12 min-w-0 items-center gap-1 px-1.5')}
+            data-testid="expediente-nav-card"
+          >
+            {isWideViewport ? (
+              <ExpedienteTopNav
+                groups={visibleSectionGroups}
+                activeSection={activeSection}
+                onSelect={handleNavSelect}
+                onNavigated={focusContentRegion}
+                renderTools={renderExpedienteTools}
+              />
+            ) : (
+              <>
+                <button
+                  ref={sectionsTriggerRef}
+                  type="button"
+                  onClick={() => setNavSheetOpen(true)}
+                  aria-haspopup="dialog"
+                  aria-expanded={navSheetOpen}
+                  aria-label={`Secciones del expediente: ${activeItemLabel}`}
+                  data-testid="expediente-sections-trigger"
                   className={cn(
-                    'grid min-w-max grid-flow-col auto-cols-max items-center gap-1 rounded-xl border p-1 shadow-sm',
-                    group.tone === 'sky' && 'border-sky-300 bg-sky-100/85 shadow-sky-950/5',
-                    group.tone === 'violet' && 'border-violet-300 bg-violet-100/85 shadow-violet-950/5',
-                    group.tone === 'amber' && 'border-amber-300 bg-amber-100/85 shadow-amber-950/5'
+                    'flex h-10 min-w-0 cursor-pointer items-center gap-1.5 rounded-xl border-0 pl-1.5 pr-2 text-[13px] font-semibold leading-none outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card',
+                    activeTone.activeSurface,
+                    activeTone.activeText,
                   )}
                 >
-                  {group.items.map((item) => (
-                    <SectionButton
-                      key={item.id}
-                      item={item}
-                      active={activeSection === item.id}
-                      onClick={handleSectionChange}
-                      tone={group.tone}
+                  {activeNavEntry ? (
+                    <span className={cn('inline-flex h-5 shrink-0 items-center rounded-md px-1.5 text-[10px] font-bold uppercase leading-none tracking-[0.05em]', activeTone.chip)}>
+                      {activeNavEntry.group.label}
+                    </span>
+                  ) : null}
+                  {activeNavEntry ? <Icon name={activeNavEntry.item.icon} size={15} strokeWidth={2.2} aria-hidden="true" /> : null}
+                  <span className="truncate">{activeItemLabel}</span>
+                  <ChevronsUpDown className="size-3.5 shrink-0 opacity-70" aria-hidden="true" />
+                </button>
+                {renderExpedienteTools(mobileTier ? 'menu' : 'icons')}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── Work area ───────────────────────────────────────────────── */}
+        <div ref={setWorkArea} className="relative flex min-h-0 flex-1 overflow-hidden">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <ScrollArea className="min-w-0 flex-1">
+              <div className="w-full min-w-0 space-y-2 p-2">
+                {headerExpanded ? (
+                  <section
+                    aria-label="Resumen del expediente"
+                    className="grid gap-3 rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4 xl:grid-cols-[minmax(0,1fr)_20rem]"
+                  >
+                    <div className="min-w-0">
+                      <p className="m-0 mb-2 text-xs text-muted-foreground">
+                        {isPendingProcess || !term.phaseTitle ? term.text : (
+                          <>
+                            {term.phaseTitle} ·{' '}
+                            <span className="font-mono">{term.usedDays}/{term.totalDays} días hábiles</span>{' · '}{term.text}
+                          </>
+                        )}
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <SummaryItem icon="User" label="Solicitante" value={getExpedienteApplicant(legalSummary)} />
+                        <SummaryItem icon="Layers" label="Categoría" value={legalSummary?.categoria || legalSummary?.tipo || 'Sin categoría'} />
+                        <SummaryItem icon="Calendar" label="Radicación" value={legalSummary?.fecha_radicacion || 'Sin fecha'} />
+                        <SummaryItem icon="CalendarDays" label="Límite legal de la fase" value={term.limitDate ? formatPhaseDate(term.limitDate) : 'Sin fecha límite'} />
+                      </div>
+                    </div>
+                    <LegalStatusCard
+                      summary={legalSummary}
+                      termView={term}
+                      legalGuide={legalGuide}
+                      legalGuideLoading={legalGuideLoading}
                     />
-                  ))}
-                </fieldset>
-              ))}
-            </div>
-          </nav>
-        </div>
-      </div>
+                  </section>
+                ) : null}
 
-      {/* ── Área de trabajo ──────────────────────────────────────────── */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Contenido principal */}
-        <div className={cn('flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden transition-[max-width] duration-200', rightPanelOpen ? 'max-w-[calc(100%_-_20rem)]' : 'max-w-full')}>
-          <ScrollArea className="min-w-0 flex-1">
-            <div className="w-full min-w-0 space-y-4 p-3 sm:p-5">
-              <div
-                className={cn(
-                  'w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm',
-                  activeSection === 'tiempos'
-                    ? 'p-1 sm:p-2'
-                    : activeSection === 'actualizar' || activeSection === 'publicidad'
-                      ? 'p-2 sm:p-4'
-                      : 'p-3 sm:p-5'
-                )}
-              >
-                <Suspense fallback={<ModuleLoadingFallback />}>
-                  {moduleContent}
-                </Suspense>
+                {/* Card-stack modules lay out their own floating cards on the page background. */}
+                <div
+                  className={cn(
+                    'w-full min-w-0',
+                    !isCardStackSection && 'overflow-hidden rounded-2xl border border-border bg-card shadow-[shadow:var(--card-shadow)]',
+                  )}
+                >
+                  {/* `expediente-workspace` scopes the legacy bridge (shared/styles/legacy-bridge.css).
+                      The new documental module is token-native and stays out of it. */}
+                  <div
+                    ref={contentRegionRef}
+                    role="region"
+                    tabIndex={-1}
+                    aria-label={activeItemLabel}
+                    className={cn(
+                      'min-w-0 outline-none',
+                      activeSection !== 'documentos-new' && 'expediente-workspace',
+                      isCardStackSection
+                        ? 'p-0'
+                        : 'p-3 sm:p-5'
+                    )}
+                    data-section={activeSection === 'expedicion' && isPropertyHorizontal ? 'ph' : activeSection}
+                    data-layout={isCardStackSection && activeSection !== 'tiempos' ? 'stack' : undefined}
+                  >
+                    <ExpedienteWorkspaceContext.Provider value>
+                      <Suspense fallback={<ModuleLoadingFallback />}>
+                        {moduleContent}
+                      </Suspense>
+                    </ExpedienteWorkspaceContext.Provider>
+                  </div>
+                </div>
               </div>
-            </div>
-          </ScrollArea>
-        </div>
+            </ScrollArea>
+          </div>
 
-        {/* ── Panel derecho colapsable ─────────────────────────────── */}
-        <div className="relative flex shrink-0">
-          {!rightPanelOpen && (
-            <PanelToggleButton
-              open={rightPanelOpen}
-              onToggle={() => setRightPanelOpen(p => !p)}
-            />
-          )}
-
-          {rightPanelOpen && (
-            <aside aria-label="Bitácoras profesionales" className="w-[26rem] max-w-[38vw] shrink-0 overflow-hidden border-l border-border bg-card/50 shadow-xl flex flex-col">
-              <div className="flex h-14 shrink-0 items-center border-b border-border/60 bg-background/70 px-2">
-                <PanelToggleButton
-                  open={rightPanelOpen}
-                  onToggle={() => setRightPanelOpen(p => !p)}
-                  docked
-                />
+          {/* ── Right binnacle panel ("Más" > Panel de bitácoras): docked or overlay ── */}
+          {asideVisible ? (
+            <aside
+              ref={asideRef}
+              tabIndex={-1}
+              aria-label="Bitácoras profesionales"
+              data-docked={asideDocked ? 'true' : 'false'}
+              onKeyDown={asideDocked ? undefined : (event) => {
+                if (event.key !== 'Escape' || event.defaultPrevented) return;
+                event.stopPropagation();
+                closeAsideOverlay();
+              }}
+              className={cn(
+                'flex w-[26rem] flex-col overflow-hidden rounded-2xl border border-border bg-card outline-none',
+                asideDocked
+                  ? 'my-2 mr-2 max-w-[38vw] shrink-0 shadow-[shadow:var(--card-shadow)]'
+                  : 'absolute inset-y-2 right-2 z-30 max-w-[calc(100%-1rem)] shadow-[shadow:var(--elevation-bar)]',
+              )}
+            >
+              <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border/60 px-3">
+                <ClipboardList className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <h2 className="m-0 min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Bitácoras profesionales</h2>
+                {asideDocked ? null : (
+                  <TopBarIconButton label="Cerrar panel de bitácoras" onClick={closeAsideOverlay} className={cn('-mr-1.5', controlSizeClass)}>
+                    <X className="size-4" aria-hidden="true" />
+                  </TopBarIconButton>
+                )}
               </div>
               <ScrollArea className="min-h-0 flex-1">
-                <div className="p-2.5">
+                {/* Same legacy-bridge scope as the module area: the binnacle cards are Bootstrap markup. */}
+                <div className="expediente-workspace p-2.5">
                   <RecordsBinnacleStack
                     translation={translation}
                     swaMsg={swaMsg}
@@ -1754,9 +2238,40 @@ export function FunExpedienteFullscreen({
                 </div>
               </ScrollArea>
             </aside>
-          )}
+          ) : null}
         </div>
-      </div>
+      </TooltipProvider>
+
+      {!isWideViewport ? (
+        <Sheet open={navSheetOpen} onOpenChange={setNavSheetOpen}>
+          <SheetContent
+            side="left"
+            className="flex w-[280px] max-w-[85vw] flex-col p-0 sm:max-w-[280px] [&>button]:right-2 [&>button]:top-2 [&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-lg"
+            onCloseAutoFocus={(event) => {
+              // The sheet has no Radix trigger, so focus is handed back here: to the module
+              // after picking one, otherwise to the button that opened it.
+              event.preventDefault();
+              if (navSheetNavigated.current) {
+                navSheetNavigated.current = false;
+                focusContentRegion();
+              } else {
+                sectionsTriggerRef.current?.focus?.();
+              }
+            }}
+          >
+            <SheetTitle className="sr-only">Módulos del expediente</SheetTitle>
+            <SheetDescription className="sr-only">Módulos disponibles para {currentPublic}</SheetDescription>
+            <ExpedienteSideNav
+              variant="sheet"
+              groups={visibleSectionGroups}
+              activeSection={activeSection}
+              onSelect={handleSheetNavSelect}
+              identity={navIdentity}
+              className="pt-10"
+            />
+          </SheetContent>
+        </Sheet>
+      ) : null}
 
       <AlertsDialog
         open={alertsDialogOpen}
@@ -1771,10 +2286,10 @@ export function FunExpedienteFullscreen({
         groups={bitacoraGroups}
         currentPublic={currentPublic}
       />
-    </div>
+    </section>
   );
 
-  return createPortal(content, document.body);
+  return createPortal(content, portalSlot || document.body);
 }
 
 export default FunExpedienteFullscreen;

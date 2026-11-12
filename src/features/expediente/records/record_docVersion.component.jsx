@@ -1,4 +1,5 @@
 
+import { DateInput } from '@/shared/components/DateInput';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { LegacyModal as Modal } from '@/shared/components/legacy-modal';
@@ -121,18 +122,18 @@ export default function RECORD_DOCUMENT_VERSION(props) {
             <div className="row d-flex justify-content-start">
                 <div className="col">
                     <div className="input-group">
-                        <input type="date" className="form-control" value={documentDate} onChange={(e) => setDocumentDate(e.target.value)} hidden />
+                        <DateInput className="form-control" value={documentDate} onChange={(e) => setDocumentDate(e.target.value)} hidden />
                     </div>
                 </div>
             </div>
 
             <div className="text-end py-2">
-                <Button size="sm" type='submit'><Icon name="times-circle" size={16} /> SUBIR</Button>
+                <Button size="sm" type='submit'><Icon name="upload" size={16} /> Subir</Button>
             </div>
         </form>
     }
 
-    let BTN_DOWN = <Button size="sm" className="ms-1"><Icon name="download" size={16} /></Button>
+    let BTN_DOWN = <Button size="sm" className="ms-1" aria-label="Descargar documento" title="Descargar documento"><Icon name="download" size={16} /></Button>
     let BTN_VIEW = (f6DocInfo) => {
         const filePath = encodeFun6FilePath(f6DocInfo);
         return <VIZUALIZER
@@ -192,11 +193,12 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
     return (
         <>
-            {!_FIND_6_ID_REPLACE(id6) ? <Button variant="destructive" size="sm" className="ms-1" onClick={() => setModal(true)}><Icon name="upload" size={16} /></Button> : null}
+            {!_FIND_6_ID_REPLACE(id6) ? <Button variant="outline" size="sm" className="ms-1" aria-label={`Subir documento: ${VERSION_DESC[id6] || 'Documento de Evaluación'}`} title="Subir documento de evaluación (pendiente)" onClick={() => setModal(true)}><Icon name="upload" size={16} /></Button> : null}
             {_FIND_6_ID_REPLACE(id6) ? BTN_VIEW(_FIND_6_ID_REPLACE(id6)) : null}
 
-            <Modal contentLabel="UPLOAD RECORD DOC"
+            <Modal contentLabel={`Subir documento de evaluación: ${VERSION_DESC[id6] || 'Documento de Evaluación'}`}
                 isOpen={modal}
+                onRequestClose={() => setModal(false)}
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
@@ -217,7 +219,7 @@ export default function RECORD_DOCUMENT_VERSION(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <Button size="sm" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> CERRAR</Button>
+                    <Button size="sm" variant="outline" type="button" onClick={() => setModal(false)}><Icon name="times-circle" size={16} /> Cerrar</Button>
                 </div>
             </Modal>
         </>

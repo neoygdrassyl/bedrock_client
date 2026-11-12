@@ -1,3 +1,4 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import { useState, useEffect } from 'react';
 import DataTable from '@/shared/components/data-table-bridge';
 
@@ -62,7 +63,7 @@ function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, current
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `record_arc_control:step.${_id_public}.json`);
             return value
         }
         let _SAVING_STATE = (state) => {
@@ -123,7 +124,7 @@ function RECORD_ARC_CONTROL({ translation, swaMsg, globals, currentItem, current
                 </div>
 
                 {LIST.map(item => {
-                    return <div className="row border">
+                    return <div className="row border" key={item.name}>
                         <div className='col-8'><label className=''>{item.name}</label></div>
                         <div className='col'><input type="number" step={1} min="0" onBlur={() => manage_ra_33(false)} className="form-control form-control-sm"
                             name="blue_prints_values" id={"blue_prints_values_" + item.v} defaultValue={_VALUE_ARRAY[item.v] ?? 0} /></div>

@@ -122,7 +122,7 @@ export default function FunHistoryTable({ history, loading, error, onDownload, o
   return (
     <fieldset className="p-3 mt-3">
       <legend className="my-2 px-3 bg-light" id="fun_history">
-        <label className="app-p lead fw-normal">HISTÓRICO DE CAMBIOS FUN</label>
+        <label className="app-p lead fw-normal">Histórico de cambios FUN</label>
       </legend>
       {error && <div className="alert alert-warning" role="alert">{error}</div>}
       <DataTable

@@ -51,7 +51,7 @@ describe('hoja de control documental of canonical expedientes', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Anexos (1)' }));
     expect(screen.getByLabelText('Folios de Carta')).toHaveValue('1-2');
     fireEvent.click(screen.getByRole('button', { name: 'Expedidos (1)' }));
-    fireEvent.click(screen.getByRole('button', { name: /GENERAR PDF/ }));
+    fireEvent.click(screen.getByRole('button', { name: /generar pdf/i }));
     await waitFor(() => expect(mocks.gen).toHaveBeenCalledTimes(1));
     const form = mocks.gen.mock.calls[0][0];
     expect(form.get('name_doc')).toBe('Licencia');

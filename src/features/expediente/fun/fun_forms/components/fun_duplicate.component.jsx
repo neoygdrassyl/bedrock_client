@@ -180,12 +180,8 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
     const selectedCount = ALL_OPTION_KEYS.filter(key => options[key]).length;
 
     return (
-        <div className="rounded-lg border bg-card p-4 bg-card mb-3">
+        <div className="rounded-lg border bg-card p-4 mb-3">
             <div>
-                <h4 className="text-center mb-3">
-                    <Icon name="copy" size={16} className="me-2" />
-                    DUPLICAR PROYECTO
-                </h4>
                 <p className="text-muted text-center mb-3">
                     Crea un nuevo proyecto basado en <strong>{currentItem.id_public}</strong>. Seleccione las entidades que desea copiar.
                 </p>
@@ -193,11 +189,12 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                 <form onSubmit={handleSubmit}>
                     {/* New ID Public input */}
                     <div className="mb-3">
-                        <label className="form-label fw-bold">
+                        <label className="form-label fw-bold" htmlFor="dup_new_id_public">
                             <Icon name="hashtag" size={16} className="me-1" /> Nuevo ID Público (Radicación) *
                         </label>
                         <input
                             type="text"
+                            id="dup_new_id_public"
                             className="form-control"
                             placeholder="Ej: LC-2026-0045"
                             value={newIdPublic}
@@ -228,7 +225,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                     {/* Option groups */}
                     <div className="row">
                         {OPTION_GROUPS.map((group) => (
-                            <div className="col-md-6">
+                            <div className="col-md-6 mb-2" key={group.label}>
                                 <div className="border rounded p-2 h-100">
                                     <h6 className="fw-bold mb-2">
                                         <Icon name={group.icon} size={14} className="me-1" /> {group.label}
@@ -258,9 +255,9 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
 
                     {/* Submit button */}
                     <div className="text-center mt-3">
-                        <button
-                            color="primary"
+                        <Button
                             type="submit"
+                            size="sm"
                             disabled={isSubmitting}
                             className="px-4"
                         >
@@ -275,7 +272,7 @@ function FUN_DUPLICATE({ swaMsg, currentItem, onDuplicateSuccess }) {
                                     Duplicar proyecto
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

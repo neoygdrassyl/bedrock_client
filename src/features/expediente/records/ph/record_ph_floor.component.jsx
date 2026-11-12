@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import DataTable from '@/shared/components/data-table-bridge';
@@ -122,7 +123,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
     const renderList = (value) => {
         const items = splitValue(value);
         return <ul className="list-group list-group-flush">
-            {items.length ? items.map(item => <li className="list-group-item mx-0 p-1" key={item || 'empty-value'}>{item || '-'}</li>) : <li className="list-group-item mx-0 p-1">-</li>}
+            {items.length ? items.map((item, itemIndex) => <li className="list-group-item mx-0 p-1" key={`${itemIndex}-${item || 'empty-value'}`}>{item || '-'}</li>) : <li className="list-group-item mx-0 p-1">-</li>}
         </ul>;
     };
 
@@ -144,7 +145,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
             minWidth: '120px',
             cell: row => <>
                 <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
-                <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => deleteItem(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => deleteItem(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
             </>,
         },
     ];
@@ -253,8 +254,8 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
                 </div>)}
             </div>
             <div className="col-12 col-lg-4 text-lg-end mt-2 mt-lg-0">
-                {data.divisions.length > 1 ? <Button type="button" variant="outline" size="sm" className="mx-2" onClick={() => removeDivision(setter)}><Icon name="minus-circle" size={16} /> REMOVER ULTIMO</Button> : null}
-                <Button type="button" variant="outline" size="sm" onClick={() => addDivision(setter)}><Icon name="plus-circle" size={16} /> AÑADIR</Button>
+                {data.divisions.length > 1 ? <Button type="button" variant="outline" size="sm" className="mx-2" onClick={() => removeDivision(setter)}><Icon name="minus-circle" size={16} /> Remover último</Button> : null}
+                <Button type="button" variant="outline" size="sm" onClick={() => addDivision(setter)}><Icon name="plus-circle" size={16} /> Añadir</Button>
             </div>
         </div>
 
@@ -283,7 +284,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         <div className="border border-info rounded-2 p-2 my-2">
             <div className="row">
                 <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-writing`}>Escritura</label><input id={`${prefix}-fixed-writing`} type="text" className="form-control my-1" value={data.fixed[0]} onChange={(event) => updateFixed(setter, 0, event.target.value)} /></div>
-                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-date`}>Fecha</label><input id={`${prefix}-fixed-date`} type="date" max="2100-01-01" className="form-control my-1" value={data.fixed[1]} onChange={(event) => updateFixed(setter, 1, event.target.value)} /></div>
+                <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-date`}>Fecha</label><DateInput id={`${prefix}-fixed-date`} max="2100-01-01" className="form-control my-1" value={data.fixed[1]} onChange={(event) => updateFixed(setter, 1, event.target.value)} /></div>
                 <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-notary`}>Notaria</label><input id={`${prefix}-fixed-notary`} type="number" min="0" step="1" className="form-control my-1" value={data.fixed[2]} onChange={(event) => updateFixed(setter, 2, event.target.value)} /></div>
                 <div className="col-12 col-md"><label htmlFor={`${prefix}-fixed-city`}>Ciudad</label><input id={`${prefix}-fixed-city`} type="text" className="form-control my-1" value={data.fixed[3]} onChange={(event) => updateFixed(setter, 3, event.target.value)} /></div>
             </div>
@@ -298,13 +299,12 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         </div>
         {isNew ? <form id="form_ph_floor_new" onSubmit={newItem}>
             {renderForm(form, setForm, 'ph-floor-new')}
-            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> AÑADIR ITEM</Button></div></div>
+            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Añadir ítem</Button></div></div>
         </form> : null}
 
-        <DataTable
+        <DataTable pagination={false}
             conditionalRowStyles={[{ when: row => row.fixed?.includes('&&'), style: { backgroundColor: 'hsl(var(--warning) / 0.12)' } }]}
             noDataComponent="No hay Items"
-            striped="true"
             columns={columns}
             data={floors}
             highlightOnHover
@@ -328,7 +328,7 @@ function RECORD_PH_FLOOR({ swaMsg, currentItem, currentRecord = {}, requestUpdat
         {edit ? <form id="form_ph_floor_edit" onSubmit={editItem}>
             <h3 className="my-3 text-center">Actualizar Área</h3>
             {renderForm(editForm, setEditForm, 'ph-floor-edit')}
-            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS</Button></div></div>
+            <div className="row mb-3 text-center"><div className="col-12"><Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Guardar cambios</Button></div></div>
         </form> : null}
     </div>;
 }

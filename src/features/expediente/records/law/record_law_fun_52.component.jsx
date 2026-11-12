@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import HTMLDatalist from '../../../../shared/components/HTMLDatalist';
@@ -125,7 +126,7 @@ export default function RECORD_LAW_FUN_52(props) {
         let _LIST = _GET_CHILD_6();
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+            _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
         }
         return <>{_COMPONENT}</>
     }
@@ -236,7 +237,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <label>Profesional No. {index + 1}</label> {_EDIT_BTN(value)}
                         </div>
                     </div>
-                    <div className='row  border-dark border py-0 text-center fw-bold' style={{ 'backgroundColor': 'lightgray' }}>
+                    <div className='row  border-dark border py-0 text-center fw-bold' style={{ 'backgroundColor': 'hsl(var(--muted))' }}>
                         <div className='col'>
                             <label>Responsabilidad: {value.role}</label>
                         </div>
@@ -566,7 +567,7 @@ export default function RECORD_LAW_FUN_52(props) {
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" max="2100-01-01" id="f_527" defaultValue={item.registration_date}
+                            <DateInput className="form-control" max="2100-01-01" id="f_527" defaultValue={item.registration_date}
                                 onChange={() => _GET_YEARS_EXPERIENCE('')} />
                         </div>
                     </div>
@@ -700,7 +701,7 @@ export default function RECORD_LAW_FUN_52(props) {
 
                 <div className="text-center">
                     <Button size="sm" className="my-3" onClick={() => edit_52(item)}>
-                        <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                        <Icon name="share-square" size={16} /> Guardar cambios
                     </Button>
                 </div>
             </fieldset>

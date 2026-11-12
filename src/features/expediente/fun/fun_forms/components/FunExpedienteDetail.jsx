@@ -6,6 +6,7 @@ import { Icon } from '@/shared/components/icon';
 import { useAlarms } from '../hooks/useAlarms';
 import legalGuideService from '../../../api/legalGuide.service';
 import { BookmarkQuickMenu } from './BookmarkQuickMenu';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 
 // ── Status visual config ─────────────────────────────────────────────────────
 const STATUS_META = {
@@ -262,8 +263,8 @@ export function FunExpedienteDetail({
             <InfoField label="Categoría" value={expediente.categoria} icon="fas fa-layer-group" />
             <InfoField label="Tipo de licencia" value={expediente.tipo_licencia || '—'} icon="fas fa-file-alt" />
             <InfoField label="Tipo de trámite" value={expediente.tramite || '—'} icon="fas fa-clipboard-list" />
-            <InfoField label="Fecha radicación" value={expediente.fecha_radicacion || '—'} icon="fas fa-calendar" />
-            <InfoField label="Fecha límite" value={expediente.fecha_limite || '—'} icon="fas fa-calendar-times" />
+            <InfoField label="Fecha radicación" value={formatDisplayDate(expediente.fecha_radicacion)} icon="fas fa-calendar" />
+            <InfoField label="Fecha límite" value={formatDisplayDate(expediente.fecha_limite)} icon="fas fa-calendar-times" />
             <InfoField
               label="Días totales"
               value={`${expediente.dias_habiles_totales ?? '—'} hábiles desde radicación`}
@@ -371,18 +372,18 @@ export function FunExpedienteDetail({
               <div className="d-flex justify-content-between text-xs text-muted-foreground">
                 <span>
                   <Icon name="calendar-check" size={16} className="me-1" />
-                  Inicio: {expediente.fecha_radicacion || '—'}
+                  Inicio: {formatDisplayDate(expediente.fecha_radicacion)}
                 </span>
                 <span>
                   <Icon name="calendar-times" size={16} className="me-1" />
-                  Vence: {expediente.fecha_limite || '—'}
+                  Vence: {formatDisplayDate(expediente.fecha_limite)}
                 </span>
               </div>
               {expediente.control_temporal_activo && (
                 <div className="mt-2 text-xs">
                   <FlagBadge
                     icon="fas fa-shield-alt"
-                    label={`${expediente.control_temporal_label} (desde ${expediente.control_temporal_fecha_inicio || '—'})`}
+                    label={`${expediente.control_temporal_label} (desde ${formatDisplayDate(expediente.control_temporal_fecha_inicio)})`}
                     bg="#f0f9ff"
                     color="#0369a1"
                   />
@@ -427,7 +428,7 @@ export function FunExpedienteDetail({
                           Estado {entry.state}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {entry.date || '—'}
+                          {formatDisplayDate(entry.date)}
                         </span>
                       </div>
                       {entry.desc && (
@@ -513,7 +514,7 @@ export function FunExpedienteDetail({
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                         <span className="text-xs text-muted" title={a.computedAt}>
-                          {a.computedAt ? String(a.computedAt).substring(0, 10) : ''}
+                          {formatDisplayDate(a.computedAt, { empty: '' })}
                         </span>
                         {isPending ? (
                           <div className="d-flex gap-1">

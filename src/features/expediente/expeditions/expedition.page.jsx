@@ -14,32 +14,56 @@ import EXP_LIC from './exp_lic.component';
 import { regexChecker_isOA_2, regexChecker_isPh } from '../../../shared/config/customClasses/typeParse';
 import EXP_2 from './exp_2.component';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
+import { SectionCard } from '@/shared/components/SectionCard';
+import { useActionGuard } from './useActionGuard';
 
-function EXP_CLOCKS_ACCESS({ currentItem, NAVIGATION }) {
+function EXP_CLOCKS_ACCESS({ currentItem, NAVIGATION, step }) {
     const canOpenTimes = currentItem && typeof NAVIGATION === 'function';
 
     return (
-        <fieldset className="p-3" data-testid="exp-clocks-link" id="nav_expedition_clock_redirect">
-            <div className="rounded-lg border border-warning/30 bg-warning/10 p-4">
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <div className="space-y-1">
-                        <h3 className="m-0 text-sm font-semibold text-foreground">TIEMPOS</h3>
-                        <p className="m-0 text-sm text-muted-foreground">
-                            Este registro se gestiona desde el submódulo de tiempos.
-                        </p>
-                    </div>
+        <SectionCard
+            id="nav_expedition_clock_redirect"
+            title={`${step ? `${step}. ` : ''}Tiempos`}
+            actions={
+                <Button
+                    size="sm"
+                    variant="outline"
+                    type="button"
+                    onClick={() => canOpenTimes && NAVIGATION(currentItem, 'clock', 'expedition')}
+                    disabled={!canOpenTimes}
+                >
+                    Abrir submódulo de tiempos
+                </Button>
+            }
+        >
+            <p className="ew-toolbar__meta m-0" data-testid="exp-clocks-link">
+                Las fechas de expedición, notificación y entrega se gestionan desde el submódulo de tiempos.
+            </p>
+        </SectionCard>
+    );
+}
 
-                    <Button
-                        size="sm"
-                        type="button"
-                        onClick={() => canOpenTimes && NAVIGATION(currentItem, 'clock', 'expedition')}
-                        disabled={!canOpenTimes}
-                    >
-                        Abrir submódulo de tiempos
-                    </Button>
-                </div>
-            </div>
-        </fieldset>
+/** Purely navigational: jumps to a step card of the module. */
+function EXP_STEP_INDEX({ steps }) {
+    const goTo = (id) => {
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.scrollIntoView({ block: 'start', behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    };
+
+    return (
+        <nav className="ew-steps" aria-label="Pasos de la expedición">
+            <ol>
+                {steps.map((item, index) => (
+                    <li key={item.id}>
+                        <button type="button" className="ew-steps__item" onClick={() => goTo(item.id)}>
+                            <span className="ew-steps__number" aria-hidden="true">{index + 1}</span>
+                            <span>{item.title}</span>
+                        </button>
+                    </li>
+                ))}
+            </ol>
+        </nav>
     );
 }
 
@@ -53,6 +77,7 @@ function EXPEDITION(props) {
     const [recordArc, setRecordArc] = useState(null);
     const [, setOutCodes] = useState([]);
     const [currentItem, setCurrentItem] = useState(null);
+    const guard = useActionGuard(4000);
 
     const requestOutCodes = useCallback((id) => {
         CUSTOM_DATA_SERVICE.loadDictionary_cub_id(id)
@@ -185,6 +210,24 @@ function EXPEDITION(props) {
         let isPH = () => regexChecker_isPh(currentItem ? _GET_CHILD_1() : false, true)
         const isOtherActuation = currentItem ? conOA() : false;
         const isPropertyHorizontal = currentItem ? isPH() : false;
+        // Steps of the module in the order they are mounted below (same conditions as the render).
+        const steps = [{ id: 'nav_expedition_1', title: 'Liquidación y pagos' }];
+        if (!isOtherActuation && !isPropertyHorizontal) steps.push({ id: 'nav_expedition_10', title: 'Áreas y unidades' });
+        if (!isPropertyHorizontal) {
+            steps.push(
+                { id: 'nav_expedition_control', title: 'Control para entidades' },
+                { id: 'nav_expedition_20', title: 'Documentos de pago' },
+                { id: 'nav_expedition_documents', title: 'Actos y documentos' },
+                { id: 'nav_expedition_clock_redirect', title: 'Tiempos' },
+                { id: 'nav_expedition_4', title: 'Cierre de la solicitud' },
+            );
+        }
+        const stepOf = (id) => steps.findIndex(item => item.id === id) + 1;
+        const moduleLoading = (id) => (
+            <section className="ew-card" id={id} aria-busy="true">
+                <p className="ew-toolbar__meta m-0" role="status">Cargando información…</p>
+            </section>
+        );
         // DATA CONVERTERS
         // JSX CONTROLLERS
 
@@ -196,7 +239,7 @@ function EXPEDITION(props) {
         let new_expedition = () => {
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
-            EXPEDITION_SERVICE.create(formData)
+            return EXPEDITION_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -218,7 +261,9 @@ function EXPEDITION(props) {
                         {currentRecord
                             ? <>
                                 <>
+                                    <EXP_STEP_INDEX steps={steps} />
                                     <EXP_1
+                                        step={stepOf('nav_expedition_1')}
                                         translation={translation} swaMsg={swaMsg} globals={globals}
                                         currentItem={currentItem}
                                         currentVersion={currentVersion}
@@ -229,6 +274,7 @@ function EXPEDITION(props) {
 
                                     {!isOtherActuation && !isPropertyHorizontal ? <>
                                         <EXP_AREAS
+                                            step={stepOf('nav_expedition_10')}
                                             translation={translation} swaMsg={swaMsg} globals={globals}
                                             currentItem={currentItem}
                                             currentVersion={currentVersion}
@@ -241,6 +287,7 @@ function EXPEDITION(props) {
                                     {!isPropertyHorizontal ?
                                         <>
                                             <EXP_2
+                                                step={stepOf('nav_expedition_control')}
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
@@ -250,6 +297,7 @@ function EXPEDITION(props) {
                                             requestUpdateRecord={requestUpdateRecord} />
 
                                             <EXP_DOCS
+                                                step={stepOf('nav_expedition_20')}
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
@@ -260,11 +308,13 @@ function EXPEDITION(props) {
                                                 requestUpdateRecord={requestUpdateRecord} />
 
                                             <EXP_CLOCKS_ACCESS
+                                                step={stepOf('nav_expedition_clock_redirect')}
                                                 currentItem={currentItem}
                                                 NAVIGATION={NAVIGATION}
                                             />
 
                                             <EXP_LIC
+                                                step={stepOf('nav_expedition_4')}
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
                                                 currentItem={currentItem}
                                                 currentVersion={currentVersion}
@@ -279,17 +329,17 @@ function EXPEDITION(props) {
 
                                 </>
                             </> : <>
-                                <fieldset className="p-3">
-                                    <div className="text-center">
-                                        <Button size="sm" onClick={() => new_expedition()}>
-                                            {isPropertyHorizontal ? 'GENERAR EXPEDICIÓN P.H. EN BLANCO' : 'GENERAR EXPEDICION EN BLANCO'}
+                                <section className="ew-card">
+                                    <div className="ew-empty">
+                                        <h2 className="ew-empty__title">Este expediente aún no tiene expedición</h2>
+                                        <p className="ew-empty__text">Genere el registro en blanco para liquidar, producir los actos y cerrar la solicitud.</p>
+                                        <Button size="sm" type="button" onClick={guard(() => new_expedition(), 'new_expedition')}>
+                                            {isPropertyHorizontal ? 'Generar expedición P.H. en blanco' : 'Generar expedición en blanco'}
                                         </Button>
                                     </div>
-                                </fieldset>
+                                </section>
                             </>}
-                    </> : <div className="text-center">
-                        <h3 className="fw-bold ">CARGANDO INFORMACION...</h3>
-                    </div>}
+                    </> : moduleLoading()}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentRecord}
@@ -305,9 +355,7 @@ function EXPEDITION(props) {
                         NAVIGATION={NAVIGATION}
                         pqrsxfun={pqrsxfun}
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
-                </fieldset>}
+                </> : moduleLoading('fung_0')}
             </div >
         );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
@@ -227,7 +227,7 @@ export default function RECORD_LAW_FUN_53(props) {
             { desc: "Autorizó notificación electrónica", ind: 3, },
         ]
         return _LIST.map((value, i) => {
-            return <>
+            return <Fragment key={value.ind ?? i}>
                 <div className='row'>
                     <div className="col-8 py-0"><label> <label className='fw-bold'>{i + 1}. </label>{value.desc}</label> </div>
                     <div className="col-4 py-0 ">
@@ -237,7 +237,7 @@ export default function RECORD_LAW_FUN_53(props) {
                                 defaultValue={_VALUE_ARRAY[value.ind]} onChange={() => manage_rl_f53(false)} id={'s_f53_checks_' + value.ind}>
                                 {value.alt
                                     ? <>
-                                        {value.alt.map((value2, j) => <option value={j}>{value2}</option>)}
+                                        {value.alt.map((value2, j) => <option key={j} value={j}>{value2}</option>)}
                                     </>
                                     : <>
                                         <option value="0" className="text-danger">NO</option>
@@ -250,10 +250,10 @@ export default function RECORD_LAW_FUN_53(props) {
                     </div>
                 </div>
                 {value.subItems ?
-                    value.subItems.map(v => <div className='row'><div className="col-8 py-0 "><label>- {v} </label> </div></div>)
+                    value.subItems.map(v => <div className='row' key={v}><div className="col-8 py-0 "><label>- {v} </label> </div></div>)
                     : ''}
 
-            </>
+            </Fragment>
         })
     }
     let _COMPOENTN_DETAIL = () => {

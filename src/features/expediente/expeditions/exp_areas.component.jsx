@@ -1,23 +1,26 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Children } from 'react';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import DataTable from '@/shared/components/data-table-bridge';
-import { cities, infoCud, rules_opt } from '../../../shared/config/jsons/vars';
+import { infoCud } from '../../../shared/config/jsons/vars';
 import EXPEDITION_SERVICE from '../api/expedition.service';
 import record_arcService from '../api/record_arc.service';
 import RECORD_ARC_AREAS_RESUME from '../records/arc/record_arc_areas_resumen.component';
 import EXP_CALC from './exp_calc.component';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { SectionCard, SectionSubheading } from '@/shared/components/SectionCard';
+import { useActionGuard } from './useActionGuard';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
-function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord }) {
+function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdate, requestUpdateRecord, step }) {
     const [isNew, setIsNew] = useState(false);
     const [edit, setEdit] = useState(false);
     const [currentRecordArc, setCurrentRecordArc] = useState(null);
     const [currentVersionRArc, setCurrentVersionRArc] = useState(null);
     const prevEditRef = useRef(false);
+    const guard = useActionGuard();
 
     const setItem_RecordArc = (id) => {
         record_arcService.getRecord(id || currentItem.id)
@@ -79,7 +82,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     selector: row => row.area,
                     sortable: true,
                     filterable: true,
-                    center: true,
+                    right: true,
                     maxWidth: '40px',
                     cell: row => <span className="text-sm font-mono">{row.area}</span>
                 },
@@ -88,7 +91,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     selector: row => row.units,
                     sortable: true,
                     filterable: true,
-                    center: true,
+                    right: true,
                     maxWidth: '40px',
                     cell: row => <span className="text-sm font-mono">{row.units}</span>
                 },
@@ -97,19 +100,19 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     selector: row => row.charge,
                     sortable: true,
                     filterable: true,
-                    center: true,
+                    right: true,
                     maxWidth: '40px',
                     omit: _GLOBAL_ID != 'cp1',
                     cell: row => <span className="text-sm font-mono">{row.charge}</span>
                 },
                 {
-                    name: 'Cobro Total',
+                    name: 'Cobro total',
                     selector: row => row.charge * row.area,
                     sortable: true,
                     filterable: true,
-                    center: true,
+                    right: true,
                     maxWidth: '40px',
-                    cell: row => <span className="text-sm">{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</span>
+                    cell: row => <span className="text-sm font-mono">{_GLOBAL_ID == 'cp1' ? Math.round(row.charge * row.area) : row.charge}</span>
                 },
                 {
                     name: 'Uso',
@@ -121,7 +124,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     cell: row => <span className="text-sm">{row.use}</span>
                 },
                 {
-                    name: 'Tipo de Actuación',
+                    name: 'Tipo de actuación',
                     selector: row => row.desc,
                     sortable: true,
                     filterable: true,
@@ -144,13 +147,13 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                     button: true,
                     maxWidth: '50px',
                     cell: row => <>
-                        <span title="Modificar Item"><Button type="button" variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button type="button" variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                        <Button type="button" variant="outline" size="sm" className="m-0 me-1 p-1" title="Modificar área" aria-label="Modificar área" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button>
+                        <Button type="button" variant="outline" size="sm" className="m-0 p-1 text-destructive" title="Eliminar área" aria-label="Eliminar área" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>
                 },
             ]
-            return <DataTable
-                noDataComponent="No hay Items"
+            return <DataTable pagination={false}
+                noDataComponent="Aún no hay áreas liquidadas"
                 striped="true"
                 columns={columns}
                 data={_LIST}
@@ -161,35 +164,35 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
         }
         let _COMPONENT_MANAGE = (edit = "") => {
             return <>
-                <div className="row mb-1">
-                    <div className="col">
+                <div className="ew-form-grid ew-form-grid--pairs">
+                    <div>
                         <label>Área</label>
-                        <div className="input-group my-1">
+                        <div className="input-group">
                             <input type="number" min="0" step="0.01" className="form-control" id={"expedition_area_1" + edit} required />
                         </div>
                     </div>
-                    <div className="col">
+                    <div>
                         <label>Unidades</label>
-                        <div className="input-group my-1">
+                        <div className="input-group">
                             <input type="number" min="0" step="1" className="form-control" id={"expedition_area_6" + edit} required />
                         </div>
                     </div>
-                    <div className="col-2">
+                    <div>
                         {_GLOBAL_ID == 'cp1' ?
-                            <label>Cobro (COP) x m2</label>
-                            : <label>Cobro (COP) Total</label>
+                            <label>Cobro (COP) × m²</label>
+                            : <label>Cobro (COP) total</label>
                         }
 
-                        <div className="input-group my-1">
+                        <div className="input-group">
                             <input type="number" min="0" step="0.0001" className="form-control" id={"expedition_area_2" + edit} required />
                         </div>
                     </div>
-                    <div className="col">
+                    <div>
                         <label>Uso</label>
-                        <div className="input-group my-1">
-                            <input list="exp_uses_datalist" className="form-select" id={"expedition_area_3" + edit} required />
+                        <div className="input-group">
+                            <input list={"exp_uses_datalist" + edit} className="form-select" id={"expedition_area_3" + edit} required />
 
-                            <datalist id="exp_uses_datalist">
+                            <datalist id={"exp_uses_datalist" + edit}>
                                 <option value="Residencial (NO VIS)" />
                                 <option value="Residencial (VIS)" />
                                 <option value="Residencial (VIP)" />
@@ -201,17 +204,17 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                             </datalist>
                         </div>
                     </div>
-                    <div className="col">
-                        <label>Tipo de Actuación</label>
-                        <div className="input-group my-1">
+                    <div>
+                        <label>Tipo de actuación</label>
+                        <div className="input-group">
                             <input type="text" className="form-control" id={"expedition_area_4" + edit} />
                         </div>
                     </div>
-                    <div className="col">
+                    <div>
                         <label>Destino</label>
-                        <div className="input-group my-1">
+                        <div className="input-group">
                             <select className="form-select" id={"expedition_area_5" + edit} required >
-                                {rules_opt}
+                                {infoCud.exp_rules.map((value, index) => <option key={index} value={index}>{value}</option>)}
                             </select>
                         </div>
                     </div>
@@ -243,7 +246,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
             else formData.set('units', 1);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.create_exp_area(formData)
+            return EXPEDITION_SERVICE.create_exp_area(formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -298,7 +301,7 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
             else formData.set('units', 1);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.update_exp_area(edit.id, formData)
+            return EXPEDITION_SERVICE.update_exp_area(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -315,14 +318,19 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                 });
         }
 
+        const areaCount = _GET_CHILD_AREAS().length;
         return (
-            <div className="expedition_areas my-2">
-                <legend className="my-2 px-3 bg-light" id="nav_expedition_10">
-                    <label className="app-p lead fw-normal">Áreas Y Unidades</label>
-                </legend>
+            <SectionCard
+                id="nav_expedition_10"
+                className="expedition_areas"
+                title={`${step ? `${step}. ` : ''}Áreas y unidades`}
+                meta={areaCount
+                    ? <span className="ew-status-chip">{areaCount} {areaCount === 1 ? 'área liquidada' : 'áreas liquidadas'}</span>
+                    : <span className="ew-status-chip">Sin áreas</span>}
+            >
                 {currentRecordArc ?
                     <>
-                        <label className='fw-bold'>RESUMEN DE AREAS</label>
+                        <SectionSubheading className="ew-subheading--first">Resumen de áreas</SectionSubheading>
                         <RECORD_ARC_AREAS_RESUME
                             currentItem={currentItem}
                             currentVersion={currentVersion}
@@ -333,30 +341,26 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
 
                     : null}
 
-                <hr />
-                <div className="form-check ms-5">
-                    <input className="form-check-input" type="checkbox" onChange={(e) => setIsNew(e.target.checked)} />
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
-                        Nueva Área
+                <SectionSubheading className={currentRecordArc ? undefined : 'ew-subheading--first'}>Áreas para liquidación</SectionSubheading>
+                <div className="form-check mb-2">
+                    <input className="form-check-input" type="checkbox" id="expedition_area_new_toggle" onChange={(e) => setIsNew(e.target.checked)} />
+                    <label className="form-check-label" htmlFor="expedition_area_new_toggle">
+                        Nueva área
                     </label>
                 </div>
                 {isNew
                     ? <>
-                        <form id="form_expedition_area" onSubmit={new_item}>
+                        <form id="form_expedition_area" onSubmit={guard(new_item, 'new_item')}>
                             {_COMPONENT_MANAGE()}
-                            <div className="row my-3 text-center">
-                                <div className="col">
-                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
-                                </div>
-                                <div className='col'>
-                                    <EXP_CALC
-                                        ranslation={translation} swaMsg={swaMsg} globals={globals}
-                                        domArea={'expedition_area_1'}
-                                        domM2={'expedition_area_2'}
-                                        domUse={'expedition_area_3'}
-                                        domTipe={'expedition_area_4'}
-                                    />
-                                </div>
+                            <div className="ew-actions mb-3">
+                                <EXP_CALC
+                                    ranslation={translation} swaMsg={swaMsg} globals={globals}
+                                    domArea={'expedition_area_1'}
+                                    domM2={'expedition_area_2'}
+                                    domUse={'expedition_area_3'}
+                                    domTipe={'expedition_area_4'}
+                                />
+                                <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> Añadir área</Button>
                             </div>
                         </form>
                     </>
@@ -364,27 +368,23 @@ function EXP_AREAS({ translation, swaMsg, globals, currentItem, currentVersion, 
                 {_CHILD_AREA_LIST()}
                 {edit
                     ? <>
-                        <form id="form_expedition_area_edit" onSubmit={edit_item}>
-                            <h3 className="my-3 text-center">Actualizar Área</h3>
+                        <form id="form_expedition_area_edit" onSubmit={guard(edit_item, 'edit_item')}>
+                            <SectionSubheading>Actualizar área</SectionSubheading>
                             {_COMPONENT_MANAGE('_edit')}
-                            <div className="row my-2 text-center">
-                                <div className="col">
-                                    <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
-                                </div>
-                                <div className='col'>
-                                    <EXP_CALC
-                                        ranslation={translation} swaMsg={swaMsg} globals={globals}
-                                        domArea={'expedition_area_1_edit'}
-                                        domM2={'expedition_area_2_edit'}
-                                        domUse={'expedition_area_3_edit'}
-                                        domTipe={'expedition_area_4_edit'}
-                                    />
-                                </div>
+                            <div className="ew-actions">
+                                <EXP_CALC
+                                    ranslation={translation} swaMsg={swaMsg} globals={globals}
+                                    domArea={'expedition_area_1_edit'}
+                                    domM2={'expedition_area_2_edit'}
+                                    domUse={'expedition_area_3_edit'}
+                                    domTipe={'expedition_area_4_edit'}
+                                />
+                                <Button type="submit" size="sm"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                             </div>
                         </form>
                     </>
                     : ""}
-            </div >
+            </SectionCard>
         );
 }
 

@@ -1,13 +1,18 @@
 const pendingRequests = new Map();
 const resolvedRequests = new Map();
 
-export function dedupeGet(key, requestFn) {
-  if (pendingRequests.has(key)) {
+/**
+ * Shares one in-flight GET per key. `force` starts a new request instead of joining the
+ * pending one (e.g. a reload after a write must not receive a response read before it);
+ * later callers then join the forced, fresher request.
+ */
+export function dedupeGet(key, requestFn, { force = false } = {}) {
+  if (!force && pendingRequests.has(key)) {
     return pendingRequests.get(key);
   }
 
   const request = Promise.resolve(requestFn()).finally(() => {
-    pendingRequests.delete(key);
+    if (pendingRequests.get(key) === request) pendingRequests.delete(key);
   });
 
   pendingRequests.set(key, request);

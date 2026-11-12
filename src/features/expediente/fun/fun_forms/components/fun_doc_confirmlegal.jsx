@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import { formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse'
 import FUNService from '../../../api/fun.service'
@@ -288,12 +290,12 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.1. Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="geng_date_doc" required
                             defaultValue={_JSON.date_doc ?? dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>5.2. Fecha LyDF</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="geng_date" required disabled
                             value={normalizeDateInputValue(_CHILD_C.item_c9)} />
                     </div>
                     <div className="col">
@@ -307,7 +309,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                         <div className="input-group">
                             <input type="text" className="form-control" id="geng_cub_ldf"
                                 defaultValue={_GET_CHILD_LAW().cub_ldf || cubSelected || ""} />
-                            {edit ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>GENERAR</button>
+                            {edit ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_ldf')}>Generar</button>
                                 : ''}
                         </div>
                     </div>
@@ -452,7 +454,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                         </div>
                         <div className="col">
                             <label>Fecha</label>
-                            <input type="date" className="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
+                            <DateInput className="form-control form-control-sm" id="clock_event_3" max="2100-01-01" disabled
                                 defaultValue={date} />
 
                         </div>
@@ -496,7 +498,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                             </div>
                             <div className="col-4">
                                 <div className="input-group my-1">
-                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
+                                    <DateInput className="form-control" id="type_not_name" placeholder='Fecha' />
                                 </div>
                             </div>
                         </>
@@ -571,6 +573,10 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
         }
 
         let save_doc = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_doc_confirmlegal:save_doc')) { e?.preventDefault?.(); return; }
             if (e) e.preventDefault();
             let formData = new FormData();
             let cub_ldf_json = getJSONFull(_GET_CHILD_LAW().cub_ldf_json);
@@ -615,9 +621,9 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             fun_c_control.push(document.getElementById("control_func_3").checked ? 1 : 0);
             formData.set('fun_c_control', fun_c_control.join(';'));
 
-            manage_law(true, formData);
-            if (document.getElementById('control_func_3').checked) createEvent(false)
-            createVRxCUB_relation(new_id)
+            holdSubmit('fun_doc_confirmlegal:save_doc', manage_law(true, formData));
+            if (document.getElementById('control_func_3').checked) holdSubmit('fun_doc_confirmlegal:save_doc', createEvent(false));
+            holdSubmit('fun_doc_confirmlegal:save_doc', createVRxCUB_relation(new_id));
             retrieveItem();
 
         }
@@ -628,11 +634,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
-                FUNService.update_law(_CHILD.id, formData)
+                return FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id, true)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
@@ -651,11 +657,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     });
             }
             else {
-                FUNService.create_law(formData)
+                return FUNService.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id, true)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
@@ -696,11 +702,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             let control_clock = _GET_CLOCK_STATE_VERSION(0, 5)
 
             if (control_clock.id) {
-                FUNService.update_clock(control_clock.id, formDataclock)
+                return FUNService.update_clock(control_clock.id, formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdate(currentItem.id, true)
                         } else {
@@ -717,11 +723,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     });
             }
             else {
-                FUNService.create_clock(formDataclock)
+                return FUNService.create_clock(formDataclock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             requestUpdate(currentItem.id, true);
                         } else {
@@ -739,6 +745,8 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             }
         }
         let createVRxCUB_relation = (cub_selected) => {
+            // Without a consecutive there is no CUB-VR relation to create (the API rejects an empty one).
+            if (!idCUBxVr && !String(cub_selected ?? '').trim()) return;
             let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
             let formatData = new FormData();
@@ -755,7 +763,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
             formatData.set('date', date);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -767,7 +775,7 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -792,11 +800,11 @@ function FUN_DOC_CONFIRMLEGAL({ currentItem, currentVersion, edit, requestUpdate
 
                     {edit ?
                         <div className="col">
-                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
+                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> Guardar datos</Button>
                         </div>
                         : ''}
                     <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> Generar documento</Button>
                     </div>
                 </div>
             </form>

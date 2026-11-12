@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { useState, useEffect, Children } from 'react';
 import { appendDocumentarySourceCommand, recoverDocumentarySourceConflict } from '@/features/expediente/api/documentaryOperations.service';
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
@@ -28,6 +29,8 @@ import { swalClose, swalConfirm, swalError, swalLoading, swalSuccess } from '@/s
 import { useDocumentaryInventory } from '../documental/hooks/useDocumentaryInventory';
 import { inventoryBlocker } from '../documental/documentaryInventoryModel';
 import fileDownload from 'js-file-download';
+import { SectionCard, SectionSubheading } from '@/shared/components/SectionCard';
+import { useActionGuard } from '../expeditions/useActionGuard';
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 
@@ -44,6 +47,13 @@ export function resolveStructuralReviewDate({ reviewDate = '', clocks = [] } = {
 
 function normalizeReviewValue(value) {
     return value === undefined || value === null ? '' : String(value).trim();
+}
+
+/** Screen format of a stored `YYYY-MM-DD` date; anything else is shown as stored. */
+function formatActaDate(value) {
+    if (!value) return '';
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY') : String(value);
 }
 
 function getElementValue(id, fallback = '') {
@@ -146,6 +156,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
     const [load, setLoad] = useState(false);
     const [tn, setTn] = useState(undefined);
     const [actaSimple, setActaSimple] = useState(false);
+    const guard = useActionGuard(3000);
     // Canonical expedientes take requirement statuses from the documentary inventory (null for legacy).
     const documentaryInventory = useDocumentaryInventory(currentItem);
 
@@ -196,6 +207,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
     function requestUpdate(id) {
         requestUpdateProp(id);
+        // The letters (2.1 / 2.2) render from this module's item: without this they kept a stale
+        // fun_law and created a new one on every save.
+        retrieveItem(id);
     }
 
     function retrieveItem(id) {
@@ -603,7 +617,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let _LIST = _GET_CHILD_6();
             let _COMPONENT = [];
             for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
             }
             return <>{_COMPONENT}</>
         }
@@ -627,10 +641,10 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         // COMPONENT JSX
         let _NOTY_TYPE_COMPONENENT = () => {
             return <>
-                <div className='row mx-5 my-3'>
-                    <strong>TIPO DE NOTIFICACIÓN</strong>
-
-                    <div className="col-4">
+                <SectionSubheading>Notificación</SectionSubheading>
+                <div className="ew-form-grid">
+                    <div>
+                        <label htmlFor="type_not">Tipo de notificación</label>
                         <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
@@ -641,31 +655,21 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     </div>
                     {tn == 2 || tn == 3 ?
                         <>
-                            <div className="col-4">
-                                <div className="input-group my-1">
-                                    <input type="text" className="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
-                                </div>
+                            <div>
+                                <label htmlFor="type_not_name">Sujeto de notificación</label>
+                                <input type="text" className="form-control" id="type_not_name" placeholder='Sujeto Notificación' />
                             </div>
-                            <div className="col-4">
-                                <div className="input-group my-1">
-                                    <input type="text" className="form-control" id="type_not_email" placeholder='Correo Notificación' />
-                                </div>
+                            <div>
+                                <label htmlFor="type_not_email">Correo de notificación</label>
+                                <input type="text" className="form-control" id="type_not_email" placeholder='Correo Notificación' />
                             </div>
                         </>
                         : ''}
                     {tn == 4 ?
-                        <>
-                         <div className="col-4">
-                                <div className="input-group my-1">
-                                    <label>Fecha Comunicación: </label>
-                                </div>
-                            </div>
-                            <div className="col-4">
-                                <div className="input-group my-1">
-                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
-                                </div>
-                            </div>
-                        </>
+                        <div>
+                            <label htmlFor="type_not_name">Fecha de comunicación</label>
+                            <DateInput className="form-control" id="type_not_name" placeholder='Fecha' />
+                        </div>
                         : ''}
                 </div>
             </>
@@ -681,69 +685,46 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let is_Outdate_1 = dateParser_dateDiff(limit_1, currentRecord.date, true)
             let is_Outdate_2 = dateParser_dateDiff(limit_2, currentRecord.date_2, true)
 
+            const limitHint = (limit, outdated) => (
+                <p className="form-text ew-field-hint">
+                    Fecha límite <span className="ew-num font-mono">{formatActaDate(limit) || 'sin definir'}</span>
+                    {outdated < 0 ? <span className="ew-status-chip ew-status-chip--danger">Extemporáneo</span> : ''}
+                </p>
+            );
+
             return <>
-                <div className="row">
-                    <div className="col-2">
-                        <br />
-                        <label className='fw-bold'>Fecha limite: </label> {limit_1} {is_Outdate_1 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                <div className="ew-form-grid">
+                    <div>
+                        <label htmlFor="record_review_2">Fecha del acta de observaciones</label>
+                        <DateInput className="form-control" id="record_review_2" max="2100-01-01"
+                            defaultValue={currentRecord.date ?? ''} />
+                        {limitHint(limit_1, is_Outdate_1)}
                     </div>
-                    <div className="col-5">
-                        <label>Fecha del acta de observaciones</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="calendar-alt" size={16} />
-                            </span>
-                            <input type="date" className="form-control" id="record_review_2" max="2100-01-01"
-                                defaultValue={currentRecord.date ?? ''} />
-                        </div>
+                    <div>
+                        <label htmlFor="record_review_3">Resultado de observaciones</label>
+                        <select className="form-select" id="record_review_3" defaultValue={getObservationReviewDefaultValue(currentRecord.check)} >
+                            <option value="">Seleccione resultado</option>
+                            <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
+                            <option value="1" className="text-success">CUMPLE CON TODO</option>
+                            <option value="2" className="text-warning">SIN REVISAR</option>
+                        </select>
                     </div>
-                    <div className="col-4">
-                        <label>Resultado</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="check-square" size={16} />
-                            </span>
-                            <select className="form-select" id="record_review_3" defaultValue={getObservationReviewDefaultValue(currentRecord.check)} >
-                                <option value="">Seleccione resultado</option>
-                                <option value="0" className="text-danger">TIENE OBSERVACIONES</option>
-                                <option value="1" className="text-success">CUMPLE CON TODO</option>
-                                <option value="2" className="text-warning">SIN REVISAR</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label htmlFor="record_review_4">Fecha del acta de correcciones</label>
+                        <DateInput className="form-control" id="record_review_4" max="2100-01-01"
+                            defaultValue={currentRecord.date_2 ?? ''} />
+                        {limitHint(limit_2, is_Outdate_2)}
                     </div>
-
-                </div>
-                <div className="row">
-                    <div className="col-2">
-                        <br />
-                        <label className='fw-bold'>Fecha limite: </label>  {limit_2} {is_Outdate_2 < 0 ? <label className='fw-bold text-danger'>EXTEMPORÁNEO</label> : ''}
+                    <div>
+                        <label htmlFor="record_review_5">Resultado de correcciones</label>
+                        <select className="form-select" id="record_review_5" defaultValue={getOptionalCorrectionDefaultValue(currentRecord.check_2)} >
+                            <option value="">Sin aplicar</option>
+                            <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
+                            <option value="1" className="text-success">CUMPLE CON TODO (APROBADO)</option>
+                            <option value="2" className="text-warning">SIN REVISAR</option>
+                            <option value="-1" className="text-danger">DESISTIDO</option>
+                        </select>
                     </div>
-                    <div className="col-5">
-                        <label>Fecha del acta de Correcciones</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="calendar-alt" size={16} />
-                            </span>
-                            <input type="date" className="form-control" id="record_review_4" max="2100-01-01"
-                                defaultValue={currentRecord.date_2 ?? ''} />
-                        </div>
-                    </div>
-                    <div className="col-4">
-                        <label>Resultado</label>
-                        <div className="input-group my-1">
-                            <span className="input-group-text bg-primary text-primary-foreground">
-                                <Icon name="check-square" size={16} />
-                            </span>
-                            <select className="form-select" id="record_review_5" defaultValue={getOptionalCorrectionDefaultValue(currentRecord.check_2)} >
-                                <option value="">Sin aplicar</option>
-                                <option value="0" className="text-danger">NO CUMPLE (NEGADO)</option>
-                                <option value="1" className="text-success">CUMPLE CON TODO (APROBADO)</option>
-                                <option value="2" className="text-warning">SIN REVISAR</option>
-                                <option value="-1" className="text-danger">DESISTIDO</option>
-                            </select>
-                        </div>
-                    </div>
-
                 </div>
             </>
         }
@@ -751,146 +732,131 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             let _chceks_prev = currentRecord.checks_prev;
             if (_chceks_prev) {
                 let _reviews = _chceks_prev.split('&');
-                return _reviews.map((array, index) => {
-                    let values = array.split(';');
-                    return <>
-                        <div className="row">
-                            <legend className="my-2 px-3 bg-light" id="record_ph_2">
-                                <label className="app-p lead fw-normal">HISTORIAL DE REVISIONES DE ACTAS</label>
-                            </legend>
-                        </div>
-                        <div className="row">
-                            <div className="col-4">
-                                <label className="fw-bold">Resultado de la revisión {index + 1}</label>
-                            </div>
-                            <div className="col-4">
-                                <label>Fecha del acta de observaciones</label>
-                                <div className="input-group my-1">
-                                    <span className="input-group-text bg-primary text-primary-foreground">
-                                        <Icon name="calendar-alt" size={16} />
-                                    </span>
-                                    <input type="date" className="form-control" id="record_ph_worker_arc_2" required
-                                        defaultValue={values[1]} />
-                                </div>
-                            </div>
-                            <div className="col-4">
-                                <label>Aprobado</label>
-                                <div className="input-group my-1">
-                                    <span className="input-group-text bg-primary text-primary-foreground">
-                                        <Icon name="check-square" size={16} />
-                                    </span>
-                                    <select className="form-control" id="recprd_ph_final_check" defaultValue={values[0]} >
-                                        <option value="0" className="text-danger">NO</option>
-                                        <option value="1" className="text-success">SI</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                })
-
+                return <>
+                    <SectionSubheading id="record_ph_2">Historial de revisiones de actas</SectionSubheading>
+                    <div className="ew-table-scroll">
+                        <table className="table mb-0 ew-grid-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Revisión</th>
+                                    <th scope="col">Fecha del acta de observaciones</th>
+                                    <th scope="col">Aprobado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {_reviews.map((array, index) => {
+                                    let values = array.split(';');
+                                    return <tr key={index}>
+                                        <td>Resultado de la revisión {index + 1}</td>
+                                        <td className="ew-num font-mono">{formatActaDate(values[1]) || <span className="text-muted-foreground">Sin fecha</span>}</td>
+                                        <td>
+                                            {values[0] == 1
+                                                ? <span className="ew-status-chip ew-status-chip--success">Sí</span>
+                                                : <span className="ew-status-chip ew-status-chip--danger">No</span>}
+                                        </td>
+                                    </tr>
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
             }
         }
         let _COMPONENT_NOTIFICATION_OBS = () => {
             return <>
-
-                <div className="row mx-2 bg-primary text-primary-foreground">
-                    <div className="col-3 text-center">
-                        <label className="fw-bold mt-1">EVENTO</label>
-                    </div>
-                    <div className="col text-center">
-                        <label className="fw-bold mt-1">FECHA EVENTO</label>
-                    </div>
-                    <div className="col text-center">
-                        <label className="fw-bold mt-1">FECHA LIMITE</label>
-                    </div>
-                    <div className="col text-center">
-                        <label className="fw-bold mt-1">FORMA</label>
-                    </div>
-                    <div className="col text-center">
-                        <label className="fw-bold mt-1">ANEXO</label>
-                    </div>
-                    <div className="col-1 text-center">
-                    </div>
+                <p className="ew-toolbar__meta mb-2">Las fechas, la forma y el anexo de cada evento se guardan al modificarlos.</p>
+                <div className="ew-table-scroll">
+                    <table className="table mb-0 ew-grid-table ew-grid-table--fixed">
+                        <colgroup>
+                            <col style={{ width: '26%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '13%' }} />
+                            <col style={{ width: '18%' }} />
+                            <col style={{ width: '22%' }} />
+                            <col style={{ width: '6%' }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">Evento</th>
+                                <th scope="col">Fecha evento</th>
+                                <th scope="col">Fecha límite</th>
+                                <th scope="col">Forma</th>
+                                <th scope="col">Anexo</th>
+                                <th scope="col"><span className="sr-only">Ver anexo</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">{get_clockExistIcon(30)} Acta de Observaciones</th>
+                                <td className="ew-num font-mono">
+                                    {_GET_CLOCK_STATE(30).date_start
+                                        ? formatActaDate(_GET_CLOCK_STATE(30).date_start)
+                                        : <span className="ew-status-chip ew-status-chip--danger">No hay acta de obs.</span>}
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    {(_GET_CLOCK_STATE(30).resolver_id6 ?? 0) > 0
+                                        ?
+                                        <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(30).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(30).resolver_id6).filename} apipath={'/files/'}
+                                        />
+                                        : ""}
+                                </td>
+                            </tr>
+                            {_COMPONENT_CLOCK_LIST()}
+                        </tbody>
+                    </table>
                 </div>
-
-                <div className="row mx-2 my-0">
-                    <div className="col-3 border">
-                        <label className="fw-bold mt-2 ">{get_clockExistIcon(30)} Acta de Observaciones</label>
-                    </div>
-                    <div className="col border py-1 text-center">
-                        <label className="fw-bold mt-2 ">{_GET_CLOCK_STATE(30).date_start ?? <label className='text-danger'>NO HAY ACTA DE OBS.</label>}</label>
-                    </div>
-                    <div className="col text-center border py-1">
-                    </div>
-                    <div className="col border py-1">
-                    </div>
-
-                    <div className="col border py-1">
-                    </div>
-
-                    <div className="col-1 border py-1">
-                        {(_GET_CLOCK_STATE(30).resolver_id6 ?? 0) > 0
-                            ?
-                            <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(30).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(30).resolver_id6).filename} apipath={'/files/'}
-                            />
-                            : ""}
-                    </div>
-                </div>
-                {_COMPONENT_CLOCK_LIST()}
             </>
         }
         let _COMPONENT_CLOCK_LIST = () => {
 
-            return record_clocks.map((value, i) => <>
-                {value.alert ? <div className="row mx-2 my-0 text-center">
-                    <div className="col border border-danger">
-                        <label className="fw-bold mt-2 "> {value.alert}</label>
-                    </div>
-                </div>
-
-                    : <div className="row mx-2 my-0">
-                        <div className="col-3 border">
-                            <label className="fw-bold mt-2">{value.state ? get_clockExistIcon(value.state) : ''} {value.name}</label>
-                        </div>
-                        <div className="col border py-1">
-                            {value.state ?
-                                <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
-                                    defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
-                                : ''}
-                        </div>
-                        <div className="col text-center border py-1">
-                            {value.limit != undefined && value.alt == undefined ? dateParser_finalDate(get_map_clock(value.limit_id).date_start, value.limit) : ''}
-                            {value.limit != undefined && value.alt ? dateParser_finalDate(get_map_clock(value.alt).date_start, 1) : ''}
-                        </div>
-                        <div className="col border py-1">
-                            {value.types
-                                ? <select className='form-select' id={'clock_acta_res_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
-                                    onChange={(e) => save_clock2(value, i)}>
-                                    {value.types.map(value => <option>{value}</option>)}
-                                </select>
-                                : ''}
-                        </div>
-
-                        <div className="col border py-1">
-                            <select className='form-select' id={'clock_acta_id6_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0}
+            return record_clocks.map((value, i) => value.alert
+                ? <tr key={i} className="ew-grid-table__group">
+                    <th scope="colgroup" colSpan={6}>{value.alert}</th>
+                </tr>
+                : <tr key={i}>
+                    <th scope="row" id={'clock_acta_name_' + i}>{value.state ? get_clockExistIcon(value.state) : ''} {value.name}</th>
+                    <td>
+                        {value.state ?
+                            <DateInput className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                                aria-label={'Fecha del evento: ' + value.name}
+                                defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
+                            : ''}
+                    </td>
+                    <td className="ew-num font-mono">
+                        {value.limit != undefined && value.alt == undefined ? formatActaDate(dateParser_finalDate(get_map_clock(value.limit_id).date_start, value.limit)) : ''}
+                        {value.limit != undefined && value.alt ? formatActaDate(dateParser_finalDate(get_map_clock(value.alt).date_start, 1)) : ''}
+                    </td>
+                    <td>
+                        {value.types
+                            ? <select className='form-select' id={'clock_acta_res_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
+                                aria-label={'Forma: ' + value.name}
                                 onChange={(e) => save_clock2(value, i)}>
-                                <option value="-1">APORTADO FISICAMENTE</option>
-                                <option value="0">SIN DOCUMENTO</option>
-                                {_CHILD_6_SELECT()}
+                                {value.types.map(value => <option key={value}>{value}</option>)}
                             </select>
-                        </div>
-
-                        <div className="col-1 border py-1">
-                            {(_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0) > 0
-                                ?
-                                <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(value.state).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(value.state).resolver_id6).filename} apipath={'/files/'}
-                                />
-                                : ""}
-                        </div>
-                    </div>}
-
-            </>)
+                            : ''}
+                    </td>
+                    <td>
+                        {value.state ?
+                        <select className='form-select' id={'clock_acta_id6_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0}
+                            aria-label={'Anexo: ' + value.name}
+                            onChange={(e) => save_clock2(value, i)}>
+                            <option value="-1">APORTADO FISICAMENTE</option>
+                            <option value="0">SIN DOCUMENTO</option>
+                            {_CHILD_6_SELECT()}
+                        </select>
+                        : ''}
+                    </td>
+                    <td>
+                        {(_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0) > 0
+                            ?
+                            <VIZUALIZER url={_FIND_6(_GET_CLOCK_STATE(value.state).resolver_id6).path + "/" + _FIND_6(_GET_CLOCK_STATE(value.state).resolver_id6).filename} apipath={'/files/'}
+                            />
+                            : ""}
+                    </td>
+                </tr>)
         }
         let PDF_GEN_ACTA = () => {
             let _RR = currentRecord;
@@ -974,238 +940,181 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 }
             }
             return <>
-                <div className="row mb-3">
-                    <div className="col">
-                        <label>Autoridad Competente</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"func_pdf_0_1"}>
-                                {domains_number}
-                            </select>
-                        </div>
+                <div className="ew-form-grid">
+                    <div>
+                        <label htmlFor="func_pdf_0_1">Autoridad competente</label>
+                        <select className="form-select" id={"func_pdf_0_1"}>
+                            {Children.toArray(domains_number)}
+                        </select>
                     </div>
-                    <div className="col">
-                        <label>Ciudad</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"func_pdf_0_2"}>
-                                {cities}
-                            </select>
-                        </div>
+                    <div>
+                        <label htmlFor="func_pdf_0_2">Ciudad</label>
+                        <select className="form-select" id={"func_pdf_0_2"}>
+                            {Children.toArray(cities)}
+                        </select>
                     </div>
-                    <div className="col">
-                        <label>Acta</label>
-                        <div className="input-group my-1">
-                            <select className="form-select me-1" id={"record_version"}>
-                                <option value={1}>OBSERVACIONES</option>
-                                <option value={2}>CORRECCIONES</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label htmlFor="record_version">Acta</label>
+                        <select className="form-select" id={"record_version"}>
+                            <option value={1}>OBSERVACIONES</option>
+                            <option value={2}>CORRECCIONES</option>
+                        </select>
                     </div>
-                    <div className="col">
-                        <label>Fecha expedición</label>
-                        <div className="input-group my-1">
-                            <input type="date" max="2100-01-01" className="form-control me-1" id="record_date"
-                                defaultValue={dayjs().format('YYYY-MM-DD')} />
-                        </div>
+                    <div>
+                        <label htmlFor="record_date">Fecha de expedición</label>
+                        <DateInput max="2100-01-01" className="form-control" id="record_date"
+                            defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                 </div>
-                <div className="row mb-1 text-center">
-                    <div className="col"> <label className='fw-bold'>INFORME</label> </div>
-                    <div className="col"> <label className='fw-bold'>REVISION</label> </div>
-                    <div className="col"> <label className='fw-bold'>PROFESIONAL</label> </div>
-                    <div className="col"> <label className='fw-bold'>RESULTADO</label> </div>
-                    <div className="col"> <label className='fw-bold'>FECHA</label> </div>
-                    <div className="col-1"> <label className='fw-bold'>PEND.</label> </div>
-                </div>
-                <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="balance-scale" size={16} /> JUR.</label> </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
-                                {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_worker_name_law"} disabled defaultValue={reviews_law[0].worker} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_check_law"} disabled defaultValue={reviews_law[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_date_law"} disabled defaultValue={reviews_law[0].date} />
-                        </div>
-                    </div>
-                    <div className="col-1 d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_law_pending" />
-                        </div>
-                    </div>
 
+                <SectionSubheading>Informes que componen el acta</SectionSubheading>
+                <div className="ew-table-scroll">
+                    <table className="table mb-0 ew-grid-table ew-grid-table--fixed">
+                        <colgroup>
+                            <col style={{ width: '12%' }} />
+                            <col style={{ width: '24%' }} />
+                            <col style={{ width: '24%' }} />
+                            <col style={{ width: '16%' }} />
+                            <col style={{ width: '16%' }} />
+                            <col style={{ width: '8%' }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">Informe</th>
+                                <th scope="col">Revisión</th>
+                                <th scope="col">Profesional</th>
+                                <th scope="col">Resultado</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col" className="text-center"><abbr title="Pendiente">Pend.</abbr></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"><Icon name="balance-scale" size={16} /> JUR.</th>
+                                <td>
+                                    <select className="form-select" id={"record_pdf_version_law"} aria-label="Revisión del informe JUR." onChange={(e) => _CHANGE_VALUES('law', reviews_law, e.target.value)}>
+                                        {CLOCKS_R.map((op, i) => <option key={i} value={i}>{op}</option>)}
+                                    </select>
+                                </td>
+                                <td><input className='form-control' id={"record_pdf_worker_name_law"} aria-label="Profesional JUR." disabled defaultValue={reviews_law[0].worker} /></td>
+                                <td><input className='form-control' id={"record_pdf_check_law"} aria-label="Resultado JUR." disabled defaultValue={reviews_law[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} /></td>
+                                <td><input className='form-control ew-num font-mono' id={"record_pdf_date_law"} aria-label="Fecha JUR." disabled defaultValue={reviews_law[0].date} /></td>
+                                <td className="text-center">
+                                    <input type="checkbox" className="form-check-input" id="record_law_pending" aria-label="Pendiente JUR." />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><Icon name="building" size={16} /> ARQ.</th>
+                                <td>
+                                    <select className="form-select" id={"record_pdf_version_arc"} aria-label="Revisión del informe ARQ." onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
+                                        {CLOCKS_R.map((op, i) => <option key={i} value={i}>{op}</option>)}
+                                    </select>
+                                </td>
+                                <td><input className='form-control' id={"record_pdf_worker_name_arc"} aria-label="Profesional ARQ." disabled defaultValue={reviews_arc[0].worker} /></td>
+                                <td><input className='form-control' id={"record_pdf_check_arc"} aria-label="Resultado ARQ." disabled defaultValue={reviews_arc[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} /></td>
+                                <td><input className='form-control ew-num font-mono' id={"record_pdf_date_arc"} aria-label="Fecha ARQ." disabled defaultValue={reviews_arc[0].date} /></td>
+                                <td className="text-center">
+                                    <input type="checkbox" className="form-check-input" id="record_arc_pending" aria-label="Pendiente ARQ." />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><Icon name="cogs" size={16} /> EST.</th>
+                                <td>
+                                    <select className="form-select" id={"record_pdf_version_eng"} aria-label="Revisión del informe EST." onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
+                                        {CLOCKS_R.map((op, i) => <option key={i} value={i}>{op}</option>)}
+                                    </select>
+                                </td>
+                                <td><input className='form-control' id={"record_pdf_worker_name_eng"} aria-label="Profesional EST." disabled defaultValue={reviews_eng[0].worker} /></td>
+                                <td><input className='form-control' id={"record_pdf_check_eng"} aria-label="Resultado EST." disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} /></td>
+                                <td><input className='form-control ew-num font-mono' id={"record_pdf_date_eng"} aria-label="Fecha EST." disabled defaultValue={reviews_eng[0].date} /></td>
+                                <td className="text-center">
+                                    <input type="checkbox" className="form-check-input" id="record_eng_pending" aria-label="Pendiente EST." />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="building" size={16} />  ARQ.</label> </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES('arc', reviews_arc, e.target.value)}>
-                                {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_worker_name_arc"} disabled defaultValue={reviews_arc[0].worker} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_check_arc"} disabled defaultValue={reviews_arc[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_date_arc"} disabled defaultValue={reviews_arc[0].date} />
-                        </div>
-                    </div>
-                    <div className="col-1 d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_arc_pending" />
-                        </div>
-                    </div>
 
-                </div>
-                <div className="row mb-1">
-                    <div className="col text-center pt-1"> <label className='fw-bold'><Icon name="cogs" size={16} /> EST.</label> </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <select className="form-select me-1" id={"record_pdf_version_eng"} onChange={(e) => _CHANGE_VALUES_ENG(reviews_eng, e.target.value)}>
-                                {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
-                            </select>
-                        </div>
+                <SectionSubheading>Resultados del informe estructural</SectionSubheading>
+                <div className="ew-form-grid ew-form-grid--pairs">
+                    <div>
+                        <label htmlFor="record_pdf_check_1_c_eng">Resultado 1, contexto</label>
+                        <input className='form-control' id={"record_pdf_check_1_c_eng"} disabled defaultValue={reviews_eng[0].c1} />
                     </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_worker_name_eng"} disabled defaultValue={reviews_eng[0].worker} />
-                        </div>
+                    <div>
+                        <label htmlFor="record_pdf_check_1_v_eng">Resultado 1</label>
+                        <input className='form-control' id={"record_pdf_check_1_v_eng"} disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
                     </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_check_eng"} disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
-                        </div>
+                    <div>
+                        <label htmlFor="record_pdf_check_2_c_eng">Resultado 2, contexto</label>
+                        <input className='form-control' id={"record_pdf_check_2_c_eng"} disabled defaultValue={reviews_eng[0].c2} />
                     </div>
-                    <div className="col">
-                        <div className="input-group input-group-sm">
-                            <input className='form-control' id={"record_pdf_date_eng"} disabled defaultValue={reviews_eng[0].date} />
-                        </div>
+                    <div>
+                        <label htmlFor="record_pdf_check_2_v_eng">Resultado 2</label>
+                        <input className='form-control' id={"record_pdf_check_2_v_eng"} disabled defaultValue={reviews_eng[0].check2 == 1 ? 'VIABLE' : reviews_eng[0].check2 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
                     </div>
-                    <div className="col-1 d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_eng_pending" />
-                        </div>
+                    <div>
+                        <label htmlFor="record_pdf_check_3_c_eng">Resultado 3, contexto</label>
+                        <input className='form-control' id={"record_pdf_check_3_c_eng"} disabled defaultValue={reviews_eng[0].c3} />
                     </div>
-                </div>
-                <div className="row mb-1">
-                    <div className="col"></div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 1 Contexto:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_1_c_eng"} disabled defaultValue={reviews_eng[0].c1} />
-                    </div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 1:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_1_v_eng"} disabled defaultValue={reviews_eng[0].check == 1 ? 'VIABLE' : 'NO VIABLE'} />
-                    </div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 2 Contexto:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_2_c_eng"} disabled defaultValue={reviews_eng[0].c2} />
-                    </div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 2:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_2_v_eng"} disabled defaultValue={reviews_eng[0].check2 == 1 ? 'VIABLE' : reviews_eng[0].check2 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
-                    </div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 3 Contexto:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_3_c_eng"} disabled defaultValue={reviews_eng[0].c3} />
-                    </div>
-                    <div className="col">
-                        <h5 className='fw-normal'>Resultado 3:</h5>
-                        <input className='form-control form-control-sm' id={"record_pdf_check_3_v_eng"} disabled defaultValue={reviews_eng[0].check3 == 1 ? 'VIABLE' : reviews_eng[0].check3 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
+                    <div>
+                        <label htmlFor="record_pdf_check_3_v_eng">Resultado 3</label>
+                        <input className='form-control' id={"record_pdf_check_3_v_eng"} disabled defaultValue={reviews_eng[0].check3 == 1 ? 'VIABLE' : reviews_eng[0].check3 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
                     </div>
                 </div>
 
                 {_NOTY_TYPE_COMPONENENT()}
                 {/* notdig section removed */}
 
-                <div className="row my-3">
-                    <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_simple" checked={actaSimple} onChange={(e) => setActaSimple(e.target.checked)} />
-                            <label className="form-check-label" htmlFor="exampleCheck1">Acta simple</label>
-                        </div>
+                <SectionSubheading>Opciones del documento</SectionSubheading>
+                <div className="ew-option-row">
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_simple" checked={actaSimple} onChange={(e) => setActaSimple(e.target.checked)} />
+                        <label className="form-check-label" htmlFor="record_rew_simple">Acta simple</label>
                     </div>
-                    <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_footer" defaultChecked={'true'} />
-                            <label className="form-check-label" htmlFor="exampleCheck1" >Usar Pie de pagina</label>
-                        </div>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_footer" defaultChecked={true} />
+                        <label className="form-check-label" htmlFor="record_rew_footer">Usar pie de página</label>
                     </div>
-                    <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_rew_pagination" />
-                            <label className="form-check-label" htmlFor="exampleCheck1">Usar Paginación</label>
-                        </div>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_rew_pagination" />
+                        <label className="form-check-label" htmlFor="record_rew_pagination">Usar paginación</label>
                     </div>
-                </div>
-
-                <div className="row my-3">
-                    <div className="col d-flex justify-content-center">
-                        <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="record_eng_diagnostic" />
-                            <label className="form-check-label" htmlFor="exampleCheck1">Diagnostico NSR-10</label>
-                        </div>
+                    <div className="form-check">
+                        <input type="checkbox" className="form-check-input" id="record_eng_diagnostic" />
+                        <label className="form-check-label" htmlFor="record_eng_diagnostic">Diagnóstico NSR-10</label>
                     </div>
                 </div>
 
-                <div className="row my-3 text-center">
-                    <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="me-1" onClick={() => creae_pdf()}> <Icon name="file-pdf" size={16} /> DESCARGAR ACTA</Button>
-                    </div>
-                    <div className="col text-center">
-                        <Button type="button" variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> DESCARGAR CHEKEO</Button>
-                    </div>
+                <div className="ew-actions">
+                    <Button type="button" variant="outline" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="file-pdf" size={16} /> Descargar chequeo</Button>
+                    <Button type="button" size="sm" onClick={guard(() => creae_pdf(), 'creae_pdf')}> <Icon name="file-pdf" size={16} /> Descargar acta</Button>
                 </div>
             </>
         }
         let _BTN_GEN_ID = () => {
             return <>
-                <div className='row'>
-                    <div className="col-2">
-                    </div>
-                    <div className="col-5">
-                        <label className="mt-2">{infoCud.serials.end} de Acta de Observaciones y Correcciones</label>
+                <SectionSubheading>Consecutivo del acta</SectionSubheading>
+                <div className="ew-form-grid">
+                    <div>
+                        <label htmlFor="rev_cub">{infoCud.serials.end} de acta de observaciones y correcciones</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" id="rev_cub"
+                            <input type="text" className="form-control ew-num font-mono" id="rev_cub"
                                 value={getOptionalCubDefaultValue({ cubSelected, currentRecordIdPublic: currentRecord.id_public })}
                                 onChange={(e) => setCubSelected(e.target.value)} />
-                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>GENERAR</Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => _GET_LAST_ID('rev_cub')}>Generar</Button>
                         </div>
                     </div>
-                    <div className="col-4" >
-                        <label className="mt-1">{infoCud.serials.start}</label>
-                        <div className="input-group">
-                            <select className="form-select" id="vr_selected11" value={getOptionalVrDefaultValue(vrSelected)} onChange={(e) => setVrSelected(e.target.value)}>
-                                <option value=''>Sin seleccionar</option>
-                                {vrsRelated && vrsRelated.map((value, key) => (
-                                    <option key={value.id} value={value.id_public}>
-                                        {value.id_public}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
+                    <div>
+                        <label htmlFor="vr_selected11">{infoCud.serials.start}</label>
+                        <select className="form-select" id="vr_selected11" value={getOptionalVrDefaultValue(vrSelected)} onChange={(e) => setVrSelected(e.target.value)}>
+                            <option value=''>Sin seleccionar</option>
+                            {vrsRelated && vrsRelated.map((value, key) => (
+                                <option key={value.id} value={value.id_public}>
+                                    {value.id_public}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </>
@@ -1218,7 +1127,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formData = new FormData();
             formData.set('fun0Id', currentItem.id);
             formData.set('version', 1);
-            RECORD_REVIEW_SERVICE.create(formData)
+            return RECORD_REVIEW_SERVICE.create(formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -1290,9 +1199,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         });
                     }
 
-                    await save_review(reviewValues);
-                    save_clock(reviewValues);
-                    createVRxCUB_relation(reviewValues);
+                    await guard.hold('review', save_review(reviewValues));
+                    guard.hold('review', save_clock(reviewValues));
+                    guard.hold('review', createVRxCUB_relation(reviewValues));
                 }
             });
         }
@@ -1354,10 +1263,11 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formDataClock.set('name', 'Entra en proceso de expedición');
             formDataClock.set('desc', 'La solicitud cumple con todos los requisitos satisfactoriamente.');
 
-            manage_clock(false, 50, false, formDataClock)
+            return manage_clock(false, 50, false, formDataClock);
         }
         let save_clock = (reviewValues = getReviewFormValues()) => {
             var formDataClock = new FormData();
+            const pending = [];
 
             //let state = 30 // THIS IS CANGED DEPENDING ON WICH LOCATION IT IS
             let version = currentItem.version;
@@ -1378,7 +1288,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 formDataClock.set('state', state);
                 formDataClock.set('version', version);
 
-                manage_clock(false, state, version, formDataClock);
+                pending.push(manage_clock(false, state, version, formDataClock));
             }
             if (shouldSaveReviewClock({ date: date_2, check: review_2 })) {
                 formDataClock = new FormData();
@@ -1389,14 +1299,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 formDataClock.set('state', state);
                 formDataClock.set('version', version);
 
-                manage_clock(false, state, version, formDataClock);
+                pending.push(manage_clock(false, state, version, formDataClock));
             }
             else {
-                clear_clock(49, version);
+                pending.push(clear_clock(49, version));
             }
+            return Promise.allSettled(pending);
 
         }
         let save_clock2 = (value, i) => {
+            if (!value.state) return;
             var formDataClock = new FormData();
 
             let date_start = document.getElementById("clock_acta_date_" + i) ? document.getElementById("clock_acta_date_" + i).value : '';
@@ -1424,7 +1336,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             }
 
             if (_CHILD.id) {
-                FUN_SERVICE.update_clock(_CHILD.id, formDataClock)
+                return FUN_SERVICE.update_clock(_CHILD.id, formDataClock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
@@ -1446,7 +1358,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     });
             }
             else {
-                FUN_SERVICE.create_clock(formDataClock)
+                return FUN_SERVICE.create_clock(formDataClock)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
@@ -1473,7 +1385,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             const _CHILD = version ? _GET_CLOCK_STATE_VERSION(findOne, version) : _GET_CLOCK_STATE(findOne);
             if (!_CHILD?.id) return;
 
-            FUN_SERVICE.delete_clock(_CHILD.id)
+            return FUN_SERVICE.delete_clock(_CHILD.id, currentItem.id)
                 .then(response => {
                     if (response.data === 'OK') {
                         requestUpdateRecord(currentItem.id)
@@ -1494,16 +1406,16 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                 if (SweetAlertResult.isConfirmed) {
                     swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                         if (SweetAlertResult.isConfirmed) {
-                            manage_fun_0();
-                            save_clock_exp();
+                            guard.hold('update_fun_0', manage_fun_0());
+                            guard.hold('update_fun_0', save_clock_exp());
                         }
                     });
                 }
             });
             else swalConfirm({ title: "¿PROSEGUIR A EXPEDICIÓN?", text: `¿Esta seguro de seguir al proceso de Expedición de esta solicitud?`, icon: 'question', confirmButtonText: "PROSEGUIR" }).then(SweetAlertResult => {
                 if (SweetAlertResult.isConfirmed) {
-                    manage_fun_0();
-                    save_clock_exp();
+                    guard.hold('update_fun_0', manage_fun_0());
+                    guard.hold('update_fun_0', save_clock_exp());
                 }
             });
 
@@ -1512,7 +1424,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
         let manage_fun_0 = () => {
             formData = new FormData();
             formData.set('state', 50);
-            FunService.update(currentItem.id, formData)
+            return FunService.update(currentItem.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -1621,7 +1533,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formData.set('r_eng_diagnostic', r_eng_diagnostic);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RECORD_REVIEW_SERVICE.pdfgen(formData)
+            return RECORD_REVIEW_SERVICE.pdfgen(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.artifactId) {
                         swalClose();
@@ -1827,7 +1739,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
             formatData.set('date', date);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -1839,7 +1751,7 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -1854,6 +1766,18 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
 
         let conOA = () => regexChecker_isOA_2(currentItem ? _GET_CHILD_1() : {})
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
+        const actaLoading = (
+            <section className="ew-card" aria-busy="true">
+                <p className="ew-toolbar__meta m-0" role="status">Cargando información…</p>
+            </section>
+        );
+        // Card chips restate what the record already holds; they add no rule of their own.
+        const reviewChip = (check, labels) => {
+            const value = normalizeReviewValue(check);
+            if (value === '1') return <span className="ew-status-chip ew-status-chip--success">{labels[1]}</span>;
+            if (value === '0' || value === '-1') return <span className="ew-status-chip ew-status-chip--danger">{labels[value]}</span>;
+            return <span className="ew-status-chip">{labels.none}</span>;
+        };
         return (
             <div className="record_ph container">
                 {currentItem != null ? <>
@@ -1870,53 +1794,57 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                         nomenclature={'1.'}
                                         textAlign={'text-center'}
                                         noEng={conOA() || rules[1] == 1}
+                                        card
                                     />
 
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_2">
-                                        <label className="app-p lead fw-normal">2. DECLARACIÓN DEL ACTA</label>
-                                    </legend>
+                                    <SectionCard
+                                        id="record_review_title_2"
+                                        title="2. Declaración del acta"
+                                        meta={<>
+                                            {reviewChip(currentRecord.check, { 1: 'Observaciones: cumple', 0: 'Observaciones: tiene observaciones', '-1': 'Observaciones: tiene observaciones', none: 'Observaciones: sin revisar' })}
+                                            {normalizeReviewValue(currentRecord.check_2) !== ''
+                                                ? <> {reviewChip(currentRecord.check_2, { 1: 'Correcciones: aprobado', 0: 'Correcciones: negado', '-1': 'Correcciones: desistido', none: 'Correcciones: sin revisar' })}</>
+                                                : null}
+                                        </>}
+                                    >
+                                        <Collapsible trigger={<label>2.1 Carta de ratificación</label>}>
+                                            <div className='text-start'>
+                                                <RECORD_DOC_LETTER
+                                                    translation={translation}
+                                                    swaMsg={swaMsg}
+                                                    globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    requestUpdate={requestUpdate}
+                                                    edit />
+                                            </div>
+                                        </Collapsible>
+                                        <Collapsible trigger={<label>2.2 Carta de ampliación de términos</label>}>
+                                            <div className='text-start'>
+                                                <RECORD_DOC_LETTER_2
+                                                    translation={translation}
+                                                    swaMsg={swaMsg}
+                                                    globals={globals}
+                                                    currentItem={currentItem}
+                                                    currentVersion={currentVersion}
+                                                    requestUpdate={requestUpdate}
+                                                    edit />
+                                            </div>
+                                        </Collapsible>
 
-                                    <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">2.1 CARTA DE RATIFICACIÓN</label>}>
-                                        <div className='text-start'>
-                                            <RECORD_DOC_LETTER
-                                                translation={translation}
-                                                swaMsg={swaMsg}
-                                                globals={globals}
-                                                currentItem={currentItem}
-                                                currentVersion={currentVersion}
-                                                requestUpdate={requestUpdate}
-                                                edit />
-                                        </div>
-                                    </Collapsible>
-                                    <Collapsible className='bg-light border border-info text-center' openedClassName='bg-light border border-info text-center' trigger={<label className="fw-normal text-info">2.2 CARTA DE AMPLIACIÓN DE TERMINOS</label>}>
-                                        <div className='text-start'>
-                                            <RECORD_DOC_LETTER_2
-                                                translation={translation}
-                                                swaMsg={swaMsg}
-                                                globals={globals}
-                                                currentItem={currentItem}
-                                                currentVersion={currentVersion}
-                                                requestUpdate={requestUpdate}
-                                                edit />
-                                        </div>
-                                    </Collapsible>
+                                        <SectionSubheading>2.3 Control del acta de observaciones y correcciones</SectionSubheading>
 
-                                    <h3 className='text-center my-3'>2.3 CONTROL DEL ACTA DE OBSERVACIONES Y CORRECIONES</h3>
+                                        {_COMPONENT_REVIEW()}
+                                        {_COMPOANENT_PAST_REIEWS()}
+                                        {_BTN_GEN_ID()}
 
-                                    {_COMPONENT_REVIEW()}
-                                    {_COMPOANENT_PAST_REIEWS()}
-                                    {_BTN_GEN_ID()}
-
-                                    <div className="row mb-3 text-center">
                                         {currentItem.state > -5
-                                            ? <>
-                                                <div className="col">
-                                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => review()}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
-                                                </div>
-                                            </>
-                                            : <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIEMIENTO,
-                                                NO SE PUEDE REALIZAR REVISIONES HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
-                                    </div>
+                                            ? <div className="ew-actions">
+                                                <Button type="button" size="sm" onClick={guard(() => review(), 'review')}><Icon name="check-square" size={16} /> Realizar revisión</Button>
+                                            </div>
+                                            : <p className="ew-notice ew-notice--danger" role="status">Esta solicitud se encuentra en un proceso de desistimiento:
+                                                no se pueden realizar revisiones hasta que el proceso termine totalmente.</p>}
+                                    </SectionCard>
 
                                     {/**
                                      * 
@@ -1938,67 +1866,66 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                                     </div>
                                      * 
                                      */}
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal">3. DESCARGAR ACTA</label>
-                                    </legend>
-                                    {PDF_GEN_ACTA()}
+                                    <SectionCard id="record_review_title_3" title="3. Descargar acta">
+                                        {PDF_GEN_ACTA()}
+                                    </SectionCard>
 
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_3">
-                                        <label className="app-p lead fw-normal">4. PROCESO DE NOTIFICACIÓN</label>
-                                    </legend>
+                                    <SectionCard
+                                        id="record_review_title_notification"
+                                        title="4. Proceso de notificación"
+                                        meta={_GET_CLOCK_STATE(32).date_start || _GET_CLOCK_STATE(33).date_start
+                                            ? <span className="ew-status-chip ew-status-chip--success">Notificada</span>
+                                            : <span className="ew-status-chip">Sin notificación registrada</span>}
+                                    >
+                                        {_COMPONENT_NOTIFICATION_OBS()}
+                                    </SectionCard>
 
-                                    {_COMPONENT_NOTIFICATION_OBS()}
-
-                                    <legend className="my-2 px-3 Collapsible text-center" id="record_review_title_4">
-                                        <label className="app-p lead fw-normal">5. PROSEGUIR A EXPEDICIÓN</label>
-                                    </legend>
+                                    <SectionCard
+                                        id="record_review_title_4"
+                                        title="5. Proseguir a expedición"
+                                        meta={currentItem.state > 0 && currentItem.state >= 50
+                                            ? <span className="ew-status-chip ew-status-chip--success">En expedición</span>
+                                            : currentItem.state > 0 ? <span className="ew-status-chip">Pendiente</span> : null}
+                                    >
                                     {currentItem.state > 0
                                         ?
                                         currentItem.state < 50
                                             ?
                                             <>
 
-                                                <form id="form_record_review_next" onSubmit={update_fun_0}>
-                                                    <div className="row">
-                                                        <div className="col text-end">
-                                                            <label className="fw-bold mt-1">Fecha de evento:</label>
-                                                        </div>
-                                                        <div className="col">
-                                                            <input type="date" className="form-control" id="record_review_next" max="2100-01-01"
+                                                <form id="form_record_review_next" onSubmit={guard(update_fun_0, 'update_fun_0')}>
+                                                    <div className="ew-form-grid">
+                                                        <div>
+                                                            <label htmlFor="record_review_next">Fecha de evento <span className="text-destructive" aria-hidden="true">*</span></label>
+                                                            <DateInput className="form-control" id="record_review_next" max="2100-01-01"
                                                                 defaultValue={_GET_CLOCK_STATE(51).date_start ?? ''} required />
                                                         </div>
                                                     </div>
-                                                    <div className="row">
-                                                        <div className="col text-center">
-
-                                                            <Button type="submit" variant="destructive" size="sm" className="my-3"><Icon name="check-square" size={16} /> PROSEGUIR A EXPEDICIÓN </Button>
-                                                        </div>
+                                                    <div className="ew-actions">
+                                                        <Button type="submit" size="sm"><Icon name="check-square" size={16} /> Proseguir a expedición</Button>
                                                     </div>
                                                 </form>
 
                                             </>
-                                            : <div className="row">
-                                                <div className="col text-center">
-                                                    <label className="app-p lead fw-normal text-success">ESTA SOLICITUD YA SE ENCUENTRA EN EXPEDICIÓN</label>
-                                                </div>
-                                            </div>
+                                            : <p className="ew-notice ew-notice--success m-0" role="status">Esta solicitud ya se encuentra en expedición.</p>
                                         :
-                                        <label className="app-p lead fw-normal text-danger">ESTA SOLICITUD SE ENCUENTRA EN UN PROCESO DE DESISTIMIENTO,
-                                            NO SE PUEDE PROSEGUIR HASTA QUE EL PROCESO TERMINE TOTALMENTE</label>}
+                                        <p className="ew-notice ew-notice--danger m-0" role="status">Esta solicitud se encuentra en un proceso de desistimiento:
+                                            no se puede proseguir hasta que el proceso termine totalmente.</p>}
+                                    </SectionCard>
                                 </div>
                                 {/* {NAV_FUNA()} */}
                             </> : <>
 
-                                <fieldset className="p-3">
-                                    <div className="text-center">
-                                        <Button type="button" size="sm" onClick={() => new_record_review()}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
+                                <section className="ew-card">
+                                    <div className="ew-empty">
+                                        <h2 className="ew-empty__title">Este expediente aún no tiene acta</h2>
+                                        <p className="ew-empty__text">Genere un acta en blanco para registrar la revisión de observaciones y correcciones.</p>
+                                        <Button type="button" size="sm" onClick={guard(() => new_record_review(), 'new_record_review')}><Icon name="FilePlus" size={14} /> Generar acta en blanco</Button>
                                     </div>
-                                </fieldset>
+                                </section>
 
                             </>}
-                    </> : <div className="text-center">
-                        <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3>
-                    </div>}
+                    </> : actaLoading}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentRecord}
@@ -2014,9 +1941,9 @@ function RECORD_REVIEW({ currentId, swaMsg, requestUpdate: requestUpdateProp, tr
                         NAVIGATION={NAVIGATION}
                         pqrsxfun={pqrsxfun}
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
-                </fieldset>}
+                </> : <section className="ew-card" id="fung_0" aria-busy="true">
+                    <p className="ew-toolbar__meta m-0" role="status">Cargando información…</p>
+                </section>}
             </div >
         );
 }

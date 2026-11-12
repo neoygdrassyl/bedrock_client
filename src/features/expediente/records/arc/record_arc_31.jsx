@@ -246,7 +246,7 @@ function RECORD_ARC_31({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT()}
                         <div className="text-center">
                             <Button size="sm" className="my-3" onClick={() => save_ra_31()}>
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </div>

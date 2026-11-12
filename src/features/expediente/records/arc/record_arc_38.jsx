@@ -1,3 +1,5 @@
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import RECORD_ARCSERVICE from '../../api/record_arc.service';
@@ -460,7 +462,7 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                                 }
                             </div>
                             <div className="col text-center">
-                                <label>{iasing}</label>
+                                <label>{formatDisplayDate(iasing, { empty: '' })}</label>
                             </div>
                             <div className="col text-center">
                                 {rewState['REW' + i]
@@ -473,9 +475,9 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                             <div className="col text-center">
                                 {rewState['REW' + i]
-                                    ? <input type="date" className="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
+                                    ? <DateInput className="form-control form-control-sm" id={"r_a_38_4_" + i} max="2100-01-01"
                                         defaultValue={idate} />
-                                    : <label>{idate ?? ''}</label>
+                                    : <label>{formatDisplayDate(idate, { empty: '' })}</label>
                                 }
                             </div>
                             <div className="col-1">
@@ -613,12 +615,12 @@ function RECORD_ARC_38({ translation, swaMsg, globals, currentItem, currentVersi
                             </div>
                         </div>
                     </div>
-                    <div className="row mb-3 text-center">
-                        <div className="col">
-                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
+                    <div className="ew-actions">
+                        <div>
+                            <Button size="sm" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> Descargar informe</Button>
                         </div>
-                        <div className="col">
-                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
+                        <div>
+                            <Button variant="outline" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> Descargar chequeo</Button>
                         </div>
                     </div>
                 </div>

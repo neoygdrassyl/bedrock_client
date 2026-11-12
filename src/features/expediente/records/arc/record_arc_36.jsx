@@ -1,4 +1,5 @@
-import { useCallback, useState, useEffect } from 'react';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { Fragment, useCallback, useState, useEffect } from 'react';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 import RECORD_ARCSERVICE from '../../api/record_arc.service';
 import perfilData from '../../../../shared/config/jsons/perfilesData.json';
@@ -132,7 +133,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `record_arc_36:step.${_id_public}.json`);
             return value
         }
         let _GET_TOTAL_AREA = (_build, _historic) => {
@@ -212,11 +213,11 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                 },
             ]
             return LIST.map((list, i) => {
-                return <div className="row border">
+                return <div className="row border" key={i}>
                     {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
                     <div className='col'>
                         {list.items.map((item, j) => {
-                            return <>
+                            return <Fragment key={j}>
                                 <div className='row border'>
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'><select className={_GET_SELECT_COLOR_VALUE(_VALUE_ARRAY[item.i])} name="s_36_values"
@@ -226,7 +227,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                                         <option className="text-warning">NA</option>
                                     </select></div>
                                 </div>
-                            </>
+                            </Fragment>
                         })}
                     </div>
                     <div className='col-2 text-center '>
@@ -350,8 +351,8 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
                         <label>Evaluación</label>
                     </div>
                 </div>
-                {_CONDTIIONS.map(con => {
-                    return <div className='row border text-center'>
+                {_CONDTIIONS.map((con, conIndex) => {
+                    return <div className='row border text-center' key={conIndex}>
                         <div className='col-3'>
                             <label>{con.name}</label>
                         </div>
@@ -370,7 +371,7 @@ function RECORD_ARC_36({ translation, swaMsg, globals, currentItem, currentVersi
 
 
 
-                <div className='row py-3 border' style={{ backgroundColor: 'gainsboro' }}>
+                <div className='row py-3 border' style={{ backgroundColor: 'hsl(var(--muted))' }}>
                     <div className='col text-center fw-bold'>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input" type="checkbox" id="s36_useduty_check" defaultChecked={_CHECK == 1 ? true : false} onChange={() => save_ra_36()} />

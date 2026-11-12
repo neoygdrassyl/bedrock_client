@@ -69,13 +69,12 @@ function RECORD_PH_LAW({ translation, swaMsg, globals, currentItem, currentVersi
                 minWidth: '120px',
                 cell: row => <>
                     <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
-                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                    <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                 </>
             },
         ]
         return <DataTable
             noDataComponent="No hay Items"
-            striped="true"
             columns={columns}
             data={_LIST}
             highlightOnHover
@@ -201,7 +200,7 @@ function RECORD_PH_LAW({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_MANAGE(false)}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                             </div>
                         </div>
                     </form>
@@ -215,7 +214,7 @@ function RECORD_PH_LAW({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_MANAGE(true)}
                         <div className="row mb-3 text-center">
                             <div className="col-12">
-                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                             </div>
                         </div>
                     </form>

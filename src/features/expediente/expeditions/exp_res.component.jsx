@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { DateInput } from '@/shared/components/DateInput';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { useState, Fragment } from "react";
+import { useActionGuard } from './useActionGuard';
 import { Button } from '@/shared/ui/button';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
@@ -22,12 +25,13 @@ const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_RES(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
+    const guard = useActionGuard();
 
     // ***************************  DATA GETTERS *********************** //
     let _GET_EXPEDITION_JSON = (field) => {
         let json = currentRecord[field];
         if (!json) return {}
-        let object = JSON.parse(JSON.parse(json))
+        let object = parseLegacyJson(json, {}, `exp_res:expedition.${field}`)
         return object
     }
     let _GET_CHILD_AREAS = () => {
@@ -221,11 +225,10 @@ export default function EXP_RES(props) {
 
     let _NOTY_TYPE_COMPONENENT = () => {
         return <>
-            <div className='row mx-5 my-3 text-start'>
-                <strong>TIPO DE NOTIFICACIÓN</strong>
-
-                <div className="col-4">
-                    <select className='form-select' id="type_not">
+            <div className="col-md-4 col-xl-3">
+                <label>Tipo de notificación</label>
+                <div className="input-group my-1">
+                    <select className='form-select' id="type_not_res">
                         <option value="0">NO USAR</option>
                         <option value="1">NOTIFICACIÓN PRESENCIAL</option>
                         <option value="2">NOTIFICACIÓN ELECTRÓNICA - SIN RECURSO</option>
@@ -276,7 +279,7 @@ export default function EXP_RES(props) {
     let _VERSIONS_SELECT = () => {
         var _COMPONENT = [];
         for (let i = 0; i < currentItem.version; i++) {
-            _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
+            _COMPONENT.push(<option key={i + 1} value={i + 1}>Revision {i + 1}</option>)
         }
         return <select className="form-select" id="exp_pdf_reso_record_version">{_COMPONENT}</select>
     }
@@ -562,10 +565,10 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">PRIMERO</label>
+                        <label className="mt-4 fw-bold">Primero</label>
                     </div>
                     <div className="col text-start">
-                        <textarea id="expedition_doc_res_primero" className="form-control" rows={7}>{primero || p_text}</textarea>
+                        <textarea id="expedition_doc_res_primero" className="form-control" rows={7} defaultValue={primero || p_text} />
                     </div>
                 </div>
             </>
@@ -576,7 +579,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">SEGUNDO</label>
+                        <label className="mt-4 fw-bold">Segundo</label>
                     </div>
                     <div className="col text-start">
                         <p>Que el proyecto objeto de la solicitud fue revisado y aprobado de acuerdo con la normatividad vigente,
@@ -596,7 +599,7 @@ export default function EXP_RES(props) {
                         </div>
                     </div>
                     <div className="col text-start">
-                        <textarea className="form-control" rows={3} id="expedition_doc_res_segundo_a">{segundo_a}</textarea>
+                        <textarea className="form-control" rows={3} id="expedition_doc_res_segundo_a" defaultValue={segundo_a} />
                     </div>
                 </div>
                 <div className="row mb-1">
@@ -670,7 +673,7 @@ export default function EXP_RES(props) {
         let _TERCERO = () => {
             return <>
                 <div className="row mb-1">
-                    <div className="col-2"><label className="mt-4 fw-bold">TERCERO</label></div>
+                    <div className="col-2"><label className="mt-4 fw-bold">Tercero</label></div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
                             <input className="form-check-input" type="checkbox" defaultChecked={tercero_cb[0] == 1 ? true : false} name="expedition_doc_res_tercero_cb" />
@@ -746,7 +749,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">CUARTO</label>
+                        <label className="mt-4 fw-bold">Cuarto</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
@@ -773,7 +776,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">QUINTO</label>
+                        <label className="mt-4 fw-bold">Quinto</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
@@ -793,7 +796,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">QUINTO</label>
+                        <label className="mt-4 fw-bold">Sexto</label>
                     </div>
                     <div className="col-1">
 
@@ -914,7 +917,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ABIERTOS</label>
+                        <label className="mt-4 fw-bold">Abiertos</label>
                     </div>
                     <div className="col-1">
 
@@ -962,7 +965,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">OBLIGACIONES TITULAR</label>
+                        <label className="mt-4 fw-bold">Obligaciones titular</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
@@ -1277,7 +1280,7 @@ export default function EXP_RES(props) {
 
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ADICIONAL</label>
+                        <label className="mt-4 fw-bold">Adicional</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
@@ -1349,7 +1352,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 1</label>
+                        <label className="mt-4 fw-bold">Artículo 1</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline">
@@ -1358,7 +1361,7 @@ export default function EXP_RES(props) {
                         </div>
                     </div>
                     <div className="col">
-                        <textarea rows={'4'} id="expedition_doc_res_art_1_text_tb" className="form-control">{art_1_txt_tb}</textarea>
+                        <textarea rows={'4'} id="expedition_doc_res_art_1_text_tb" className="form-control" defaultValue={art_1_txt_tb} />
                     </div>
                 </div>
                 <div className="row mb-1">
@@ -1370,7 +1373,7 @@ export default function EXP_RES(props) {
                         </div>
                     </div>
                     <div className="col">
-                        <textarea rows={'7'} id="expedition_doc_res_art_1_text" className="form-control">{art_1_txt}</textarea>
+                        <textarea rows={'7'} id="expedition_doc_res_art_1_text" className="form-control" defaultValue={art_1_txt} />
                     </div>
                 </div>
             </>
@@ -1379,7 +1382,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 4</label>
+                        <label className="mt-4 fw-bold">Artículo 4</label>
                     </div>
                     <div className="col text-start">
                         <p>Autorizar las obras e intervenciones que a continuación se describen.</p>
@@ -1436,7 +1439,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 5</label>
+                        <label className="mt-4 fw-bold">Artículo 5</label>
                     </div>
                     <div className="col text-start">
                         <p>Reconocer como parte integral de este acto administrativo los documentos legales y técnicos presentados por los titulares de la solicitud urbanística y los profesionales reconocidos en esta solicitud, quienes son responsables por su contenido; también hace parte de este acto los documentos expedidos por el curador urbano. A continuación, se relacionan:</p>
@@ -1456,7 +1459,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row mb-1">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 7</label>
+                        <label className="mt-4 fw-bold">Artículo 7</label>
                     </div>
                     <div className="col text-start">
                         <div className="input-group">
@@ -1515,7 +1518,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 8</label>
+                        <label className="mt-4 fw-bold">Artículo 8</label>
                     </div>
                     <div className="col text-start">
                         <label className="mt-1">Vigencia</label>
@@ -1554,7 +1557,7 @@ export default function EXP_RES(props) {
             return <>
                 <div className="row">
                     <div className="col-2">
-                        <label className="mt-4 fw-bold">ARTICULO 9</label>
+                        <label className="mt-4 fw-bold">Artículo 9</label>
                     </div>
                     <div className="col-1">
                         <div className="form-check form-check-inline mt-5">
@@ -1577,14 +1580,14 @@ export default function EXP_RES(props) {
                 <>
 
                     <div className="row text-center">
-                        <h3 className="my-4 fw-bold">PARTE CONSIDERATIVA</h3>
+                        <h3 className="ew-subheading text-start">Parte considerativa</h3>
                     </div>
 
                     {/***
                          * 
                          * <div className="row">
                                 <div className="col-2">
-                                    <label className="mt-4 fw-bold">PRIMERO</label>
+                                    <label className="mt-4 fw-bold">Primero</label>
                                 </div>
                                 <div className="col">
                                     <label className="mt-1">Acuerdo</label>
@@ -1650,7 +1653,7 @@ export default function EXP_RES(props) {
                     <hr />
 
                     <div className="row text-center">
-                        <h3 className="my-4 fw-bold">PARTE RESOLUTIVA</h3>
+                        <h3 className="ew-subheading text-start">Parte resolutiva</h3>
                     </div>
 
                     {_DUTIES()}
@@ -1672,7 +1675,7 @@ export default function EXP_RES(props) {
                     <>
                         <div className="row">
                             <div className="col-2">
-                                <label className="mt-4 fw-bold">CONSIDERANDO</label>
+                                <label className="mt-4 fw-bold">Considerando</label>
                             </div>
                             <div className="col">
                                 <label className="mt-1">Uso Principal</label>
@@ -1684,7 +1687,7 @@ export default function EXP_RES(props) {
                         </div>
                         <div className="row">
                             <div className="col-2">
-                                <label className="mt-4 fw-bold">RESUELVE</label>
+                                <label className="mt-4 fw-bold">Resuelve</label>
                             </div>
                             <div className="col">
                                 <label className="mt-1">Art 1. Paragrafo</label>
@@ -1787,7 +1790,7 @@ export default function EXP_RES(props) {
         return <>
             <div className="row">
                 <div className="col-2">
-                    <label className="mt-4 fw-bold">PRIMERO</label>
+                    <label className="mt-4 fw-bold">Primero</label>
                 </div>
                 <div className="col">
                     <label className="mt-1">Titular</label>
@@ -1854,7 +1857,7 @@ export default function EXP_RES(props) {
             <div className="row mt-2">
                 <div className="col-2"></div>
                 <div className="col">
-                    <label className="pt-2 fw-bold">MOTIVO DE DESISTIMIENTO</label>
+                    <label className="pt-2 fw-bold">Motivo de desistimiento</label>
                     <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_negative_id" defaultValue={primero_3_dv} required>
                             <option value={'102'}>POR NO RADICAR EL REGISTRO FOTOGRÁFICO DE LA VALLA O POR NO RADICARLO EN DEBIDA FORMA</option>
@@ -1868,7 +1871,7 @@ export default function EXP_RES(props) {
             </div>
 
             {negative_info[primero_3_dv].map(value => {
-                return <>
+                return <Fragment key={value.id}>
                     <div className="row mt-2">
                         <div className="col-2">
                             <label className="mt-4 fw-bold">{value.title}</label>
@@ -1882,13 +1885,13 @@ export default function EXP_RES(props) {
                             </div>
                         </div>
                     </div>
-                </>
+                </Fragment>
             })}
 
             <div className="row mt-3">
                 <div className="col-2"></div>
                 <div className="col-10">
-                    <label className="mY-2 fw-bold" >ABOGADO REVISOR</label>
+                    <label className="mt-2 fw-bold">Abogado revisor</label>
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_negative_user"
                             defaultValue={primero_32_dv} />
@@ -2011,7 +2014,7 @@ export default function EXP_RES(props) {
 
             <div className="row mt-3">
                 <div className="col">
-                    <label className='fw-bold'>CONSIDERATIVA 7</label>
+                    <label className='fw-bold'>Considerativa 7</label>
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
@@ -2139,62 +2142,62 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 2</label>
+                <label className='fw-bold'>Considerativa 2</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col">
                     <textarea className='form-control' rows="8" name="expedition_doc_res_c_parcon" defaultValue={parcon_6 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 7</label>
+                <label className='fw-bold'>Considerativa 7</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 8</label>
+                <label className='fw-bold'>Considerativa 8</label>
                 <div className="col">
                     <textarea className='form-control' rows="5" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 9</label>
+                <label className='fw-bold'>Considerativa 9</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_9 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 10</label>
+                <label className='fw-bold'>Considerativa 10</label>
                 <div className="col">
                     <textarea className='form-control' rows="4" name="expedition_doc_res_c_parcon" defaultValue={parcon_10 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 11</label>
+                <label className='fw-bold'>Considerativa 11</label>
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_11 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 12</label>
+                <label className='fw-bold'>Considerativa 12</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_12 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 13</label>
+                <label className='fw-bold'>Considerativa 13</label>
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_13 || ''} />
                 </div>
@@ -2202,7 +2205,7 @@ export default function EXP_RES(props) {
 
             <div className="row mb-1">
                 <div className="col">
-                    <label className='fw-bold'>CONSIDERATIVA 16</label>
+                    <label className='fw-bold'>Considerativa 16</label>
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
@@ -2266,7 +2269,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col">
                     <textarea className='form-control' rows="4" name="expedition_doc_res_c_sub" defaultValue={parcon_6 || ''} />
                 </div>
@@ -2274,7 +2277,7 @@ export default function EXP_RES(props) {
 
             <div className="row mb-1">
                 <div className="col">
-                    <label className='fw-bold'>CONSIDERATIVA 16</label>
+                    <label className='fw-bold'>Considerativa 16</label>
                     <div className='row text-start'>
                         <p>1- Expensas fijas A.1 </p>
                         <p>2- Impuesto de delineación y urbanismo por la suma de A.3 según recibo A.4.  </p>
@@ -2320,7 +2323,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col">
                     <div className='row text-start'>
                         <p>Actos administrativos precedentes, separados por punto y coma ( ; ) </p>
@@ -2331,7 +2334,7 @@ export default function EXP_RES(props) {
 
             <div className="row mt-3">
                 <div className="col">
-                    <label className='fw-bold'>CONSIDERATIVA 6</label>
+                    <label className='fw-bold'>Considerativa 6</label>
                     <div className='row text-start'>
                         <p>1- Expensas fijas y variables mediante las facturas A.1 y A.2. </p>
                     </div>
@@ -2373,7 +2376,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col">
                     <div className='row text-start'>
                         <p>Actos administrativos precedentes, separados por punto y coma ( ; ) </p>
@@ -2498,7 +2501,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 3</label>
+                <label className='fw-bold'>Considerativa 3</label>
                 <div className="col">
                     <div className='row text-start'>
                         <p>Actos administrativos precedentes, separados por punto y coma ( ; ) </p>
@@ -2527,7 +2530,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 2</label>
+                <label className='fw-bold'>Considerativa 2</label>
                 <div className="col">
                     <div className='row text-start'>
                         <p>Actos administrativos precedentes, separados por punto y coma ( ; ) </p>
@@ -2537,7 +2540,7 @@ export default function EXP_RES(props) {
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>ARTICULO 1, PARRAFO 1</label>
+                <label className='fw-bold'>Artículo 1, párrafo 1</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
                 </div>
@@ -2564,7 +2567,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CUERPO</label>
+                <label className='fw-bold'>Cuerpo</label>
                 <div className="col">
                     <div className="col">
                         <textarea className='form-control' rows="6" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
@@ -2592,7 +2595,7 @@ export default function EXP_RES(props) {
         let parcon_5 = parcon[3] || ``
 
         return <>
-            <label className='fw-bold'>CONSIDERATIVA 3</label>
+            <label className='fw-bold'>Considerativa 3</label>
             <div className="col">
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
@@ -2601,7 +2604,7 @@ export default function EXP_RES(props) {
 
             <div className="row my-2">
                 <div className="col">
-                    <label className='fw-bold'>CONSIDERATIVA 4</label>
+                    <label className='fw-bold'>Considerativa 4</label>
                     <div className="row">
                         <div className="form-group col">
                             <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_3 || ''} />
@@ -2612,7 +2615,7 @@ export default function EXP_RES(props) {
 
             <div className="row">
                 <div className="col">
-                    <label className='fw-bold'>ARTICULO 1</label>
+                    <label className='fw-bold'>Artículo 1</label>
                     <div className="row">
                         <div className="form-group col">
                             <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_4 || ''} />
@@ -2658,42 +2661,42 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 4</label>
+                <label className='fw-bold'>Considerativa 4</label>
                 <div className="col text-start">
                     <label>Que la edificación reconocida en la resolución consta de:</label>
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_9 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 8</label>
+                <label className='fw-bold'>Considerativa 8</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_10 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 9</label>
+                <label className='fw-bold'>Considerativa 9</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_11 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 10</label>
+                <label className='fw-bold'>Considerativa 10</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_12 || ''} />
                 </div>
@@ -2722,13 +2725,13 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 3</label>
+                <label className='fw-bold'>Considerativa 3</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 4</label>
+                <label className='fw-bold'>Considerativa 4</label>
                 <div className="col text-start">
                     <label>Que la edificación reconocida en la resolución consta de:</label>
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
@@ -2736,21 +2739,21 @@ export default function EXP_RES(props) {
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_9 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_10 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 7</label>
+                <label className='fw-bold'>Considerativa 7</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_11 || ''} />
                 </div>
@@ -2785,13 +2788,13 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 3</label>
+                <label className='fw-bold'>Considerativa 3</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 4</label>
+                <label className='fw-bold'>Considerativa 4</label>
                 <div className="col text-start">
                     <label>Que la edificación reconocida en la resolución consta de:</label>
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
@@ -2799,35 +2802,35 @@ export default function EXP_RES(props) {
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_9 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 7</label>
+                <label className='fw-bold'>Considerativa 7</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_10 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 8</label>
+                <label className='fw-bold'>Considerativa 8</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_11 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 9</label>
+                <label className='fw-bold'>Considerativa 9</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_12 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 10</label>
+                <label className='fw-bold'>Considerativa 10</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_13 || ''} />
                 </div>
@@ -2856,34 +2859,34 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 3</label>
+                <label className='fw-bold'>Considerativa 3</label>
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 4</label>
+                <label className='fw-bold'>Considerativa 4</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_6 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col">
                     <textarea className='form-control' rows="2" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>ARTICULO 1</label>
+                <label className='fw-bold'>Artículo 1</label>
                 <div className="col text-start">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_9 || ''} />
                 </div>
@@ -2935,27 +2938,27 @@ export default function EXP_RES(props) {
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col">
                     <textarea className='form-control' rows="4" name="expedition_doc_res_c_parcon" defaultValue={parcon_2 || ''} />
                 </div>
             </div>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 6</label>
+                <label className='fw-bold'>Considerativa 6</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_6 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 7</label>
+                <label className='fw-bold'>Considerativa 7</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_7 || ''} />
                 </div>
             </div>
 
             <div className="row mb-1">
-                <label className='fw-bold'>REQUISITOS DE PROCEDIBILIDAD DEL RECURSO DE REPOSICIÓN y APELACIÓN.</label>
+                <label className='fw-bold'>Requisitos de procedibilidad del recurso de reposición y apelación.</label>
                 <div className="col">
                     <textarea className='form-control' rows="3" name="expedition_doc_res_c_parcon" defaultValue={parcon_8 || ''} />
                 </div>
@@ -2985,7 +2988,7 @@ export default function EXP_RES(props) {
 
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 4</label>
+                <label className='fw-bold'>Considerativa 4</label>
                 <div className="col">
                     <div className='row text-start'>
                         <p>Actos administrativos precedentes, separados por punto y coma ( ; ) </p>
@@ -3028,7 +3031,7 @@ export default function EXP_RES(props) {
         
         return <>
             <div className="row mb-1">
-                <label className='fw-bold'>CONSIDERATIVA 5</label>
+                <label className='fw-bold'>Considerativa 5</label>
                 <div className="col">
                     <textarea className='form-control' rows="4" id="expedition_doc_res_primero_5" defaultValue={dv} />
                 </div>
@@ -3120,7 +3123,7 @@ export default function EXP_RES(props) {
                 <div className="col">
                     <label className="mt-1">Fecha</label>
                     <div className="input-group">
-                        <input type="date" className="form-control" id="expedition_doc_res_2"
+                        <DateInput className="form-control" id="expedition_doc_res_2"
                             defaultValue={reso_date_dv} required />
                     </div>
                 </div>
@@ -3129,7 +3132,7 @@ export default function EXP_RES(props) {
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_id"
                             defaultValue={currentRecord.id_public} />
-                        <Button type="button" size="sm" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>GENERAR</Button>
+                        <Button type="button" size="sm" variant="outline" onClick={() => _GET_LAST_ID_RES('expedition_doc_res_id')}>Generar</Button>
                     </div>
                 </div>
                 <div className="col">
@@ -3148,7 +3151,7 @@ export default function EXP_RES(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label className="mt-1"># Radicacion</label>
+                    <label className="mt-1">N.° de radicación</label>
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_doc_res_3" disabled
                             value={currentItem.id_public} readOnly />
@@ -3161,7 +3164,7 @@ export default function EXP_RES(props) {
             {canSave ?
                 <div className="row text-center">
                     <div className="col">
-                        <Button type="submit" size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="submit" size="sm" className="my-3"><Icon name="share-square" size={16} /> Guardar cambios</Button>
                     </div>
                 </div>
                 : ''}
@@ -3182,9 +3185,7 @@ export default function EXP_RES(props) {
 
         return <>
             <hr />
-            <div className="row my-3 text-center">
-                <label className='fw-bold my-2'>GENERAR PDFS</label>
-            </div>
+            <h3 className="ew-subheading">Generar PDF</h3>
 
             <div className="row mb-3 g-3">
                 {_NOTY_TYPE_COMPONENENT()}
@@ -3228,7 +3229,7 @@ export default function EXP_RES(props) {
                 </div>
 
                 <div className="col-12 col-xl-3">
-                    <label className="mt-2">Texto de cabezera</label>
+                    <label className="mt-2">Texto de cabecera</label>
                     <input className="form-control" id="expedition_doc_header_text" defaultValue={reso_header_text} />
                 </div>
             </div>
@@ -3355,12 +3356,11 @@ export default function EXP_RES(props) {
             <div className="row text-center">
                 <div className="col d-flex justify-content-center">
                     <div className="d-flex flex-wrap justify-content-center gap-3">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_res()}>
-                            <Icon name="file-pdf" size={16} /> GENERAR PDF
-                        </Button>
+                        <Button type="button" size="sm" className="my-3" onClick={guard(() => pdf_gen_res(), 'pdf_gen_res')}>
+                            <Icon name="file-pdf" size={16} /> Generar PDF</Button>
                         {import.meta.env.VITE_GLOBAL_ID == 'cb1' && (
-                            <Button type="button" variant="outline" size="sm" className="my-3" onClick={() => pdf_gen_res(true)}>
-                                <Icon name="edit" size={16} /> EDITAR PDF
+                            <Button type="button" variant="outline" size="sm" className="my-3" onClick={guard(() => pdf_gen_res(true), 'pdf_gen_res')}>
+                                <Icon name="edit" size={16} /> Editar PDF
                             </Button>
                         )}
                     </div>
@@ -3451,16 +3451,16 @@ export default function EXP_RES(props) {
         return <>
             <div className="row">
                 <div className="col">
-                    <label className="mt-2">MODELO DE RESOLUCIÓN</label>
+                    <label className="mt-2">Modelo de resolución</label>
                     <div className="input-group">
                         <select className="form-select" id="expedition_doc_res_model" defaultValue={default_model} onChange={(e) => update_model(e.target.value)}>
                             {models.map(model => {
                                 if (model.omit) return ''
                                 if (model.group)
-                                    return <optgroup label={model.group}>
-                                        {model.items.map(m => <option value={m.value}>{m.label}</option>)}
+                                    return <optgroup key={model.group} label={model.group}>
+                                        {model.items.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                                     </optgroup>
-                                else return <option value={model.value}>{model.label}</option>
+                                else return <option key={model.value} value={model.value}>{model.label}</option>
                             })}
                         </select>
                     </div>
@@ -3791,7 +3791,7 @@ export default function EXP_RES(props) {
         formData.set('id', currentItem.id);
 
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        EXPEDITION_SERVICE.gen_doc_res(formData)
+        return EXPEDITION_SERVICE.gen_doc_res(formData)
             .then(response => {
                 console.log('✅ Respuesta exitosa:', response.data);
                 if (response.data.status === 'OK') {
@@ -4036,7 +4036,7 @@ export default function EXP_RES(props) {
         reso.open_cb = checks.join(',');
 
         formData.set('reso', JSON.stringify(reso));
-        manage_exp();
+        return manage_exp();
 
     }
     let update_model = (model) => {
@@ -4046,7 +4046,7 @@ export default function EXP_RES(props) {
     }
     let manage_exp = () => {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        EXPEDITION_SERVICE.update(currentRecord.id, formData)
+        return EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
                     swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -4069,7 +4069,7 @@ export default function EXP_RES(props) {
         <div>
             <div>
                 {_MODEL_SELECTOR()}
-                <form id="form_expedition_4" onSubmit={save_exp_res}>
+                <form id="form_expedition_res" onSubmit={guard(save_exp_res, 'save_exp_res')}>
                     {_COMPONENT_DOC_RES()}
                     {_COMPONENT_DOC_RES_PDF()}
                 </form>

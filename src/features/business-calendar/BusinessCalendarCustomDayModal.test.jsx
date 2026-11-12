@@ -24,7 +24,16 @@ it('offers marking a normal day as non-business', async () => {
   await user.click(screen.getByRole('button', { name: 'Marcar como día no hábil' }));
 
   expect(onChooseCreate).toHaveBeenCalledOnce();
-  expect(screen.getByRole('button', { name: 'Cerrar' })).toBeVisible();
+  // The footer action and the dialog's own close control both read "Cerrar"; each closes the modal.
+  const onClose = baseProps.onClose;
+  onClose.mockClear();
+  const closeButtons = screen.getAllByRole('button', { name: 'Cerrar' });
+  expect(closeButtons.length).toBeGreaterThanOrEqual(1);
+  for (const button of closeButtons) {
+    expect(button).toBeVisible();
+    await user.click(button);
+  }
+  expect(onClose).toHaveBeenCalledTimes(closeButtons.length);
 });
 
 it('requires a non-empty reason before saving', async () => {
