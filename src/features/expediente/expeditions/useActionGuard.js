@@ -1,5 +1,5 @@
 import { useId, useMemo } from 'react';
-import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { guardSubmit, holdSubmit } from '@/shared/utils/submitGuard';
 
 /**
  * Wraps a handler with the shared double-submit guard (`shared/utils/submitGuard`):
@@ -23,12 +23,15 @@ export function useActionGuard(windowMs = 1500) {
 
     return useMemo(() => {
         const guard = (handler, key = handler?.name || 'action') => (...args) => {
-            const guardKey = `${scope}:${key}`;
-            if (isRepeatedSubmit(guardKey, windowMs)) {
-                args[0]?.preventDefault?.();
-                return undefined;
-            }
-            return holdSubmit(guardKey, handler(...args));
+            let ran = false;
+            // `guardSubmit` frees the key when the handler throws synchronously (e.g. a
+            // validation error), so the next click is not dropped.
+            const result = guardSubmit(`${scope}:${key}`, () => {
+                ran = true;
+                return handler(...args);
+            }, { windowMs });
+            if (!ran) args[0]?.preventDefault?.();
+            return result;
         };
         /** Keeps `key` taken until `pending` settles; returns a promise that settles like it. */
         guard.hold = (key, pending) => holdSubmit(`${scope}:${key}`, pending);
