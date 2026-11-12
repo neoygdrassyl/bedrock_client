@@ -159,29 +159,38 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
 
                         <h2 className="ew-group-title">5. Titulares y profesionales responsables</h2>
 
-                        <FUNN51
-                            translation={translation}
-                            swaMsg={swaMsg}
-                            globals={globals}
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            requestUpdate={requestUpdate} />
+                        {/* Anchor of the legal y debida forma "Completar en 5.1" action (documental/funFormAnchor.js). */}
+                        <div id="fun_n_51" tabIndex={-1} className="scroll-mt-4 focus:outline-none">
+                            <FUNN51
+                                translation={translation}
+                                swaMsg={swaMsg}
+                                globals={globals}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                requestUpdate={requestUpdate} />
+                        </div>
 
-                        <FUNN52
-                            translation={translation}
-                            swaMsg={swaMsg}
-                            globals={globals}
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            requestUpdate={requestUpdate} />
+                        {/* Anchor of the legal y debida forma "Completar en 5.2" action (documental/funFormAnchor.js). */}
+                        <div id="fun_n_52" tabIndex={-1} className="scroll-mt-4 focus:outline-none">
+                            <FUNN52
+                                translation={translation}
+                                swaMsg={swaMsg}
+                                globals={globals}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                requestUpdate={requestUpdate} />
+                        </div>
 
-                        <FUNN53
-                            translation={translation}
-                            swaMsg={swaMsg}
-                            globals={globals}
-                            currentItem={currentItem}
-                            currentVersion={currentVersion}
-                            requestUpdate={requestUpdate} />
+                        {/* Anchor of the legal y debida forma "Completar en 5.3" action (documental/funFormAnchor.js). */}
+                        <div id="fun_n_53" tabIndex={-1} className="scroll-mt-4 focus:outline-none">
+                            <FUNN53
+                                translation={translation}
+                                swaMsg={swaMsg}
+                                globals={globals}
+                                currentItem={currentItem}
+                                currentVersion={currentVersion}
+                                requestUpdate={requestUpdate} />
+                        </div>
 
                         {/* <NAV_FUNN /> */}
                         <FUN_MODULE_NAV

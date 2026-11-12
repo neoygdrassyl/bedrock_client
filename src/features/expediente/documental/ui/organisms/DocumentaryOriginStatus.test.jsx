@@ -21,10 +21,10 @@ describe('DocumentaryOriginStatus', () => {
 });
 
 describe('OriginCaption and OriginNotices', () => {
-  it('renders one compact line with the radicado and the catalogue version', () => {
+  it('renders a compact chip with the catalogue version and keeps the full sentence in its title', () => {
     render(<OriginCaption origin={{ mode: 'canonical', project: { idPublic: 'FUN-9' }, publication: { releaseVersion: 4 } }} />);
-    expect(screen.getByText('FUN-9')).toBeInTheDocument();
-    expect(screen.getByText('Documentación según el catálogo documental (versión 4)')).toBeInTheDocument();
+    expect(screen.queryByText('FUN-9')).not.toBeInTheDocument();
+    expect(screen.getByText('Catálogo v4').closest('p')).toHaveAttribute('title', 'Documentación según el catálogo documental (versión 4)');
   });
 
   it('uses the short traditional label and keeps load and error states out of the caption', () => {

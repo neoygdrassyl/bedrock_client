@@ -43,7 +43,7 @@ const VERDICT_OPTIONS = [
 ];
 
 /** Reviewer verdict of ONE delivery (a VR version) of a document without Central controls. */
-export function ReviewForm({ fun0Id, row, canReview = true, onSaved, onConflict, onCancel, after }) {
+export function ReviewForm({ fun0Id, row, canReview = true, onSaved, onConflict, onCancel, before, after }) {
   const ids = useId();
   const evaluation = evaluationOf(row);
   // A verdict given on superseded evidence shows as pending: keep the notes but ask for the verdict again.
@@ -76,6 +76,7 @@ export function ReviewForm({ fun0Id, row, canReview = true, onSaved, onConflict,
     <form onSubmit={save} onChange={() => { command.current = null; }} className="flex min-h-0 flex-1 flex-col" aria-label="Evaluación del documento" noValidate>
       <fieldset disabled={busy || !canReview} className="m-0 flex min-h-0 min-w-0 flex-1 flex-col p-0 !border-0">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
+          {before}
           <div className="flex flex-col gap-[1rem]">
             {reviewedBy ? <p className="mb-0 text-[11px] leading-4 text-muted-foreground">{reviewedBy}</p> : null}
             {stale ? <p role="status" className="mb-0 text-xs font-medium leading-4 text-[hsl(var(--operational-warning-text))]">La entrega cambió desde la última revisión. Confirme nuevamente el veredicto.</p> : null}
@@ -114,7 +115,7 @@ export function ReviewForm({ fun0Id, row, canReview = true, onSaved, onConflict,
  * both layers save through the same control command, the backend resolves the layer from the control id.
  * In the checking layer the applicant self-assessment of each control (read-only) is shown under its fields.
  */
-export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel, after, layer = CONTROL_LAYERS.checking, tagFilter }) {
+export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, onConflict, onCancel, before, after, layer = CONTROL_LAYERS.checking, tagFilter }) {
   const ids = useId();
   const controls = controlsForLayer(row, layer, tagFilter);
   const applicant = layer === CONTROL_LAYERS.checking ? splitApplicantItems(row, controls) : null;
@@ -181,6 +182,7 @@ export function ControlsForm({ origin, row, canReview, onSaved, onControlSaved, 
     <form onSubmit={save} className="flex min-h-0 flex-1 flex-col" aria-label={layer === CONTROL_LAYERS.technical ? 'Evaluación de controles técnicos' : 'Evaluación de controles'} noValidate>
       <fieldset disabled={busy} className="m-0 flex min-h-0 min-w-0 flex-1 flex-col p-0 !border-0">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
+          {before}
           <div className="flex flex-col divide-y [&>*:first-child]:pt-0 [&>*:last-child]:pb-0 [&>*]:py-[0.75rem]">
             {controls.map((control) => (
               <div key={control.controlId} className="flex flex-col gap-[0.75rem]">
@@ -348,7 +350,7 @@ function useVrChoice({ origin, baseRow, canEvaluate, legalForm, onChanged, enabl
   };
 }
 
-function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter }) {
+function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter, context }) {
   const [version, setVersion] = useState(null);
   const savedAny = useRef(false);
   const technical = layer === CONTROL_LAYERS.technical;
@@ -378,22 +380,23 @@ function EvaluationBody({ baseRow, origin, canEvaluate, legalForm, onClose, onSa
       {hasControls ? (
         <ControlsForm key={formKey} layer={layer} tagFilter={tagFilter}
           origin={origin} row={row} canReview={canEvaluate} onSaved={saved} onControlSaved={() => { savedAny.current = true; }}
-          onConflict={() => { savedAny.current = false; onConflict(); }} onCancel={close} after={history} />
+          onConflict={() => { savedAny.current = false; onConflict(); }} onCancel={close} before={context} after={history} />
       ) : technical ? (
-        <NoTechnicalControls onClose={close} after={history} />
+        <NoTechnicalControls onClose={close} before={context} after={history} />
       ) : (
         <ReviewForm key={`${row.receivedDocumentRowId}:${evaluationOf(row).reviewRevision || 0}`} fun0Id={origin.project.fun0Id} row={row} canReview={canEvaluate}
-          onSaved={saved} onConflict={onConflict} onCancel={close} after={history} />
+          onSaved={saved} onConflict={onConflict} onCancel={close} before={context} after={history} />
       )}
     </>
   );
 }
 
 /** Technical layer without controls for this version (or none of the filtered tags): a visible note, the versions and a close action. */
-function NoTechnicalControls({ onClose, after }) {
+function NoTechnicalControls({ onClose, before, after }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-[1.25rem]">
+        {before}
         <p role="status" className="mb-0 text-sm leading-5 text-muted-foreground">{NO_TECHNICAL_CONTROLS}</p>
         {after}
       </div>
@@ -413,13 +416,14 @@ function NoTechnicalControls({ onClose, after }) {
  * optional `{ data, reload }` of the host; `onSelectionChanged` fires after choosing or clearing it).
  * `layer` ('checking' by default, 'technical' for Evaluación técnica) picks the controls shown; the technical layer has no reviewer
  * verdict nor VR choice, and `tagFilter` narrows its controls to the chosen tags.
+ * `context` (optional node) is shown above the form, e.g. why Legal y debida forma requires the document.
  */
-export function EvaluationSheet({ target, origin, canEvaluate = false, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter }) {
+export function EvaluationSheet({ target, origin, canEvaluate = false, legalForm, onClose, onSaved, onPartialSave, onConflict, onSelectionChanged, layer = CONTROL_LAYERS.checking, tagFilter, context }) {
   const row = target?.row;
   return (
     <Sheet open={Boolean(target)} onOpenChange={(next) => { if (!next) onClose(); }}>
       <SheetContent side="right" className={cn(DOCUMENTAL_SCOPE, 'flex w-full flex-col gap-0 p-0 sm:max-w-xl')}>
-        {row ? <EvaluationBody key={target.nonce ?? row.rowKey} baseRow={row} origin={origin} canEvaluate={canEvaluate} legalForm={legalForm} layer={layer} tagFilter={tagFilter}
+        {row ? <EvaluationBody key={target.nonce ?? row.rowKey} baseRow={row} origin={origin} canEvaluate={canEvaluate} legalForm={legalForm} layer={layer} tagFilter={tagFilter} context={context}
           onClose={onClose} onSaved={onSaved} onPartialSave={onPartialSave} onConflict={onConflict} onSelectionChanged={onSelectionChanged} /> : null}
       </SheetContent>
     </Sheet>

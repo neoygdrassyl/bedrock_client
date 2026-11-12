@@ -62,6 +62,7 @@ export async function getDocumentaryInventory(fun0Id, signal) {
   const { data } = await http.get(`${projectUrl(fun0Id)}/inventory`, { signal });
   return validateDocumentaryInventory(data, fun0Id);
 }
+/** POST documents: `command.subjectId` (optional) receives a requirement on behalf of a person of the FUN. */
 export async function receiveCanonicalDocument(fun0Id, command, digital, scan) {
   const body = new FormData(); body.set('command', JSON.stringify(command));
   if (digital) body.set('digital', digital);
@@ -104,8 +105,16 @@ const RECEIPT_ERROR_MESSAGES = {
   NEW_VERSION_NOT_ALLOWED: 'Un volante de radicación pertenece a un único VR y no admite nuevas versiones.',
   MULTIPLICITY_CONFLICT: 'Ya existe este documento en el expediente (o el volante de este VR). Reciba una nueva versión del documento existente.',
 };
+// Person-scoped receipts: errors explained whatever their status (503 storage, 422 scope, 400 validation).
+const RECEIPT_SUBJECT_MESSAGES = {
+  SUBJECT_STORAGE_UNAVAILABLE: 'Las entregas por persona aún no están habilitadas en el servidor (falta la actualización de la base documental). Contacte al administrador.',
+  SUBJECT_SCOPE_MISMATCH: 'La persona elegida ya no hace parte del FUN vigente del expediente. Actualice la vista y elija otra persona.',
+};
+const INVALID_SUBJECT_MESSAGE = 'La persona elegida no es válida para este documento. Elija una persona de la lista.';
 export function documentaryReceiptRuleError(error) {
   const code = error?.response?.data?.error?.code;
+  if (RECEIPT_SUBJECT_MESSAGES[code]) return RECEIPT_SUBJECT_MESSAGES[code];
+  if (code === 'INVALID_INPUT' && /subject|person/i.test(String(error?.response?.data?.error?.message || ''))) return INVALID_SUBJECT_MESSAGE;
   return error?.response?.status === 409 && RECEIPT_ERROR_MESSAGES[code] ? RECEIPT_ERROR_MESSAGES[code] : null;
 }
 

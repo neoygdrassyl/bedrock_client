@@ -4,6 +4,23 @@ import { afterClockWrite } from "./clockWriteEvents";
 
 const route = "fun"
 
+/**
+ * FUN 5.2 fields the backend owns (fun.controller FUN52_LEGACY_READ_ONLY_FIELDS): a create that sends any of them
+ * with a value is rejected ("El campo docs es de solo lectura") and an update ignores them, so they are never sent.
+ */
+export const FUN52_READ_ONLY_FIELDS = Object.freeze(['docs', 'active', 'check', 'registration_validity', 'required_experience', 'postgraduate']);
+
+/** Copy of a FUN 5.2 payload (FormData or plain object) without the read-only fields. */
+export function withoutFun52ReadOnly(data) {
+  if (typeof FormData !== 'undefined' && data instanceof FormData) {
+    const copy = new FormData();
+    for (const [key, value] of data.entries()) if (!FUN52_READ_ONLY_FIELDS.includes(key)) copy.append(key, value);
+    return copy;
+  }
+  if (data && typeof data === 'object') return Object.fromEntries(Object.entries(data).filter(([key]) => !FUN52_READ_ONLY_FIELDS.includes(key)));
+  return data;
+}
+
 class UserslDataService {
   getAll() {
     return http.get(`/${route}`);
@@ -230,7 +247,7 @@ class UserslDataService {
     return http.post(`/${route}/fun51`, data);
   }
   create_fun52(data) {
-    return http.post(`/${route}/fun52`, data);
+    return http.post(`/${route}/fun52`, withoutFun52ReadOnly(data));
   }
   create_fun53(data) {
     return http.post(`/${route}/fun53`, data);
@@ -295,7 +312,7 @@ class UserslDataService {
     return http.put(`/${route}/fun51A/${id}`, data);
   }
   update_52(id, data) {
-    return http.put(`/${route}/fun52A/${id}`, data);
+    return http.put(`/${route}/fun52A/${id}`, withoutFun52ReadOnly(data));
   }
   update_53(id, data) {
     return http.put(`/${route}/fun53A/${id}`, data);

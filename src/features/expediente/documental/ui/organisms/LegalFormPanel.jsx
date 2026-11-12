@@ -1,25 +1,29 @@
 import { useEffect, useId, useMemo, useState } from 'react';
-import { ChevronDown, CircleAlert, CircleCheck, ListChecks, RefreshCw, Scale, TriangleAlert } from 'lucide-react';
+import { ChevronDown, CircleAlert, CircleCheck, ListChecks, Lock, RefreshCw, Scale, TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { cn } from '@/shared/lib/utils';
 import FUN_SERVICE from '@/features/expediente/api/fun.service';
-import { declareLegalForm, listTypologySelections, revokeLegalForm, updateLegalFormDeclaration } from '@/features/expediente/api/documentaryLegalForm.service';
+import { declareLegalForm, listTypologySelections, revokeLegalForm, SUBJECT_STORAGE_MESSAGE, updateLegalFormDeclaration } from '@/features/expediente/api/documentaryLegalForm.service';
 import { refreshRequirementsFor } from '@/features/expediente/api/documentaryRequirements.service';
 import { Tag } from '../atoms/Tag';
 import { ChecklistDialog, CommandDialog, TypologySelectionDialog } from './LegalFormDialogs';
 import { CanonicalDocumentaryWorkspace } from './CanonicalDocumentaryWorkspace';
+import { LdfParties } from './LdfParties';
+import { LdfChecklist } from './LdfChecklist';
+import { LdfRequirementContext, LdfRequirementSheet } from './LdfRequirementDetail';
 import { useLegalForm } from '../../hooks/useLegalForm';
 import { formatDocumentaryDate } from '../../canonicalDocumentaryModel';
-import { buildSections, instancesByKey, LEGAL_FORM_STATE_META, missingFactLabels, pendingGroups, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
+import { buildSections, instancesByKey, LEGAL_FORM_STATE_META, missingFactLabels, MUTED_ALTERNATIVE_TEXT, SECTION_STATE_META, SELECTION_SOURCE_LABELS, VERDICT_META } from '../../legalFormModel';
+import { buildLdfChecklist, partiesOf, primaryInstance, requirementOfDocumentKey } from '../../ldfChecklistModel';
 
 const CONFLICT_MESSAGE = 'Los datos cambiaron. Revise el estado actualizado y confirme nuevamente su decisión.';
 /** " por {name}" / " por el usuario {id}" of an actor, or nothing when unknown. */
 const personSuffix = (name, id) => (name ? ` por ${name}` : id != null ? ` por el usuario ${id}` : '');
 const ITEM_ERROR = 'No fue posible cargar el expediente para generar el formato. Cierre e intente nuevamente.';
 
-/** State line of the expediente and the warning of an incomplete evaluation; the pending items live in PendingPanel. */
+/** State line of the expediente and the warning of an incomplete evaluation; the pending items live in the checklist. */
 function StateBanner({ data }) {
   const meta = LEGAL_FORM_STATE_META[data.state] || LEGAL_FORM_STATE_META.not_ready;
   const incomplete = (data.warnings || []).some((warning) => warning.code === 'REQUIREMENTS_INCOMPLETE');
@@ -40,52 +44,6 @@ function StateBanner({ data }) {
         </div>
       ) : null}
     </div>
-  );
-}
-
-/**
- * Everything still pending before declaring, in one panel: evaluation-level problems as an alert on top, then the
- * groups in a fixed order (sin entregar, rechazados, sin evaluar, elección de VR inválida, opción de tipología). An item
- * with a delivery opens its evaluation sheet; a typology item offers "Elegir opción".
- */
-function PendingPanel({ data, onOpen, selectable, onChoose }) {
-  const titleId = useId();
-  const { alerts, groups } = useMemo(() => pendingGroups(data), [data]);
-  if (!alerts.length && !groups.length) return null;
-  const total = groups.reduce((sum, group) => sum + group.items.length, 0);
-  return (
-    <section aria-labelledby={titleId} className="flex flex-col gap-2 border-b px-[1rem] py-[0.75rem]" data-testid="legal-form-pending">
-      <h3 id={titleId} className="mb-0 flex items-center gap-2 text-sm font-semibold leading-5 text-foreground">
-        Pendientes para declarar {total ? <Tag tone="warning" pill>{total}</Tag> : null}
-      </h3>
-      {alerts.length ? (
-        <Alert variant="warning" className="py-2" data-testid="legal-form-pending-alert">
-          <TriangleAlert aria-hidden="true" />
-          <AlertDescription className="min-w-0 flex-1">
-            {alerts.map((alert) => <span key={alert.code} className="block"><span className="font-medium">{alert.label}</span>{alert.message ? ` · ${alert.message}` : ''}</span>)}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-      {groups.map((group) => (
-        <div key={group.key} className="flex flex-col gap-1" data-testid={`legal-form-pending-${group.key}`}>
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <h4 className="mb-0 text-xs font-semibold leading-5 text-foreground">{group.title} <span className="font-mono font-normal tabular-nums text-muted-foreground">({group.items.length})</span></h4>
-            {group.hint ? <span className="text-[11px] leading-4 text-muted-foreground">{group.hint}</span> : null}
-          </div>
-          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-            {group.items.map((item) => (
-              <li key={item.key} className="flex flex-wrap items-center gap-x-2 text-xs leading-5">
-                {item.openable ? (
-                  <button type="button" className="min-w-0 bg-transparent p-0 text-left text-foreground underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => onOpen(item.documentKey)}>{item.label}</button>
-                ) : <span className="min-w-0 text-foreground">{item.label}</span>}
-                {item.note ? <span className="text-muted-foreground">{item.note}</span> : null}
-                {item.typologyCode && selectable(item.typologyCode) ? <Button type="button" variant="outline" size="sm" className="ml-auto h-6 px-2 text-xs" onClick={() => onChoose(item.typologyCode)}>Elegir opción</Button> : null}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </section>
   );
 }
 
@@ -165,6 +123,23 @@ function RequirementSections({ data, selectable, onChoose }) {
   );
 }
 
+/** Secondary block of the panel, closed by default; its content stays mounted (hidden) so what it hosts keeps working. */
+function Disclosure({ title, hint, testId, children, className }) {
+  const bodyId = useId();
+  const [open, setOpen] = useState(false);
+  return (
+    <section className={cn('flex flex-col', className)} data-testid={testId}>
+      <button type="button" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen((value) => !value)}
+        className="flex w-full items-center gap-1.5 bg-transparent px-[1rem] py-2 text-left text-sm font-semibold leading-5 text-foreground transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none">
+        <ChevronDown aria-hidden="true" className={cn('h-3.5 w-3.5 shrink-0 transition-transform motion-reduce:transition-none', !open && '-rotate-90')} />
+        {title}
+        {hint ? <span className="truncate text-xs font-normal text-muted-foreground">· {hint}</span> : null}
+      </button>
+      <div id={bodyId} hidden={!open}>{children}</div>
+    </section>
+  );
+}
+
 /** Read-only legal-form summary of a traditional expediente (declaration and clock of the legacy module). */
 function LegacyConsult({ legacy }) {
   const declared = Boolean(legacy?.declared);
@@ -189,14 +164,18 @@ function LegacyConsult({ legacy }) {
 }
 
 /**
- * "Legal y debida forma" tab: state, the pending panel, the declaration, and the same
- * documents table as Radicación filtered to requirement documents, where each delivery is evaluated with the
- * shared evaluation sheet. Traditional expedientes only get a read-only consult card of the legacy declaration.
- * `onDeclarationChanged` lets the module reload origin, inventory and the expediente state.
+ * "Legal y debida forma" tab: state, the declaration, the parties of the request (applicants and professionals,
+ * completed in the FUN before their documents are evaluated) and ONE document checklist ("Solicitud" and one group
+ * per person). A row opens its detail: why it is required (typology and option, with the per-person option picker) and,
+ * when delivered, the shared evaluation sheet of its controls. The typology sections and the documents table of
+ * Radicación (deliveries and versions) stay available, collapsed. Traditional expedientes only get a read-only consult
+ * card of the legacy declaration. `onDeclarationChanged` lets the module reload origin, inventory and the expediente
+ * state; `onOpenFunForm(form)` navigates to the FUN form (5.1 / 5.2 / 5.3) of a party; `onDataChanged()` tells the module
+ * that documentary data changed here (selection, receipt, evaluation, refresh) so its other tabs reload.
  * The "Lista de chequeo" action needs `currentVersion` (hidden without it); the FUN it prints is
  * `currentItem` or, when absent, loaded from the expediente when the dialog opens.
  */
-export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged, currentItem = null, currentVersion = null, swaMsg }) {
+export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged, currentItem = null, currentVersion = null, swaMsg, onOpenFunForm, onDataChanged }) {
   const titleId = useId();
   const fun0Id = origin?.project?.fun0Id;
   const legal = useLegalForm(fun0Id) || { status: 'loading', data: null, error: '', reload: () => {} };
@@ -207,16 +186,25 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
   const [itemError, setItemError] = useState('');
   // Bumped when the legal-form state is refreshed so the documents table reloads with it.
   const [tableRevision, setTableRevision] = useState(0);
-  // GET /typology-selections (null while unknown or unavailable: older backends answer 404) and the open picker.
+  // GET /typology-selections (null while unknown or unavailable: older backends answer 404) and the open picker
+  // ({ typologyCode, subjectId }: subjectId for per-person typologies).
   const [selections, setSelections] = useState(null);
   const [choosing, setChoosing] = useState(null);
+  // Detail of a checklist row without an evaluation to open (not delivered, alternatives, typology option).
+  const [detail, setDetail] = useState(null);
   // Asks the documents table to open the evaluation sheet of a document (pending panel item).
   const [openRequest, setOpenRequest] = useState(null);
   const openEvaluation = (documentKey) => setOpenRequest({ documentKey, nonce: Date.now() });
+  // Asks the documents table to open the receipt form preselected ({ documentId, subjectId, nonce }).
+  const [receiveRequest, setReceiveRequest] = useState(null);
   const data = legal.data;
   const traditional = data?.mode === 'traditional';
   const actions = data?.actions || {};
-  const canReview = Boolean(canManage && actions.review);
+  const parties = useMemo(() => partiesOf(data), [data]);
+  const checklist = useMemo(() => buildLdfChecklist(data), [data]);
+  // Parties with pending data gate the evaluation: the documents of each person depend on them.
+  const gated = Boolean(parties?.gated);
+  const canReview = Boolean(canManage && actions.review && !gated);
   const canDeclare = Boolean(canManage && actions.declare && data?.state === 'ready');
   const declared = Boolean(data?.declaration);
   const instances = useMemo(() => instancesByKey(data), [data]);
@@ -232,8 +220,42 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
       .catch(() => { if (!controller.signal.aborted) setSelections(null); });
     return () => controller.abort();
   }, [selectionsEnabled, fun0Id, data]);
-  const selectableTypology = (code) => Boolean(selectionsEnabled && selections?.typologies?.some((item) => item.typologyCode === code && item.options?.length));
-  const choosingTypology = choosing ? selections?.typologies?.find((item) => item.typologyCode === choosing) || null : null;
+  const findTypology = (code, subjectId = null) => selections?.typologies?.find((item) => item.typologyCode === code && (item.subjectId || null) === (subjectId || null)) || null;
+  /** Whether the option of a typology (of a person) can be chosen here: { available, reason }. */
+  function optionState(code, subjectId = null) {
+    if (!code || !canManage || traditional) return { available: false, reason: null };
+    if (declared) return { available: false, reason: 'Anule la declaración para cambiar opciones.' };
+    const typology = findTypology(code, subjectId);
+    if (!selectionsEnabled || !typology?.options?.length) return { available: false, reason: null };
+    if (subjectId && selections?.subjectSelectionAvailable === false) return { available: false, reason: SUBJECT_STORAGE_MESSAGE };
+    if (gated) return { available: false, reason: 'Complete primero las partes de la solicitud.' };
+    return { available: true, reason: null };
+  }
+  const selectableTypology = (code) => optionState(code, null).available;
+  const choosingTypology = choosing ? findTypology(choosing.typologyCode, choosing.subjectId) : null;
+  const choose = (typologyCode, subjectId = null) => { setNotice(''); setDetail(null); setChoosing({ typologyCode, subjectId: subjectId || null }); };
+  // A checklist row: a delivered document opens the evaluation of its first instance needing work; the rest open the detail sheet.
+  function openRow(row) {
+    setNotice('');
+    const instance = row.type === 'document' && row.delivered && origin?.publication ? primaryInstance(row.requirement) : null;
+    if (instance) { setDetail(null); openEvaluation(instance.documentKey); return; }
+    setDetail({ row, nonce: Date.now() });
+  }
+  const openInstance = (documentKey) => { setDetail(null); openEvaluation(documentKey); };
+  // "Recibir a nombre de …": the receipt form of the documents table, with the document and its person chosen.
+  const receiveFor = (row) => { setNotice(''); setDetail(null); setReceiveRequest({ documentId: row.requirement.documentId, subjectId: row.subjectId || null, nonce: Date.now() }); };
+  // On top of the evaluation sheet: why Legal y debida forma requires the document of that row.
+  const evaluationContext = (viewRow) => {
+    const requirement = requirementOfDocumentKey(data, viewRow?.documentKey);
+    if (!requirement) return null;
+    const row = { type: 'document', requirement, members: [requirement], group: null, subjectId: requirement.subjectId || null, typologyCode: requirement.section?.typologyCode || null };
+    return (
+      <>
+        {gated ? <p role="status" className="mb-2 flex items-center gap-2 text-xs leading-5 text-[hsl(var(--operational-warning-text))]"><Lock aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />Completa las partes para evaluar los documentos de cada persona.</p> : null}
+        <LdfRequirementContext data={data} row={row} optionState={optionState} onChoose={choose} onOpenInstance={openEvaluation} activeDocumentKey={viewRow.documentKey} />
+      </>
+    );
+  };
   async function selectionSaved(result) {
     setChoosing(null);
     // The backend re-evaluates in the same command; a stale answer asks for the ordinary refresh.
@@ -254,9 +276,10 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
     return () => { ignore = true; };
   }, [checklistOpen, currentItem, fun0Id]);
 
-  function refresh(message = '') { setNotice(message); legal.reload(); setTableRevision((value) => value + 1); }
+  // One reload of the legal form and of the table; the module is told so Radicación follows when shown.
+  function refresh(message = '') { setNotice(message); legal.reload(); setTableRevision((value) => value + 1); onDataChanged?.(); }
   // An evaluation saved in the table: the table reloads itself, the legal-form state follows.
-  const evaluationSaved = () => legal.reload();
+  const evaluationSaved = () => { legal.reload(); onDataChanged?.(); };
   // A rejected declaration command (409) means the state moved: reload it behind the dialog.
   async function run(command, values, message) {
     try { await command(fun0Id, values); } catch (failure) { if (failure.response?.status === 409) legal.reload(); throw failure; }
@@ -341,24 +364,38 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
                 Lista de chequeo guardada por {data.checklist.updatedByName || (data.checklist.updatedBy != null ? `usuario ${data.checklist.updatedBy}` : 'un usuario')} · {formatDocumentaryDate(data.checklist.updatedAt)}
               </p>
             ) : null}
-            <PendingPanel data={data} onOpen={openEvaluation} selectable={selectableTypology} onChoose={(code) => { setNotice(''); setChoosing(code); }} />
-            <RequirementSections data={data} selectable={selectableTypology} onChoose={(code) => { setNotice(''); setChoosing(code); }} />
+            <LdfParties parties={parties} onOpenForm={onOpenFunForm} />
+            <LdfChecklist checklist={checklist} onOpen={openRow} gated={gated} />
+            {buildSections(data).some((section) => section.typologyCode) ? (
+              <Disclosure title="Tipologías y opciones" hint="Requisitos agrupados por tipología" testId="legal-form-sections-disclosure" className="border-b">
+                <RequirementSections data={data} selectable={selectableTypology} onChoose={(code) => choose(code)} />
+              </Disclosure>
+            ) : null}
           </>
         ) : null}
       </div>
 
       {data && !traditional && origin?.publication ? (
-        <CanonicalDocumentaryWorkspace
-          origin={origin}
-          canManage={canReview}
-          variant="legalForm"
-          embedded
-          reloadKey={tableRevision}
-          onEvaluationSaved={evaluationSaved}
-          legalForm={sheetLegalForm}
-          instances={instances}
-          openRequest={openRequest}
-        />
+        <Disclosure title="Entregas y versiones" hint="Documentos recibidos, VR en uso y versiones" testId="legal-form-deliveries" className="overflow-hidden rounded-lg border bg-[hsl(var(--card))] shadow-sm">
+          <div className="border-t p-[0.75rem]">
+            <CanonicalDocumentaryWorkspace
+              origin={origin}
+              canManage={canReview}
+              variant="legalForm"
+              embedded
+              reloadKey={tableRevision}
+              onEvaluationSaved={evaluationSaved}
+              legalForm={sheetLegalForm}
+              instances={instances}
+              openRequest={openRequest}
+              evaluationContext={evaluationContext}
+              receiveRequest={receiveRequest}
+              receiveOnRequest={Boolean(canManage)}
+              parties={data.parties || null}
+              onReceived={(message) => refresh(message)}
+            />
+          </div>
+        </Disclosure>
       ) : null}
 
       {currentVersion != null && data && !traditional ? (
@@ -376,6 +413,15 @@ export function LegalFormPanel({ origin, canManage = false, onDeclarationChanged
           onConflict={() => { setChecklistOpen(false); refresh(CONFLICT_MESSAGE); }}
         />
       ) : null}
+      <LdfRequirementSheet
+        target={detail}
+        data={data}
+        optionState={optionState}
+        onChoose={choose}
+        onOpenInstance={origin?.publication ? openInstance : undefined}
+        onReceive={canManage && origin?.publication ? receiveFor : undefined}
+        onClose={() => setDetail(null)}
+      />
       <TypologySelectionDialog
         open={Boolean(choosingTypology)}
         typology={choosingTypology}

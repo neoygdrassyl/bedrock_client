@@ -28,7 +28,8 @@ describe('http-profs / http-emails client wiring', () => {
     expect(mockCreateDovelaHttpClient).toHaveBeenCalledTimes(1);
     const config = mockCreateDovelaHttpClient.mock.calls[0][0];
 
-    expect(config.baseURL).toBe(import.meta.env.VITE_API_PROF_URL);
+    // Outside production builds the registry stays disabled unless VITE_PROFESSIONALS_API_URL is set.
+    expect(config.baseURL).toBe(import.meta.env.VITE_PROFESSIONALS_API_URL || undefined);
     expect(config.headers['Content-type']).toContain('multipart/form-data');
     expect(config.attachAuth).toBe(false);
   });

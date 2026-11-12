@@ -84,14 +84,35 @@ function normalize(text) {
   return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
-/** Client-side filters over the rows of the current page. */
-export function filterCanonicalRows(rows, { search = '', list = '', documentClass = '', scan = SCAN_FILTER.ALL } = {}) {
+/** Evaluation filter of the documents table (values are the row evaluation statuses). */
+export const EVALUATION_FILTER_OPTIONS = [
+  { value: 'pending', label: 'Sin evaluar' },
+  { value: 'approved', label: 'Aprobado' },
+  { value: 'rejected', label: 'Rechazado' },
+  { value: 'not_applicable', label: 'No se evalúa' },
+];
+/** Support filter: rows with a physical or a digital support. */
+export const SUPPORT_FILTER_OPTIONS = [{ value: 'physical', label: 'Con soporte físico' }, { value: 'digital', label: 'Con soporte digital' }];
+
+/** Filter keys counted on the "Filtros" button (the search box is not one of them). */
+export const MENU_FILTER_KEYS = ['subject', 'list', 'documentClass', 'evaluation', 'support'];
+export const activeFilterCount = (filters) => MENU_FILTER_KEYS.filter((key) => Boolean(filters?.[key])).length;
+
+/**
+ * Client-side filters over the loaded rows. `subject`: '' every row, '__request__' rows without a person, else the rows
+ * of that person (subjectId); `evaluation`: an evaluation status; `support`: 'physical' | 'digital'.
+ */
+export function filterCanonicalRows(rows, { search = '', list = '', documentClass = '', scan = SCAN_FILTER.ALL, subject = '', evaluation = '', support = '' } = {}) {
   const needle = normalize(search.trim());
   return rows.filter((row) => {
     if (needle && !normalize(`${rowCode(row) || ''} ${rowName(row)}`).includes(needle)) return false;
     if (list && rowListTitle(row) !== list) return false;
     if (documentClass && documentClassOf(row) !== documentClass) return false;
-    const { scanned } = rowSupport(row);
+    if (subject && (subject === '__request__' ? Boolean(row.subjectId) : row.subjectId !== subject)) return false;
+    if (evaluation && (row.evaluation?.status || 'not_applicable') !== evaluation) return false;
+    const { scanned, mediumPresence } = rowSupport(row);
+    if (support === 'physical' && !mediumPresence.physical) return false;
+    if (support === 'digital' && !mediumPresence.digital) return false;
     if (scan === SCAN_FILTER.PENDING && !(scanned.applies && !scanned.value)) return false;
     if (scan === SCAN_FILTER.SCANNED && !scanned.value) return false;
     return true;
@@ -107,6 +128,11 @@ export function groupRowsByList(rows) {
     groups.get(title).push(row);
   });
   return [...groups].map(([title, items]) => ({ title, rows: items }));
+}
+
+/** Second line of a document row: "511 · Requisito · Hoja 2 · Ana Pérez Ruiz · Profesional" (empty parts left out). */
+export function rowMetaLine(row, person = null) {
+  return [rowCode(row), CLASS_SHORT_LABELS[documentClassOf(row)] || 'Documento', row.instanceLabel || null, person?.text || null].filter(Boolean).join(' · ');
 }
 
 export function listOptions(rows) {

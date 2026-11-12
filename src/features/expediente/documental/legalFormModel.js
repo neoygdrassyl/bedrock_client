@@ -38,7 +38,7 @@ export const SECTION_STATE_META = {
   not_applicable: { label: 'No aplica', tone: 'neutral' },
 };
 
-export const SELECTION_SOURCE_LABELS = { portal: 'Ventanilla', backoffice: 'Backoffice' };
+export const SELECTION_SOURCE_LABELS = { portal: 'Ventanilla', backoffice: 'Backoffice', party: 'Datos de la persona', implicit: 'Única opción' };
 
 export const REQUIREMENT_MODE_LABELS = { all: 'Todos requeridos', at_least_one: 'Al menos uno', complementary: 'Complementarios (opcionales)' };
 
@@ -76,7 +76,11 @@ export function buildSections(data) {
     return requirements.length ? [{ key: 'all', typologyCode: null, title: null, state: null, selectionMode: null, selectedOptionIds: [], selectionSource: null, optionLabels: [],
       options: [{ key: 'all', optionId: null, label: null, group: null, statusLabel: null, items: requirements.map((requirement) => ({ requirement, muted: false })) }] }] : [];
   }
-  const byCode = new Map(requirements.map((requirement) => [requirement.documentCode, requirement]));
+  // Several requirements may share a code (one per person): each section consumes them in order.
+  const byCode = new Map();
+  requirements.forEach((requirement) => { if (!byCode.has(requirement.documentCode)) byCode.set(requirement.documentCode, []); byCode.get(requirement.documentCode).push(requirement); });
+  const taken = new Set();
+  const take = (code) => { const next = (byCode.get(code) || []).find((item) => !taken.has(item)); if (next) taken.add(next); return next || null; };
   return data.sections.map((section) => {
     const typologyCode = section.typologyCode ?? null;
     const options = new Map();
@@ -89,7 +93,7 @@ export function buildSections(data) {
       return options.get(key);
     };
     (section.requirementCodes || []).forEach((code) => {
-      const requirement = byCode.get(code);
+      const requirement = take(code);
       if (!requirement) return;
       const option = optionOf(requirement.section?.optionId ?? null, requirement.section?.optionLabel);
       const muted = Boolean(option.group && option.group.mode === 'at_least_one' && option.group.satisfied && !requirement.delivered);
@@ -121,6 +125,14 @@ export function groupBlockers(blockers = []) {
 // Blockers about the evaluation as a whole (shown as an alert on top of the pending panel).
 const EVALUATION_BLOCKERS = ['REQUIREMENTS_NOT_EVALUATED', 'REQUIREMENTS_STALE', 'REQUIREMENTS_INCOMPLETE', 'REQUIREMENTS_UNSUPPORTED'];
 
+// Explicación en español de los avisos de evaluación; el texto del backend viene en inglés.
+const EVALUATION_BLOCKER_HINTS = {
+  REQUIREMENTS_NOT_EVALUATED: 'Los requisitos del expediente aún no se han evaluado.',
+  REQUIREMENTS_STALE: 'Cambiaron los datos del expediente o sus partes. Use «Actualizar requisitos» en Configuración documental antes de declarar.',
+  REQUIREMENTS_INCOMPLETE: 'La evaluación tiene diagnósticos que impiden declarar.',
+  REQUIREMENTS_UNSUPPORTED: 'La versión de Central que gobierna el expediente no es compatible.',
+};
+
 // Fixed order of the pending groups: what the user must resolve first comes first.
 export const PENDING_GROUPS = [
   { key: 'not_delivered', title: 'Sin entregar', hint: 'Reciba estos documentos en Radicación.', codes: ['NOT_DELIVERED', 'GROUP_NOT_SATISFIED'] },
@@ -141,7 +153,8 @@ const BLOCKER_REASON_NOTES = {
     invalid_count: 'Se eligieron más opciones de las permitidas',
   },
 };
-const blockerNote = (blocker) => BLOCKER_REASON_NOTES[blocker.code]?.[blocker.reason ?? blocker.details?.reason] || null;
+/** Extra explanation of a blocker (e.g. controls decided without approval), or null. */
+export const blockerNote = (blocker) => BLOCKER_REASON_NOTES[blocker.code]?.[blocker.reason ?? blocker.details?.reason] || null;
 
 /** Instances of the legal form by documentKey ({ requirement, instance }). */
 export function instancesByKey(data) {
@@ -174,7 +187,7 @@ function pendingItem(blocker, data, lookup) {
 export function pendingGroups(data) {
   const blockers = data?.blockers || [];
   const lookup = instancesByKey(data);
-  const alerts = blockers.filter((blocker) => EVALUATION_BLOCKERS.includes(blocker.code)).map((blocker) => ({ code: blocker.code, label: BLOCKER_LABELS[blocker.code], message: blocker.message || null }));
+  const alerts = blockers.filter((blocker) => EVALUATION_BLOCKERS.includes(blocker.code)).map((blocker) => ({ code: blocker.code, label: BLOCKER_LABELS[blocker.code], message: EVALUATION_BLOCKER_HINTS[blocker.code] || null }));
   const groups = PENDING_GROUPS.map((group) => ({ key: group.key, title: group.title, hint: group.hint,
     items: blockers.filter((blocker) => group.codes.includes(blocker.code)).sort((a, b) => group.codes.indexOf(a.code) - group.codes.indexOf(b.code)).map((blocker) => pendingItem(blocker, data, lookup)) }));
   const others = blockers.filter((blocker) => !KNOWN_PENDING_CODES.has(blocker.code));
