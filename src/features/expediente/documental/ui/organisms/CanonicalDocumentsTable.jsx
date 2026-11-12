@@ -1,28 +1,21 @@
 import { Tag } from '../atoms/Tag';
-import { Archive, ClipboardCheck, FileSearch, History, Layers, Monitor, UserCheck, Wrench } from 'lucide-react';
+import { Archive, ClipboardCheck, FileSearch, History, Layers, UserCheck, Wrench } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { cn } from '@/shared/lib/utils';
 import { VrBadge } from '../atoms/VrBadge';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
-import { ReceiptStatus } from '../molecules/DocumentReceiptStatus';
+import { SupportIcons } from '../molecules/SupportIcons';
 import { EvaluationStatus } from '../molecules/EvaluationStatus';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 import { effectiveDeliveryLabel, effectiveOf } from '../../legalFormModel';
-import { canEvaluateRow, CLASS_SHORT_LABELS, documentClassOf, formatDocumentaryDate, rowCode, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
+import { canEvaluateRow, evaluationOf, evaluationReviewer, EVALUATION_META, formatDocumentaryDate, rowCode, rowMetaLine, rowName, rowSupport, versionCountOf } from '../../canonicalDocumentaryModel';
 import { applicantSummaryLabel, applicantSummaryTitle, technicalControlsOf, technicalSummary, technicalSummaryLabel, technicalSummaryTone } from '../../technicalEvaluationModel';
 
-const CLASS_TONES = { requirement: 'info', annex: 'slate', vr_slip: 'teal' };
-
-function ClassBadge({ row }) {
-  const documentClass = documentClassOf(row);
-  return (
-    <Tag tone={CLASS_TONES[documentClass] || 'neutral'}>
-      {CLASS_SHORT_LABELS[documentClass] || 'Documento'}
-    </Tag>
-  );
-}
+/** One line, never wrapping: the cells of a document row stay single-line (full text in `title`). */
+const LINE = 'flex min-w-0 items-center gap-1.5 whitespace-nowrap';
+const MUTED = 'min-w-0 truncate text-[11px] leading-4 text-muted-foreground';
 
 function HeadLabel({ icon: Icon, children }) {
   return (
@@ -37,11 +30,11 @@ const HEAD = 'h-10 text-[11px] font-semibold uppercase tracking-wide text-muted-
 
 /**
  * Optional columns after the document title, in display order. A table shows the ones it is given
- * (`columns` prop): Radicación shows all but `actions`; Expedidos hides physical/digital/evaluation;
+ * (`columns` prop): Radicación shows all but `actions`; Expedidos hides supports/evaluation;
  * Legal y debida forma adds the applicant self-assessment; Evaluación técnica swaps the evaluation for the technical summary.
  */
-export const TABLE_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'applicant', 'technical', 'versions', 'actions'];
-export const INPUT_COLUMNS = ['delivery', 'physical', 'digital', 'evaluation', 'versions'];
+export const TABLE_COLUMNS = ['delivery', 'supports', 'evaluation', 'applicant', 'technical', 'versions', 'actions'];
+export const INPUT_COLUMNS = ['delivery', 'supports', 'evaluation', 'versions'];
 export const LEGAL_FORM_COLUMNS = ['delivery', 'evaluation', 'applicant', 'versions', 'actions'];
 export const TECHNICAL_COLUMNS = ['delivery', 'technical', 'versions', 'actions'];
 export const ISSUED_COLUMNS = ['delivery', 'versions'];
@@ -49,41 +42,45 @@ export const ISSUED_COLUMNS = ['delivery', 'versions'];
 /** Row action predicate of the technical layer: the server flags it per row (older backends never do). */
 export const canEvaluateTechnicalRow = (row) => Boolean(row?.actions?.reviewTechnical);
 
+// Día y mes de la entrega (el año y la hora quedan en el título): cabe junto a la VR sin cortarse.
+function compactDeliveryDate(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return '—';
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${date.getDate()} ${months[date.getMonth()]}`;
+}
+
 const COLUMN_DEFS = {
   delivery: {
-    head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[18%] px-[0.75rem]',
+    head: <HeadLabel icon={History}>Última entrega</HeadLabel>, className: 'w-[9.5rem] px-[0.75rem]',
     cell: (row) => (
-      <>
+      <span className={LINE}>
         <VrBadge value={row.receipt.vrLabel} />
-        <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
-      </>
+        <span className={`${MUTED} shrink-0 overflow-visible whitespace-nowrap tabular-nums`} title={formatDocumentaryDate(row.receipt.registeredAt || row.receipt.receivedAt)}>{compactDeliveryDate(row.receipt.registeredAt || row.receipt.receivedAt)}</span>
+      </span>
     ),
   },
-  physical: {
-    head: <HeadLabel icon={Archive}>Físico</HeadLabel>, className: 'w-[11%] px-2',
-    cell: (row) => {
-      const support = rowSupport(row);
-      return (
-        <>
-          <ReceiptStatus row={support} medium="physical" />
-          {support.pagesPhysical !== null ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{support.pagesPhysical} {support.pagesPhysical === 1 ? 'folio' : 'folios'}</span> : null}
-        </>
-      );
-    },
+  supports: {
+    head: <HeadLabel icon={Archive}>Soportes</HeadLabel>, className: 'w-[7.5rem] px-2',
+    cell: (row) => <SupportIcons support={rowSupport(row)} location={row.receipt?.location || null} />,
   },
-  digital: { head: <HeadLabel icon={Monitor}>Digital</HeadLabel>, className: 'w-[9%] px-2', cell: (row) => <ReceiptStatus row={rowSupport(row)} medium="digital" /> },
   evaluation: {
-    head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[15%] px-[0.75rem]',
+    head: <HeadLabel icon={ClipboardCheck}>Evaluación</HeadLabel>, className: 'w-[9rem] px-[0.75rem]',
     cell: (row, { instances }) => {
       const effective = effectiveOf(instances?.get(row.documentKey)?.instance);
       // With legal-form data the delivery in use is derived from it; without it only an explicit choice is marked.
       const inUse = effective ? effective.rowId === row.receivedDocumentRowId : Boolean(row.ldfSelected);
+      const evaluation = evaluationOf(row);
+      const reviewer = evaluationReviewer(evaluation);
+      const title = [EVALUATION_META[evaluation.status]?.label, reviewer ? `por ${reviewer}` : null, inUse ? 'En uso en legal y debida forma' : effective ? `Se usa: ${effectiveDeliveryLabel(effective)}` : null].filter(Boolean).join(' · ');
       return (
-        <>
-          <EvaluationStatus row={row} />
-          {inUse ? <Tag tone="success" className="mt-1" title="Entrega que usa legal y debida forma">En uso</Tag>
-            : effective ? <span className="mt-1 block text-[11px] leading-4 text-muted-foreground" title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span> : null}
-        </>
+        <span className={LINE} title={title}>
+          <EvaluationStatus row={row} showReviewer={false} />
+          {/* The reviewer lives in the tooltip (title) of the cell; screen readers still hear it. */}
+          {reviewer ? <span className="sr-only">por {reviewer}</span> : null}
+          {inUse ? <Tag tone="success" title="Entrega que usa legal y debida forma">En uso</Tag>
+            : effective ? <span className={MUTED} title="Entrega que usa legal y debida forma">Se usa: {effectiveDeliveryLabel(effective)}</span> : null}
+        </span>
       );
     },
   },
@@ -102,16 +99,17 @@ const COLUMN_DEFS = {
       const label = technicalSummaryLabel(summary);
       if (!label) return <span className="text-xs text-muted-foreground" title="Sin controles técnicos">—</span>;
       return (
-        <>
+        <span className={LINE}>
           <Tag tone={technicalSummaryTone(summary)} mono title={`${summary.complies} cumple de ${summary.total} controles técnicos`}>{label}</Tag>
-          {summary.pending ? <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{summary.pending} {summary.pending === 1 ? 'pendiente' : 'pendientes'}</span> : null}
-        </>
+          {summary.pending ? <span className={MUTED}>{summary.pending} {summary.pending === 1 ? 'pendiente' : 'pendientes'}</span> : null}
+        </span>
       );
     },
   },
-  versions: { head: <HeadLabel icon={Layers}>Versiones</HeadLabel>, className: 'w-[9%] px-2', cellClassName: 'font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
+  versions: { head: <span className="flex items-center justify-center" title="Versiones"><Layers className="h-3.5 w-3.5" aria-hidden="true" /><span className="sr-only">Versiones</span></span>, className: 'w-[3.25rem] px-2 text-center', cellClassName: 'text-center font-mono text-xs tabular-nums text-foreground', cell: (row) => versionCountOf(row) },
   actions: { head: <span className="sr-only">Acciones</span>, className: 'w-[12%] px-[0.75rem] text-right', cellClassName: 'text-right', cell: null },
 };
+
 
 /**
  * One row per current document, grouped by ventanilla list. Presentation only.
@@ -120,7 +118,7 @@ const COLUMN_DEFS = {
  * "Evaluar" action to the `actions` column for rows the server allows to evaluate (`rowEvaluable(row)` decides which; by default
  * the checking-layer flags). `instances` (documentKey -> legal-form instance, optional) lets the evaluation cell tag the delivery in use and name it when the row is another one.
  */
-export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, rowEvaluable = canEvaluateRow, instances, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
+export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSelect, loading, hasFilters, onResetFilters, idPrefix, columns = INPUT_COLUMNS, onEvaluate, rowEvaluable = canEvaluateRow, instances, personOf, ariaLabel = 'Documentos recibidos', emptyText = 'Aún no hay documentos recibidos', emptyHint = 'Los documentos que se reciban en este expediente aparecerán aquí.' }) {
   const defs = columns.filter((key) => COLUMN_DEFS[key]).map((key) => ({ key, ...COLUMN_DEFS[key] }));
   const span = defs.length + 1;
   return (
@@ -165,9 +163,8 @@ export function CanonicalDocumentsTable({ groups, selectedKey, expandedKey, onSe
                   <DocumentTitleButton
                     name={rowName({ ...row, instanceLabel: null })}
                     code={rowCode(row)}
-                    extra={<><ClassBadge row={row} />{row.instanceLabel ? <Tag tone="teal" title="Instancia del documento">{row.instanceLabel}</Tag> : null}</>}
+                    meta={rowMetaLine(row, personOf?.(row))}
                     selected={selected}
-                    expanded={expandedKey === row.rowKey}
                     controlsId={`${idPrefix}-${row.receivedDocumentRowId}`}
                     tabIndex={-1}
                   />

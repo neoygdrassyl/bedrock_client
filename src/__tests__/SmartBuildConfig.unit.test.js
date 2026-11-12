@@ -88,7 +88,7 @@ describe('smart build configuration', () => {
     // Documented optional overrides (README.md "Variables de entorno"):
     // intentionally shipped empty in the template and filled per environment
     // via *.local overrides, so they must be declared but may stay empty.
-    const optionalVars = [];
+    const optionalVars = ['VITE_PROFESSIONALS_API_URL'];
 
     for (const envName of [...requiredNonEmptyVars, ...optionalVars]) {
       expect(declaredValue(envName), `${envName} must be declared in .env.example as KEY="value"`).not.toBeNull();

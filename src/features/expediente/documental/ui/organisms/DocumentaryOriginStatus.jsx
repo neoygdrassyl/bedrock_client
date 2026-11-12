@@ -1,4 +1,4 @@
-import { CircleAlert, Clock } from 'lucide-react';
+import { BookCheck, BookOpen, CircleAlert, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -17,26 +17,37 @@ function pendingMessage(pending) {
   return `Radicado desde el portal con la publicación de Central ${pending.releaseVersion != null ? `versión ${pending.releaseVersion}` : 'registrada'}${pending.releaseId ? ` (${pending.releaseId})` : ''}, pendiente de activación. Mientras tanto se gestiona como documentación tradicional.`;
 }
 
+function captionLabel(origin) {
+  if (origin.publication) return `Catálogo v${origin.publication.releaseVersion}`;
+  if (origin.mode === 'unlinked') return 'Sin expediente vinculado';
+  return 'Documentación tradicional';
+}
+
 /**
- * Single muted line with the radicado and the documentary origin. Meant to sit next to the
- * module tabs; load state shows a short skeleton and query errors render nothing here
- * (see OriginNotices).
+ * Compact origin chip that sits at the end of the module tab bar. The radicado is already in
+ * the expediente header, so only the documentary origin shows here (full sentence in `title`).
+ * Load state shows a short skeleton and query errors render nothing here (see OriginNotices).
  */
-export function OriginCaption({ origin, error, currentPublic, className }) {
+export function OriginCaption({ origin, error, className }) {
   if (error) return null;
   if (!origin) {
     return (
       <div className={`flex items-center gap-2 ${className || ''}`.trim()}>
         <Skeleton className="h-3.5 w-24" aria-hidden="true" />
-        <p role="status" className="mb-0 text-xs text-muted-foreground">Consultando la configuración del expediente…</p>
+        <p role="status" className="sr-only">Consultando la configuración del expediente…</p>
       </div>
     );
   }
-  const radicado = currentPublic || origin.project?.idPublic;
+  const canonical = Boolean(origin.publication);
   return (
-    <p className={`mb-0 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground ${className || ''}`.trim()}>
-      {radicado ? <><span className="font-mono text-foreground/80">{radicado}</span><span className="text-muted-foreground/50" aria-hidden="true">·</span></> : null}
-      <span>{originLabel(origin, { compact: true })}</span>
+    <p
+      className={`mb-0 inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground ${className || ''}`.trim()}
+      title={originLabel(origin)}
+    >
+      {canonical
+        ? <BookCheck className="h-3.5 w-3.5 shrink-0 text-[hsl(var(--primary))]" aria-hidden="true" />
+        : <BookOpen className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
+      <span className="truncate">{captionLabel(origin)}</span>
     </p>
   );
 }

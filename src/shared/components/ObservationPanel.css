@@ -222,3 +222,24 @@
     color: color-mix(in srgb, hsl(var(--primary)) 62%, hsl(var(--foreground)));
 }
 
+
+/* Dark theme: read-only binnacle bodies sit on the card instead of a light #F3F6F9 slab. */
+.dark .op__static-textarea,
+.dark .op__static-editor .rich-text-editor-shell {
+    border-color: hsl(var(--border));
+}
+
+.dark .op__static-textarea--readonly,
+.dark .op__static-editor .rich-text-editor-shell--readonly {
+    color: hsl(var(--foreground));
+    background: hsl(var(--background) / 0.6);
+    border-color: hsl(var(--border));
+}
+
+.dark .op__static-editor .rich-text-editor-toolbar {
+    border-bottom-color: hsl(var(--border));
+}
+
+.dark .rich-text-editor-shell .bn-editor {
+    background: transparent;
+}

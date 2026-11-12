@@ -51,3 +51,22 @@ describe('requirementStatus', () => {
     expect(requirementStatus({ warnings: [], satisfaction: { allRequirementsSatisfied: true } }).tone).toBe('complete');
   });
 });
+
+describe('documents table filters and second line', () => {
+  it('filters by evaluation and support, counts the menu filters and builds the second line of a row', async () => {
+    const { activeFilterCount, rowMetaLine } = await import('./canonicalDocumentaryModel');
+    const rows = [
+      { rowKey: 'a', catalogueDisplay: { code: '511', name: 'FUN' }, evaluation: { status: 'approved' }, receipt: { hasPhysical: true, files: { digital: null } } },
+      { rowKey: 'b', catalogueDisplay: { code: '101', name: 'Cédula' }, subjectId: 'fun_51:1', evaluation: { status: 'pending' }, receipt: { hasPhysical: false, files: { digital: { name: 'x' } } } },
+      { rowKey: 'c', documentClass: 'annex', title: 'Anexo', receipt: { hasPhysical: true, files: { digital: { name: 'y' } } } },
+    ];
+    expect(filterCanonicalRows(rows, { evaluation: 'pending' }).map((row) => row.rowKey)).toEqual(['b']);
+    expect(filterCanonicalRows(rows, { evaluation: 'not_applicable' }).map((row) => row.rowKey)).toEqual(['c']);
+    expect(filterCanonicalRows(rows, { support: 'physical' }).map((row) => row.rowKey)).toEqual(['a', 'c']);
+    expect(filterCanonicalRows(rows, { support: 'digital', subject: '__request__' }).map((row) => row.rowKey)).toEqual(['c']);
+    expect(activeFilterCount({ search: 'x', subject: 'fun_51:1', support: 'digital', list: '' })).toBe(2);
+    expect(rowMetaLine(rows[0])).toBe('511 · Requisito');
+    expect(rowMetaLine({ ...rows[1], instanceLabel: 'Hoja 2' }, { text: 'Ana Pérez · Solicitante' })).toBe('101 · Requisito · Hoja 2 · Ana Pérez · Solicitante');
+    expect(rowMetaLine(rows[2])).toBe('Anexo');
+  });
+});

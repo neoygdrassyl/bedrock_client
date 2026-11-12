@@ -109,7 +109,7 @@ function VersionTimeline({ origin, row }) {
 }
 
 /** "Ficha documental" of a catalogue-based document. */
-export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, headingId, onReceiveVersion, onUpdateEvidence, onEvaluate }) {
+export function CanonicalDocumentDetail({ origin, row, person = null, canReceive, canReview, headingId, onReceiveVersion, onUpdateEvidence, onEvaluate }) {
   const documentClass = documentClassOf(row);
   const support = rowSupport(row);
   const receipt = row.receipt;
@@ -147,6 +147,11 @@ export function CanonicalDocumentDetail({ origin, row, canReceive, canReview, he
       caption={`${CLASS_LABELS[documentClass] || 'Documento'} · Versión ${row.versionSequence} de ${versionCountOf(row)}`}
       footer={footer}
     >
+      {person ? (
+        <p className="mb-0 text-xs leading-5 text-foreground" data-testid="detail-person">
+          <span className="text-muted-foreground">A nombre de: </span><span className="font-medium">{person.text}</span>
+        </p>
+      ) : null}
       {row.isAdditional === true ? (
         <Alert role="note" variant="neutral" className="px-[0.75rem] py-2">
           <Info aria-hidden="true" />
