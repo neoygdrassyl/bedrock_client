@@ -158,7 +158,7 @@ describe('FunExpedienteFullscreen bookmarks', () => {
     await user.click(screen.getByTestId('fullscreen-bookmark-menu-team-123'));
 
     expect(setScopeMock).toHaveBeenCalledWith(123, 'team', true);
-    expect(getFunByPublicMock).toHaveBeenCalledWith('2026-00123');
+    expect(getFunByPublicMock).toHaveBeenCalledWith('2026-00123', undefined, { force: true });
   });
 
   it('restaura Actualizar y Publicidad en expedientes elegibles y permite navegar entre ambos', async () => {

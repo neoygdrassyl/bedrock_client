@@ -90,6 +90,8 @@ function renderWorkspace(item, props = {}) {
   );
 }
 
+// Compute `expectedTerm` OUTSIDE `waitFor`: its `renderHook` mutates the DOM, which re-runs the
+// `waitFor` callback through its MutationObserver and starves the timers (the test hangs).
 function expectHeaderShows(term) {
   const indicator = screen.getByTestId('expediente-term-indicator');
   expect(within(indicator).getByTestId('expediente-term-text')).toHaveTextContent(term.text);
@@ -153,7 +155,8 @@ describe('FunExpedienteFullscreen legal term (header)', () => {
     const write = new FormData();
     write.set('fun0Id', '123');
     act(() => notifyClockWritten(write));
-    await waitFor(() => expectHeaderShows(expectedTerm(after)));
+    const termAfter = expectedTerm(after);
+    await waitFor(() => expectHeaderShows(termAfter));
     expect(getFunByPublicMock).toHaveBeenCalledTimes(1);
     expect(getFunByPublicMock).toHaveBeenCalledWith('68001-1-26-9950', undefined, { force: true });
   });
@@ -168,7 +171,9 @@ describe('FunExpedienteFullscreen legal term (header)', () => {
     renderWorkspace(before, { initialSection: 'tiempos' });
     await user.click(await screen.findByRole('button', { name: 'module-save' }));
 
-    await waitFor(() => expectHeaderShows(expectedTerm(after)));
+    const termAfter = expectedTerm(after);
+
+    await waitFor(() => expectHeaderShows(termAfter));
     expect(getFunMock).not.toHaveBeenCalled();
     expect(getFunByPublicMock).toHaveBeenCalledTimes(1);
   });
@@ -199,7 +204,8 @@ describe('FunExpedienteFullscreen legal term (header)', () => {
     expect(getFunByPublicMock).toHaveBeenLastCalledWith('68001-1-26-9950', undefined, { force: true });
 
     await act(async () => { postWrite.resolve({ data: after }); });
-    await waitFor(() => expectHeaderShows(expectedTerm(after)));
+    const termAfter = expectedTerm(after);
+    await waitFor(() => expectHeaderShows(termAfter));
     // The pre-write response arriving last never overwrites the newer term.
     await act(async () => { preWrite.resolve({ data: { ...before } }); });
     expectHeaderShows(expectedTerm(after));
@@ -235,7 +241,9 @@ describe('FunExpedienteFullscreen legal term (header)', () => {
       notifyClockWritten({ fun0Id: 999 });
     });
 
-    await waitFor(() => expectHeaderShows(expectedTerm(after)));
+    const termAfter = expectedTerm(after);
+
+    await waitFor(() => expectHeaderShows(termAfter));
     // Past the coalescing window nothing else is requested.
     await new Promise((resolve) => setTimeout(resolve, 300));
     expect(getFunByPublicMock).toHaveBeenCalledTimes(1);
