@@ -354,4 +354,23 @@ describe('FunExpedienteFullscreen runtime guards', () => {
     unmount();
     expect(getDockSnapshot().activeWorkspace).toBeNull();
   });
+
+  it('sin informe estructural (regla x;1) oculta el módulo y un enlace directo cae en el primer informe', async () => {
+    render(
+      <FunExpedienteFullscreen
+        expediente={{ ...expediente, rules: '0;1' }}
+        translation={{}}
+        globals={{}}
+        swaMsg={{}}
+        onClose={vi.fn()}
+        initialSection="informes"
+        initialReport="estructural"
+      />
+    );
+
+    expect(await screen.findByTestId('module-law')).toBeInTheDocument();
+    expect(screen.queryByTestId('module-eng')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Informe arquitectónico' }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: 'Informe estructural' })).not.toBeInTheDocument();
+  });
 });

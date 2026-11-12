@@ -48,12 +48,13 @@ import { useBookmarks } from '../hooks/useBookmarks';
 import { formsParser1, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import RecordsBinnacleStack from '../../../records/RecordsBinnacleStack';
 import { isBinnaclePanelDefaultOpen } from '../utils/expedienteWorkspaceRoute';
-import { isSubdivisionExpediente } from '../utils/expedienteDomainRules.js';
+import { isSubdivisionExpediente, shouldUseStructuralReport } from '../utils/expedienteDomainRules.js';
 import {
   EXPEDIENTE_NAV_GROUPS,
   EXPEDIENTE_SECTION_IDS,
   findNavSection,
   getExpedienteNavGroups,
+  getFirstReportSection,
   getNavToneClasses,
 } from '../../../workspace/expedienteNavConfig';
 import { getShortRadicado } from '../../../workspace/expedienteStatus';
@@ -474,10 +475,13 @@ function canShowLegacyPublicidad(expediente, version) {
 }
 
 function getVisibleSectionGroups(expediente, version) {
+  const isPropertyHorizontal = isPropertyHorizontalExpediente(expediente, version);
   return getExpedienteNavGroups({
     canEdit: isEditableLegacyExpediente(expediente),
     canShowPublicidad: canShowLegacyPublicidad(expediente, version),
-    isPropertyHorizontal: isPropertyHorizontalExpediente(expediente, version),
+    isPropertyHorizontal,
+    // Subdivisión, P.H. and rule `x;1` have no structural report (expedienteDomainRules).
+    hasStructuralReport: shouldUseStructuralReport(expediente, version, { isPropertyHorizontal }),
   });
 }
 
@@ -1598,8 +1602,15 @@ export function FunExpedienteFullscreen({
       return;
     }
 
+    // A hidden report (e.g. `report=estructural` on a subdivisión) lands on the first visible one.
+    const firstReport = getFirstReportSection(visibleSectionGroups);
+    if (activeSection === 'estructural' && firstReport) {
+      setActiveSection(firstReport);
+      return;
+    }
+
     setActiveSection('detalles');
-  }, [activeSection, isPropertyHorizontal, visibleSectionIds]);
+  }, [activeSection, isPropertyHorizontal, visibleSectionGroups, visibleSectionIds]);
 
   useEffect(() => {
     if (activeSection !== 'expedicion' || !isPropertyHorizontal) {
