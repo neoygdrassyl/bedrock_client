@@ -41,6 +41,8 @@ import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
 import { SectionCard } from '@/shared/components/SectionCard';
 import { buildFunInformationViewModel } from './law/funInformationViewModel';
+import SubdivisionLegalCriteria from './law/SubdivisionLegalCriteria';
+import { isSubdivisionExpediente } from '../fun/fun_forms/utils/expedienteDomainRules';
 
 // Render the replacement legal-information tables while their legacy versions remain available in code.
 const SHOW_LEGACY_FUN_1_TABLE = false;
@@ -313,6 +315,16 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentItem={currentItem}
                                     currentVersion={currentVersion}
                                 />
+
+                                {isSubdivisionExpediente(currentItem, currentVersion) ? (
+                                    <SubdivisionLegalCriteria
+                                        currentItem={currentItem}
+                                        currentVersion={currentVersion}
+                                        currentRecord={currentRecord}
+                                        currentVersionR={currentVersionR}
+                                        requestUpdateRecord={requestUpdateRecord}
+                                    />
+                                ) : null}
 
                                 <h2 className="ew-group-title" id="record_law_gen_2">II. Observaciones jurídicas</h2>
 

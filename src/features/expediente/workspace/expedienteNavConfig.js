@@ -6,7 +6,8 @@
  * `renderModuleContent`; do not rename them. Visibility rules mirror the legacy
  * module nav: "Actualizar" requires an editable expediente, "Publicidad" requires
  * the publicity rules, and P.H. expedientes swap the three discipline reports for
- * a single "Informe P.H." and drop "Acta".
+ * a single "Informe P.H." and drop "Acta". The structural report is hidden when the
+ * expediente has none (`shouldUseStructuralReport`: subdivisión, P.H., rule `x;1`).
  *
  * `shortLabel` is the label used where the group name is already visible next to the
  * item (the horizontal nav card); `label` is the self-explanatory one. `description`
@@ -46,7 +47,7 @@ export const EXPEDIENTE_NAV_GROUPS = Object.freeze([
     items: [
       { id: 'juridico', label: 'Inf. jurídico', shortLabel: 'Jurídico', ariaLabel: 'Informe jurídico', icon: 'Scale', standardReport: true },
       { id: 'arquitectonico', label: 'Inf. arquitectónico', shortLabel: 'Arquitectónico', ariaLabel: 'Informe arquitectónico', icon: 'Building', standardReport: true },
-      { id: 'estructural', label: 'Inf. estructural', shortLabel: 'Estructural', ariaLabel: 'Informe estructural', icon: 'Cog', standardReport: true },
+      { id: 'estructural', label: 'Inf. estructural', shortLabel: 'Estructural', ariaLabel: 'Informe estructural', icon: 'Cog', standardReport: true, structuralReport: true },
       { id: 'ph', label: 'Informe P.H.', shortLabel: 'P.H.', icon: 'PenTool', phOnly: true },
     ],
   },
@@ -126,9 +127,9 @@ export function getNavToneClasses(tone) {
 
 /**
  * Resolves the groups and items visible for one expediente.
- * @param {{ canEdit?: boolean, canShowPublicidad?: boolean, isPropertyHorizontal?: boolean }} flags
+ * @param {{ canEdit?: boolean, canShowPublicidad?: boolean, isPropertyHorizontal?: boolean, hasStructuralReport?: boolean }} flags
  */
-export function getExpedienteNavGroups({ canEdit = false, canShowPublicidad = false, isPropertyHorizontal = false } = {}) {
+export function getExpedienteNavGroups({ canEdit = false, canShowPublicidad = false, isPropertyHorizontal = false, hasStructuralReport = true } = {}) {
   return EXPEDIENTE_NAV_GROUPS
     .map((group) => ({
       ...group,
@@ -137,17 +138,24 @@ export function getExpedienteNavGroups({ canEdit = false, canShowPublicidad = fa
           if (item.requiresEdit && !canEdit) return false;
           if (item.requiresPublicidad && !canShowPublicidad) return false;
           if (item.standardReport && isPropertyHorizontal) return false;
+          if (item.structuralReport && !hasStructuralReport) return false;
           if (item.phOnly && !isPropertyHorizontal) return false;
           if (item.hideForPH && isPropertyHorizontal) return false;
           return true;
         })
-        .map(({ phLabel, standardReport, phOnly, hideForPH, ...item }) => ({
+        .map(({ phLabel, standardReport, structuralReport, phOnly, hideForPH, ...item }) => ({
           ...item,
           label: isPropertyHorizontal && phLabel ? phLabel : item.label,
           tone: group.tone,
         })),
     }))
     .filter((group) => group.items.length > 0);
+}
+
+/** First visible report (group `informes`) of the resolved groups, or `null`. */
+export function getFirstReportSection(groups) {
+  const reports = (groups || []).find((group) => group.id === 'informes');
+  return reports?.items[0]?.id ?? null;
 }
 
 /** Finds the visible item and its group for a section id. */

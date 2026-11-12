@@ -4,6 +4,7 @@ import {
   buildSectionSearchParams,
   findNavSection,
   getExpedienteNavGroups,
+  getFirstReportSection,
   sectionToWorkspaceTarget,
 } from './expedienteNavConfig';
 
@@ -35,6 +36,18 @@ describe('getExpedienteNavGroups', () => {
     expect(findNavSection(groups, 'acta')).toBeNull();
   });
 
+  it('hides the structural report when the expediente has none and keeps the other reports', () => {
+    const groups = getExpedienteNavGroups({ canEdit: true, canShowPublicidad: true, hasStructuralReport: false });
+    expect(idsByGroup(groups).informes).toEqual(['juridico', 'arquitectonico']);
+    expect(findNavSection(groups, 'estructural')).toBeNull();
+    expect(getFirstReportSection(groups)).toBe('juridico');
+    // P.H. keeps its single report whatever the structural flag says.
+    const ph = getExpedienteNavGroups({ isPropertyHorizontal: true, hasStructuralReport: false });
+    expect(idsByGroup(ph).informes).toEqual(['ph']);
+    expect(getFirstReportSection(ph)).toBe('ph');
+    expect(getFirstReportSection([])).toBeNull();
+  });
+
   it('tags each item with its group tone and strips internal flags', () => {
     const groups = getExpedienteNavGroups({ canEdit: true, canShowPublicidad: true });
     const { group, item } = findNavSection(groups, 'juridico');
@@ -48,6 +61,7 @@ describe('getExpedienteNavGroups', () => {
       ['cierre', 'Expedición', 'expedicion'],
     ]);
     expect(item).not.toHaveProperty('standardReport');
+    expect(findNavSection(groups, 'estructural').item).not.toHaveProperty('structuralReport');
   });
 });
 

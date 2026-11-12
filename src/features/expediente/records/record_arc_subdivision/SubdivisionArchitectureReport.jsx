@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import RECORD_ARC from '../record_arc';
 import SubdivisionQgisService from '../../api/subdivision_qgis.service.js';
+import SubdivisionArchitectureCriteria from './SubdivisionArchitectureCriteria.jsx';
 
 function formatArea(value) {
   if (value === null || value === undefined || value === '') return '—';
@@ -251,6 +252,13 @@ export default function SubdivisionArchitectureReport(props) {
   return (
     <div className="space-y-4" data-testid="subdivision-architecture-report">
       <SubdivisionQgisImportPanel idPublic={idPublic} version={currentVersion} />
+
+      <SubdivisionArchitectureCriteria
+        currentId={props.currentId}
+        currentVersion={currentVersion}
+        expediente={expediente}
+        canManage={props.canManage !== false}
+      />
 
       <RECORD_ARC {...props} hideStructuralBinnacle />
     </div>
