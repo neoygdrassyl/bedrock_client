@@ -3,7 +3,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva } from 'class-variance-authority';
 import { PanelLeft } from 'lucide-react';
 
-import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { useIsOffCanvasSidebar } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -50,7 +50,8 @@ function SidebarProvider({
   children,
   ...props
 }) {
-  const isMobile = useIsMobile();
+  // Off-canvas sheet below 1024px (tablet and mobile tiers); icon rail from there up.
+  const isMobile = useIsOffCanvasSidebar();
   const [openMobile, setOpenMobile] = React.useState(false);
   const triggerRef = React.useRef(null);
   const [_open, _setOpen] = React.useState(defaultOpen);

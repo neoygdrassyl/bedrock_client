@@ -1,5 +1,6 @@
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue, noNaN } from './calcFieldValue';
 
 export const ENG_FUEGO = (props) => {
 
@@ -295,7 +296,7 @@ export const ENG_FUEGO = (props) => {
                 let v = null
                 if (paso.calc) {
                     v = paso.calc();
-                    document.getElementById('fuego_p1_' + paso.i).value = v;
+                    setCalcValue('fuego_p1_' + paso.i, v);
                 }
                 values.push(v || document.getElementById('fuego_p1_' + paso.i).value)
             }
@@ -323,7 +324,7 @@ export const ENG_FUEGO = (props) => {
                 let v = null
                 if (paso.calc) {
                     v = paso.calc();
-                    document.getElementById('fuego_p2_' + paso.i).value = v;
+                    setCalcValue('fuego_p2_' + paso.i, v);
                 }
                 values.push(v || document.getElementById('fuego_p2_' + paso.i).value)
             }
@@ -396,7 +397,7 @@ export const ENG_FUEGO = (props) => {
         }
     }
 
-    let BUILD_COMPONENT = (item, id, save) => <div className="row">
+    let BUILD_COMPONENT = (item, id, save, index) => <div className="row" key={`${id}_${index}`}>
         <div className={"col-3 mb-1" + (item.title ? " fw-bold text-center" : "")}>{item.name}</div>
         <div className="col-3 mb-1">
             <div className='form-group row'>
@@ -405,12 +406,12 @@ export const ENG_FUEGO = (props) => {
                         <select className={"form-control form-control-sm form-select"}
                             name={id} id={id + "_" + + item.i}
                             defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? item.options[0]} onChange={() => save()} >
-                            {item.options.map(o => <option>{o}</option>)}
+                            {item.options.map((o, oIndex) => <option key={oIndex}>{o}</option>)}
                         </select> :
-                        <input type={item.open ? "number" : "text"} step={item.open ? false : "0.01"}
+                        <input type={item.open ? "number" : "text"} step={item.open ? undefined : "0.01"}
                             className="form-control form-control-sm" name={id} id={id + "_" + + item.i} disabled={item.open ? false : true}
                             onBlur={() => save()}
-                            defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? (item.calc ? item.calc() : '')} />}
+                            defaultValue={noNaN(_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? (item.calc ? item.calc() : ''))} />}
                 </div> : null}
             </div>
         </div>
@@ -427,12 +428,12 @@ export const ENG_FUEGO = (props) => {
     </div>
 
     let PART_1 = () => <>
-        {FUEGO_1.map(i => BUILD_COMPONENT(i, "fuego_p1", SAVE_STEP_FUEGO_1))}
+        {FUEGO_1.map((i, index) => BUILD_COMPONENT(i, "fuego_p1", SAVE_STEP_FUEGO_1, index))}
     </>
 
 
     let PART_2 = () => <>
-        {FUEGO_2.map(i => BUILD_COMPONENT(i, "fuego_p2", SAVE_STEP_FUEGO_2))}
+        {FUEGO_2.map((i, index) => BUILD_COMPONENT(i, "fuego_p2", SAVE_STEP_FUEGO_2, index))}
     </>
 
     return <>

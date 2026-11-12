@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Icon from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
@@ -155,7 +156,7 @@ function RECORD_PH_GEN(props) {
                     <label>Expedida:</label>
                 </div>
                 <div className="col-3">
-                    <input type="date" max="2100-01-01" className="form-control" value={form[2]} onChange={handleChange(2)} />
+                    <DateInput max="2100-01-01" className="form-control" value={form[2]} onChange={handleChange(2)} />
                 </div>
             </div>
             <div className="row border p-2 ms-2">
@@ -366,7 +367,7 @@ function RECORD_PH_GEN(props) {
                     <div className="row mb-3 text-center">
                         <div className="col-12">
                             <Button size="sm" className="my-3" disabled={isSaving}>
-                                <Icon name="file-alt" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="file-alt" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </div>

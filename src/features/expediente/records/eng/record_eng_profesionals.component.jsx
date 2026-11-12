@@ -1,7 +1,8 @@
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import DataTable from '@/shared/components/data-table-bridge';
-import { useEffect, useState } from 'react';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
+import { Fragment, useEffect, useState } from 'react';
 const profs = [
     ['URBANIZADOR O CONSTRUCTOR RESPONSABLE', 'DIRECTOR DE LA CONSTRUCCION'],
     ['ARQUITECTO PROYECTISTA'],
@@ -110,28 +111,28 @@ function RECORD_ENG_PROFESIONALS(props) {
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_array[0] > 0
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_array[0] > 0
                 ?
                 <span title="CEDULA DE CIUDADANIA"><VIZUALIZER url={_FIND_6(_array[0]).path + "/" + _FIND_6(_array[0]).filename} apipath={'/files/'}
                         icon={'IdCard'} color={'DeepSkyBlue'} /></span>
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[1] > 0
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_array[1] > 0
                 ?
                 <span title="MATRICULA"><VIZUALIZER url={_FIND_6(_array[1]).path + "/" + _FIND_6(_array[1]).filename} apipath={'/files/'}
                         icon={'BadgeCheck'} color={'DarkOrchid'} /></span>
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_array[2] > 0
                 ?
                 <span title="FICHA COPNIA"><VIZUALIZER url={_FIND_6(_array[2]).path + "/" + _FIND_6(_array[2]).filename} apipath={'/files/'}
                         icon={'BookOpen'} color={'GoldenRod'} /></span>
-                : ""}</>)
+                : ""}</Fragment>)
 
-            _COMPONENT.push(<>{_array[2] > 0
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_array[2] > 0
                 ? <span title="HOJA DE VIDA Y CERTIFICADOS"><VIZUALIZER url={_FIND_6(_array[3]).path + "/" + _FIND_6(_array[3]).filename} apipath={'/files/'}
                         icon={'FileText'} color={'LimeGreen'} /></span>
-                : ""}</>)
+                : ""}</Fragment>)
 
             return <>{_COMPONENT}</>
         }
@@ -203,7 +204,7 @@ function RECORD_ENG_PROFESIONALS(props) {
             {
                 name: 'MATRICULA',
                 minWidth: '120px',
-                cell: (row) => <span className="text-xs font-mono">{row.professional?.registration_date || '—'}</span>
+                cell: (row) => <span className="text-xs font-mono">{formatDisplayDate(row.professional?.registration_date)}</span>
             },
             {
                 name: 'EXPERIENCIA',
@@ -273,10 +274,9 @@ function RECORD_ENG_PROFESIONALS(props) {
                     <p className="text-xs text-muted-foreground">Tabla compacta para validar responsables, experiencia y soportes visibles en el informe.</p>
                 </div>
 
-                <DataTable
+                <DataTable pagination={false}
                     paginationComponentOptions={{ rowsPerPageText: 'Filas por pagina:', rangeSeparatorText: 'de' }}
                     noDataComponent="No hay profesionales configurados"
-                    striped="true"
                     columns={columns}
                     data={buildProfessionalRows()}
                     dense

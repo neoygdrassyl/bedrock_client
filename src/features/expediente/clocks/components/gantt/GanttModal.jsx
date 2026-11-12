@@ -1,355 +1,198 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { GanttChart } from './GanttChart';
-import dayjs from 'dayjs';
-import { sumarDiasHabiles } from '../../hooks/useClocksManager';
+import { GANTT_STATUS, formatGanttDate } from './ganttSeries';
 import { Icon } from '@/shared/components/icon';
+import { cn } from '@/shared/lib/utils';
 
-// Panel de detalle (Muestra información específica al hacer click en una fase)
-const PhaseDetailPanel = ({ phase, onClose, suspensionPreActa, suspensionPostActa, extension }) => {
-  if (!phase) return null;
+const STATUS_SWATCH = {
+  done: 'tone-success',
+  doneLate: 'tone-danger',
+  active: 'tone-info',
+  overdue: 'tone-danger',
+  paused: 'tone-warning is-hatched',
+  pendingRecord: 'tone-pending is-dashed',
+  notStarted: 'tone-muted is-plan',
+};
 
-  const {
-    title,
-    status,
-    startDate,
-    endDate,
-    totalDays,
-    usedDays,
-    responsible,
-    parallelActors,
-    blockWidth,      
-    blockBaseDays,   
-    phaseIndex,
-  } = phase;
-
-  let statusInfo = { text: 'Pendiente', class: 'gantt-status-pendiente' };
-  switch (status) {
-    case 'ACTIVO':
-      statusInfo = { text: 'En Curso', class: 'gantt-status-activo' };
-      break;
-    case 'PAUSADO':
-      statusInfo = { text: 'Pausado', class: 'gantt-status-pausado' };
-      break;
-    case 'COMPLETADO':
-      statusInfo = { text: 'Completado', class: 'gantt-status-completado' };
-      break;
-    case 'VENCIDO':
-      statusInfo = { text: 'Vencido', class: 'gantt-status-vencido' };
-      break;
-    default:
-      break;
-  }
-
-  // Cálculo de retraso general de la fase
-  const delayDays = Math.max(0, (usedDays || 0) - (totalDays || 0));
-
+/**
+ * Legend of the Gantt, built from the same series as the chart: only what is drawn, in the
+ * order it first appears (statuses top to bottom, then overlays). Every entry pairs the
+ * tone with a shape or pattern, so no meaning relies on color alone.
+ */
+export const GanttLegend = ({ series, className = '' }) => {
+  if (!series) return null;
+  const statuses = series.kinds
+    .map((key) => Object.values(GANTT_STATUS).find((s) => s.key === key))
+    .filter(Boolean);
+  const { has } = series;
   return (
-    <div className="gantt-phase-detail-content">
-      <div className="gantt-phase-detail-header">
-        <h4>{title}</h4>
-        <button className="gantt-close-btn-small" onClick={onClose} title="Cerrar detalles">
-          <Icon name="times" size={16} />
-        </button>
-      </div>
-
-      <div className="gantt-phase-detail-body">
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Fase</span>
-          <span>{phaseIndex}</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Estado</span>
-          <span className={`gantt-status-badge ${statusInfo.class}`}>{statusInfo.text}</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Responsable</span>
-          <span>{responsible || '—'}</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Inicio</span>
-          <span>{startDate ? dayjs(startDate).format('DD MMM YYYY') : '—'}</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Fin</span>
-          <span>{endDate ? dayjs(endDate).format('DD MMM YYYY') : '—'}</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Progreso</span>
-          <span>{(usedDays ?? 0)} / {(totalDays ?? 0)} días</span>
-        </div>
-
-        {delayDays > 0 && (
-           <div className="gantt-detail-row" style={{ backgroundColor: '#fff5f5', border: '1px solid #ffc9c9' }}>
-             <span className="gantt-detail-label" style={{ color: '#dc3545' }}>Retraso</span>
-             <span style={{ color: '#dc3545', fontWeight: 'bold' }}>{delayDays} días</span>
-           </div>
-        )}
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Ancho Visual</span>
-          <span>{blockWidth ?? '—'} d</span>
-        </div>
-
-        <div className="gantt-detail-row">
-          <span className="gantt-detail-label">Base Legal</span>
-          <span>{blockBaseDays ?? '—'} d</span>
-        </div>
-
-        {!!parallelActors && (
-          <div className="gantt-detail-actors">
-            <h5>Actores Paralelos</h5>
-
-            {/* ACTOR PRIMARIO */}
-            {(() => {
-                const pDelay = Math.max(0, (parallelActors.primary.usedDays || 0) - (parallelActors.primary.totalDays || 0));
-                return (
-                    <div className="gantt-actor-card">
-                        <div className="gantt-actor-header">
-                            <Icon name={parallelActors.primary.icon} size={16} />
-                            <span>{parallelActors.primary.name}</span>
-                        </div>
-                        <div className="gantt-actor-info">
-                            <span>
-                            {parallelActors.primary.usedDays} / {parallelActors.primary.totalDays} días
-                            </span>
-                            <span>{parallelActors.primary.status}</span>
-                        </div>
-                        {pDelay > 0 && (
-                            <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
-                                <Icon name="exclamation-triangle" size={16} className="me-1" />
-                                {pDelay} días de retraso
-                            </div>
-                        )}
-                    </div>
-                );
-            })()}
-
-            {/* ACTOR SECUNDARIO */}
-            {(() => {
-                const sDelay = Math.max(0, (parallelActors.secondary.usedDays || 0) - (parallelActors.secondary.totalDays || 0));
-                return (
-                    <div className="gantt-actor-card">
-                        <div className="gantt-actor-header">
-                            <Icon name={parallelActors.secondary.icon} size={16} />
-                            <span>{parallelActors.secondary.name}</span>
-                        </div>
-                        <div className="gantt-actor-info">
-                            <span>
-                            {parallelActors.secondary.usedDays} / {parallelActors.secondary.totalDays} días
-                            </span>
-                            <span>{parallelActors.secondary.status}</span>
-                        </div>
-                        {sDelay > 0 && (
-                            <div style={{ marginTop: '8px', fontSize: '12px', color: '#dc3545', fontWeight: '600' }}>
-                                <Icon name="exclamation-triangle" size={16} className="me-1" />
-                                {sDelay} días de retraso
-                            </div>
-                        )}
-                    </div>
-                );
-            })()}
-          </div>
-        )}
-
-        <div className="gantt-detail-extras">
-          <h5>Tiempos Adicionales</h5>
-
-          {suspensionPreActa?.exists && (
-            <div className="gantt-extra-badge gantt-extra-suspension">
-              <span>{suspensionPreActa.days} días de Suspensión (Pre)</span>
-            </div>
-          )}
-
-          {suspensionPostActa?.exists && (
-            <div className="gantt-extra-badge gantt-extra-suspension">
-              <span>{suspensionPostActa.days} días de Suspensión (Post)</span>
-            </div>
-          )}
-
-          {extension?.exists && (
-            <div className="gantt-extra-badge gantt-extra-extension">
-              <span>{extension.days} días de Prórroga</span>
-            </div>
-          )}
-
-          {!suspensionPreActa?.exists && !suspensionPostActa?.exists && !extension?.exists && (
-            <small className="text-muted">No hay tiempos adicionales en este proceso.</small>
-          )}
-        </div>
-      </div>
+    <div className={cn('gx-legend', className)}>
+      <span className="gx-legend-title">Leyenda</span>
+      <ul className="gx-legend-items" aria-label="Leyenda del diagrama">
+        {statuses.map((s) => (
+          <li key={s.key} className="gx-legend-item">
+            <span className={cn('gx-swatch', s.key === 'notStarted' ? 'gx-swatch-plan' : 'gx-swatch-bar', STATUS_SWATCH[s.key])} aria-hidden="true" />
+            {s.key === 'notStarted' && has.plan ? 'Sin iniciar (previsto)' : s.label}
+          </li>
+        ))}
+        {has.allowance ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-allow" aria-hidden="true" />Plazo legal</li> : null}
+        {has.overrun ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-over" aria-hidden="true" />Exceso sobre el límite</li> : null}
+        {has.suspension ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-susp" aria-hidden="true" />Suspensión</li> : null}
+        {has.prorroga ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-prorroga" aria-hidden="true" />Prórroga</li> : null}
+        {has.markers ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-sched" aria-hidden="true" />Límite programado</li> : null}
+        {has.milestones ? <li className="gx-legend-item"><span className="gx-swatch gx-swatch-milestone" aria-hidden="true" />Hito</li> : null}
+        <li className="gx-legend-item"><span className="gx-swatch gx-swatch-today" aria-hidden="true" />Hoy</li>
+      </ul>
     </div>
   );
 };
 
-export const GanttModal = ({
-  isOpen,
-  onClose,
-  phases = [],
-  radDate,
-  suspensionPreActa,
-  suspensionPostActa,
-  extension,
-  currentItem,
-  scheduleConfig,
-  manager
-}) => {
-  const [viewMode, setViewMode] = useState('legal'); 
-  const [selectedPhase, setSelectedPhase] = useState(null);
+/** Detail of the phase picked in the dialog. Figures as the phases hook gives them. */
+const PhaseDetailPanel = ({ row, onClose }) => {
+  if (!row) return null;
+  const { status, phase } = row;
+  const actors = phase.parallelActors?.primary && phase.parallelActors?.secondary
+    ? [phase.parallelActors.primary, phase.parallelActors.secondary]
+    : [];
+  return (
+    <aside className="gx-detail" aria-label={`Detalle de la fase ${row.title}`}>
+      <div className="gx-detail-head">
+        <div className="min-w-0">
+          <p className="gx-detail-kicker">Fase {row.index}</p>
+          <h4 className="gx-detail-title">{row.title}</h4>
+        </div>
+        <button type="button" className="gx-icon-btn" onClick={onClose} aria-label="Cerrar detalle de la fase" title="Cerrar">
+          <Icon name="X" size={16} />
+        </button>
+      </div>
+      <p className={cn('gx-chip', `tone-${status.tone}`)}>
+        <Icon name={status.icon} size={12} aria-hidden="true" />
+        {status.label}
+      </p>
+      <dl className="gx-detail-grid">
+        <dt>Responsable</dt><dd>{row.responsible || '—'}</dd>
+        <dt>Inicio</dt><dd className="gx-mono">{row.startDate ? formatGanttDate(row.startDate) : 'Sin registro'}</dd>
+        <dt>Fin</dt><dd className="gx-mono">{row.endDate ? formatGanttDate(row.endDate) : status === GANTT_STATUS.pendingRecord ? 'Sin registro' : row.start !== null ? 'En curso' : '—'}</dd>
+        <dt>Límite legal</dt><dd className="gx-mono">{formatGanttDate(row.limitDate)}</dd>
+        <dt>Días hábiles</dt><dd className="gx-mono">{row.used}/{row.total}</dd>
+        {row.overrun ? (<><dt>Retraso</dt><dd className="gx-mono gx-text-danger">+{row.overrun.days} d</dd></>) : null}
+        {row.suspension ? (<><dt>Suspensión</dt><dd className="gx-mono">{row.suspension.days} d</dd></>) : null}
+        {row.prorroga ? (<><dt>Prórroga</dt><dd className="gx-mono">{row.prorroga.days} d{row.prorroga.counted ? '' : ' · sin computar'}</dd></>) : null}
+      </dl>
+      {actors.length ? (
+        <div className="gx-detail-actors">
+          <p className="gx-detail-kicker">Actores en paralelo</p>
+          {actors.map((a) => (
+            <div key={a.name} className="gx-detail-actor">
+              <span>{a.name}{a.taskDescription ? <span className="gx-detail-task"> · {a.taskDescription}</span> : null}</span>
+              <span className="gx-mono">{Number(a.usedDays) || 0}/{(Number(a.totalDays) || 0) + (Number(a.extraDays) || 0)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </aside>
+  );
+};
 
+export const GanttModal = ({ isOpen, onClose, series, currentItem }) => {
+  const [selectedId, setSelectedId] = useState(null);
+  const titleId = useId();
+  const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => { if (!isOpen) setSelectedId(null); }, [isOpen]);
+  const togglePhase = useCallback((phase) => setSelectedId((id) => (id === phase.id ? null : phase.id)), []);
+
+  // Focus moves into the dialog on open, returns to the opener on close; Escape closes.
   useEffect(() => {
-    setSelectedPhase(null);
-  }, [viewMode]);
-
-  const projectedFinishData = useMemo(() => {
-    if (!radDate || phases.length === 0) return null;
-
-    let totalProjectedDays = 0;
-    
-    // Identificar si existe Acta 1 (Fin de fase 1)
-    const phase1 = phases.find(p => p.id === 'phase1');
-    const hasActa1 = phase1?.endDate ? true : false;
-
-    phases.forEach(phase => {
-        let daysToAdd = 0;
-        
-        // CORRECCIÓN LÓGICA: Si es Fase 4 (Viabilidad) y no hay Acta 1, 
-        // asumimos que el proceso no ha llegado ahí y no sumamos días fantasma
-        // si se basa en la resta de días de curaduría.
-        if (phase.id === 'phase4' || phase.id === 'phase4_desist') {
-             if (!hasActa1 && phase.status === 'PENDIENTE') {
-                 // Si no hay Acta 1, la Fase 4 aun no tiene días disponibles reales calculables
-                 // para proyección futura hasta que cierre F1. Se toma como 0 para no duplicar.
-                 daysToAdd = 0; 
-             } else {
-                 if (phase.status === 'COMPLETADO') {
-                     daysToAdd = phase.usedDays || 0;
-                 } else {
-                     // Si hay programación o tiempos definidos, calculamos lo que falta
-                     daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
-                 }
-             }
-        } else {
-            if (phase.status === 'COMPLETADO') {
-                daysToAdd = phase.usedDays || 0;
-            } else {
-                daysToAdd = (phase.totalDays || 0) + (phase.extraDays || 0);
-            }
-        }
-        
-        totalProjectedDays += daysToAdd;
-    });
-
-    const projectedDate = sumarDiasHabiles(radDate, totalProjectedDays);
-
-    return {
-        date: projectedDate,
-        totalDays: totalProjectedDays
+    if (!isOpen) return undefined;
+    const opener = document.activeElement;
+    dialogRef.current?.focus();
+    // Opened from a menu, the menu hands focus back to its trigger right after closing:
+    // take it again once that has happened.
+    const focusTimer = window.setTimeout(() => {
+      if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) dialogRef.current.focus();
+    }, 80);
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+        onCloseRef.current?.();
+        return;
+      }
+      // Keep Tab inside the dialog.
+      if (event.key === 'Tab' && dialogRef.current) {
+        const focusables = [...dialogRef.current.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')];
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
     };
-
-  }, [phases, radDate]);
-
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', handleKeyDown);
+      if (opener instanceof HTMLElement && document.contains(opener)) opener.focus();
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handlePhaseClick = (phase) => setSelectedPhase(phase);
+  const selectedRow = series?.rows.find((r) => r.id === selectedId) || null;
+  const pending = series?.rows.some((r) => r.status === GANTT_STATUS.pendingRecord);
 
   return (
     <div className="gantt-modal-overlay" onClick={onClose}>
-      <div className="gantt-modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* HEADER */}
+      <div
+        ref={dialogRef}
+        className="gantt-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="gantt-modal-header">
           <div className="gantt-modal-title-group">
-             <h3><Icon name="chart-gantt" size={16} /> Diagrama de Gantt</h3>
-             {projectedFinishData && (
-                 <div className="gantt-header-stats">
-                     <div className="gantt-stat-item">
-                         <span className="gantt-stat-label">Entrega Estimada:</span>
-                         <span className="gantt-stat-value">{dayjs(projectedFinishData.date).format('DD MMM YYYY')}</span>
-                     </div>
-                     <div className="gantt-stat-item">
-                         <span className="gantt-stat-label">Duración Proyectada:</span>
-                         <span className="gantt-stat-value">{projectedFinishData.totalDays} días hábiles</span>
-                     </div>
-                 </div>
-             )}
+            <h3 id={titleId}>Diagrama de Gantt</h3>
+            {series ? (
+              <dl className="gantt-modal-stats">
+                {series.deliveredDate ? (
+                  <div><dt>Entrega real</dt><dd className="gx-mono">{formatGanttDate(series.deliveredDate)}</dd></div>
+                ) : pending ? (
+                  <div><dt>Estado</dt><dd>Finalizado · pendiente por registrar</dd></div>
+                ) : series.projectedEndDate ? (
+                  <div><dt>Entrega estimada</dt><dd className="gx-mono">{formatGanttDate(series.projectedEndDate)}</dd></div>
+                ) : null}
+                {!pending && series.projectedEnd !== null ? (
+                  <div><dt>{series.deliveredDate ? 'Duración' : 'Duración proyectada'}</dt><dd className="gx-mono">{series.projectedEnd} días hábiles</dd></div>
+                ) : null}
+                <div><dt>Hoy</dt><dd className="gx-mono">día {series.todayX}</dd></div>
+              </dl>
+            ) : null}
           </div>
-
           <div className="gantt-modal-controls">
-            {/* <label className="gantt-toggle" title="Alternar entre vista de límites legales completos vs. tiempos reales ejecutados">
-              <span className={`gantt-toggle-label ${viewMode === 'legal' ? 'active' : ''}`}>Legal</span>
-              <div className="gantt-switch">
-                <input
-                    type="checkbox"
-                    checked={viewMode === 'real'}
-                    onChange={(e) => setViewMode(e.target.checked ? 'real' : 'legal')}
-                />
-                <span className="gantt-slider round"></span>
-              </div>
-              <span className={`gantt-toggle-label ${viewMode === 'real' ? 'active' : ''}`}>Real</span>
-            </label> */}
-
-            <button className="gantt-close-btn" onClick={onClose}>
-              <Icon name="times" size={16} />
+            {currentItem?.id ? <span className="gantt-modal-ref">Ref. {currentItem.id}</span> : null}
+            <button type="button" className="gx-icon-btn" onClick={onClose} aria-label="Cerrar diagrama de Gantt" title="Cerrar">
+              <Icon name="X" size={18} />
             </button>
           </div>
         </div>
 
-        {/* BODY */}
-        <div className="gantt-modal-body">
-          <div className="gantt-modal-chart-container">
-            <GanttChart
-              phases={phases}
-              radDate={radDate}
-              suspensionPreActa={suspensionPreActa}
-              suspensionPostActa={suspensionPostActa}
-              extension={extension}
-              compactMode={false}
-              viewMode={viewMode}
-              onPhaseClick={handlePhaseClick}
-              activePhaseId={selectedPhase?.id}
-              scheduleConfig={scheduleConfig}
-              manager={manager}
-            />
-          </div>
-
-          <div className={`gantt-phase-detail ${selectedPhase ? '' : 'hidden'}`}>
-            <PhaseDetailPanel
-              phase={selectedPhase}
-              onClose={() => setSelectedPhase(null)}
-              suspensionPreActa={suspensionPreActa}
-              suspensionPostActa={suspensionPostActa}
-              extension={extension}
-            />
-          </div>
+        <div className={cn('gantt-modal-body', selectedRow && 'has-detail')}>
+          <GanttChart
+            series={series}
+            variant="dialog"
+            activePhaseId={selectedId}
+            onPhaseClick={togglePhase}
+          />
+          {selectedRow ? <PhaseDetailPanel row={selectedRow} onClose={() => setSelectedId(null)} /> : null}
         </div>
 
-        {/* FOOTER (LEYENDA COMPACTA) */}
         <div className="gantt-modal-footer">
-          <div className="gantt-legend-compact-wrapper">
-             <span className="gantt-legend-compact-title">Leyenda:</span>
-             <div className="gantt-legend-compact-items">
-                <div className="gl-item"><span className="gl-dot bg-pending"></span>Pendiente</div>
-                <div className="gl-item"><span className="gl-dot bg-active"></span>En curso</div>
-                <div className="gl-item"><span className="gl-dot bg-paused"></span>Pausado</div>
-                <div className="gl-item"><span className="gl-dot bg-completed"></span>Completado</div>
-                <div className="gl-item"><span className="gl-dot bg-overdue"></span>Vencido</div>
-                <div className="gl-item"><span className="gl-dot bg-suspension"></span>Suspensión</div>
-                <div className="gl-item"><span className="gl-dot bg-extension"></span>Prórroga</div>
-                <div className="gl-item"><span className="gl-dot bg-error-line"></span>Exceso</div>
-                <div className="gl-item"><span className="gl-marker"></span>Programado</div>
-             </div>
-             
-             {!!currentItem?.id && (
-                <div style={{ marginLeft: 'auto', fontSize: '10px', color: '#adb5bd', fontWeight: '600' }}>
-                    Ref: {currentItem.id}
-                </div>
-             )}
-          </div>
+          <GanttLegend series={series} />
         </div>
       </div>
     </div>

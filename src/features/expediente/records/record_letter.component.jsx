@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../shared/config/customClasses/typeParse'
 import FUNService from '../api/fun.service'
@@ -11,12 +12,14 @@ import CubXVrDataService from '../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { downloadGeneratedPdf } from '@/shared/utils/pdfDownload';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { useActionGuard } from '../expeditions/useActionGuard';
 
 function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentVersion, edit, requestUpdate }) {
     const [vrsRelated, setVrsRelated] = useState([]);
     const [vrSelected, setVrSelected] = useState(null);
     const [cubSelected, setCubSelected] = useState(null);
     const [idCUBxVr, setIdCUBxVr] = useState(null);
+    const guard = useActionGuard();
 
     const retrieveItem = async () => {
         try {
@@ -151,27 +154,27 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
             return <>
                 <div className="row mb-3">
                     <div className="col">
-                        <label>Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date_doc" required
+                        <label htmlFor="gena_date_doc">Fecha del documento</label>
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="gena_date_doc" required
                             defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
-                        <label>Número de Radicación</label>
+                        <label htmlFor="gena_id_public">Número de Radicación</label>
                         <input type="text" className="form-control mb-3" id="gena_id_public" disabled
                             defaultValue={currentItem.id_public} />
                     </div>
                     <div></div>
                     <div className="col">
-                        <label className="mt-1">{infoCud.serials.end} Carta Acta de Obs.</label>
+                        <label className="mt-1" htmlFor="gena_cub_act">{infoCud.serials.end} Carta Acta de Obs.</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="gena_cub_act"
                                 defaultValue={_GET_CHILD_LAW().cub_act || cubSelected || ""} />
-                            {edit  ? <Button size="sm" onClick={() => _GET_LAST_ID('gena_cub_act')}>GENERAR</Button>
+                            {edit  ? <Button type="button" size="sm" variant="outline" onClick={() => _GET_LAST_ID('gena_cub_act')}>Generar</Button>
                                 : ''}
                         </div>
                     </div>
                     <div className="col  mb-auto" >
-                        <label className="mt-1">{infoCud.serials.start}</label>
+                        <label className="mt-1" htmlFor="vr_selected">{infoCud.serials.start}</label>
                         <div className="input-group">
                             <select className="form-select" id="vr_selected" defaultValue={vrSelected || ""}>
                                 <option disabled value=''>Seleccione una opción</option>
@@ -186,36 +189,36 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 </div>
                 <div className="row mb-3">
                     <div className="col">
-                        <label>5.4 Ciudad</label>
+                        <label htmlFor="gena_city">5.4 Ciudad</label>
                         <input type="text" className="form-control mb-3" id="gena_city"
                             defaultValue={_JSON.city || capitalize(infoCud.city.toLowerCase())} />
                     </div>
                     <div className="col">
-                        <label>5.5. Fecha LyDF</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date" required
+                        <label htmlFor="gena_date">5.5. Fecha LyDF</label>
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="gena_date" required
                             defaultValue={_JSON.date || _GET_CLOCK_STATE(5).date_start} />
                     </div>
                     <div className="col">
-                        <label>5.6. Fecha Limite</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="gena_date_limit" required
+                        <label htmlFor="gena_date_limit">5.6. Fecha Limite</label>
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="gena_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(5).date_start, 30)} />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col">
-                        <label>5.7 Responsable</label>
+                        <label htmlFor="gena_name">5.7 Responsable</label>
                         <input type="text" className="form-control mb-3" id="gena_name"
                             defaultValue={_JSON.name || _CHILD_53.item_5311 + " " + _CHILD_53.item_5312} />
                     </div>
                     <div className="col">
-                        <label>5.8 Dirección</label>
+                        <label htmlFor="gena_address">5.8 Dirección</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="gena_address"
                                 defaultValue={_JSON.address || _CHILD_53.item_536} />
                         </div>
                     </div>
                     <div className="col">
-                        <label>5.9 Email</label>
+                        <label htmlFor="gena_email">5.9 Email</label>
                         <div className="input-group">
                             <input type="text" className="form-control" id="gena_email"
                                 defaultValue={_JSON.email || _CHILD_53.item_535} />
@@ -251,7 +254,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
             formData.set('cub', cub);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            RecordReviewService.gen_doc_incomplete_act(formData)
+            return RecordReviewService.gen_doc_incomplete_act(formData)
                 .then(response => {
                     swalClose();
                     const filename = `Carta_Alerta_Acta_Observaciones_${currentItem.id_public}.pdf`;
@@ -294,9 +297,10 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
 
             formData.set('cub_act_json', JSON.stringify(cub_act_json));
 
-            manage_law(true, formData);
-            createVRxCUB_relation(new_id);
+            const saving = [manage_law(true, formData)];
+            saving.push(createVRxCUB_relation(new_id));
             retrieveItem();
+            return Promise.allSettled(saving);
         }
         let manage_law = (useMySwal, formData) => {
             var _CHILD = _GET_CHILD_LAW();
@@ -305,7 +309,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
-                FUNService.update_law(_CHILD.id, formData)
+                return FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
@@ -328,7 +332,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                     });
             }
             else {
-                FUNService.create_law(formData)
+                return FUNService.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
@@ -355,6 +359,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
         let createVRxCUB_relation = (cub_selected) => {
             let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
+            if (!cub || !vr) return; // nothing to relate yet
             let formatData = new FormData();
 
             formatData.set('vr', vr);
@@ -368,7 +373,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
             formatData.set('date', date);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -380,7 +385,7 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -393,16 +398,16 @@ function RECORD_DOC_LETTER({ translation, swaMsg, globals, currentItem, currentV
             }
         }
         return (
-            <form id="genc_doc_form" onSubmit={save_doc}>
+            <form id="genc_doc_form_act" onSubmit={guard(save_doc, 'save_doc')}>
                 {_GENDOC_COMPONENT()}
                 <div className="row text-center">
                     {edit ?
                         <div className="col">
-                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
+                            <Button type="submit" size="sm" className="my-3"><Icon name="share-square" size={16} /> Guardar datos</Button>
                         </div>
                         : ''}
                     <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                        <Button type="button" variant="outline" size="sm" className="my-3" onClick={guard(() => gen_confirmDoc(), 'gen_confirmDoc')}><Icon name="file-pdf" size={16} /> Generar documento</Button>
                     </div>
                 </div>
             </form>

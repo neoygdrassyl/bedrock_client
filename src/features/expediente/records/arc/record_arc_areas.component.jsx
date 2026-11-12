@@ -833,30 +833,25 @@ export default function RECORD_ARC_AREAS(props) {
     }
     let _COMPONENT_BTNS = () => {
         return <>
-            <div className='row'>
-                <div className='col-8'>
-                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <Button variant={!openConfig ? "outline" : "default"} size="sm"
-                            onClick={() => setOc(!openConfig)}>CONFIGURAR TABLA</Button>
-                        <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>NUEVA FILA</Button>
-                        <Button variant="outline" size="sm" onClick={() => manage_areas(false)}>GUARDAR CAMBIOS</Button>
-                    </div>
-                    <div>
-                        {saving === 0 ?
-                            <label className='fw-bold'>GUARDANDO...</label>
-                            : ''}
-                        {saving === 1 ?
-                            <label className='fw-bold text-success'>DATOS GUARDADOS</label>
-                            : ''}
-                    </div>
-
+            <div className='ew-toolbar mt-3'>
+                <div className="ew-toolbar__actions" role="group" aria-label="Acciones de la tabla de áreas">
+                    <Button variant="outline" size="sm" aria-pressed={openConfig}
+                        onClick={() => setOc(!openConfig)}>Configurar tabla</Button>
+                    <Button variant="outline" size="sm" onClick={() => _ADD_TO_TABLE()}>Nueva fila</Button>
+                    <Button size="sm" onClick={() => manage_areas(false)}>Guardar cambios</Button>
+                    <span className="ew-toolbar__meta" role="status">
+                {saving === 0 ?
+                    <span className='font-semibold'>Guardando…</span>
+                    : ''}
+                {saving === 1 ?
+                    <span className='font-semibold text-success'>Datos guardados</span>
+                    : ''}
+                    </span>
                 </div>
-                <div className='col text-end'>
-                    <div className="btn-group btn-group-sm" role="group" aria-label="...">
-                        <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area" />
-                        <input type='number' step={1} className="border-danger text-end" style={{ width: '50px' }} id="delete_pos_area_end" />
-                        <Button variant="outline" size="sm" className="text-destructive border-destructive" onClick={() => _REMOVE_TO_TABLE()}>ELIMINAR FILA</Button>
-                    </div>
+                <div className="ew-toolbar__actions" role="group" aria-label="Eliminar filas de la tabla de áreas">
+                    <input type='number' step={1} className="form-control form-control-sm ew-num w-20 text-end" id="delete_pos_area" aria-label="Fila inicial a eliminar" placeholder="Desde" />
+                    <input type='number' step={1} className="form-control form-control-sm ew-num w-20 text-end" id="delete_pos_area_end" aria-label="Fila final a eliminar" placeholder="Hasta" />
+                    <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => _REMOVE_TO_TABLE()}>Eliminar filas</Button>
                 </div>
             </div>
         </>
@@ -988,7 +983,7 @@ export default function RECORD_ARC_AREAS(props) {
                             </div>
                         </div>
                         <div className='col-3'>
-                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>CREAR</Button>
+                            <Button variant="outline" size="sm" onClick={() => _NEW_BD()}>Crear</Button>
                         </div>
                         <div className='col'>
                             <div className="form-check">

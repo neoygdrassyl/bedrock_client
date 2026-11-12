@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import FUNService from '../../api/fun.service'
 
 import DataTable from '@/shared/components/data-table-bridge';
@@ -257,6 +260,13 @@ function FUN_6_VIEW({
                 return;
             }
 
+            // A row without a document type has nothing to register; the API rejects it with a 500.
+            const hasDocumentData = (row) => Boolean(String(row.documentCode || '').trim() || String(row.documentName || '').trim());
+            if (!rowsToSave.some(hasDocumentData)) {
+                swalError({ title: 'Falta el documento', text: 'Seleccione el tipo de documento de cada fila marcada antes de guardar.' });
+                return;
+            }
+
             const batchFormData = new FormData();
             const fun0Id = currentId || currentItem?.id;
             const creationYear = dayjs(currentItem?.createdAt || new Date()).format('YY');
@@ -387,7 +397,7 @@ function FUN_6_VIEW({
                     sortable: true,
                     filterable: true,
                     maxWidth: '100px',
-                    cell: row => <span className="text-sm">{row.date}</span>
+                    cell: row => <span className="text-sm">{formatDisplayDate(row.date, { empty: '' })}</span>
                 },
                 /**
                  * {
@@ -465,7 +475,7 @@ function FUN_6_VIEW({
                     <div className="col-5">
                         <div className="input-group">
                             <span className="input-group-text bg-primary text-primary-foreground"><Icon name="calendar-alt" size={16} />&nbsp;Fecha Anexo</span>
-                            <input type="date" className="form-control" max="2100-01-01" id="fun6_dates_edit" required />
+                            <DateInput className="form-control" max="2100-01-01" id="fun6_dates_edit" required />
                         </div>
                     </div>
                 </div>
@@ -519,7 +529,7 @@ function FUN_6_VIEW({
                     FUNService.delete_6(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id);
                                 setEdit(false)
                             } else {
@@ -538,6 +548,8 @@ function FUN_6_VIEW({
             setEdit(true);
         }
         let edit_6 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_6.view:edit_6')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             // FILE DATA
@@ -574,7 +586,7 @@ function FUN_6_VIEW({
             formData.set('origin_state', originState);
             formData.set('medio_recepcion', receptionMedium);
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.update_6(item.id, formData)
+            holdSubmit('fun_6.view:edit_6', FUNService.update_6(item.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
@@ -587,7 +599,7 @@ function FUN_6_VIEW({
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
 
         }
         let edit_6_vr = (id, new_vr) => {

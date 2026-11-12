@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import { dateParser_finalDate, formsParser1, getJSONFull, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse'
 import FUNService from '../../../api/fun.service'
@@ -278,7 +280,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row mb-3">
                     <div className="col">
                         <label>5.1 Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_doc" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="geni_date_doc" required
                             defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
@@ -293,7 +295,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                         <div className="input-group">
                             <input type="text" className="form-control" id="geng_cub_inc"
                                 defaultValue={_GET_CHILD_LAW().cub_inc || cubSelected || ""} />
-                            {edit  ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_inc')}>GENERAR</button>
+                            {edit  ? <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID('geng_cub_inc')}>Generar</button>
                                 : ''}
                         </div>
                     </div>
@@ -322,12 +324,12 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                     </div>
                     <div className="col">
                         <label>5.5. Fecha Radicación</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="geni_date" required
                             defaultValue={_JSON.date || _GET_CLOCK_STATE(3).date_start} />
                     </div>
                     <div className="col">
                         <label>5.6. Fecha Limite</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="geni_date_limit" required
                             defaultValue={_JSON.date_limit || dateParser_finalDate(_GET_CLOCK_STATE(3).date_start, 30)} />
                     </div>
                 </div>
@@ -423,6 +425,10 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
         }
 
         let save_doc = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_doc_confirminc:save_doc')) { e?.preventDefault?.(); return; }
             if (e) e.preventDefault();
             let formData = new FormData();
             let cub_inc_json = getJSONFull(_GET_CHILD_LAW().cub_inc_json);
@@ -456,8 +462,8 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
 
             formData.set('cub_inc_json', JSON.stringify(cub_inc_json));
 
-            manage_law(true, formData);
-            createVRxCUB_relation(new_id);
+            holdSubmit('fun_doc_confirminc:save_doc', manage_law(true, formData));
+            holdSubmit('fun_doc_confirminc:save_doc', createVRxCUB_relation(new_id));
             retrieveItem();
         }
         let manage_law = (useMySwal, formData) => {
@@ -467,11 +473,11 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD.id) {
-                FUNService.update_law(_CHILD.id, formData)
+                return FUNService.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
@@ -490,11 +496,11 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                     });
             }
             else {
-                FUNService.create_law(formData)
+                return FUNService.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id)
                             }
                         } else if (response.data === 'ERROR_DUPLICATE') {
@@ -515,8 +521,9 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
 
         }
         let createVRxCUB_relation = (cub_selected) => {
+            // Without a consecutive there is no CUB-VR relation to create (the API rejects an empty one).
+            if (!idCUBxVr && !String(cub_selected ?? '').trim()) return;
             let vr = document.getElementById("vr_selected1").value;
-            console.log(vr)
             let cub = cub_selected;
             let formatData = new FormData();
 
@@ -531,7 +538,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
 
             formatData.set('date', date);
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             requestUpdate(currentItem.id, true);
@@ -542,7 +549,7 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -562,11 +569,11 @@ function FUN_DOC_CONFIRM_INCOMPLETE({ currentItem, currentVersion, edit, request
                 <div className="row text-center">
                     {edit ?
                         <div className="col">
-                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR DATOS</Button>
+                            <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> Guardar datos</Button>
                         </div>
                         : ''}
                     <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> GENERAR DOCUMENTO</Button>
+                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_confirmDoc()}><Icon name="file-pdf" size={16} /> Generar documento</Button>
                     </div>
                 </div>
             </form>

@@ -118,6 +118,7 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
     const [draftGeneralCriterionId, setDraftGeneralCriterionId] = useState('');
     const cellRefs = useRef({});
     const savedReviewRef = useRef('');
+    const closeButtonRef = useRef(null);
 
     function createNoteId() {
         return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -321,10 +322,10 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
             return;
         }
         const result = await swalConfirm({
-            title: '¿DESEA GUARDAR LOS CAMBIOS ANTES DE SALIR?',
+            title: '¿Desea guardar los cambios antes de salir?',
             text: 'Los cambios sin guardar se perderán si continúa sin guardarlos.',
-            confirmButtonText: 'SI, GUARDAR',
-            cancelButtonText: 'NO, SALIR',
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'No, salir',
         });
         if (result.isConfirmed) {
             const missingObservations = getMissingObservations();
@@ -338,6 +339,31 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
         }
         if (result.dismiss === 'cancel') onClose();
     }
+
+    // The host modal has no close of its own: focus moves in on open and returns to the opener on
+    // close; Escape closes the topmost layer (observation panels first, then the review itself).
+    useEffect(() => {
+        const opener = document.activeElement;
+        closeButtonRef.current?.focus();
+        return () => { if (opener && typeof opener.focus === 'function' && document.contains(opener)) opener.focus(); };
+    }, []);
+    const escapeRef = useRef(null);
+    escapeRef.current = () => {
+        if (professionalsOpen) return; // its own modal handles Escape
+        if (activeObservationId) setActiveObservationId(null);
+        else if (activeVerificationObservation) setActiveVerificationObservation(null);
+        else if (generalObservationsOpen) setGeneralObservationsOpen(false);
+        else closeReview();
+    };
+    useEffect(() => {
+        const onKeyDown = (event) => {
+            if (event.key !== 'Escape' || event.defaultPrevented) return;
+            if ([...document.querySelectorAll('.swal2-container, [role="alertdialog"]')].some((layer) => layer.getClientRects().length)) return;
+            escapeRef.current?.();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, []);
 
     function handleCellKeyDown(event, blueprintIndex, criterionIndex, blueprint, visibleBlueprints) {
         const shortcut = { '0': 'pending', '1': 'cumple', '2': 'no_cumple', '3': 'no_aplica' }[event.key];
@@ -371,6 +397,10 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
     }
 
     return <form onSubmit={save} className="space-y-3 [&_*]:text-[11px]" aria-readonly={readOnly}>
+        <div className="flex items-center justify-between gap-3 border-b border-border pb-2">
+            <h2 className="mb-0 !text-sm font-semibold text-foreground">Evaluación de planos</h2>
+            <Button ref={closeButtonRef} type="button" variant="ghost" size="sm" aria-label="Cerrar evaluación de planos" title="Cerrar" disabled={saving || finalizing} onClick={closeReview}><Icon name="times" size={14} /></Button>
+        </div>
         {readOnly ? <p className={`mb-0 rounded-md border px-3 py-2 text-sm font-semibold ${noCumpleCount ? 'border-destructive bg-destructive/10 text-destructive' : 'border-success bg-success/10 text-success'}`} role="status">{evaluationStatus}</p> : null}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {['cumple', 'no_cumple', 'no_aplica', 'pending'].map(state => <div key={state} className="rounded-md border border-border bg-muted/40 px-2 py-1 text-center text-xs"><strong>{counts[state]}</strong><span className="ms-1">{STATE_META[state].label}</span></div>)}
@@ -399,14 +429,14 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
                     <tr>{CRITERIA.map(criterion => <th key={criterion.id} className="h-28 min-w-8 w-8 border-b border-r border-border bg-muted/30 p-0 text-center align-bottom text-foreground">
                         <div className="flex h-full flex-col items-center justify-end gap-1 pb-1">
                             {criterion.label === 'Firmas' ? <button type="button" className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Ver profesionales que deben firmar los planos" title="Ver profesionales que deben firmar los planos" onClick={() => setProfessionalsOpen(true)}><Icon name="eye" size={14} /></button> : null}
-                            <span className="inline-block whitespace-nowrap !text-[10px] font-medium leading-none [writing-mode:vertical-rl] rotate-180">{criterion.label}</span>
+                            <span className="inline-block whitespace-nowrap !text-[11px] font-medium leading-none [writing-mode:vertical-rl] rotate-180">{criterion.label}</span>
                         </div>
                     </th>)}</tr>
                 </thead>
                 <tbody>
                     <tr className="bg-muted/20">
                         <th scope="row" className="sticky left-0 z-20 w-60 min-w-60 border-b border-r border-border bg-muted/20 px-2 py-1 text-left font-normal">
-                            <div className="flex items-center justify-between gap-2"><strong>Actuación masiva</strong><div className="flex items-center gap-1"><Button type="button" size="sm" variant={bulkActionActive ? 'default' : 'outline'} className="h-7 px-2 text-xs" aria-pressed={bulkActionActive} onClick={() => setBulkActionActive(active => !active)} disabled={bulkActionApplying}>{bulkActionActive ? 'DESACTIVAR' : 'ACTIVAR'}</Button><button type="button" className="rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Información sobre actuación masiva" onClick={showBulkActionInfo}><Icon name="info-circle" size={14} /></button></div></div>
+                            <div className="flex items-center justify-between gap-2"><strong>Actuación masiva</strong><div className="flex items-center gap-1"><Button type="button" size="sm" variant={bulkActionActive ? 'default' : 'outline'} className="h-7 px-2 text-xs" aria-pressed={bulkActionActive} onClick={() => setBulkActionActive(active => !active)} disabled={bulkActionApplying}>{bulkActionActive ? 'Desactivar' : 'Activar'}</Button><button type="button" className="rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Información sobre actuación masiva" onClick={showBulkActionInfo}><Icon name="info-circle" size={14} /></button></div></div>
                         </th>
                         {CRITERIA.map(criterion => {
                             const state = getBulkState(blueprints, review.cells, criterion.id);
@@ -418,7 +448,7 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
                     const notes = review.observations[blueprint.id] || [];
                     return <tr key={blueprint.id}>
                         <th scope="row" className="sticky left-0 z-20 w-60 min-w-60 border-b border-r border-border bg-background px-2 py-1 text-left font-normal">
-                            <div className="flex items-center justify-between gap-2"><div className="min-w-0"><strong>{blueprint.id_public}</strong><p className="mb-0 truncate text-[10px] leading-tight text-muted-foreground">{blueprint.use || ''}</p></div><Button type="button" size="sm" variant="outline" className={`h-7 shrink-0 px-2 text-xs ${notes.length ? 'border-destructive text-destructive' : 'text-muted-foreground'}`} onClick={() => openObservationPanel(blueprint.id)}><Icon name="comment" size={13} className="me-1" />{notes.length ? `${notes.length} observación${notes.length === 1 ? '' : 'es'}` : 'Añadir observación'}</Button></div>
+                            <div className="flex items-center justify-between gap-2"><div className="min-w-0"><strong>{blueprint.id_public}</strong><p className="mb-0 truncate text-[11px] leading-tight text-muted-foreground">{blueprint.use || ''}</p></div><Button type="button" size="sm" variant="outline" className={`h-7 shrink-0 px-2 text-xs ${notes.length ? 'border-destructive text-destructive' : 'text-muted-foreground'}`} onClick={() => openObservationPanel(blueprint.id)}><Icon name="comment" size={13} className="me-1" />{notes.length ? `${notes.length} observación${notes.length === 1 ? '' : 'es'}` : 'Añadir observación'}</Button></div>
                         </th>
                         {CRITERIA.map((criterion, criterionIndex) => {
                             const state = review.cells[blueprint.id]?.[criterion.id] || 'pending';
@@ -437,9 +467,9 @@ function BlueprintReviewMatrix({ blueprints, professionals, savedReview, saving,
                 return <div key={item.id} className="grid gap-2 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"><span className="text-sm">{item.label}</span><div className="grid grid-cols-[92px_92px_92px_146px] gap-1">{CONTROL_META.map(option => <button key={option.state} type="button" aria-pressed={currentState === option.state} className={`w-full rounded border bg-background px-2 py-1 text-xs font-medium transition-[border-color,color,background-color] duration-[140ms] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 ${option.focusClassName} ${option.pressedClassName} ${currentState === option.state ? option.selectedClassName : 'border-border text-foreground [&_svg]:text-muted-foreground'}`} onClick={() => updateVerification(item.id, option.state)}><Icon name={option.icon} size={13} className="me-1" />{option.label}</button>)}<Button type="button" size="sm" variant="outline" className={`h-auto w-full px-2 text-xs ${notes.length ? 'border-destructive text-destructive' : 'text-muted-foreground'}`} onClick={() => setActiveVerificationObservation(item.id)}><Icon name="comment" size={13} className="me-1" />{notes.length ? `${notes.length} observación${notes.length === 1 ? '' : 'es'}` : 'Añadir observación'}</Button></div></div>;
             })}
         </section>
-        <div className="rounded-md border border-border p-3"><div className="mb-2 flex items-center justify-between gap-2"><strong className="text-sm">Observaciones</strong><Button type="button" size="sm" variant="outline" onClick={() => { setActiveObservationId(null); setActiveVerificationObservation(null); setGeneralObservationsOpen(true); }}><Icon name="comment" size={13} className="me-1" />OBSERVACIONES GENERALES</Button></div><textarea className="form-control form-control-sm" rows="4" readOnly value={observationText} placeholder="Las observaciones de planos, criterios y verificaciones aparecerán aquí." /></div>
+        <div className="rounded-md border border-border p-3"><div className="mb-2 flex items-center justify-between gap-2"><strong className="text-sm">Observaciones</strong><Button type="button" size="sm" variant="outline" onClick={() => { setActiveObservationId(null); setActiveVerificationObservation(null); setGeneralObservationsOpen(true); }}><Icon name="comment" size={13} className="me-1" /> Observaciones generales</Button></div><textarea className="form-control form-control-sm" rows="4" readOnly value={observationText} placeholder="Las observaciones de planos, criterios y verificaciones aparecerán aquí." /></div>
         {validationError ? <p className="mb-0 text-sm text-destructive" role="alert">{validationError}</p> : null}
-        <div className="flex justify-end gap-2"><Button type="button" variant="outline" size="sm" disabled={saving || finalizing} onClick={closeReview}><Icon name="times-circle" size={16} className="me-1" />CERRAR</Button>{!readOnly ? <><Button type="submit" size="sm" disabled={saving || finalizing}><Icon name="save" size={16} className="me-1" />{saving ? 'GUARDANDO...' : 'Guardar'}</Button><Button type="button" size="sm" variant="outline" disabled={saving || finalizing || !isComplete} title={isComplete ? 'Finalizar revisión' : 'Complete todos los criterios y verificaciones para finalizar'} onClick={finalizeReview}><Icon name="check-circle" size={16} className="me-1" />{finalizing ? 'FINALIZANDO...' : 'FINALIZAR REVISIÓN'}</Button></> : null}</div>
+        <div className="flex justify-end gap-2"><Button type="button" variant="outline" size="sm" disabled={saving || finalizing} onClick={closeReview}><Icon name="times-circle" size={16} className="me-1" /> Cerrar</Button>{!readOnly ? <><Button type="submit" size="sm" disabled={saving || finalizing}><Icon name="save" size={16} className="me-1" />{saving ? 'Guardando…' : 'Guardar'}</Button><Button type="button" size="sm" variant="outline" disabled={saving || finalizing || !isComplete} title={isComplete ? 'Finalizar revisión' : 'Complete todos los criterios y verificaciones para finalizar'} onClick={finalizeReview}><Icon name="check-circle" size={16} className="me-1" />{finalizing ? 'Finalizando…' : 'Finalizar revisión'}</Button></> : null}</div>
         <Modal
             contentLabel="Profesionales que deben firmar los planos"
             isOpen={professionalsOpen}

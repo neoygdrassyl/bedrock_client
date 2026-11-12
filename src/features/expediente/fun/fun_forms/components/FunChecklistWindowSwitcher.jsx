@@ -14,6 +14,7 @@ function FunChecklistWindowSwitcher({
   requestUpdate,
   readOnly,
   hideDocumentManagement = false,
+  hideHeading = false,
   vrDocs,
   LegacyChecklistComponent = FUNG_CHECKLIST,
   IntelligentChecklistComponent = FUN_CHECKLIST_N,
@@ -48,6 +49,7 @@ function FunChecklistWindowSwitcher({
     requestUpdate,
     readOnly,
     hideDocumentManagement,
+    hideHeading,
   };
 
   return (
@@ -81,7 +83,7 @@ function FunChecklistWindowSwitcher({
         </div>
       </div>
 
-      <div className="border border-top-0 p-3 bg-white">
+      <div className="pt-3">
         {activeTab === LEGACY_TAB && (
           <div id={legacyPanelId} role="tabpanel" aria-labelledby={legacyTabId}>
             <EffectiveLegacyChecklistComponent {...legacyProps} />

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
@@ -341,12 +342,12 @@ function RECORD_ENG_STEP_44(props) {
             ]
 
             return LIST.map((list, i) => {
-                return <>
+                return <Fragment key={i}>
                     <div className="row border">
                         {list.title ? <div className='col'><label className={list.className ?? ''}>{list.title}</label></div> : ''}
                     </div>
                     {list.items.map((item, j) => {
-                        return <>
+                        return <Fragment key={j}>
                             <div className='row border'>
                                 <div className='col'><label>{item.desc}</label></div>
                                 {item.i === false ? '' :
@@ -359,9 +360,9 @@ function RECORD_ENG_STEP_44(props) {
                                     </select></div>
                                 }
                             </div>
-                        </>
+                        </Fragment>
                     })}
-                </>
+                </Fragment>
             })
         }
         // FUNCTIONS AND APIS

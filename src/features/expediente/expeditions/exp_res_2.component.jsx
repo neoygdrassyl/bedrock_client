@@ -154,7 +154,7 @@ export default function EXP_RES_2(props) {
           </p>
         </div>
 
-        <Button variant="destructive" size="sm" onClick={handleDownloadPDFv2} disabled={!isTemplateReady}>
+        <Button variant="outline" size="sm" onClick={handleDownloadPDFv2} disabled={!isTemplateReady}>
           <Icon name="file-pdf" size={16} className="me-2" />
           Descargar PDF
         </Button>

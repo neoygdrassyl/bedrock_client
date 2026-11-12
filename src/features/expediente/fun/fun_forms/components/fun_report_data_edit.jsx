@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { dateParser, dateParser_finalDate, _MANAGE_IDS } from '../../../../../shared/config/customClasses/typeParse';
@@ -119,7 +121,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                         <div className="input-group my-1">
                             <input type="text" className="form-control" id="fun_report_data_2"
                                 defaultValue={_GET_CHILD_LAW().report_cub || cubSelected || ""} />
-                                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>Generar</button>
                         </div>
                     </div>
                 </div>
@@ -145,7 +147,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                         <label>Fecha de Radicación ante la entidad interesada</label>
                     </div>
                     <div className="col-4 p-2">
-                        <input type="date" max="2100-01-01" className="form-control" id="fun_report_data_3" defaultValue={_CHILD[2]} />
+                        <DateInput max="2100-01-01" className="form-control" id="fun_report_data_3" defaultValue={_CHILD[2]} />
                     </div>
                 </div>
                 <div className="row">
@@ -196,10 +198,10 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (_CHILD.id) {
 
-                FUN_SERVICE.update_law(_CHILD.id, formData)
+                return FUN_SERVICE.update_law(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
@@ -214,10 +216,10 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                     });
             }
             else {
-                FUN_SERVICE.create_law(formData)
+                return FUN_SERVICE.create_law(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else if (response.data === 'ERROR_DUPLICATE') {
                             swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
@@ -234,6 +236,10 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
         }
 
         let save_law = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_report_data_edit:save_law')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
 
@@ -252,11 +258,13 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
             let prev_id = _GET_CHILD_LAW().report_cub;
             formData.set('prev_id', prev_id);
 
-            manage_law();
-            createVRxCUB_relation(new_id)
+            holdSubmit('fun_report_data_edit:save_law', manage_law());
+            holdSubmit('fun_report_data_edit:save_law', createVRxCUB_relation(new_id));
             retrieveItem();
         }
         let createVRxCUB_relation = (cub_selected) => {
+            // Without a consecutive there is no CUB-VR relation to create (the API rejects an empty one).
+            if (!idCUBxVr && !String(cub_selected ?? '').trim()) return;
             let vr = document.getElementById("vr_selected").value;
             let cub = cub_selected;
             let formatData = new FormData();
@@ -271,7 +279,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
             formatData.set('date', date);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -283,7 +291,7 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -297,13 +305,13 @@ function FUN_REPORT_DATA_EDIT({ translation, swaMsg, globals, currentItem, curre
         };
 
         return (
-            <div className="fun_report_data container_arc">
+            <div className="fun_report_data container_arc px-1">
                 <form id="form_report_data_edit" onSubmit={save_law}>
                     {_COMPONENT()}
                     <div className="row text-center">
                         <div className="col-12">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                <Icon name="share-square" size={16} /> Guardar cambios
                             </Button>
                         </div>
                     </div>

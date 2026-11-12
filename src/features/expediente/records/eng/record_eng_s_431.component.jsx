@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import Estudios_Simico from '../../../../shared/config/jsons/estudio_eng.json'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue } from './calcFieldValue';
 
 function RECORD_ENG_STEP_431(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, isP, version, requestUpdateRecord } = props;
@@ -18,7 +19,7 @@ function RECORD_ENG_STEP_431(props) {
                 }
             }
             if (STEP) {
-                //document.getElementById('r_e_p_select').value = STEP.check
+                //setCalcValue('r_e_p_select', STEP.check);
                 if (STEP.check == 1) setShowSection(true);
                 if (STEP.check == 0) setShowSection(false);
             }
@@ -176,29 +177,29 @@ function RECORD_ENG_STEP_431(props) {
         let var_d129 = () => 0.75;
 
         let _set_e54 = () => {
-            if (!var_a123()) document.getElementById('e54').value = null
+            if (!var_a123()) setCalcValue('e54', null);
             let op = 0;
             if (var_a123() > 1.29) op = 0.8 * var_a125() * Math.pow((var_a123() + 0.3) / var_a123(), 2);
             else op = 1.2 * var_a125();
             op = (op * _gravity).toFixed(2);
-            document.getElementById('e54').value = op;
+            setCalcValue('e54', op);
         }
         let _set_e56 = () => {
             let op = Number(var_a122()) / 5.5;
             op = op.toFixed(2)
-            document.getElementById('e56').value = op;
+            setCalcValue('e56', op);
         }
         let _set_i56 = () => {
             let e55 = Number(document.getElementById('e55').value) ?? 0;
             let op = Math.pow(Math.tan(degrees_to_radians(45 - e55 / 2)), 2);
             op = op.toFixed(2)
-            document.getElementById('i56').value = op;
+            setCalcValue('i56', op);
         }
         let _set_i57 = () => {
             let e55 = Number(document.getElementById('e55').value) ?? 0;
             let op = Math.pow(Math.tan(degrees_to_radians(45 + e55 / 2)), 2);
             op = op.toFixed(2)
-            document.getElementById('i57').value = op;
+            setCalcValue('i57', op);
         }
 
         let update_values = () => {
@@ -211,10 +212,10 @@ function RECORD_ENG_STEP_431(props) {
         let _set_ubicacion = (ubicacion) => {
             let find_ubicacion = Estudios_Simico.find(i => i.Ciudades === ubicacion);
             if (find_ubicacion) {
-                document.getElementById('e60').value = Number(find_ubicacion.Aa.replace(/,/g, '.'));
-                document.getElementById('j60').value = Number(find_ubicacion.Av.replace(/,/g, '.'));
-                document.getElementById('j61').value = Number(find_ubicacion.Ae.replace(/,/g, '.'));
-                document.getElementById('j62').value = Number(find_ubicacion.Ad.replace(/,/g, '.'));
+                setCalcValue('e60', Number(find_ubicacion.Aa.replace(/,/g, '.')));
+                setCalcValue('j60', Number(find_ubicacion.Av.replace(/,/g, '.')));
+                setCalcValue('j61', Number(find_ubicacion.Ae.replace(/,/g, '.')));
+                setCalcValue('j62', Number(find_ubicacion.Ad.replace(/,/g, '.')));
             }
             manage_step_01();
         }
@@ -264,19 +265,19 @@ function RECORD_ENG_STEP_431(props) {
         let _SET_VALUES = (value) => {
             if (!value) return {}
             const newValue = STEP_01_SUPPORT[value];
-            document.getElementById('recprd_eng_s01_1').value = newValue.niveles;
-            document.getElementById('recprd_eng_s01_2').value = newValue.cargas;
-            document.getElementById('recprd_eng_s01_3').value = newValue.profundidad;
-            document.getElementById('recprd_eng_s01_4').value = newValue.sondeos;
-            document.getElementById('recprd_eng_s01_5').value = newValue.supervicion;
+            setCalcValue('recprd_eng_s01_1', newValue.niveles);
+            setCalcValue('recprd_eng_s01_2', newValue.cargas);
+            setCalcValue('recprd_eng_s01_3', newValue.profundidad);
+            setCalcValue('recprd_eng_s01_4', newValue.sondeos);
+            setCalcValue('recprd_eng_s01_5', newValue.supervicion);
         }
         let _SET_VALUES_03 = (value) => {
             if (!value) return {}
             const newValue = STEP_03_tipo_perfil[value];
-            document.getElementById('recprd_eng_s03_1').value = newValue.velocidad;
-            document.getElementById('recprd_eng_s03_2').value = newValue.golpepie;
-            document.getElementById('recprd_eng_s03_3').value = newValue.resistencia;
-            document.getElementById('recprd_eng_s03_4').value = newValue.su;
+            setCalcValue('recprd_eng_s03_1', newValue.velocidad);
+            setCalcValue('recprd_eng_s03_2', newValue.golpepie);
+            setCalcValue('recprd_eng_s03_3', newValue.resistencia);
+            setCalcValue('recprd_eng_s03_4', newValue.su);
             manage_step_01()
         }
         let _GET_STEP_TYPE_INDEX = (_id_public, _type, _index) => {
@@ -383,7 +384,7 @@ function RECORD_ENG_STEP_431(props) {
         let COMPONENT_02 = () => {
             return <>
                 {H2221().map((value, i) => (
-                    <div className="row border my-0">
+                    <div className="row border my-0" key={i}>
                         <div className="col-10">
                             <div className="input-group my-0">
                                 <label>{value}</label>
@@ -505,7 +506,7 @@ function RECORD_ENG_STEP_431(props) {
                             <select className='form-select form-control form-control-sm'
                                 id='recprd_eng_s03_01' onChange={(e) => _set_ubicacion(e.target.value)}
                                 defaultValue={_GET_STEP_TYPE_INDEX('s4313', 'value', 21) ?? ''}>
-                                {Estudios_Simico.map(item => <option>{item.Ciudades}</option>)}
+                                {Estudios_Simico.map((item, itemIndex) => <option key={itemIndex}>{item.Ciudades}</option>)}
                             </select>
                         </div>
                         <div className="col-3"></div>

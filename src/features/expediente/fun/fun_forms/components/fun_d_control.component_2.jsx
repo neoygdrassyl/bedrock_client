@@ -1,5 +1,6 @@
 
 import FUN_SERVICE from '../../../api/fun.service';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
 import { _GET_SERIE_COD, _GET_SUBSERIE_COD, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
@@ -231,7 +232,7 @@ export default function FUN_D_CONTROL_2(props) {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         try {
             await saveLegalFormSheet(currentItem.id, inventorySheetCommand(legalForm.data, readSheet(), INVENTORY_SHEET_REASON));
-            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
         } catch (e) {
             swalError({ title: swaMsg.generic_eror_title, text: legalFormErrorMessage(e) || generatorSaveErrorText(e, swaMsg.generic_error_text) });
         } finally {
@@ -314,7 +315,7 @@ export default function FUN_D_CONTROL_2(props) {
             FUN_SERVICE.update_r(_CHILD.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -330,7 +331,7 @@ export default function FUN_D_CONTROL_2(props) {
             FUN_SERVICE.create_funr(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -390,7 +391,7 @@ export default function FUN_D_CONTROL_2(props) {
         return (
             <div className='row' key={`${item.name}-${index}`}>
                 <div className='col-4 border'>{item.name}</div>
-                {item.date ? <div className='col-3 border'><input type="date" max='2100-01-01' className='form-control' id={`date_${item.n}_${item.i}`} defaultValue={find_item.date || dv} /></div> : <div className='col-3 border' />}
+                {item.date ? <div className='col-3 border'><DateInput max='2100-01-01' className='form-control' id={`date_${item.n}_${item.i}`} defaultValue={find_item.date || dv} /></div> : <div className='col-3 border' />}
                 {item.folio ? <div className='col-3 border'><input type="number" className='form-control' id={`folio_${item.n}_${item.i}`} defaultValue={find_item.n || df_n} /></div> : <div className='col-3 border' />}
                 <div className='col-2 border'>{item.label}</div>
             </div>
@@ -415,13 +416,13 @@ export default function FUN_D_CONTROL_2(props) {
         return <>
             <div className='row'>
                 <div className='col-3 border fw-bold'>FECHA DE ELABORACIÓN</div>
-                <div className='col-3 border'><input type="date" max='2100-01-01' className='form-control' id="date_create" defaultValue={INVENTORY.date_create} /></div>
+                <div className='col-3 border'><DateInput max='2100-01-01' className='form-control' id="date_create" defaultValue={INVENTORY.date_create} /></div>
                 <div className='col-3 border fw-bold'>PERSONA QUE ARCHIVA</div>
                 <div className='col-3 border'><input className='form-control' id="user_archive" defaultValue={INVENTORY.user_archive} /></div>
             </div>
             <div className='row'>
                 <div className='col-3 border fw-bold'>FECHA DE RECIBO</div>
-                <div className='col-3 border'><input type="date" max='2100-01-01' className='form-control' id="date_retrieve" defaultValue={INVENTORY.date_retrieve} /></div>
+                <div className='col-3 border'><DateInput max='2100-01-01' className='form-control' id="date_retrieve" defaultValue={INVENTORY.date_retrieve} /></div>
                 <div className='col-3 border fw-bold'>PERSONA QUE RECIBE</div>
                 <div className='col-3 border'><input className='form-control' id="user_retrieve" defaultValue={INVENTORY.user_retrieve} /></div>
             </div>
@@ -434,10 +435,10 @@ export default function FUN_D_CONTROL_2(props) {
                     <div className="col">
                         {canonicalSaveBlocked
                             ? <span className="d-block my-3 text-muted small" role="status">{CANONICAL_SAVE_UNAVAILABLE_HINT}</span>
-                            : <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>}
+                            : <Button size="sm" className="my-3" onClick={() => save_fun_r()} ><Icon name="edit" size={16} /> Guardar cambios </Button>}
                     </div>
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()}><Icon name="file-pdf" size={16} /> Generar PDF </Button>
                     </div>
                 </div>
             </div>

@@ -139,13 +139,12 @@ export default function EXP_AREAS_RECORD(props) {
                 maxWidth: '50px',
                 cell: row => <>
                     <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-1" onClick={() => setEdit(row)}><Icon name="edit" size={16} /></Button></span>
-                    <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-1" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
+                    <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-1 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_item(row.id)}><Icon name="trash-alt" size={16} /></Button></span>
                 </>
             },
         ]
-        return <DataTable
+        return <DataTable pagination={false}
             noDataComponent="No hay Items"
-            striped="true"
             columns={columns}
             data={_LIST}
             highlightOnHover
@@ -281,7 +280,7 @@ export default function EXP_AREAS_RECORD(props) {
                     </div>
                     <div className='row'>
                         <div className='col'>
-                            <Button size="sm" onClick={() => new_expedition()}>CREAR CUADRO DE AREAS</Button>
+                            <Button size="sm" onClick={() => new_expedition()}>Crear cuadro de áreas</Button>
                         </div>
                     </div>
 
@@ -299,7 +298,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE()}
                                 <div className="row mb-3 text-center">
                                     <div className="col">
-                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                     </div>
                                 </div>
                             </form>
@@ -313,7 +312,7 @@ export default function EXP_AREAS_RECORD(props) {
                                 {_COMPONENT_MANAGE('_edit')}
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                     </div>
                                 </div>
                             </form>

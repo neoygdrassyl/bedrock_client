@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 
 import Record_lawService from '../../api/record_law.service';
 import ObservationPanel from '../../../../shared/components/ObservationPanel';
@@ -49,10 +50,10 @@ function RECORD_LAW_STEP_1(props) {
             var _COMPONENT = [];
 
             for (const item in _LIST) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={item}>
                     <div className="col-9 my-1"><label>{parseInt(item, 10) + 1}. {_LIST[item].desc}</label> </div>
-                    <div className="col-3 my-1"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} name="s_1_checks"
-                        defaultValue={_CHECK_ARRAY[item]} onChange={() => manage_rl_s1()} >
+                    <div className="col-3 my-1"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} aria-label={_LIST[item].desc} name="s_1_checks"
+                        defaultValue={_CHECK_ARRAY[item]} onChange={(event) => { event.target.className = _GET_SELECT_COLOR_VALUE(event.target.value); manage_rl_s1(); }} >
                         {_LIST[item].alt
                             ? <>
                                 <option value="0" className="text-danger">INCOMPLETA</option>
@@ -64,7 +65,7 @@ function RECORD_LAW_STEP_1(props) {
                             </>}
 
                     </select> </div>
-                </>)
+                </Fragment>)
             }
             return <div className="row">{_COMPONENT}</div>
         }
@@ -150,11 +151,13 @@ function RECORD_LAW_STEP_1(props) {
         }
 
         return (
-            <div className="record_law_step_1 container">
-                <h3 className='fw-bold py-3 text-center'> Análisis de la información</h3>
+            <section className="record_law_step_1 ew-card">
+                <div className="ew-card__header">
+                    <h3 className="ew-card__title">Análisis de la información</h3>
+                </div>
                 {_COMPONENT_4()}
                 {_COMPONENT_CORRECTIONS()}
-            </div >
+            </section>
         );
 }
 

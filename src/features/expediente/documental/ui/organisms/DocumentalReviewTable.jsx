@@ -17,6 +17,7 @@ import { VrCell } from '../molecules/VrCell';
 import { DocumentTitleButton } from '../molecules/DocumentTitleButton';
 import { ReceiptStatus, ScanStatus } from '../molecules/DocumentReceiptStatus';
 import { DocumentalDetailPanel } from './DocumentalDetailPanel';
+import { formatDocumentDisplayDate } from '../../shared/expediente-documental.utils';
 import { DocumentalTableToolbar } from './DocumentalTableToolbar';
 import { handleSelectableRowKeyDown, selectableRowClass, selectedRowAccent } from '../selectableRows';
 
@@ -286,7 +287,7 @@ export function DocumentalReviewTable({
                           <TableCell className="px-[0.75rem] py-2">
                             <VrCell latestVr={row.latestVr} />
                             <span className="mt-1 block font-mono text-[11px] leading-4 text-muted-foreground">
-                              {row.latestDocumentDate || 'Sin fecha'}
+                              {formatDocumentDisplayDate(row.latestDocumentDate) || 'Sin fecha'}
                             </span>
                           </TableCell>
                           <TableCell className="px-2 py-2">

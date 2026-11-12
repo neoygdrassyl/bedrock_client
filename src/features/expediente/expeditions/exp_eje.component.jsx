@@ -1,3 +1,4 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import { Button } from '@/shared/ui/button';
 import SubmitService from '../../ventanilla/api/submit.service';
@@ -16,23 +17,38 @@ import EXP_RES_2 from './exp_res_2.component';
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { downloadGeneratedPdf } from '../../../shared/utils/pdfDownload';
+import { useActionGuard } from './useActionGuard';
+
+// Records whose default model was already stored in this session (the effect below runs twice under StrictMode).
+const defaultModelStored = new Set();
 
 const _GLOBAL_ID = import.meta.env.VITE_GLOBAL_ID;
 export default function EXP_EJEC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc } = props;
     const [resDocData, setResDocData] = useState(null);
-    // console.log(currentRecord);
+    const guard = useActionGuard();
 
+    // A record without model gets the default one stored once, silently: opening the module is not a user action,
+    // so it must not raise the "processing / saved / error" dialogs.
     useEffect(() => {
-        if (!currentRecord?.model_exec) {
-            update_model_exec('eje_open');
-        }
+        if (!currentRecord?.id || currentRecord.model_exec || defaultModelStored.has(currentRecord.id)) return;
+        defaultModelStored.add(currentRecord.id);
+        const defaultModel = new FormData();
+        defaultModel.set('model_exec', 'eje_open');
+        EXPEDITION_SERVICE.update(currentRecord.id, defaultModel)
+            .then(response => {
+                if (response.data === 'OK') props.requestUpdateRecord(currentItem.id);
+            })
+            .catch(e => {
+                defaultModelStored.delete(currentRecord.id);
+                console.log(e);
+            });
     }, []);
 
     let _GET_EXPEDITION_JSON = (field) => {
         let json = currentRecord[field];
         if (!json) return {}
-        let object = JSON.parse(JSON.parse(json))
+        let object = parseLegacyJson(json, {}, `exp_eje:expedition.${field}`)
         return object
     }
     let _GET_CHILD_1 = () => {
@@ -201,16 +217,16 @@ export default function EXP_EJEC(props) {
         return <>
             <div className="row">
                 <div className="col">
-                    <label className="mt-2">ACTO</label>
+                    <label className="mt-2">Acto</label>
                     <div className="input-group">
                         <select className="form-select" id="expedition_doc_eje_model" defaultValue={default_model} onChange={(e) => {setResDocData(null); update_model_exec(e.target.value)}}>
                             {models.map(model => {
                                 if (model.omit) return ''
                                 if (model.group)
-                                    return <optgroup label={model.group}>
-                                        {model.items.map(m => <option value={m.value}>{m.label}</option>)}
+                                    return <optgroup key={model.group} label={model.group}>
+                                        {model.items.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                                     </optgroup>
-                                else return <option value={model.value}>{model.label}</option>
+                                else return <option key={model.value} value={model.value}>{model.label}</option>
                             })}
                         </select>
                     </div>
@@ -314,7 +330,7 @@ export default function EXP_EJEC(props) {
                     <label className="mt-1">Consecutivo</label>
                     <div className="input-group">
                         <input type="text" className="form-control" disabled id="expedition_eje_id_res"
-                            value={currentRecord.id_public} />
+                            value={currentRecord.id_public ?? ''} readOnly />
                     </div>
                 </div>
                 <div className="col">
@@ -332,7 +348,7 @@ export default function EXP_EJEC(props) {
                     </div>
                 </div>
                 <div className="col">
-                    <label className="mt-1"># Radicacion</label>
+                    <label className="mt-1">N.° de radicación</label>
                     <div className="input-group">
                         <input type="text" className="form-control" id="expedition_eje_id_public" disabled
                             value={currentItem.id_public} readOnly />
@@ -423,11 +439,11 @@ export default function EXP_EJEC(props) {
                     <div className="fields vertical">
                         <div className="field">
                             <label className="field_label">Mostrar logo</label>
-                            <select size={1} className="form-select form-select-sm" id="logo_pages_exec">
+                            <select size={1} className="form-select form-select-sm" id="logo_pages_exec" defaultValue="none">
                                 <option value="impar">Pág Impares</option>
                                 <option value="par">Pág Pares</option>
                                 <option value="all">Todas las pág.</option>
-                                <option value="none" selected>No mostrar</option>
+                                <option value="none">No mostrar</option>
                             </select>
                         </div>
 
@@ -443,8 +459,8 @@ export default function EXP_EJEC(props) {
 
                         <div className="field">
                             <label className="field_label">Autenticidad</label>
-                            <select size={1} className="form-select form-select-sm" id="autenticidad_exec">
-                                <option value="Original" selected>Original</option>
+                            <select size={1} className="form-select form-select-sm" id="autenticidad_exec" defaultValue="Original">
+                                <option value="Original">Original</option>
                                 <option value="Copia">Copia</option>
                                 <option value="Vacio">Vacío</option>
                             </select>
@@ -462,11 +478,11 @@ export default function EXP_EJEC(props) {
             <hr />
             <div className="row text-center">
                 <div className="col">
-                    <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                    <Button type="button" size="sm" className="my-3" onClick={guard(() => save_eje(), 'save_eje')}><Icon name="share-square" size={16} /> Guardar cambios</Button>
                 </div>
                 <div className="col">
                     {import.meta.env.VITE_GLOBAL_ID === 'cb1' && (
-                        <Button size="sm" className="my-3" onClick={() => pd_eje(true)}>
+                        <Button type="button" size="sm" className="my-3" onClick={guard(() => pd_eje(true), 'pd_eje')}>
                             <Icon name="edit" size={16} className="me-2" />
                             Editar PDF
                         </Button>
@@ -556,7 +572,7 @@ export default function EXP_EJEC(props) {
 
         applyPdfFormData(formData, 'exec');
 
-        manage_exp();
+        return manage_exp();
     };
 
     let pd_eje = (editDocument = null) => {
@@ -666,7 +682,7 @@ export default function EXP_EJEC(props) {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
         let fd = Object.fromEntries(formData.entries())
 
-        EXPEDITION_SERVICE.gen_doc_eje(formData)
+        return EXPEDITION_SERVICE.gen_doc_eje(formData)
             .then(response => {
             if (response.data.status === 'OK') {
                 if (editDocument) {
@@ -700,7 +716,7 @@ export default function EXP_EJEC(props) {
 
     let manage_exp = () => {
         swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-        EXPEDITION_SERVICE.update(currentRecord.id, formData)
+        return EXPEDITION_SERVICE.update(currentRecord.id, formData)
             .then(response => {
                 if (response.data === 'OK') {
                     swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });

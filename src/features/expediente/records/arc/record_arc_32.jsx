@@ -56,9 +56,11 @@ function RECORD_ARC_32({ translation, swaMsg, globals, currentItem, currentVersi
         let _COMPONENT = () => {
             let _CHILD = _GET_CHILD_1();
 
-            return <dl className="record-arc-request-type mt-2 mb-0 rounded-md border border-border bg-slate-50 px-3 py-2 dark:bg-slate-800/40">
-                <dt className="mb-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Tipo de trámite</dt>
-                <dd className="mb-0 text-[11px] font-medium text-foreground">{formsParser1(_CHILD)}</dd>
+            return <dl className="record-arc-request-type ew-dl ew-dl--wide mt-3">
+                <div className="ew-dl__item ew-dl__item--full">
+                    <dt>Tipo de trámite</dt>
+                    <dd>{formsParser1(_CHILD)}</dd>
+                </div>
             </dl>
         }
         let _COMPONENT_SERIES = () => {

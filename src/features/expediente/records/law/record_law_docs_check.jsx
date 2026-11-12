@@ -190,7 +190,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         let _LIST = _GET_CHILD_6();
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+            _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
         }
         return <>{_COMPONENT}</>
     }
@@ -280,7 +280,7 @@ function RECORD_LAW_DOCSCHECK(props) {
         {
             when: row => !_GET_EDIT_POWERS(row),
             style: {
-                backgroundColor: 'lightgray',
+                backgroundColor: 'hsl(var(--muted))',
                 color: 'dark',
                 '&:hover': {
                     cursor: 'pointer',
@@ -392,8 +392,7 @@ function RECORD_LAW_DOCSCHECK(props) {
                             url={fun6doc.path + "/" + fun6doc.filename}
                             apipath={'/files/'}
                             icon='Search'
-                            iconWrapper='inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 h-8 w-8'
-                            iconStyle={{ fontSize: '150%' }}
+                            iconWrapper='inline-flex items-center justify-center rounded-md border border-border bg-background text-primary hover:bg-muted h-8 w-8'
                         />
                     }
                     return (
@@ -408,7 +407,7 @@ function RECORD_LAW_DOCSCHECK(props) {
                     return (
                         <span
                             title="Documento aportado físicamente (ventanilla única)"
-                            className="inline-flex items-center justify-center rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning cursor-help"
+                            className="inline-flex items-center justify-center rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning cursor-help"
                         >FÍSICO</span>
                     );
                 }
@@ -428,6 +427,10 @@ function RECORD_LAW_DOCSCHECK(props) {
     const allRows = _COMPONENT_TABLE_LIST();
     const visibleRows = hideNotApplicable ? allRows.filter((row) => row.value != 2) : allRows;
     const notApplicableRows = allRows.filter((row) => row.value == 2).length;
+    // Outcome summary of what the table shows (presentation only).
+    const evaluatedRows = visibleRows.filter((row) => _GET_EVA_VAKUE(row));
+    const compliantRows = evaluatedRows.filter((row) => _GET_REVIEW(row.code) == 1).length;
+    const nonCompliantRows = evaluatedRows.length - compliantRows;
     const editableGridColumns = columns.map((column, index) => ({
         id: column.name,
         header: column.name,
@@ -443,13 +446,12 @@ function RECORD_LAW_DOCSCHECK(props) {
             VER: 90,
         }[column.name] || 140,
     }));
-    const editableGridRows = visibleRows.map((row, rowIndex) => {
+    const editableGridRows = visibleRows.map((row) => {
         const restricted = !_GET_EDIT_POWERS(row);
+        // Rows the user cannot edit stay muted; no zebra striping otherwise.
         const rowToneClass = restricted
-            ? 'bg-slate-200/80 text-foreground/70 group-hover:bg-slate-200/80 dark:bg-slate-800/90 dark:group-hover:bg-slate-800/90'
-            : rowIndex % 2 === 1
-                ? 'bg-muted/20 group-hover:bg-muted/40'
-                : '';
+            ? 'bg-muted/60 text-foreground/80 group-hover:bg-muted/60'
+            : '';
 
         return columns.map((column) => {
             const value = {
@@ -535,16 +537,19 @@ function RECORD_LAW_DOCSCHECK(props) {
     }
 
     return (
-        <div className="record_lar_doc_check container space-y-3">
-            {showFilters ? <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <p className="text-sm font-semibold text-foreground">{title}</p>
-                        <p className="text-xs text-muted-foreground">Lista compacta para revisar aporte, evaluación y soporte asociado.</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="rounded-full border border-border bg-background px-3 py-1.5">Visibles: {visibleRows.length}</span>
-                        <span className="rounded-full border border-border bg-background px-3 py-1.5">No aplica: {notApplicableRows}</span>
+        <div className="record_lar_doc_check space-y-3">
+            {showFilters ? <div className="ew-toolbar">
+                <p className="ew-toolbar__meta m-0">
+                    <span className="sr-only">{title}: </span>
+                    <span className="ew-num font-medium text-foreground">{visibleRows.length}</span> visibles
+                    <span aria-hidden="true"> · </span>
+                    <span className="ew-num font-medium text-foreground">{notApplicableRows}</span> no aplica
+                    {evaluatedRows.length ? <>
+                        <span className="ew-status-chip ew-status-chip--success ms-2">Cumple <span className="ew-num">{compliantRows}</span></span>
+                        <span className={`ew-status-chip ms-1 ${nonCompliantRows ? 'ew-status-chip--danger' : ''}`}>No cumple <span className="ew-num">{nonCompliantRows}</span></span>
+                    </> : null}
+                </p>
+                    <div className="ew-toolbar__actions">
                         {expandable ? <Button
                             type="button"
                             variant="outline"
@@ -561,14 +566,14 @@ function RECORD_LAW_DOCSCHECK(props) {
                         </Button> : null}
                         <Button
                             type="button"
-                            variant={hideNotApplicable ? 'default' : 'outline'}
+                            variant="outline"
                             size="sm"
+                            aria-pressed={!hideNotApplicable}
                             onClick={() => setHideNotApplicable((currentValue) => !currentValue)}
                         >
                             {hideNotApplicable ? 'Mostrar "No aplica"' : 'Ocultar "No aplica"'}
                         </Button>
                     </div>
-                </div>
             </div> : null}
 
             <div id="record-document-inventory-table">
@@ -579,19 +584,19 @@ function RECORD_LAW_DOCSCHECK(props) {
                     getRowId={(row, rowIndex) => row?.[0]?.id || `document-${rowIndex}`}
                     spreadsheetInteractions={false}
                     scrollable={false}
-                    emptyMessage={load ? 'NO HAY ARCHIVOS DEFINIDOS' : 'CARGANDO...'}
-                /> : <DataTable
+                    fillWidth
+                    emptyMessage={load ? 'No hay archivos definidos' : 'Cargando…'}
+                /> : <DataTable pagination={false}
                     conditionalRowStyles={conditionalRowStyles}
 
                     paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                    noDataComponent="NO HAY ARCHIVOS DEFINIDOS"
-                    striped="true"
+                    noDataComponent="No hay archivos definidos"
                     columns={columns}
                     dense
 
                     load={load}
                     progressPending={!load}
-                    progressComponent={<label className='fw-normal lead text-muted'>CARGANDO...</label>}
+                    progressComponent={<span className='text-sm text-muted-foreground' role='status'>Cargando…</span>}
 
                     fixedHeader={!tableExpanded}
                     fixedHeaderScrollHeight={showFilters ? '360px' : '500px'}

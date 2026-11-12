@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import Icon from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
 import RECORD_ARCSERVICE from '../../api/record_arc.service';
@@ -71,7 +72,7 @@ function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, current
             var _COMPONENT = [];
 
             for (const item in _LIST) {
-                _COMPONENT.push(<>
+                _COMPONENT.push(<Fragment key={_COMPONENT.length}>
                     <div className="col-9 my-1"><label>{_LIST[item].desc}</label> </div>
                     <div className="col-3 my-1"><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item])} name="s_35u_checks"
                         defaultValue={_CHECK_ARRAY[item]} >
@@ -79,7 +80,7 @@ function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, current
                         <option value="1" className="text-success">SI</option>
                         <option value="2" className="text-warning">SIN DATO</option>
                     </select> </div>
-                </>)
+                </Fragment>)
             }
             return <div className="row">{_COMPONENT}</div>
         }
@@ -173,7 +174,7 @@ function RECORD_ARC_EXTRA_2({ translation, swaMsg, globals, currentItem, current
                 {_COMPONENT_3()}
                 <div className="text-center">
                     <Button size="sm" className="my-3" onClick={() => save_ra_35u()}>
-                        <Icon name="share-square" size={16} /> GUARDAR INFORMACIÓN
+                        <Icon name="share-square" size={16} /> Guardar información
                     </Button>
                 </div>
             </div >

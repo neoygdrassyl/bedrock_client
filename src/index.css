@@ -72,10 +72,41 @@
     --operational-neutral-border: 214.3 31.8% 91.4%;
     --operational-neutral-text: 215.4 16.3% 46.9%;
 
+    /* Expediente section groups (categorical, palette-independent: they name areas of
+       the expediente, not status or brand). strong = solid chip, soft = tinted surface,
+       foreground = text/icon on soft or card. Hues avoid the warning/danger/success ones. */
+    --section-on-strong: 0 0% 100%;
+    --section-consulta-strong: 215 30% 30%;
+    --section-consulta-soft: 214 30% 93%;
+    --section-consulta-foreground: 217 35% 24%;
+    --section-documentos-strong: 221 80% 46%;
+    --section-documentos-soft: 220 95% 95%;
+    --section-documentos-foreground: 224 76% 38%;
+    --section-evaluacion-strong: 272 68% 47%;
+    --section-evaluacion-soft: 272 90% 96%;
+    --section-evaluacion-foreground: 273 67% 38%;
+    --section-expedicion-strong: 176 82% 24%;
+    --section-expedicion-soft: 172 55% 92%;
+    --section-expedicion-foreground: 177 80% 19%;
+
+    /* Document-type key (categorical): tells apart the documents attached to a person
+       (identity, registration, validity, résumé, postgraduate, publication support).
+       Icon colors, >= 4.5:1 on card; always paired with an icon shape and a text legend. */
+    --doc-key-identity: 205 85% 36%;
+    --doc-key-registration: 280 60% 46%;
+    --doc-key-validity: 36 92% 31%;
+    --doc-key-resume: 142 64% 28%;
+    --doc-key-postgraduate: 14 80% 41%;
+    --doc-key-support: 345 75% 42%;
+
     --card-radius: 0.5rem;
     --card-padding: 1rem;
     --card-padding-compact: 0.85rem;
     --card-shadow: 0 1px 2px hsl(var(--foreground) / 0.05);
+    /* Floating shell cards: the header bar and the expediente section nav. */
+    --elevation-floating: 0 8px 24px -16px rgb(15 23 42 / 0.35);
+    /* Sticky bars above scrolling content (workspace top bar). */
+    --elevation-bar: 0 1px 2px hsl(var(--foreground) / 0.06), 0 6px 14px -4px hsl(var(--foreground) / 0.14), 0 14px 28px -10px hsl(var(--foreground) / 0.18);
 
     --alert-radius: 0.5rem;
     --alert-padding-x: 0.95rem;
@@ -129,9 +160,31 @@
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
 
+    --section-on-strong: 0 0% 100%;
+    --section-consulta-strong: 215 22% 42%;
+    --section-consulta-soft: 215 24% 27%;
+    --section-consulta-foreground: 214 40% 88%;
+    --section-documentos-strong: 221 78% 52%;
+    --section-documentos-soft: 221 52% 28%;
+    --section-documentos-foreground: 217 95% 86%;
+    --section-evaluacion-strong: 272 62% 54%;
+    --section-evaluacion-soft: 272 42% 30%;
+    --section-evaluacion-foreground: 272 95% 88%;
+    --section-expedicion-strong: 176 78% 27%;
+    --section-expedicion-soft: 176 48% 21%;
+    --section-expedicion-foreground: 170 70% 80%;
+
+    --doc-key-identity: 200 90% 68%;
+    --doc-key-registration: 280 80% 78%;
+    --doc-key-validity: 42 90% 62%;
+    --doc-key-resume: 142 60% 62%;
+    --doc-key-postgraduate: 14 90% 70%;
+    --doc-key-support: 345 85% 76%;
+
     /* Component tokens */
     --button-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.24);
     --card-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.22);
+    --elevation-bar: 0 1px 2px hsl(222.2 47.4% 3% / 0.5), 0 6px 14px -4px hsl(222.2 47.4% 3% / 0.7), 0 16px 30px -10px hsl(222.2 47.4% 3% / 0.85);
     --alert-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.18);
     --input-shadow: 0 1px 2px hsl(222.2 47.4% 4% / 0.18);
   }
@@ -429,10 +482,7 @@ table,
   }
 }
 
-/* Fullscreen de expediente: remover shell/menús legacy durante la sesión activa */
-body.workspace-fullscreen-open .app-shell-rail,
-body.workspace-fullscreen-open .app-shell-context,
-body.workspace-fullscreen-open .app-shell-header,
+/* Workspace de expediente: ocultar los menús legacy; el shell (rail incluido) lo gestiona AppShell */
 body.workspace-fullscreen-open .fun-nav-sidebar,
 body.workspace-fullscreen-open .fun-nav-toggle {
   display: none !important;

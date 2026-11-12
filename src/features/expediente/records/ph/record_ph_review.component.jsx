@@ -1,3 +1,4 @@
+import { DateInput } from '@/shared/components/DateInput';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
@@ -298,7 +299,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" id="record_ph_worker_arc_2" required
+                            <DateInput className="form-control" id="record_ph_worker_arc_2" required
                                 value={acta.date_arc_review} onChange={(e) => setActa(prev => ({ ...prev, date_arc_review: e.target.value }))} />
                         </div>
                     </div>
@@ -407,7 +408,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="phnot_date_doc" required
                             value={notif.phnot_date_doc} onChange={(e) => setNotif(prev => ({ ...prev, phnot_date_doc: e.target.value }))} />
                     </div>
 
@@ -421,7 +422,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         <div className="input-group">
                             <input type="text" className="form-control" id="phnot_cub"
                                 value={notif.phnot_cub} onChange={(e) => setNotif(prev => ({ ...prev, phnot_cub: e.target.value }))} />
-                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID()}>GENERAR</Button>
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_ID()}>Generar</Button>
                         </div>
                     </div>
                 </div>
@@ -434,12 +435,12 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                     <div className="col">
                         <label>Consecutivo de Salida</label>
                         <input type="text" className="form-control mb-3" id="phnot_res_public" disabled
-                            value={currentRecord.id_public} />
+                            value={currentRecord.id_public ?? ''} />
                     </div>
                     <div className="col">
                         <label>Fecha de Revision</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="phnot_date_res" disabled
-                            value={_JSON.date || currentRecord.date_arc_review} />
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="phnot_date_res" disabled
+                            value={_JSON.date || currentRecord.date_arc_review || ''} />
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -474,7 +475,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             <span className="input-group-text bg-primary text-primary-foreground">
                                 <Icon name="calendar-alt" size={16} />
                             </span>
-                            <input type="date" className="form-control" id="ph_not_det_1"
+                            <DateInput className="form-control" id="ph_not_det_1"
                                 value={notifDetails.ph_not_det_1} onChange={(e) => { setNotifDetails(prev => ({ ...prev, ph_not_det_1: e.target.value })); save_not_data(); }} />
                         </div>
                     </div>
@@ -512,7 +513,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                                 <Icon name="hashtag" size={16} />
                             </span>
                             <input type="text" className="form-control" id="f_01_ph"
-                                value={currentItem.id_public} />
+                                value={currentItem.id_public} readOnly />
                         </div>
                     </div>
                     <div className="col-4">
@@ -523,7 +524,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             </span>
                             <input type="text" className="form-control" id="f_02_ph"
                                 value={acta.id_public} onChange={(e) => setActa(prev => ({ ...prev, id_public: e.target.value }))} />
-                            <Button type="button" size="sm" onClick={() => _GET_LAST_OA()}>GENERAR</Button>
+                            <Button type="button" size="sm" onClick={() => _GET_LAST_OA()}>Generar</Button>
                         </div>
                     </div>
                 </div>
@@ -625,10 +626,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
 
                 <div className="row mb-3 text-center">
                     <div className="col">
-                        <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                     </div>
                     <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                        <Button type="button" size="sm" className="my-3" onClick={() => pdf_gen()} ><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                     </div>
                     <div className="col">
                         <label>NUMERO DE DOMINIO</label>
@@ -655,7 +656,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         </select>
                     </div>
                     <div className="col">
-                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR CHECKEO </Button>
+                        <Button type="button" variant="outline" size="sm" className="my-3" onClick={() => CREATE_PDF_CHECK()} disabled={isSaving}><Icon name="file-pdf" size={16} /> Generar chequeo</Button>
                     </div>
                 </div>
             </>
@@ -812,7 +813,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         }
 
         let close = async () => {
-            const confirmResult = await swalConfirm({ title: "CERRAR SOLICITUD", text: "¿Esta seguro de cerra esta Solicitud? \nSI SE PODRÁ realizar cambios mas adelantes.", icon: 'question', confirmButtonText: "CERRAR" });
+            const confirmResult = await swalConfirm({ title: "Cerrar solicitud", text: "¿Está seguro de cerrar esta solicitud?\nSe podrán realizar cambios más adelante.", icon: 'question', confirmButtonText: "CERRAR" });
             if (!confirmResult.isConfirmed) return;
 
             const formDataClock = new FormData();
@@ -831,7 +832,7 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
         }
 
         let archive = async () => {
-            const confirmResult = await swalConfirm({ title: "ARCHIVAR SOLICITUD", text: "¿Esta seguro de archivar esta Solicitud? \nNO SE PODRÁ modificar de ninguna forma.", icon: 'question', confirmButtonText: "ARCHIVAR" });
+            const confirmResult = await swalConfirm({ title: "Archivar solicitud", text: "¿Está seguro de archivar esta solicitud?\nNo se podrá modificar de ninguna manera después.", icon: 'question', confirmButtonText: "ARCHIVAR" });
             if (!confirmResult.isConfirmed) return;
 
             const formDataClock = new FormData();
@@ -1225,17 +1226,17 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                             {currentItem.state > -5
                                 ? <>
                                     <div className="col">
-                                        <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => review()} disabled={isSaving}><Icon name="check-square" size={16} /> REALIZAR REVISIÓN </Button>
+                                        <Button type="button" size="sm" className="my-3" onClick={() => review()} disabled={isSaving}><Icon name="check-square" size={16} /> Realizar revisión</Button>
                                     </div>
 
                                     {!_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button type="button" size="sm" className="my-3" onClick={() => close()} disabled={isSaving}><Icon name="file-archive" size={16} /> CERRAR</Button>
+                                            <Button type="button" size="sm" className="my-3" onClick={() => close()} disabled={isSaving}><Icon name="file-archive" size={16} /> Cerrar</Button>
                                         </div>
                                         : ""}
                                     {_GET_CLOCK_STATE(100, currentVersion)
                                         ? <div className="col">
-                                            <Button type="button" size="sm" className="my-3" onClick={() => archive()} disabled={isSaving}><Icon name="file-archive" size={16} /> ARCHIVAR</Button>
+                                            <Button type="button" size="sm" className="my-3" onClick={() => archive()} disabled={isSaving}><Icon name="file-archive" size={16} /> Archivar</Button>
                                         </div>
                                         : ""}
                                 </>
@@ -1252,10 +1253,10 @@ function RECORD_PH_REVIEW({ translation, swaMsg, globals, currentItem, currentVe
                         {_COMPONENTN_NOT()}
                         <div className="row text-center">
                             <div className="col">
-                                <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                                <Button type="submit" size="sm" className="my-3" disabled={isSaving}><Icon name="share-square" size={16} /> Guardar cambios</Button>
                             </div>
                             <div className="col">
-                                <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdfnot_gen()} disabled={isSaving}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                <Button type="button" size="sm" className="my-3" onClick={() => pdfnot_gen()} disabled={isSaving}><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                             </div>
                         </div>
                     </form>

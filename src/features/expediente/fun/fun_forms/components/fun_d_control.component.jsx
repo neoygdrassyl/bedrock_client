@@ -192,10 +192,10 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                                 <div className="col">
                                     {canonicalSaveBlocked
                                         ? <span className="d-block my-3 text-muted small" role="status">{CANONICAL_SAVE_UNAVAILABLE_HINT}</span>
-                                        : <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>}
+                                        : <Button size="sm" className="my-3"><Icon name="edit" size={16} /> Guardar cambios </Button>}
                                 </div>
                                 <div className="col">
-                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                                    <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => gen_pdf()} ><Icon name="file-pdf" size={16} /> Generar PDF </Button>
                                 </div>
                             </div>
                             {canonicalRows ? _CATEGORY_FILTER() : null}
@@ -408,7 +408,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
             try {
                 const result = await saveControlSheetReviews(currentItem.id, legalForm.data, entries);
                 const skipped = result.skipped.map((item) => `${item.code}: ${SHEET_SKIP_REASONS[item.reason]}`);
-                swalSuccess({ title: swaMsg.publish_success_title, text: [`Revisiones guardadas: ${result.saved}.`, ...(skipped.length ? ['Sin guardar:', ...skipped] : [])].join('\n') });
+                swalSuccess({ title: swaMsg.generic_success_title, text: [`Revisiones guardadas: ${result.saved}.`, ...(skipped.length ? ['Sin guardar:', ...skipped] : [])].join('\n') });
                 if (result.saved) requestUpdate(currentItem.id);
             } catch (error) {
                 swalError({ title: swaMsg.generic_eror_title, text: legalFormErrorMessage(error) || generatorSaveErrorText(error, swaMsg.generic_error_text) });
@@ -425,7 +425,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 FUN_SERVICE.update_r(_CHILD.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id);
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -440,7 +440,7 @@ function FUN_D_CONTROL({ translation, swaMsg, globals, currentItem, currentVersi
                 FUN_SERVICE.create_funr(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id);
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });

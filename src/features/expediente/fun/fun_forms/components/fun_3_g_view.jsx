@@ -1,8 +1,14 @@
+import { Children } from 'react';
+import dayjs from 'dayjs';
 import DataTable from '@/shared/components/data-table-bridge';
 
 
 import { dateParser } from '../../../../../shared/config/customClasses/typeParse'
 import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
+import { DovelaBadge } from '@/shared/dovela-ui';
+
+// Publication-support download icon: categorical token from index.css.
+const SUPPORT_COLOR = 'hsl(var(--doc-key-support))';
 
 function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
 
@@ -37,12 +43,12 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
             return _CHILD;
         }
         let _GET_NEIGHBOUR_STATE = (_state) => {
-            if (!_state) return <label className="fw-bold text-danger">PENDIENTE</label>
-            else if (_state == 1) return <label className="fw-bold text-success">CITACION POSITIVA</label>
-            else if (_state == 2) return <label className="fw-bold text-warning">CITACION NEGATIVA</label>
+            if (!_state) return <DovelaBadge tone="danger">Pendiente</DovelaBadge>
+            else if (_state == 1) return <DovelaBadge tone="success">Citación positiva</DovelaBadge>
+            else if (_state == 2) return <DovelaBadge tone="warning">Citación negativa</DovelaBadge>
         }
         let _GET_NEIGHBOUR_ALERTS = (_alerts_info) => {
-            if (!_alerts_info) return "";
+            if (!_alerts_info) return null;
             let _alerts_array = _alerts_info;
             _alerts_array = _alerts_array.split(',');
             let _ALERT = [];
@@ -56,46 +62,48 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                 if (_alerts_array[i].includes("ALERT_4")) 
                     if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Físico el {dateParser(_alerts_array[i].split('&')[1])}</label><br/></>);
             }
-            return <>{_ALERT}</>
+            return _ALERT.length ? <>{Children.toArray(_ALERT)}</> : null;
         }
         let _GET_NEIGHBOUR_ALERTS_ID6 = (_alerts_info) => {
-            if (!_alerts_info) return "";
+            if (!_alerts_info) return null;
             let _alerts_array = _alerts_info;
             _alerts_array = _alerts_array.split(',');
             let _ALERT = [];
             for (var i = 0; i < _alerts_array.length; i++) {
                 if (_alerts_array[i].includes("ALERT_1")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pediódico: 
+                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte periódico:
                             
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={SUPPORT_COLOR} />
 
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Radio: 
+                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte radio:
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={SUPPORT_COLOR} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Pagina Web: 
+                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte página web:
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={SUPPORT_COLOR} />
                                 <br/>
                     </>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
-                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte Físico: 
+                    if (_alerts_array[i].split('&')[2] > 0) _ALERT.push(<>Soporte físico:
                             <VIZUALIZER url={_FIND_6(_alerts_array[i].split('&')[2]).path + "/" + _FIND_6(_alerts_array[i].split('&')[2]).filename}
-                            apipath={'/files/'} icon={'Download'} color={'Crimson'} />
+                            apipath={'/files/'} icon={'Download'} color={SUPPORT_COLOR} />
                     </>);
                 }
             }
-            return <>{_ALERT}</>
+            return _ALERT.length ? <>{Children.toArray(_ALERT)}</> : null;
         }
 
+        // Empty cells read as an explicit dash, like "¿Se declaró parte?".
+        const EMPTY_CELL = <span className="text-sm text-muted-foreground">—</span>;
         let _CHILD_3_LIST = () => {
             let _LIST = _SET_CHILD_3();
             const columns_3 = [
@@ -115,11 +123,13 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                 },
                 {
                     name: 'ORIGEN DATO',
-                    cell: row => <span className="text-sm">{row.extra ? <label className="text-warning fw-bold">Añadido por la Curaduria</label> : "Diligenciado por el solicitante"}</span>
+                    cell: row => <span className="text-sm">{row.extra ? <span className="ew-text-warning font-medium">Añadido por la Curaduría</span> : "Diligenciado por el solicitante"}</span>
                 },
                 {
                     name: '¿SE DECLARÓ PARTE?',
-                    cell: row => <label>{row.part} - {row.part_id}</label>
+                    cell: row => row.part || row.part_id
+                        ? <span className="text-sm">{row.part} - {row.part_id}</span>
+                        : <span className="text-sm text-muted-foreground">—</span>
                 },
                 {
                     name: 'ESTADO CITACIÓN',
@@ -133,33 +143,35 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                     selector: row => row.id_cub,
                     sortable: true,
                     filterable: true,
-                    cell: row => <span className="text-sm">{row.id_cub}</span>
+                    cell: row => row.id_cub ? <span className="ew-num text-sm">{row.id_cub}</span> : EMPTY_CELL
                 },
                 {
-                    name: 'GUIÁ DE CONFIRMACIÓN',
+                    name: 'GUÍA DE CONFIRMACIÓN',
                     selector: row => row.id_alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <span className="text-sm">{row.id_alerted == "-1"
-                        ? ""
-                        : row.id_alerted}</span>
+                    cell: row => row.id_alerted && row.id_alerted != "-1"
+                        ? <span className="ew-num text-sm">{row.id_alerted}</span>
+                        : EMPTY_CELL
                 },
                 {
                     name: 'FECHA RECIBIDO',
                     selector: row => row.alerted,
                     sortable: true,
                     filterable: true,
-                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
+                    cell: row => row.state == 1 && row.alerted
+                        ? <span className="ew-num text-sm">{dayjs(row.alerted).format('DD/MM/YYYY')}</span>
+                        : EMPTY_CELL
                 },
                 {
                     name: 'MÉTODOS DE PUBLICACIÓN',
                     minWidth: '250px',
-                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info)}</span>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS(row.alters_info) ?? EMPTY_CELL}</span>
                 },
                 {
                     name: 'SOPORTES DE PUBLICACIÓN',
                     minWidth: '200px',
-                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info)}</span>
+                    cell: row => <span className="text-sm">{_GET_NEIGHBOUR_ALERTS_ID6(row.alters_info) ?? EMPTY_CELL}</span>
                 },
                 {
                     name: 'DOCUMENTO',
@@ -170,13 +182,12 @@ function FUN_3_G_VIEW({ _FUN_3, _FUN_6 }) {
                             ? 
                             <VIZUALIZER url={_FIND_6(row.id_6).path + "/" + _FIND_6(row.id_6).filename}
                             apipath={'/files/'} />
-                            : ""}</>
+                            : EMPTY_CELL}</>
                 },
             ]
             return <DataTable
-                paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
-                noDataComponent="No hay Items"
-                striped="true"
+                paginationComponentOptions={{ rowsPerPageText: 'Filas por página', rangeSeparatorText: 'de' }}
+                noDataComponent="Sin vecinos colindantes registrados"
                 columns={columns_3}
                 data={_LIST}
                 highlightOnHover

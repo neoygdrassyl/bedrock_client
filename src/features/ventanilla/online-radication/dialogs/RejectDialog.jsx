@@ -23,6 +23,16 @@ const VARIANTS = {
     staleMessage: 'La solicitud ya no está pendiente: otro usuario la procesó. Cierre este diálogo para ver su estado actual.',
     notPendingCode: 'ONLINE_RADICATION_NOT_PENDING',
   },
+  receipt: {
+    title: 'Rechazar recibo de pago',
+    description: 'La solicitud seguirá en liquidación. La ciudadanía verá el motivo en el portal y podrá enviar un nuevo recibo.',
+    placeholder: 'Explique qué debe corregirse, por ejemplo: el recibo no corresponde al valor liquidado o es ilegible.',
+    submit: 'Rechazar recibo',
+    failure: 'No fue posible rechazar el recibo de pago.',
+    staleCodes: new Set(['ONLINE_RADICATION_NOT_PENDING', 'ONLINE_RADICATION_NOT_FOUND', 'LIQUIDATION_NO_RECEIPT', 'LIQUIDATION_NOT_FOUND']),
+    staleMessage: 'El recibo ya no está en revisión: otro usuario lo procesó. Cierre este diálogo para ver su estado actual.',
+    notPendingCode: 'LIQUIDATION_NO_RECEIPT',
+  },
   entry: {
     title: 'Rechazar entrada de documentos',
     description: 'La entrada quedará rechazada sin crear un radicado VR. La ciudadanía verá el motivo en el portal y podrá enviar los documentos de nuevo.',
@@ -39,8 +49,8 @@ const VARIANTS = {
  * "Rechazar": required reason (10–1000 characters) and a destructive confirmation. With `entry`
  * it rejects that document entry instead of the whole request; `onRejected(item | null, entry)`.
  */
-export function RejectDialog({ open, onOpenChange, request, entry = null, onRejected, onStale, onSuccessFocus }) {
-  const copy = entry ? VARIANTS.entry : VARIANTS.request;
+export function RejectDialog({ open, onOpenChange, request, entry = null, receipt = false, onRejected, onStale, onSuccessFocus }) {
+  const copy = receipt ? VARIANTS.receipt : entry ? VARIANTS.entry : VARIANTS.request;
   const formId = useId();
   const counterId = `${formId}-counter`;
   const [reason, setReason] = useState('');
@@ -78,9 +88,10 @@ export function RejectDialog({ open, onOpenChange, request, entry = null, onReje
     setFormError('');
     try {
       const payload = { reason: reason.trim() };
-      const item = entry
-        ? await OnlineRadicationService.rejectEntry(request.id, entry.id, payload)
-        : await OnlineRadicationService.reject(request.id, payload);
+      let item;
+      if (receipt) item = await OnlineRadicationService.rejectReceipt(request.id, payload);
+      else if (entry) item = await OnlineRadicationService.rejectEntry(request.id, entry.id, payload);
+      else item = await OnlineRadicationService.reject(request.id, payload);
       succeededRef.current = true;
       onRejected(item, entry);
       onOpenChange(false);

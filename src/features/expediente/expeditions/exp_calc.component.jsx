@@ -387,8 +387,8 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <Button variant="outline" size="sm" className="my-1" onClick={() => COPY_TO_DOM('cur_fix')}><Icon name="copy" size={16} /> COPIAR CARGO FIJO</Button>
-                    <Button variant="outline" size="sm" onClick={() => COPY_TO_DOM('cur_var')}><Icon name="copy" size={16} /> COPIAR CARGO VARIABLE</Button>
+                    <Button type="button" variant="outline" size="sm" className="my-1" onClick={() => COPY_TO_DOM('cur_fix')}><Icon name="copy" size={16} /> COPIAR CARGO FIJO</Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => COPY_TO_DOM('cur_var')}><Icon name="copy" size={16} /> COPIAR CARGO VARIABLE</Button>
                 </div>
             </div>
             <hr />
@@ -442,7 +442,7 @@ export default function EXP_CALC(props) {
                     <div className='row my-2'>
                         <h5 className='fw-normal'> Cobro total:  <label className='fw-bold'>{str_mt}</label></h5>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => COPY_TO_DOM('other')}><Icon name="copy" size={16} /> COPIAR</Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => COPY_TO_DOM('other')}><Icon name="copy" size={16} /> COPIAR</Button>
                 </div>
             </div>
         </>
@@ -450,10 +450,11 @@ export default function EXP_CALC(props) {
 
     return (
         <>
-            <Button size="sm" onClick={() => setModal(!modal)}><Icon name="calculator" size={16} /> {compact ? '' : 'CALCULADORA'}</Button>
+            <Button type="button" size="sm" variant="outline" title="Calculadora de expensas" aria-label={compact ? 'Calculadora de expensas' : undefined} onClick={() => setModal(!modal)}><Icon name="calculator" size={16} /> {compact ? '' : 'Calculadora'}</Button>
 
             <Modal contentLabel="EXP CALC"
                 isOpen={modal}
+                onRequestClose={() => setModal(false)}
                 style={customStylesForModal}
                 ariaHideApp={false}
             >
@@ -480,7 +481,7 @@ export default function EXP_CALC(props) {
 
                 <hr />
                 <div className="text-end py-2">
-                    <Button size="sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> CERRAR</Button>
+                    <Button type="button" size="sm" onClick={() => setModal(!modal)}><Icon name="times-circle" size={16} /> Cerrar</Button>
                 </div>
             </Modal>
         </>

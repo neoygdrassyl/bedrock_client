@@ -19,10 +19,13 @@ import FUN_ARCHIVE from './components/fun_archive.component';
 import FUN_ANEX from './fun_anex';
 import ARCHIVE_FUN_VIEW from '../../../archive/arcXfun_view.component';
 import { swalError } from '@/shared/utils/swalAdapter';
+import { useIsInsideExpedienteWorkspace } from '../../workspace/ExpedienteWorkspaceContext';
+import { SectionCard } from '@/shared/components/SectionCard';
 
 const SHOW_FUN_HISTORY_TABLE = true;
 
 function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesRefresh, NAVIGATION, NAVIGATION_VERSION }) {
+    const insideWorkspace = useIsInsideExpedienteWorkspace();
     const [currentItem, setCurrentItem] = useState(null);
     const [pqrsxfun, setPqrsxfun] = useState(false);
     const [history, setHistory] = useState([]);
@@ -83,20 +86,19 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
     }, []);
 
         return (
-            <div className="py-3">
+            <div>
                 {currentItem != null ? <>
-                    <div className='note note-info'>
-                        <h3 className="text-justify text-dark">RECOMENDACIONES GENERALES PARA LA FORMULACIÓN DE SOLICITUDES</h3>
-                        <ul>
+                    <SectionCard title="Recomendaciones para diligenciar la solicitud">
+                        <ul className="m-0 ps-4 text-sm leading-relaxed text-muted-foreground">
                             <li>Cedulas de Ciudadanía y documentos de identificación, usar punto cada 3 números. (x.xxx.xxx.xxx)</li>
                             <li>Direcciones, usar la nomenclatura completa, y usar el símbolo ° para el numero (Carrera, Calle, Diagonal, Transversal, Avenida, N° ) </li>
                             <li>Números de Celular y Contacto: Usar espacios para su separación (xxx xxx xxxx)</li>
                             <li>Numero de Matricula Inmobiliaria, comenzar el valor con 300- (300-xxxxx)</li>
                             <li>Numero de Identificación Catastral, usar - para su separación (xx-xx-xxxx-xxx-xxx)</li>
                         </ul>
-                    </div>
+                    </SectionCard>
                     {currentItem != null ? <>
-                        <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>
+                        {insideWorkspace ? null : <h2 className="text-center">ACTUALIZAR RADICACIÓN</h2>}
 
                         <fieldset className="p-3">
                             <legend className="my-2 px-3 bg-success" id="fun_0">
@@ -111,7 +113,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                                 requestUpdate={requestUpdate} />
 
                             <legend className="my-2 px-3 bg-light" id="fun_arch">
-                                <label className="app-p lead fw-normal">ARCHIVO</label>
+                                <label className="app-p lead fw-normal">Archivo</label>
                             </legend>
                             <ARCHIVE_FUN_VIEW
                                 translation={translation}
@@ -155,9 +157,7 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                             currentVersion={currentVersion}
                             requestUpdate={requestUpdate} />
 
-                        <legend className="my-2 px-3 Collapsible">
-                            <label>5 Titulares y profesionales responsables </label>
-                        </legend>
+                        <h2 className="ew-group-title">5. Titulares y profesionales responsables</h2>
 
                         <FUNN51
                             translation={translation}
@@ -213,8 +213,8 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                         : ''}
 
                     <fieldset className="p-3">
-                        <legend className="my-2 px-3 bg-danger" id="fun_pdf">
-                            <label className="app-p lead fw-normal text-light">DESCARGAR PDF</label>
+                        <legend className="my-2 px-3" id="fun_pdf">
+                            <label className="app-p lead fw-normal">Descargar PDF</label>
                         </legend>
                         <FUN_PDF
                             translation={translation}
@@ -239,9 +239,9 @@ function FUNN({ translation, swaMsg, globals, currentVersion, currentId, requesR
                         }}
                         onSaveObservation={saveHistoryObservation}
                     />}
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    <p className="m-0 py-8 text-center text-sm text-muted-foreground" role="status">Cargando información de la solicitud…</p>
+                </SectionCard>}
             </div>
         );
 }

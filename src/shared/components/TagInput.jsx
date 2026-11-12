@@ -35,7 +35,7 @@ function TagInput({ tags = [], onChange, placeholder = '', removeOnBackspace = t
     };
 
     return (
-        <div className="d-flex flex-wrap align-items-center border rounded p-1 bg-white" style={{ minHeight: '38px', gap: '4px' }}>
+        <div className="d-flex flex-wrap align-items-center border rounded p-1 bg-background text-foreground" style={{ minHeight: '38px', gap: '4px' }}>
             {safeTags.map((tag, index) => (
                 <span key={index} className="badge bg-primary d-flex align-items-center" style={{ fontSize: '0.85em', padding: '5px 8px' }}>
                     {tag}
@@ -44,20 +44,21 @@ function TagInput({ tags = [], onChange, placeholder = '', removeOnBackspace = t
                         className="btn-close btn-close-white ms-1"
                         style={{ fontSize: '0.6em' }}
                         onClick={() => removeTag(index)}
-                        aria-label={`Remove ${tag}`}
+                        aria-label={`Quitar ${tag}`}
                     />
                 </span>
             ))}
             <input
                 ref={inputRef}
                 type="text"
-                className="border-0 flex-grow-1"
+                className="border-0 flex-grow-1 bg-transparent text-foreground"
                 style={{ outline: 'none', minWidth: '120px', padding: '4px' }}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onBlur={() => { if (inputValue.trim()) addTag(inputValue); }}
                 placeholder={safeTags.length === 0 ? placeholder : ''}
+                aria-label={placeholder || 'Etiquetas'}
             />
         </div>
     );

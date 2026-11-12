@@ -63,7 +63,7 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
 
     // 6. Validar que estamos en el workspace y NO en un modal legacy
     await expect(newPage).toHaveURL(/\/funmanage\/expediente\/.*\?section=informes&report=ph/);
-    await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
+    await expect(newPage.getByRole('region', { name: /Detalle del expediente/i })).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Informe P\.H\.$/i }).first()).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Informes$/i })).toHaveCount(0);
 
@@ -106,7 +106,7 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
     await newPage.waitForTimeout(1500);
 
     await expect(newPage).toHaveURL(/\/funmanage\/expediente\/68001-1-26-0001\?section=expedicion/);
-    await expect(newPage.getByRole('dialog', { name: /Detalle del expediente/i })).toBeVisible();
+    await expect(newPage.getByRole('region', { name: /Detalle del expediente/i })).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Expedici[oó]n P\.H\.$/i })).toBeVisible();
     await expect(newPage.getByRole('button', { name: /^Expedici[oó]n$/i })).toHaveCount(0);
     await expect(newPage.getByText(/3\. APROBACI[OÓ]N/i)).toBeVisible();
@@ -154,8 +154,10 @@ test.describe('E2E: Flujo de Informe P.H. — fixes de UX y navegación', () => 
     await authenticatedPage.waitForLoadState('domcontentloaded');
     await authenticatedPage.waitForTimeout(1500);
 
-    // 3. Click en el botón de "Volver" (flecha hacia atrás) del header
-    const backButton = authenticatedPage.getByRole('button', { name: 'Volver' });
+    // 3. Click en el control "Cerrar" de la ventana del expediente (header)
+    const backButton = authenticatedPage
+      .getByRole('group', { name: 'Ventana del expediente' })
+      .getByRole('button', { name: 'Cerrar' });
     await expect(backButton).toBeVisible();
     await backButton.click();
 

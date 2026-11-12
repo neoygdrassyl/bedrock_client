@@ -11,6 +11,7 @@ import { RadicateDialog } from './dialogs/RadicateDialog';
 import { ReceiveEntryDialog } from './dialogs/ReceiveEntryDialog';
 import { RejectDialog } from './dialogs/RejectDialog';
 import { useOnlineRadicationDetail } from './hooks/useOnlineRadicationDetail';
+import { useOnlineRadicationLiquidation } from './hooks/useOnlineRadicationLiquidation';
 import { ONLINE_RADICATION_SCOPE } from './onlineRadicationScope';
 import { getDocumentEntries, plural } from './onlineRadicationModel';
 
@@ -24,6 +25,7 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
   const id = summary?.id ?? null;
   const detail = useOnlineRadicationDetail(id);
   const item = detail.item || summary;
+  const liquidationState = useOnlineRadicationLiquidation(detail.item ? id : null);
   const [dialog, setDialog] = useState(null);
   const [activeEntry, setActiveEntry] = useState(null);
   const [preview, setPreview] = useState({ open: false, file: null });
@@ -48,6 +50,7 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
   function handleRadicated(updated) {
     const initial = (getDocumentEntries(item) || []).find((entry) => entry.kind === 'initial' && entry.status === 'pending');
     detail.replace(updated);
+    liquidationState.reload();
     const reference = [updated.funIdPublic && `Expediente ${updated.funIdPublic}`, updated.vr].filter(Boolean).join(' · ');
     const documents = initial ? ` ${plural(initial.documents.length, 'documento inicial recibido', 'documentos iniciales recibidos')} con el mismo VR.` : '';
     setLiveMessage(`Solicitud radicada. ${reference}.${documents}`);
@@ -77,6 +80,20 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
   function openEntryDialog(kind, entry) {
     setActiveEntry(entry);
     setDialog(kind);
+  }
+
+  function handleLiquidationIssued(updated) {
+    liquidationState.replace(updated);
+    setLiveMessage('Preliquidación cargada. La solicitud queda en espera de pago.');
+    toast.success('Preliquidación cargada', { description: 'La ciudadanía verá la solicitud en espera de pago.' });
+    onChanged?.();
+  }
+
+  function handleReceiptRejected(updated) {
+    liquidationState.replace(updated);
+    setLiveMessage('Recibo de pago rechazado.');
+    toast.success('Recibo rechazado', { description: 'La ciudadanía verá el motivo en el portal.' });
+    onChanged?.();
   }
 
   function handleRejected(updated) {
@@ -120,6 +137,9 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
                 onReceiveEntry={(entry) => openEntryDialog('receive-entry', entry)}
                 onRejectEntry={(entry) => openEntryDialog('reject-entry', entry)}
                 onViewFile={(file) => setPreview({ open: true, file })}
+                liquidationState={liquidationState}
+                onLiquidationIssued={handleLiquidationIssued}
+                onRejectReceipt={() => setDialog('reject-receipt')}
               />
             </ScrollArea>
             <DetailFooter
@@ -128,6 +148,8 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
               primaryRef={primaryRef}
               onRadicate={() => setDialog('radicate')}
               onReject={() => setDialog('reject')}
+              liquidation={liquidationState.liquidation}
+              onApprovePayment={() => setDialog('approve-payment')}
             />
             <RadicateDialog
               open={dialog === 'radicate'}
@@ -136,6 +158,24 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
               onRadicated={handleRadicated}
               onStale={handleStale}
               onSuccessFocus={focusPrimary}
+            />
+            <RadicateDialog
+              open={dialog === 'approve-payment'}
+              onOpenChange={(next) => setDialog(next ? 'approve-payment' : null)}
+              request={item}
+              approvePayment
+              onRadicated={handleRadicated}
+              onStale={handleStale}
+              onSuccessFocus={focusPrimary}
+            />
+            <RejectDialog
+              open={dialog === 'reject-receipt'}
+              onOpenChange={(next) => setDialog(next ? 'reject-receipt' : null)}
+              request={item}
+              receipt
+              onRejected={handleReceiptRejected}
+              onStale={() => { handleStale(); liquidationState.reload(); }}
+              onSuccessFocus={focusTitle}
             />
             <RejectDialog
               open={dialog === 'reject'}

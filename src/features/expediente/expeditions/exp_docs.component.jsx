@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { useState, useEffect, Children, Fragment } from 'react';
+import { useActionGuard } from './useActionGuard';
 import { Button } from '@/shared/ui/button';
 import { addDecimalPoints, formsParser1, getJSONFull, regexChecker_isOA_2, _ADDRESS_SET_FULL, _MANAGE_IDS } from '../../../shared/config/customClasses/typeParse';
 import { _FUN_1_PARSER, _FUN_4_PARSER, _FUN_6_PARSER } from '../../../shared/config/customClasses/funCustomArrays';
@@ -16,6 +19,7 @@ import SubmitService from '../../ventanilla/api/submit.service'
 import CubXVrDataService from '../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { swalClose, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { SectionCard } from '@/shared/components/SectionCard';
 import { richTextToPlainText } from '../../../shared/utils/richTextBlockNote';
 import { downloadGeneratedPdf } from '../../../shared/utils/pdfDownload';
 import writtenNumber from 'written-number';
@@ -25,12 +29,13 @@ const IVA = 0.19;
 const normalizeExpeditionField = (value) => String(value ?? '');
 const stripExpeditionSeparators = (value, replacement = '') => normalizeExpeditionField(value).replaceAll('-', replacement);
 
-function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc, requestUpdate, requestUpdateRecord }) {
+function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, recordArc, requestUpdate, requestUpdateRecord, step }) {
     const [vrsRelated, setVrsRelated] = useState([]);
     const [vrSelected, setVrSelected] = useState(null);
     const [cubSelected, setCubSelected] = useState(null);
     const [idCUBxVr, setIdCUBxVr] = useState(null);
     const [tn, setTn] = useState(undefined);
+    const guard = useActionGuard();
     const [showCollapse_expedition_21, setShowCollapse_expedition_21] = useState(false);
     const [showCollapse_expedition_22, setShowCollapse_expedition_22] = useState(false);
     const [showCollapse_expedition_23, setShowCollapse_expedition_23] = useState(false);
@@ -71,7 +76,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
         let _GET_EXPEDITION_JSON = (field) => {
             let json = currentRecord[field];
             if (!json) return {}
-            let object = JSON.parse(JSON.parse(json))
+            let object = parseLegacyJson(json, {}, `exp_docs:expedition.${field}`)
             return object
         }
         let _GET_CHILD_AREAS = () => {
@@ -297,10 +302,9 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
         const _namesid = _GET_CHILD_51().map((value) => value.id_number).join('\n');
         let _NOTY_TYPE_COMPONENENT = () => {
             return <>
-                <div className='row mx-5 my-3'>
-                    <strong>TIPO DE NOTIFICACIÓN</strong>
-
-                    <div className="col-4">
+                <div className="ew-form-grid mt-3">
+                    <div>
+                        <label htmlFor="type_not">Tipo de notificación</label>
                         <select className='form-select' id="type_not" onChange={(e) => setTn(e.target.value)}>
                             <option value="0">NO USAR</option>
                             <option value="1">NOTIFICACIÓN PRESENCIAL</option>
@@ -310,29 +314,20 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         </select>
                     </div>
                     {tn == 4 ?
-                        <>
-                         <div className="col-4">
-                                <div className="input-group my-1">
-                                    <label>Fecha Comunicación: </label>
-                                </div>
-                            </div>
-                            <div className="col-4">
-                                <div className="input-group my-1">
-                                    <input type="date" className="form-control" id="type_not_name" placeholder='Fecha' />
-                                </div>
-                            </div>
-                        </>
+                        <div>
+                            <label htmlFor="type_not_name">Fecha de comunicación</label>
+                            <DateInput className="form-control" id="type_not_name" placeholder='Fecha' />
+                        </div>
                         : ''}
                 </div>
             </>
         }
-
         let _COMPONENT_DOC_1 = () => {
             return <>
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Acto de tramite de licencia</label>
-                        <input type="date" className="form-control" id="expedition_doc_1_1" max="2100-01-01"
+                        <DateInput className="form-control" id="expedition_doc_1_1" max="2100-01-01"
                             defaultValue={currentRecord.date ?? ''} />
                     </div>
                     <div className="col">
@@ -353,7 +348,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1">Ciudad</label>
                         <div className="input-group">
                             <select className="form-select me-1" id={"expedition_doc_1_8"}>
-                                {cities}
+                                {Children.toArray(cities)}
                             </select>
                         </div>
                     </div>
@@ -364,9 +359,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="col">
                         <label className="mt-2">Titular(es)</label>
                         <div className="col">
-                            <textarea className="form-control" id="expedition_doc_1_4" disabled readOnly >
-                                {_names}
-                            </textarea>
+                            <textarea className="form-control" id="expedition_doc_1_4" disabled readOnly defaultValue={_names} />
                         </div>
                     </div>
                     <div className="col">
@@ -381,7 +374,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_1_6"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_1_6", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                 </div>
@@ -403,7 +396,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             for (var i = 0; i < _areas.length; i++) {
                 if (_areas[i].payment == 0 || _areas[i].payment == 2) {
                     sum += Number(_areas[i].charge)
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={'area_' + i}>
                         <div className="row mb-1">
                             <div className="col">
                                 <input type="text" className="form-control" name="expedition_doc_2_descs" disabled
@@ -426,7 +419,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
                 }
 
             }
@@ -465,7 +458,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_2_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_2_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -488,14 +481,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_2_7" disabled readOnly >
-                            {_names}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_2_7" disabled readOnly defaultValue={_names} />
                     </div>
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_2_8" disabled readOnly >
-                            {_namesid}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_2_8" disabled readOnly defaultValue={_namesid} />
                         <div className="input-group">
                         </div>
                     </div>
@@ -591,7 +580,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             for (var i = 0; i < _areas.length; i++) {
                 if (_areas[i].payment == 1 || _areas[i].payment == 2) {
                     taxCharge += _areas[i].charge;
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={'area_' + i}>
                         <div className="row mb-1">
                             <div className="col">
                                 <input type="text" className="form-control" name="expedition_doc_3_descs" disabled
@@ -610,7 +599,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
                 }
 
             }
@@ -662,7 +651,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_3_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_3_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -684,14 +673,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </div>
                 <div className="row">
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_3_7" disabled readOnly >
-                            {_names}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_3_7" disabled readOnly defaultValue={_names} />
                     </div>
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_3_8" disabled readOnly >
-                            {_namesid}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_3_8" disabled readOnly defaultValue={_namesid} />
                         <div className="input-group">
                         </div>
                     </div>
@@ -847,7 +832,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_4_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_4_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -870,14 +855,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_4_7" disabled readOnly >
-                            {_names}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_4_7" disabled readOnly defaultValue={_names} />
                     </div>
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_4_8" disabled readOnly >
-                            {_namesid}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_4_8" disabled readOnly defaultValue={_namesid} />
                         <div className="input-group">
                         </div>
                     </div>
@@ -934,7 +915,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row">
                     <div className="col">
                         <label className="mt-2">Fecha Deber Urbanistico</label>
-                        <input type="date" className="form-control" id="expedition_doc_5_1" max="2100-01-01"
+                        <DateInput className="form-control" id="expedition_doc_5_1" max="2100-01-01"
                             defaultValue={currentRecord.date2 ?? ''} />
                     </div>
                     <div className="col">
@@ -948,7 +929,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <label className="mt-1">Ciudad</label>
                         <div className="input-group">
                             <select className="form-select me-1" id={"expedition_doc_5_26"}>
-                                {cities}
+                                {Children.toArray(cities)}
                             </select>
                         </div>
                     </div>
@@ -987,7 +968,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_5_8"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_5_8", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1010,7 +991,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="col">
                         <label className="mt-1">Tratamiento</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" id="expedition_doc_5_26" disabled
+                            <input type="text" className="form-control" id="expedition_doc_5_27" disabled
                                 value={_GET_EXPEDITION_JSON('tmp').type ?? ''} readOnly />
                         </div>
                     </div>
@@ -1027,14 +1008,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_5_10" disabled readOnly >
-                            {_names}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_5_10" disabled readOnly defaultValue={_names} />
                     </div>
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_5_11" disabled readOnly >
-                            {_namesid}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_5_11" disabled readOnly defaultValue={_namesid} />
                         <div className="input-group">
                         </div>
                     </div>
@@ -1137,12 +1114,12 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             let vr = document.getElementById("vr_selected33") ? document.getElementById("vr_selected33").value : null;
 
             let cub = cub_selected;
+            if (!cub || !vr) return;
             let formatData = new FormData();
 
             formatData.set('vr', vr);
             formatData.set('cub', cub);
             formatData.set('fun', currentItem.id_public);
-            console.log(currentItem.id)
             formatData.set('process', 'DOCUMENTOS / CITACIÓN PARA NOTIFICACIÓN');
 
             // let desc = document.getElementById('geng_type').value;
@@ -1151,7 +1128,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formatData.set('date', date);
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -1163,7 +1140,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     });
             } else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -1201,7 +1178,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     if (_GLOBAL_ID === "cp1") axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
                     if (_GLOBAL_ID === "fl2") axc = Math.round((Number(_areas[i].charge) ?? 0))
 
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={'area_' + i}>
                         <div className="row mb-1">
                             <div className="col">
                                 <input type="text" className="form-control" name="expedition_doc_6_descs" disabled
@@ -1232,7 +1209,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
                 }
 
             }
@@ -1265,7 +1242,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_6_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1304,14 +1281,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 <div className="row">
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_6_7" disabled readOnly >
-                            {_names}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_6_7" disabled readOnly defaultValue={_names} />
                     </div>
                     <div className="col">
-                        <textarea className="form-control" id="expedition_doc_6_8" disabled readOnly >
-                            {_namesid}
-                        </textarea>
+                        <textarea className="form-control" id="expedition_doc_6_8" disabled readOnly defaultValue={_namesid} />
                         <div className="input-group">
                         </div>
                     </div>
@@ -1383,7 +1356,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             for (var i = 0; i < _areas.length; i++) {
                 if (_areas[i].payment == 0 || _areas[i].payment == 2) {
                     let axc = Math.round((Number(_areas[i].charge) ?? 0) * (Number(_areas[i].area) ?? 0))
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={'area_' + i}>
                         <div className="row mb-1">
                             <div className="col">
                                 <input type="text" className="form-control" name="expedition_doc_7_descs" disabled
@@ -1406,7 +1379,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                                 </div>
                             </div>
                         </div>
-                    </>)
+                    </Fragment>)
                 }
 
             }
@@ -1445,7 +1418,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="expedition_doc_7_5"
                                 defaultValue={_GET_CHILD_2().item_211} />
-                            <Button size="sm" onClick={() => _ADDRESS_SET_FULL("expedition_doc_6_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
+                            <Button type="button" size="sm" title="Usar la dirección del predio" aria-label="Usar la dirección del predio" onClick={() => _ADDRESS_SET_FULL("expedition_doc_7_5", _GET_CHILD_2())}><Icon name="home" size={16} /></Button>
                         </div>
                     </div>
                     <div className="col-3">
@@ -1575,7 +1548,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <div className="row mb-3">
                     <div className="col">
                         <label>Fecha del documento</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="exodfb_date_doc" required
                             defaultValue={_JSON.date_doc || dayjs().format('YYYY-MM-DD')} />
                     </div>
 
@@ -1590,7 +1563,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         <div className="input-group">
                             <input type="text" className="form-control" id="exodfb_cub3_exp"
                                 defaultValue={currentRecord.cub3 || cubSelected || ""} />
-                            <Button size="sm" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>GENERAR</Button>
+                            <Button type="button" size="sm" variant="outline" onClick={() => _GET_LAST_ID('exodfb_cub3_exp')}>Generar</Button>
                         </div>
                     </div>
                     <div className="col" >
@@ -1620,7 +1593,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     </div>
                     <div className="col">
                         <label>Fecha de Resolución</label>
-                        <input type="date" className="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
+                        <DateInput className="form-control mb-3" max='2100-01-01' id="exodfb_date_res" disabled
                             defaultValue={RES_JSON.date || ''} />
                     </div>
                 </div>
@@ -1677,7 +1650,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     <div className="col">
                         <label className="mt-1">Fecha Vigencia</label>
                         <div className="input-group">
-                            <input type="date" className="form-control" id="expedition_eje_date"
+                            <DateInput className="form-control" id="expedition_eje_date"
                                 defaultValue={reso_vig_date_dv} required />
                         </div>
                     </div>
@@ -1880,10 +1853,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 <hr />
                 <div className="row text-center">
                     <div className="col">
-                        <Button size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button type="button" size="sm" className="my-3" onClick={() => save_eje()}><Icon name="share-square" size={16} /> Guardar cambios</Button>
                     </div>
                     <div className="col">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => pd_eje()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                        <Button type="button" size="sm" className="my-3" onClick={() => pd_eje()}><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                     </div>
                 </div>
             </>
@@ -1909,7 +1882,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             if(document.getElementById("type_not_name")) formData.set('type_not_name', document.getElementById("type_not_name").value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_1(formData)
+            return EXPEDITION_SERVICE.gen_doc_1(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -1967,7 +1940,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('subtotal', document.getElementById('expedition_doc_2_11').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_2(formData)
+            return EXPEDITION_SERVICE.gen_doc_2(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2032,7 +2005,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('total', document.getElementById('expedition_doc_3_20').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_3(formData)
+            return EXPEDITION_SERVICE.gen_doc_3(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2071,7 +2044,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('uis2_t', document.getElementById('expedition_doc_4_13').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_4(formData)
+            return EXPEDITION_SERVICE.gen_doc_4(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2128,7 +2101,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('city', document.getElementById('expedition_doc_5_26').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_5(formData)
+            return EXPEDITION_SERVICE.gen_doc_5(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2192,7 +2165,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('total', document.getElementById('expedition_doc_6_13').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_6(formData)
+            return EXPEDITION_SERVICE.gen_doc_6(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2252,7 +2225,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('total', document.getElementById('expedition_doc_7_11').value);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_7(formData)
+            return EXPEDITION_SERVICE.gen_doc_7(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2291,7 +2264,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
             formData.set('id_public', currentItem.id_public);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.gen_doc_final_not(formData)
+            return EXPEDITION_SERVICE.gen_doc_final_not(formData)
                 .then(response => {
                     if (response.data === 'OK' || response.data?.status === 'OK') {
                         swalClose();
@@ -2326,9 +2299,10 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
             formData.set('cub3_json', JSON.stringify(cub3_json));
 
-            createVRxCUB_relation(cub3)
-            manage_exp();
+            const saving = [createVRxCUB_relation(cub3)];
+            saving.push(manage_exp());
             retrieveItem();
+            return Promise.allSettled(saving);
         }
         let save_eje = () => {
             formData = new FormData();
@@ -2429,7 +2403,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
         let manage_exp = () => {
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            EXPEDITION_SERVICE.update(currentRecord.id, formData)
+            return EXPEDITION_SERVICE.update(currentRecord.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
                         swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
@@ -2449,45 +2423,40 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 });
         }
         return (
-            <div className="record_ph_gen container">
-                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_20">
-                    <label className="app-p lead fw-normal">PAGOS</label>
-                </legend>
+            <div className="record_ph_gen">
+                <SectionCard id="nav_expedition_20" className="ew-disclosure-list" title={`${step ? `${step}. ` : ''}Documentos de pago`}>
+                <p className="ew-toolbar__meta mb-3">Liquidaciones y actos de cobro. Cada documento se genera en PDF con los datos de su formulario.</p>
 
-                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_21"
+                <button type="button" className="ew-disclosure" id="nav_expedition_21" aria-expanded={showCollapse_expedition_21}
                     onClick={() => setShowCollapse_expedition_21(!showCollapse_expedition_21)}>
-                    <span className="text-sm font-medium text-foreground/80">Acto de tramite de licencia</span>
-                    <Icon name={!showCollapse_expedition_21 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Acto de trámite de licencia</span>
+                    <Icon name={!showCollapse_expedition_21 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                 <UiCollapsible open={showCollapse_expedition_21}><CollapsibleContent>
                     <fieldset className="p-3">
-                        <form id="form_expedition_1" onSubmit={pdf_gen_1}>
+                        <form id="form_expedition_1" onSubmit={guard(pdf_gen_1, 'pdf_gen_1')}>
                             {_COMPONENT_DOC_1()}
-                            <div className="row text-center">
-                                <div className="col">
-                                    <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                            <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                                 </div>
-                            </div>
                         </form>
                     </fieldset>
                 </CollapsibleContent></UiCollapsible>
 
                 {_GLOBAL_ID === 'cp1' ?
                     <>
-                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_27"
+                        <button type="button" className="ew-disclosure" id="nav_expedition_27" aria-expanded={showCollapse_expedition_27}
                     onClick={() => setShowCollapse_expedition_27(!showCollapse_expedition_27)}>
-                    <span className="text-sm font-medium text-foreground/80">Liquidación de Expensas</span>
-                    <Icon name={!showCollapse_expedition_27 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Liquidación de expensas</span>
+                    <Icon name={!showCollapse_expedition_27 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                         <UiCollapsible open={showCollapse_expedition_27}><CollapsibleContent>
                             <fieldset className="p-3">
-                                <form id="form_expedition_4" onSubmit={pdf_gen_7}>
+                                <form id="form_expedition_7" onSubmit={guard(pdf_gen_7, 'pdf_gen_7')}>
                                     {_COMPONENT_DOC_7()}
-                                    <div className="row text-center">
-                                        <div className="col">
-                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                                        </div>
-                                    </div>
+                                    <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
+                                </div>
                                 </form>
                             </fieldset>
                         </CollapsibleContent></UiCollapsible>
@@ -2495,19 +2464,17 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     : ''}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' || _GLOBAL_ID === 'fl2' ? <>
-                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_22"
+                    <button type="button" className="ew-disclosure" id="nav_expedition_22" aria-expanded={showCollapse_expedition_22}
                     onClick={() => setShowCollapse_expedition_22(!showCollapse_expedition_22)}>
-                    <span className="text-sm font-medium text-foreground/80">Liquidacion de Expensas</span>
-                    <Icon name={!showCollapse_expedition_22 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Liquidación de expensas</span>
+                    <Icon name={!showCollapse_expedition_22 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                     <UiCollapsible open={showCollapse_expedition_22}><CollapsibleContent>
                         <fieldset className="p-3">
-                            <form id="form_expedition_2" onSubmit={pdf_gen_2}>
+                            <form id="form_expedition_2" onSubmit={guard(pdf_gen_2, 'pdf_gen_2')}>
                                 {_COMPONENT_DOC_2()}
-                                <div className="row text-center">
-                                    <div className="col">
-                                        <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                                    </div>
+                                <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                                 </div>
                             </form>
                         </fieldset>
@@ -2515,60 +2482,54 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </> : null}
 
                 {!conOA() && _GLOBAL_ID === 'cb1' ? <>
-                    <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_23"
+                    <button type="button" className="ew-disclosure" id="nav_expedition_23" aria-expanded={showCollapse_expedition_23}
                     onClick={() => setShowCollapse_expedition_23(!showCollapse_expedition_23)}>
-                    <span className="text-sm font-medium text-foreground/80">Impuestos Municipales</span>
-                    <Icon name={!showCollapse_expedition_23 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Impuestos municipales</span>
+                    <Icon name={!showCollapse_expedition_23 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                     <UiCollapsible open={showCollapse_expedition_23}><CollapsibleContent>
 
                         <fieldset className="p-3">
-                            <form id="form_expedition_3" onSubmit={pdf_gen_3}>
+                            <form id="form_expedition_3" onSubmit={guard(pdf_gen_3, 'pdf_gen_3')}>
                                 {_COMPONENT_DOC_3()}
-                                <div className="row text-center">
-                                    <div className="col">
-                                        <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                                    </div>
+                                <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                                 </div>
                             </form>
                         </fieldset>
                     </CollapsibleContent></UiCollapsible>
                 </> : null}
 
-                <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_24"
+                <button type="button" className="ew-disclosure" id="nav_expedition_24" aria-expanded={showCollapse_expedition_24}
                     onClick={() => setShowCollapse_expedition_24(!showCollapse_expedition_24)}>
-                    <span className="text-sm font-medium text-foreground/80">Estampilla PRO-UIS</span>
-                    <Icon name={!showCollapse_expedition_24 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Estampilla PRO-UIS</span>
+                    <Icon name={!showCollapse_expedition_24 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                 <UiCollapsible open={showCollapse_expedition_24}><CollapsibleContent>
                     <fieldset className="p-3">
-                        <form id="form_expedition_4" onSubmit={pdf_gen_4}>
+                        <form id="form_expedition_4" onSubmit={guard(pdf_gen_4, 'pdf_gen_4')}>
                             {_COMPONENT_DOC_4()}
-                            <div className="row text-center">
-                                <div className="col">
-                                    <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
+                            <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
                                 </div>
-                            </div>
                         </form>
                     </fieldset>
                 </CollapsibleContent></UiCollapsible>
 
                 {_GET_CHILD_2().item_267 > 2 && _GLOBAL_ID === 'cb1'
                     ? <>
-                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_25"
+                        <button type="button" className="ew-disclosure" id="nav_expedition_25" aria-expanded={showCollapse_expedition_25}
                     onClick={() => setShowCollapse_expedition_25(!showCollapse_expedition_25)}>
-                    <span className="text-sm font-medium text-foreground/80">Deberes Urbanisticos - Estrato: {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</span>
-                    <Icon name={!showCollapse_expedition_25 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Deberes urbanísticos, estrato {_GET_CHILD_2().item_267 ?? <label className="fw-bold text-danger">SIN DEFINIR</label>}</span>
+                    <Icon name={!showCollapse_expedition_25 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                         <UiCollapsible open={showCollapse_expedition_25}><CollapsibleContent>
                             <fieldset className="p-3">
-                                <form id="form_expedition_4" onSubmit={pdf_gen_5}>
+                                <form id="form_expedition_5" onSubmit={guard(pdf_gen_5, 'pdf_gen_5')}>
                                     {_COMPONENT_DOC_5()}
-                                    <div className="row text-center">
-                                        <div className="col">
-                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                                        </div>
-                                    </div>
+                                    <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
+                                </div>
                                 </form>
                             </fieldset>
                         </CollapsibleContent></UiCollapsible>
@@ -2578,31 +2539,29 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
 
                 {_GLOBAL_ID === 'cp1' || _GLOBAL_ID === 'fl2' ?
                     <>
-                        <button type="button" className="group flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-4 py-2.5 text-left transition-colors hover:bg-muted/60" id="nav_expedition_26"
+                        <button type="button" className="ew-disclosure" id="nav_expedition_26" aria-expanded={showCollapse_expedition_26}
                     onClick={() => setShowCollapse_expedition_26(!showCollapse_expedition_26)}>
-                    <span className="text-sm font-medium text-foreground/80">Impuesto Delineación Urbana</span>
-                    <Icon name={!showCollapse_expedition_26 ? "ChevronRight" : "ChevronDown"} size={16} className="text-muted-foreground transition-transform" />
+                    <span>Impuesto de delineación urbana</span>
+                    <Icon name={!showCollapse_expedition_26 ? "ChevronRight" : "ChevronDown"} size={16} className="ew-disclosure__chevron" aria-hidden="true" />
                 </button>
                         <UiCollapsible open={showCollapse_expedition_26}><CollapsibleContent>
                             <fieldset className="p-3">
-                                <form id="form_expedition_4" onSubmit={pdf_gen_6}>
+                                <form id="form_expedition_6" onSubmit={guard(pdf_gen_6, 'pdf_gen_6')}>
                                     {_COMPONENT_DOC_6()}
-                                    <div className="row text-center">
-                                        <div className="col">
-                                            <Button variant="destructive" size="sm" className="my-3"><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                                        </div>
-                                    </div>
+                                    <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-pdf" size={16} /> Generar PDF</Button>
+                                </div>
                                 </form>
                             </fieldset>
                         </CollapsibleContent></UiCollapsible>
                     </>
                     : ''}
 
-                <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_26">
-                    <label className="app-p lead fw-normal">DOCUMENTOS</label>
-                </legend>
+                </SectionCard>
 
-                <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">Acto Administrativo / RESOLUCION</label></>}>
+                <SectionCard id="nav_expedition_documents" title={`${step ? `${step + 1}. ` : ''}Actos y documentos`}>
+
+                <Collapsible trigger={<label>Acto administrativo / resolución</label>}>
                     <EXP_RES
                         translation={translation} swaMsg={swaMsg} globals={globals}
                         currentItem={currentItem}
@@ -2615,21 +2574,17 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                     />
                 </Collapsible>
 
-                <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">CITACIÓN PARA NOTIFICACIÓN</label></>}>
-                    <form id="form_expedition_4" onSubmit={save_exp_doc_final_not}>
+                <Collapsible trigger={<label>Citación para notificación</label>}>
+                    <form id="form_expedition_final_not" onSubmit={guard(save_exp_doc_final_not, 'save_exp_doc_final_not')}>
                         {_COMPOENEN_DOC_FINAL_NOT()}
-                        <div className="row text-center">
-                            <div className="col">
-                                <Button size="sm" className="my-3"><Icon name="share-square" size={16} /> GUARDAR CAMBIOS </Button>
-                            </div>
-                            <div className="col">
-                                <Button type="button" variant="destructive" size="sm" className="my-3" onClick={() => pdf_gen_final_not()}><Icon name="file-pdf" size={16} /> GENERAR PDF </Button>
-                            </div>
+                        <div className="ew-actions">
+                            <Button type="button" variant="outline" size="sm" onClick={guard(() => pdf_gen_final_not(), 'pdf_gen_final_not')}><Icon name="file-pdf" size={16} /> Generar PDF</Button>
+                            <Button type="submit" size="sm"><Icon name="share-square" size={16} /> Guardar cambios</Button>
                         </div>
                     </form>
                 </Collapsible>
 
-                <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">EJECUTORIA</label></>}>
+                <Collapsible trigger={<label>Ejecutoria</label>}>
                     {_GLOBAL_ID === 'cb1' ?
                     <EXP_EJEC
                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -2644,7 +2599,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                 </Collapsible>
 
                 {_GLOBAL_ID === 'cb1' ? 
-                    <Collapsible className='bg-light border border-info text-center my-1' openedClassName='my-1 bg-light border border-info text-center' trigger={<><label className="fw-normal text-info text-center">ACTUACIONES DE DESISTIMIENTO</label></>}>
+                    <Collapsible trigger={<label>Actuaciones de desistimiento</label>}>
                         <EXP_ACT_DESIST
                             translation={translation} swaMsg={swaMsg} globals={globals}
                             currentItem={currentItem}
@@ -2657,6 +2612,7 @@ function EXP_DOCS({ translation, swaMsg, globals, currentItem, currentVersion, c
                         />
                     </Collapsible> : ''
                 }
+                </SectionCard>
             </div >
         );
 }

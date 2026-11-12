@@ -5,6 +5,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { getLabels, getMetadata, getSnapshot } from '../onlineRadicationModel';
 import { DocumentEntriesSection } from './DocumentEntriesSection';
 import { DocumentsSection } from './DocumentsSection';
+import { LiquidationSection } from './LiquidationSection';
 import { OutcomeNotice } from './OutcomeNotice';
 import { ProfessionalsSection, ResponsibleSection, TitleholdersSection } from './PeopleSections';
 import { SelfAssessmentSection } from './SelfAssessmentSection';
@@ -40,7 +41,7 @@ function DetailSkeleton() {
  * Scrollable body of the detail sheet, in the agreed order. Without snapshot (older portal
  * clients) only the summary columns and the evaluated requirements exist.
  */
-export function DetailBody({ item, now, loaded, loading, error, onRetry, entryActionsDisabled, onReceiveEntry, onRejectEntry, onViewFile }) {
+export function DetailBody({ item, now, loaded, loading, error, onRetry, entryActionsDisabled, onReceiveEntry, onRejectEntry, onViewFile, liquidationState, onLiquidationIssued, onRejectReceipt }) {
   if (!loaded) {
     return (
       <div className="flex flex-col gap-[1rem] px-6 py-[1.25rem]">
@@ -88,6 +89,18 @@ export function DetailBody({ item, now, loaded, loading, error, onRetry, entryAc
       ) : null}
 
       <RequestSummarySection {...sectionProps} />
+      {liquidationState ? (
+        <LiquidationSection
+          item={item}
+          liquidation={liquidationState.liquidation}
+          loaded={liquidationState.loaded}
+          error={liquidationState.error}
+          onRetry={liquidationState.reload}
+          onIssued={onLiquidationIssued}
+          onViewFile={onViewFile}
+          onRejectReceipt={onRejectReceipt}
+        />
+      ) : null}
       <DocumentEntriesSection
         item={item}
         now={now}

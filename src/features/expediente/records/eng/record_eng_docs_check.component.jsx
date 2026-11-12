@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import Icon from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
@@ -51,10 +52,10 @@ function RECORD_ENG_DOCS_CHECK(props) {
             var _array = _item.split(',');
             var _COMPONENT = [];
 
-            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[0]), "CEDULA DE CIUDADANIA", "IdCard", "DeepSkyBlue")}</>)
-            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[1]), "MATRICULA", "BadgeCheck", "DarkOrchid")}</>)
-            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[2]), "FICHA COPNIA", "BookOpen", "GoldenRod")}</>)
-            _COMPONENT.push(<>{_RENDER_VIZ_BTN(Number(_array[3]), "HOJA DE VIDA Y CERTIFICADOS", "FileText", "LimeGreen")}</>)
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_RENDER_VIZ_BTN(Number(_array[0]), "CEDULA DE CIUDADANIA", "IdCard", "DeepSkyBlue")}</Fragment>)
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_RENDER_VIZ_BTN(Number(_array[1]), "MATRICULA", "BadgeCheck", "DarkOrchid")}</Fragment>)
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_RENDER_VIZ_BTN(Number(_array[2]), "FICHA COPNIA", "BookOpen", "GoldenRod")}</Fragment>)
+            _COMPONENT.push(<Fragment key={_COMPONENT.length}>{_RENDER_VIZ_BTN(Number(_array[3]), "HOJA DE VIDA Y CERTIFICADOS", "FileText", "LimeGreen")}</Fragment>)
 
             return <>{_COMPONENT}</>
         }
@@ -118,11 +119,11 @@ function RECORD_ENG_DOCS_CHECK(props) {
                     </>
                     })
                 } else {
-                    _COMPONENT.push(<>
+                    _COMPONENT.push(<Fragment key={_COMPONENT.length}>
                         <li className="list-group-item">
                             <span className="badge bg-danger">SIN ANEXAR</span> {CodesJson[_codes[i]]}
                         </li>
-                    </>)
+                    </Fragment>)
                 }
 
             }
@@ -190,7 +191,7 @@ function RECORD_ENG_DOCS_CHECK(props) {
                     {COMPONENT_DOCS_CHECK(_DOCS)}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> GUARDAR CAMBIOS </Button>
+                            <Button size="sm" className="my-3"><Icon name="edit" size={16} /> Guardar cambios</Button>
                         </div>
                     </div>
                 </form>

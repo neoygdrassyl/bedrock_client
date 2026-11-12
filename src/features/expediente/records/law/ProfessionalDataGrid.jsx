@@ -310,7 +310,7 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
                 <select
                     aria-label={`${label} — ${professional.name || 'profesional'}`}
                     title={`${label}: ${checked ? 'Sí' : 'No'}`}
-                    className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${checked ? 'text-emerald-700' : 'text-destructive'}`}
+                    className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${checked ? 'ew-text-success' : 'text-destructive'}`}
                     value={checked ? '1' : '0'}
                     disabled={savingInline}
                     aria-busy={savingInline}
@@ -322,7 +322,7 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
                     <option value="0">No</option>
                     <option value="1">Sí</option>
                 </select>
-                <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[9px] leading-none text-muted-foreground">▾</span>
+                <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[11px] leading-none text-muted-foreground">▾</span>
             </div>
         );
     };
@@ -334,7 +334,7 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
             <select
                 aria-label={`Postgrado — ${professional.name || 'profesional'}`}
                 title={`Postgrado: ${applies ? 'APLICA' : 'NO APLICA'}`}
-                className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${applies ? 'text-emerald-700' : 'text-muted-foreground'}`}
+                className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${applies ? 'ew-text-success' : 'text-muted-foreground'}`}
                 value={applies ? '1' : '0'}
                 disabled={savingInline}
                 aria-busy={savingInline}
@@ -346,7 +346,7 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
                 <option value="0">NO APLICA</option>
                 <option value="1">APLICA</option>
             </select>
-            <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[9px] leading-none text-muted-foreground">▾</span>
+            <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[11px] leading-none text-muted-foreground">▾</span>
         </div>;
     };
 
@@ -357,7 +357,7 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
             <select
                 aria-label={`Estado certificado — ${professional.name || 'profesional'}`}
                 title={`Estado certificado: ${status || 'Pendiente'}`}
-                className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${status === 'HABILITADO' ? 'text-emerald-700' : status === 'INHABILITADO' ? 'text-destructive' : 'text-muted-foreground'}`}
+                className={`h-7 w-auto cursor-pointer appearance-none rounded-md border border-border bg-background ps-2 pe-6 text-left text-[11px] font-semibold leading-none focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${status === 'HABILITADO' ? 'ew-text-success' : status === 'INHABILITADO' ? 'text-destructive' : 'text-muted-foreground'}`}
                 value={status}
                 disabled={savingInline}
                 aria-busy={savingInline}
@@ -369,17 +369,14 @@ export default function ProfessionalDataGrid({ currentItem, currentVersion, requ
                 <option value="" disabled>Pendiente</option>
                 {CERTIFICATE_STATUSES.map(option => <option key={option} value={option}>{option}</option>)}
             </select>
-            <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[9px] leading-none text-muted-foreground">▾</span>
+            <span aria-hidden="true" className="pointer-events-none absolute right-2 text-[11px] leading-none text-muted-foreground">▾</span>
         </div>;
     };
 
 
-    return <section className="mt-3 rounded-lg border border-border bg-card p-3" aria-label="Tabla de profesionales responsables">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <div>
-                <h3 className="mb-1 text-sm font-semibold">5.2. Profesionales responsables</h3>
-                <p className="mb-0 text-xs text-muted-foreground">Información consolidada para consulta y actualización.</p>
-            </div>
+    return <section className="ew-card" aria-label="Tabla de profesionales responsables">
+        <div className="ew-card__header">
+                <h3 className="ew-card__title">5.2. Profesionales responsables</h3>
         </div>
         {inlineError ? <p className="mb-2 text-xs text-destructive" role="alert">{inlineError}</p> : null}
         <ProfessionalVerificationGrid

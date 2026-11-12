@@ -1,3 +1,5 @@
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { useEffect, useState } from 'react';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import { dateParser_dateDiff } from '../../../../shared/config/customClasses/typeParse';
@@ -116,7 +118,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
         let _LIST = _GET_CHILD_6();
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+            _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
         }
         return <>{_COMPONENT}</>
     }
@@ -146,7 +148,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
                             <label>Radicación Fotografiá</label>
                         </div>
                         <div className='col'>
-                            <input type="date" className="form-control form-control-sm" max="2100-01-01" id="alert_sign_date_rl" defaultValue={FunLaw.sign[1]} onBlur={() => uploadSign()} />
+                            <DateInput className="form-control form-control-sm" max="2100-01-01" id="alert_sign_date_rl" defaultValue={FunLaw.sign[1]} onBlur={() => uploadSign()} />
                         </div>
                     </div>
                     <div className='row'>
@@ -154,7 +156,7 @@ export default function RECORD_LAW_FUN_LAW(props) {
                             <label>Radicación LyDF</label>
                         </div>
                         <div className='col'>
-                        <label>{_GET_CLOCK_STATE(5).date_start}</label>
+                        <label>{formatDisplayDate(_GET_CLOCK_STATE(5).date_start, { empty: '' })}</label>
                         </div>
                     </div>
                     <div className='row'>

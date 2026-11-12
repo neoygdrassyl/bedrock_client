@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 
 import { dateParser, formsParser1, getJSONFull } from '../../../../../shared/config/customClasses/typeParse';
@@ -98,6 +100,8 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
         // FUNCTIONS & APIS
         var formData = new FormData();
         let save_seal = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_seals:save_seal')) { e?.preventDefault?.(); return; }
             e.preventDefault();
 
             let fun0Id = currentItem.id;
@@ -115,18 +119,18 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
             let folders = document.getElementById("seal_8").value;
             if(folders) formData.set('folders', folders);
            
-            manage_seal(true)
+            holdSubmit('fun_seals:save_seal', manage_seal(true));
         }
         let manage_seal = (useMySwal) => {
             if (useMySwal) {
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             }
             if (_CHILD_SEAL.id) {
-                sealService.update(_CHILD_SEAL.id, formData)
+                return sealService.update(_CHILD_SEAL.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             retrieveSeal(currentItem.id_public);
                         } else {
@@ -143,11 +147,11 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     });
             }
             else {
-                sealService.create(formData)
+                return sealService.create(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             if (useMySwal) {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             }
                             retrieveSeal(currentItem.id_public);
                         } else {
@@ -272,7 +276,7 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                                 <span className="input-group-text bg-primary text-primary-foreground">
                                     <Icon name="calendar-alt" size={16} />
                                 </span>
-                                <input type="date" className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
+                                <DateInput className="form-control" placeholder="Fecha de Expedicion" id="seal_5" />
                             </div>
                         </div>
                     </div>
@@ -325,17 +329,17 @@ function FUN_SEAL({ translation, swaMsg, globals, currentItem, currentVersion })
                     <div className="row">
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <Button size="sm"><Icon name="file-import" size={16} /> GUARDAR CAMBIOS </Button>
+                                <Button size="sm"><Icon name="file-import" size={16} /> Guardar cambios </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> GENERAR ORIGINAL </Button>
+                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(1)}><Icon name="file" size={16} /> Generar original </Button>
                             </div>
                         </div>
                         <div className=" col-4">
                             <div className="text-center py-4 mt-3">
-                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> GENERAR TITULAR </Button>
+                                <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90" onClick={() => generate_pdf(0)}><Icon name="file" size={16} /> Generar titular </Button>
                             </div>
                         </div>
                     </div>

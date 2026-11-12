@@ -1,5 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
+import { Fragment, useState, useEffect } from 'react';
 import { useDocumentaryInventory } from '../../documental/hooks/useDocumentaryInventory';
 import { Button } from '@/shared/ui/button';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
@@ -470,7 +472,7 @@ function RECORD_ENG_REVIEW(props) {
                     let isPrimal = i == 0;
                     let allowReview = (iasing != null && iasing != undefined && iasing != '') || window.user.roleId == 1;
 
-                    return <>
+                    return <Fragment key={`review-row-${i}-${value}`}>
                         <div className="row border">
                             <div className="row">
                                 <div className="col">
@@ -484,13 +486,13 @@ function RECORD_ENG_REVIEW(props) {
                                     }
                                 </div>
                                 <div className="col text-center">
-                                    <label>{iasing}</label>
+                                    <label>{formatDisplayDate(iasing, { empty: '' })}</label>
                                 </div>
                                 <div className="col text-center">
                                     {rewStates['REW' + i]
-                                        ? <input type="date" className="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
+                                        ? <DateInput className="form-control form-control-sm" id={"r_l_review_date_" + i} max="2100-01-01"
                                             defaultValue={idate} />
-                                        : <label>{idate ?? ''}</label>
+                                        : <label>{formatDisplayDate(idate, { empty: '' })}</label>
                                     }
                                 </div>
                                 <div className="col-1">
@@ -583,7 +585,7 @@ function RECORD_ENG_REVIEW(props) {
                                 <div className="col"></div>
                             </div>
                         </div>
-                    </>
+                    </Fragment>
                 })}
             </>
         }
@@ -745,7 +747,7 @@ function RECORD_ENG_REVIEW(props) {
                             <label>Revision</label>
                             <div className="input-group my-1">
                                 <select className="form-select me-1" id={"record_pdf_version"} onChange={(e) => _CHANGE_VALUES(e.target.value)}>
-                                    {CLOCKS_R.map((op, i) => <option value={i}>{op}</option>)}
+                                    {CLOCKS_R.map((op, i) => <option key={i} value={i}>{op}</option>)}
                                 </select>
                             </div>
                         </div>
@@ -795,12 +797,12 @@ function RECORD_ENG_REVIEW(props) {
                             <input className='form-control' id={"record_pdf_check_3_v"} disabled defaultValue={reviews[0].check3 == 1 ? 'VIABLE' : reviews[0].check3 == 2 ? 'NO APLICA' : 'NO VIABLE'} />
                         </div>
                     </div>
-                    <div className="row mb-3 text-center">
-                        <div className="col">
-                            <Button variant="destructive" size="sm" className="me-1" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> DESCARGAR INFORME</Button>
+                    <div className="ew-actions">
+                        <div>
+                            <Button size="sm" onClick={() => CREATE_PDF()}> <Icon name="file-pdf" size={16} /> Descargar informe</Button>
                         </div>
-                        <div className="col">
-                            <Button variant="destructive" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> DESCARGAR CHECKEO</Button>
+                        <div>
+                            <Button variant="outline" size="sm" onClick={() => CREATE_PDF_CHECK()}> <Icon name="check-square" size={16} /> Descargar chequeo</Button>
                         </div>
                     </div>
                 </div>
@@ -1119,7 +1121,7 @@ function RECORD_ENG_REVIEW(props) {
         let _VERSIONS_SELECT = () => {
             var _COMPONENT = [];
             for (let i = 0; i < currentItem.version; i++) {
-                _COMPONENT.push(<option value={i + 1}>Revision {i + 1}</option>)
+                _COMPONENT.push(<option key={i} value={i + 1}>Revision {i + 1}</option>)
             }
             return <select className="form-select" id="record_version">{_COMPONENT}</select>
         }

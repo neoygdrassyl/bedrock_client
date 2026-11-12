@@ -11,8 +11,8 @@ const verificationOptions = [['NO DILIGENCIADO', 'No diligenciado'], ['DILIGENCI
 const evaluationOptions = [['0', 'No cumple'], ['1', 'Cumple'], ['2', 'No aplica']];
 
 function selectClass(value, kind) {
-  if (kind === 'verification') return value === 'DILIGENCIADO' ? 'text-emerald-700' : value === 'NO APLICA' ? 'text-amber-700' : 'text-destructive';
-  return value === '1' ? 'text-emerald-700' : value === '2' ? 'text-amber-700' : 'text-destructive';
+  if (kind === 'verification') return value === 'DILIGENCIADO' ? 'ew-text-success' : value === 'NO APLICA' ? 'ew-text-warning' : 'text-destructive';
+  return value === '1' ? 'ew-text-success' : value === '2' ? 'ew-text-warning' : 'text-destructive';
 }
 
 function ComparisonInput({ row, disabled, onChange }) {
@@ -55,11 +55,11 @@ function PropertyComparisonTable({ rows, disabled, onChange }) {
       {groups.map(group => <div key={group.label} className="min-w-0 overflow-hidden rounded-md border border-border">
         <table className="h-full w-full table-fixed border-separate border-spacing-0 text-[11px] text-foreground" aria-label={group.label}>
           <colgroup><col style={{ width: '6rem' }} /><col /><col style={{ width: '2rem' }} /><col style={{ width: '2rem' }} /></colgroup>
-          <thead className="bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
+          <thead className="bg-muted text-foreground/80 ">
             <tr>
-              <th colSpan="2" className="border-b border-r border-slate-400 px-2 py-1 text-left text-[9px] font-semibold uppercase dark:border-slate-600">{group.label}</th>
-              <th className="w-8 border-b border-r border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">R</th>
-              <th className="w-8 border-b border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">A</th>
+              <th colSpan="2" className="border-b border-r border-border px-2 py-1 text-left text-[11px] font-semibold uppercase ">{group.label}</th>
+              <th className="w-8 border-b border-r border-border p-1 text-center text-[11px] font-semibold uppercase ">R</th>
+              <th className="w-8 border-b border-border p-1 text-center text-[11px] font-semibold uppercase ">A</th>
             </tr>
           </thead>
           <tbody>{[0, 1].map(rowIndex => {
@@ -123,14 +123,14 @@ function PropertyDetailsComparisonTable({ choiceRows, generalRows, disabled, isI
       <div className="min-w-0 overflow-hidden rounded-md border border-border">
         <table className="h-full w-full table-fixed border-separate border-spacing-0 text-[11px] text-foreground" aria-label="2.4 Clasificación del Suelo">
           <colgroup><col style={{ width: '12rem' }} /><col style={{ width: '2rem' }} /><col style={{ width: '2rem' }} /></colgroup>
-          <thead className="bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300"><tr><th className="h-8 border-b border-r border-slate-400 px-2 py-1 text-left align-middle text-[9px] font-semibold uppercase dark:border-slate-600">2.4 Clasificación del Suelo</th><th className="h-8 border-b border-r border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">R</th><th className="h-8 border-b border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">A</th></tr></thead>
+          <thead className="bg-muted text-foreground/80 "><tr><th className="h-8 border-b border-r border-border px-2 py-1 text-left align-middle text-[11px] font-semibold uppercase ">2.4 Clasificación del Suelo</th><th className="h-8 border-b border-r border-border p-1 text-center text-[11px] font-semibold uppercase ">R</th><th className="h-8 border-b border-border p-1 text-center text-[11px] font-semibold uppercase ">A</th></tr></thead>
           <tbody>{Array.from({ length: rowCount }, (_, index) => <tr key={index}>{choiceCells(soil, soilOptions[index])}</tr>)}</tbody>
         </table>
       </div>
       <div className="min-w-0 overflow-hidden rounded-md border border-border">
         <table className="h-full w-full table-fixed border-separate border-spacing-0 text-[11px] text-foreground" aria-label="2.5 Planimetría del Lote">
           <colgroup><col style={{ width: '12rem' }} /><col style={{ width: '2rem' }} /><col style={{ width: '2rem' }} /></colgroup>
-          <thead className="bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300"><tr><th className="h-8 border-b border-r border-slate-400 px-2 py-1 text-left align-middle text-[9px] font-semibold uppercase dark:border-slate-600">2.5 Planimetría del Lote</th><th className="h-8 border-b border-r border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">R</th><th className="h-8 border-b border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">A</th></tr></thead>
+          <thead className="bg-muted text-foreground/80 "><tr><th className="h-8 border-b border-r border-border px-2 py-1 text-left align-middle text-[11px] font-semibold uppercase ">2.5 Planimetría del Lote</th><th className="h-8 border-b border-r border-border p-1 text-center text-[11px] font-semibold uppercase ">R</th><th className="h-8 border-b border-border p-1 text-center text-[11px] font-semibold uppercase ">A</th></tr></thead>
           <tbody>{Array.from({ length: rowCount }, (_, index) => <tr key={index}>{choiceCells(planimetry, planimetryOptions[index])}</tr>)}</tbody>
         </table>
       </div>
@@ -140,10 +140,10 @@ function PropertyDetailsComparisonTable({ choiceRows, generalRows, disabled, isI
             <col style={{ width: '8rem' }} /><col /><col style={{ width: '2rem' }} /><col style={{ width: '2rem' }} />
             <col style={{ width: '8rem' }} /><col /><col style={{ width: '2rem' }} /><col style={{ width: '2rem' }} />
           </colgroup>
-          <thead className="bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
-            <tr><th colSpan="8" className="border-b border-slate-400 px-2 py-1 text-left text-[9px] font-semibold uppercase dark:border-slate-600">2.6 Información General</th></tr>
-            <tr><th colSpan="4" className="border-b border-r border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Predio urbano</th><th colSpan="4" className="border-b border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Predio rural</th></tr>
-            <tr>{['Campo', 'Valor', 'R', 'A', 'Campo', 'Valor', 'R', 'A'].map((label, index) => <th key={`${label}-${index}`} className={`border-b border-slate-400 p-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600${index === 3 ? ' border-r' : ''}`}>{label}</th>)}</tr>
+          <thead className="bg-muted text-foreground/80 ">
+            <tr><th colSpan="8" className="border-b border-border px-2 py-1 text-left text-[11px] font-semibold uppercase ">2.6 Información General</th></tr>
+            <tr><th colSpan="4" className="border-b border-r border-border p-1 text-center text-[11px] font-semibold uppercase ">Predio urbano</th><th colSpan="4" className="border-b border-border p-1 text-center text-[11px] font-semibold uppercase ">Predio rural</th></tr>
+            <tr>{['Campo', 'Valor', 'R', 'A', 'Campo', 'Valor', 'R', 'A'].map((label, index) => <th key={`${label}-${index}`} className={`border-b border-border p-1 text-center text-[11px] font-semibold uppercase ${index === 3 ? ' border-r' : ''}`}>{label}</th>)}</tr>
           </thead>
           <tbody>{Array.from({ length: rowCount }, (_, index) => <tr key={index}>{generalCells(urbanRows[index], false)}{generalCells(ruralRows[index], true)}</tr>)}</tbody>
         </table>
@@ -162,9 +162,9 @@ export default function MatrixInformationTable({ section, reviewState, mode = 'r
 
   return <div className="max-h-[70vh] overflow-auto rounded-md border border-border">
     <table className="min-w-max border-separate border-spacing-0 text-[11px] text-foreground" aria-label={section.title}>
-      <thead className="sticky top-0 z-20 bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
-        <tr>{section.fields.map(field => <th key={field.id} colSpan={hasOrigin ? '4' : '3'} className="min-w-56 border-b border-r border-slate-400 px-2 py-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">{field.label}</th>)}</tr>
-        <tr>{section.fields.map(field => <Fragment key={field.id}><th className="border-b border-r border-slate-400 px-2 py-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Valor</th><th className="border-b border-r border-slate-400 px-2 py-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Verificación</th>{hasOrigin ? <th className="border-b border-r border-slate-400 px-2 py-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Origen</th> : null}<th className="border-b border-r border-slate-400 px-2 py-1 text-center text-[9px] font-semibold uppercase dark:border-slate-600">Evaluación</th></Fragment>)}</tr>
+      <thead className="sticky top-0 z-20 bg-muted text-foreground/80 ">
+        <tr>{section.fields.map(field => <th key={field.id} colSpan={hasOrigin ? '4' : '3'} className="min-w-56 border-b border-r border-border px-2 py-1 text-center text-[11px] font-semibold uppercase ">{field.label}</th>)}</tr>
+        <tr>{section.fields.map(field => <Fragment key={field.id}><th className="border-b border-r border-border px-2 py-1 text-center text-[11px] font-semibold uppercase ">Valor</th><th className="border-b border-r border-border px-2 py-1 text-center text-[11px] font-semibold uppercase ">Verificación</th>{hasOrigin ? <th className="border-b border-r border-border px-2 py-1 text-center text-[11px] font-semibold uppercase ">Origen</th> : null}<th className="border-b border-r border-border px-2 py-1 text-center text-[11px] font-semibold uppercase ">Evaluación</th></Fragment>)}</tr>
       </thead>
       <tbody><tr>{section.fields.map(field => {
         const index = field.controlIndex;

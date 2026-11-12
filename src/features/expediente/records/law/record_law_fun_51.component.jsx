@@ -68,7 +68,7 @@ export default function RECORD_LAW_FUN_51(props) {
         let _LIST = _GET_CHILD_6();
         let _COMPONENT = [];
         for (var i = 0; i < _LIST.length; i++) {
-            _COMPONENT.push(<option value={_LIST[i].id}>{_LIST[i].description}</option>)
+            _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
         }
         return <>{_COMPONENT}</>
     }
@@ -459,7 +459,7 @@ export default function RECORD_LAW_FUN_51(props) {
                 </div>
                 <div className="row mb-3 text-center">
                     <div className="col-12">
-                        <Button size="sm" className="my-3" onClick={() => edit_51(item)} ><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                        <Button size="sm" className="my-3" onClick={() => edit_51(item)} ><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                     </div>
                 </div>
             </fieldset>

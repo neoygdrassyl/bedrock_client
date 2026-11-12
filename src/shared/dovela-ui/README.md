@@ -17,6 +17,7 @@ Capa local de componentes parametrizados para normalizar la interfaz de Dovela s
 - `DovelaInlineAlert`: mensajes de estado, advertencia, éxito y error con iconografía consistente.
 - `DovelaField`, `DovelaInput`, `DovelaTextarea`, `DovelaSelect`: contratos accesibles para formularios.
 - `DovelaPageHeader`: encabezados de páginas o submódulos.
+- `DovelaBreadcrumb`: ruta de ubicación (`<nav aria-label="Breadcrumb"><ol>`). Recibe `items=[{ label, href?, onClick?, mono? }]`; el último elemento es la página actual (`aria-current="page"`) y nunca es interactivo. Un item con `href` se pinta como enlace (agregue `onClick` para navegar sin recargar), con solo `onClick` como botón y sin ninguno como texto. `mono` es para radicados y códigos. Ejemplo: `Expedientes / 68001-1-26-0231 / Informes / Informe jurídico`.
 - `DovelaSectionPanel`: panel de sección con título, descripción, acciones y contenido.
 
 ## Regla de adopción gradual
@@ -28,6 +29,7 @@ Cuando se toque una vista existente, primero sustituir patrones repetidos por co
 - Tarjetas, resúmenes y superficies por `DovelaCard` o `DovelaSectionPanel`.
 - Estados informativos, errores y advertencias por `DovelaInlineAlert`.
 - Campos y editores por `DovelaField` + control Dovela correspondiente.
+- Rutas de ubicación ("Módulo / Registro / Sección") por `DovelaBreadcrumb`.
 
 Si una clase CSS local solo existe para color, borde, radio, sombra o tono de estado, debe moverse a token/componente. Si existe para grid, sticky behavior, alturas de módulo o layout específico, puede quedarse en la vista.
 

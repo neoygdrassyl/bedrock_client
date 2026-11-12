@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { Button } from '@/shared/ui/button';
+import dayjs from 'dayjs';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import FUNService from '../../api/fun.service'
 import DataTable from '@/shared/components/data-table-bridge';
 
@@ -56,9 +59,9 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             return _CHILD;
         }
         let _GET_NEIGHBOUR_STATE = (_state) => {
-            if (!_state) return <label className="fw-bold text-danger">PENDIENTE</label>
-            else if (_state == 1) return <label className="fw-bold text-success">CITACION POSITIVA</label>
-            else if (_state == 2) return <label className="fw-bold text-warning">CITACION NEGATIVA</label>
+            if (!_state) return <DovelaBadge tone="danger">Pendiente</DovelaBadge>
+            else if (_state == 1) return <DovelaBadge tone="success">Citación positiva</DovelaBadge>
+            else if (_state == 2) return <DovelaBadge tone="warning">Citación negativa</DovelaBadge>
         }
         let _GET_NEIGHBOUR_ALERTS = (_alerts_info) => {
             if (!_alerts_info) return "";
@@ -67,13 +70,13 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             let _ALERT = [];
             for (var i = 0; i < _alerts_array.length; i++) {
                 if (_alerts_array[i].includes("ALERT_1"))
-                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Periódico el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></>);
+                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<Fragment key={`method-${i}-1`}><label>Periódico el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></Fragment>);
                 if (_alerts_array[i].includes("ALERT_2"))
-                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Radio el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></>);
+                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<Fragment key={`method-${i}-2`}><label>Radio el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></Fragment>);
                 if (_alerts_array[i].includes("ALERT_3"))
-                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Pagina Web el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></>);
+                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<Fragment key={`method-${i}-3`}><label>Pagina Web el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></Fragment>);
                 if (_alerts_array[i].includes("ALERT_4"))
-                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<><label>Físico el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></>);
+                    if (_alerts_array[i].split('&')[1]) _ALERT.push(<Fragment key={`method-${i}-4`}><label>Físico el {dateParser(_alerts_array[i].split('&')[1])}</label><br /></Fragment>);
             }
             return <>{_ALERT}</>
         }
@@ -90,31 +93,31 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     supportDocument.filename,
                 );
                 if (_alerts_array[i].includes("ALERT_1")) {
-                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Pediódico:
-                        <button type="button" onClick={downloadSupport}>
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<Fragment key={`support-${i}-1`}>Soporte periódico:
+                        <button type="button" onClick={downloadSupport} aria-label="Descargar soporte periódico" title="Descargar soporte periódico">
+                            <Icon name="cloud-download-alt" size={16} style={{ color: 'hsl(var(--doc-key-support))' }} /></button>
                         <br />
-                    </>);
+                    </Fragment>);
                 }
                 if (_alerts_array[i].includes("ALERT_2")) {
-                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Radio:
-                        <button type="button" onClick={downloadSupport}>
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<Fragment key={`support-${i}-2`}>Soporte radio:
+                        <button type="button" onClick={downloadSupport} aria-label="Descargar soporte radio" title="Descargar soporte radio">
+                            <Icon name="cloud-download-alt" size={16} style={{ color: 'hsl(var(--doc-key-support))' }} /></button>
                         <br />
-                    </>);
+                    </Fragment>);
                 }
                 if (_alerts_array[i].includes("ALERT_3")) {
-                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Pagina Web:
-                        <button type="button" onClick={downloadSupport}>
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<Fragment key={`support-${i}-3`}>Soporte página web:
+                        <button type="button" onClick={downloadSupport} aria-label="Descargar soporte página web" title="Descargar soporte página web">
+                            <Icon name="cloud-download-alt" size={16} style={{ color: 'hsl(var(--doc-key-support))' }} /></button>
                         <br />
-                    </>);
+                    </Fragment>);
                 }
                 if (_alerts_array[i].includes("ALERT_4")) {
-                    if (documentId > 0 && supportDocument.path) _ALERT.push(<>Soporte Físico:
-                        <button type="button" onClick={downloadSupport}>
-                            <Icon name="cloud-download-alt" size={16} style={{ "color": "Crimson" }} /></button>
-                    </>);
+                    if (documentId > 0 && supportDocument.path) _ALERT.push(<Fragment key={`support-${i}-4`}>Soporte físico:
+                        <button type="button" onClick={downloadSupport} aria-label="Descargar soporte físico" title="Descargar soporte físico">
+                            <Icon name="cloud-download-alt" size={16} style={{ color: 'hsl(var(--doc-key-support))' }} /></button>
+                    </Fragment>);
                 }
             }
             return <>{_ALERT}</>
@@ -174,7 +177,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     selector: row => row.alerted, // FIX: react-data-table v7→v8
                     sortable: true,
                     filterable: true,
-                    cell: row => <span className="text-sm">{row.state == 1 ? dateParser(row.alerted) : ""}</span>
+                    cell: row => <span className="ew-num text-sm">{row.state == 1 && row.alerted ? dayjs(row.alerted).format('DD/MM/YYYY') : ""}</span>
                 },
                 {
                     name: 'METODOS DE PUBLICACION',
@@ -203,16 +206,15 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     button: true,
                     minWidth: '120px',
                     cell: row => <>
-                        <span title="Modificar Item"><Button variant="outline" size="sm" className="m-0 p-2" onClick={() => setEdit(row)}>
+                        <span title="Modificar ítem"><Button variant="outline" size="sm" className="m-0 me-1 p-2" aria-label="Modificar ítem" onClick={() => setEdit(row)}>
                             <Icon name="edit" size={16} /></Button></span>
-                        <span title="Eliminar Item"><Button variant="destructive" size="sm" className="m-0 p-2" onClick={() => delete_3(row.id)}>
+                        <span title="Eliminar Item"><Button variant="outline" size="sm" className="m-0 p-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar" title="Eliminar" onClick={() => delete_3(row.id)}>
                             <Icon name="trash-alt" size={16} /></Button></span>
                     </>
                 },
             ]
             return <DataTable
-                noDataComponent="No hay Items"
-                striped="true"
+                noDataComponent="Sin registros"
                 columns={columns_3}
                 data={_LIST}
                 highlightOnHover
@@ -311,6 +313,8 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
 
         // FUNCTIONS & APIS
         let new_3 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_3:new_3')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             let fun0Id = null;
             //
@@ -327,10 +331,10 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             formData.set('part_id', part_id);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.create_fun3(formData)
+            holdSubmit('fun_n_3:new_3', FUNService.create_fun3(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         document.getElementById('form_fun_3_new').reset();
                         requestUpdate(currentItem.id);
                     } else {
@@ -340,7 +344,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
         let delete_3 = (id) => {
             swalConfirm({
@@ -354,7 +358,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     FUNService.delete_3(id)
                         .then(response => {
                             if (response.data === 'OK') {
-                                swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                                swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                                 requestUpdate(currentItem.id);
                                 setEdit(false);
                             } else {
@@ -369,6 +373,8 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             });
         }
         let edit_3 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_n_3:edit_3')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             let direccion_1 = document.getElementById("f_31_edit").value;
@@ -381,10 +387,10 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             formData.set('part_id', part_id);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.update_3(edit.id, formData)
+            holdSubmit('fun_n_3:edit_3', FUNService.update_3(edit.id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id);
                         document.getElementById('form_fun_3_edit').reset();
                         setEdit(false);
@@ -395,7 +401,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
 
         return (<>
@@ -413,7 +419,7 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                             {_COMPONENT_NEW_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                 </div>
                             </div>
                         </form>
@@ -422,11 +428,11 @@ const FUNN3 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                 {edit
                     ? <>
                         <form id="form_fun_3_edit" onSubmit={edit_3}>
-                            <h3 className="my-3 text-center">Actualizar Vecino</h3>
+                            <h3 className="ew-subheading">Actualizar vecino</h3>
                             {_COMPONENT_EDIT_FUN_3()}
                             <div className="row mb-3 text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> GUARDAR CAMBIOS </Button>
+                                    <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Guardar cambios</Button>
                                 </div>
                             </div>
                         </form>

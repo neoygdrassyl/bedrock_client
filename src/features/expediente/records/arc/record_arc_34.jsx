@@ -1,4 +1,6 @@
-import { useCallback, useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
+import { Fragment, useCallback, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { EditableDataGrid } from '@/shared/components/editable-data-grid';
 
@@ -162,7 +164,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `record_arc_34:step.${_id_public}.json`);
             return value
         }
         let _SET_SESION_P = (session) => {
@@ -382,7 +384,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="col-3 p-1">
                         <label>Fecha</label>
                         <div className="input-group">
-                            <input type="date" className="form-control me-1" max="2100-01-01" id="r_a_34_gen_3" />
+                            <DateInput className="form-control me-1" max="2100-01-01" id="r_a_34_gen_3" />
                         </div>
                     </div>
                     <div className="col-2 p-1">
@@ -444,13 +446,12 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     center: true,
                     minWidth: '100px',
                     cell: row => <>
-                        <Button variant="destructive" size="sm" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></Button>
+                        <Button variant="outline" size="sm" className=" border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Eliminar ítem" title="Eliminar ítem" onClick={() => delete_34_gen(row.id)}><Icon name="trash-alt" size={16} /></Button>
                     </>,
                 },
             ]
-            return <DataTable
+            return <DataTable pagination={false}
                 noDataComponent="No hay Items"
-                striped="true"
                 columns={columns}
                 data={_LIST}
                 highlightOnHover
@@ -619,7 +620,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[2]} onChange={() => manage_ra_34('a41')}>
                                 <option>SIN INFORMACION</option>
-                                {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map(op => <option>{op}</option>)}
+                                {SUBMIT_ARC_TRATAMIENTO_URBANISTICO.map((op, opIndex) => <option key={opIndex}>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -646,7 +647,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <div className="input-group">
                             <input className="form-select" list="u_uses" name="s_34_values" defaultValue={value34[3]} onBlur={() => manage_ra_34('a41')} />
                             <datalist id="u_uses">
-                                {uu.map(u => <option>{u}</option>)}
+                                {uu.map((u, uIndex) => <option key={uIndex}>{u}</option>)}
                             </datalist>
                             {/**
                             *  <input type="text" className="form-control me-1" name="s_34_values"
@@ -676,7 +677,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[4]} onChange={() => manage_ra_34('a41')}>
                                 <option>SIN INFORMACION</option>
-                                {SUBMIT_ARC_AREA_ACTIVIDAD.map(op => <option>{op}</option>)}
+                                {SUBMIT_ARC_AREA_ACTIVIDAD.map((op, opIndex) => <option key={opIndex}>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -725,7 +726,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="col-6 p-1">
                         <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[6]} onChange={() => manage_ra_34('a41')}>
-                                {SUBMIT_ARC_ZONS_RESTRICCION.map(op => <option>{op}</option>)}
+                                {SUBMIT_ARC_ZONS_RESTRICCION.map((op, opIndex) => <option key={opIndex}>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -766,7 +767,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="col-6 p-1">
                         <div className="input-group">
                             <select className="form-select" name="s_34_values" defaultValue={value34[8]} onChange={() => manage_ra_34('a41')}>
-                                {SUBMIT_ARC_AMENAZA.map(op => <option>{op}</option>)}
+                                {SUBMIT_ARC_AMENAZA.map((op, opIndex) => <option key={opIndex}>{op}</option>)}
                             </select>
                         </div>
                     </div>
@@ -1194,8 +1195,8 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <h5 className='mb-0'>Evaluación</h5>
                     </div>
                 </div>
-                {typologies.map(tip => {
-                    return <div className="row">
+                {typologies.map((tip, tipIndex) => {
+                    return <div className="row" key={tipIndex}>
                         <div className="col-3 px-0 pe-1">
                             <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm mx-0" disabled={!tip.titlev}
                                 defaultValue={vt[tip.titlev] || tip.title} onBlur={() => manage_ra_34_te('edi')} name={tip.titlev ? 's_34_t_v' : 'NO'} id={tip.titlev ? 's_34_t_v_' + tip.titlev : 'NO'}
@@ -1207,7 +1208,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                                     {Array.isArray(tip.index) ?
                                         <select className={_GET_SELECT_COLOR_VALUE(vt[tip.vind])} defaultValue={vt[tip.vind]} hidden={tip.hide}
                                             onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vind}>
-                                            {tip.index.map(v => <option>{v}</option>)}
+                                            {tip.index.map((v, vIndex) => <option key={vIndex}>{v}</option>)}
                                         </select>
                                         : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vind}
                                             defaultValue={vt[tip.vind] || tip.index} onBlur={() => manage_ra_34_te('edi')} />}
@@ -1218,7 +1219,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                             {Array.isArray(tip.norm) ?
                                 <select className={_GET_SELECT_COLOR_VALUE(vt[tip.vnorm])} defaultValue={vt[tip.vnorm]} hidden={tip.hide}
                                     onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vnorm}>
-                                    {tip.norm.map(v => <option>{v}</option>)}
+                                    {tip.norm.map((v, vIndex) => <option key={vIndex}>{v}</option>)}
                                 </select>
                                 : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vnorm}
                                     defaultValue={vt[tip.vnorm] || tip.norm} onBlur={() => manage_ra_34_te('edi')} />}
@@ -1228,7 +1229,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                             {Array.isArray(tip.proyect) ?
                                 <select className={_GET_SELECT_COLOR_VALUE(vt[tip.vpjct])} defaultValue={vt[tip.vpjct]} hidden={tip.hide}
                                     onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vpjct}>
-                                    {tip.proyect.map(v => <option>{v}</option>)}
+                                    {tip.proyect.map((v, vIndex) => <option key={vIndex}>{v}</option>)}
                                 </select>
                                 : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vpjct}
                                     defaultValue={vt[tip.vpjct] || tip.proyect} onBlur={() => manage_ra_34_te('edi')} />}
@@ -1253,7 +1254,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                                     {Array.isArray(tip.exc) ?
                                         <select className={_GET_SELECT_COLOR_VALUE(vt[tip.vexc])} defaultValue={vt[tip.vexc]} hidden={tip.hide}
                                             onBlur={() => manage_ra_34_te('edi')} name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}>
-                                            {tip.exc.map(v => <option>{v}</option>)}
+                                            {tip.exc.map((v, vIndex) => <option key={vIndex}>{v}</option>)}
                                         </select>
                                         : <input type={tip.hide ? 'hidden' : "text"} className="form-control form-control-sm" name={'s_34_t_v'} id={'s_34_t_v_' + tip.vexc}
                                             defaultValue={vt[tip.vexc]} onBlur={() => manage_ra_34_te('edi')} />}
@@ -1311,7 +1312,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                     </div>
                 </div>
                 {voladizos.map((vol, i) => {
-                    return <div className="row pb-1">
+                    return <div className="row pb-1" key={i}>
                         <div className="col px-0 pe-1">
                             <input type={"text"} className="form-control form-control-sm mx-0"
                                 defaultValue={vt[vol.vTitle] || `Voladizo (${i + 1})`}
@@ -1379,11 +1380,11 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                 },
             ]
             return LIST.map((list, i) => {
-                return <div className="row border">
+                return <div className="row border" key={i}>
                     {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
                     <div className='col'>
                         {list.items.map((item, j) => {
-                            return <>
+                            return <Fragment key={j}>
                                 <div className='row border'>
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'>
@@ -1398,7 +1399,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                                             </select>}
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         })}
                     </div>
                     <div className='col-2 text-center'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[list.c])} name="s_34_ev_checks"
@@ -1481,11 +1482,11 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
             ]
 
             return LIST.map((list, i) => {
-                return <div className="row border">
+                return <div className="row border" key={i}>
                     {list.title ? <div className='col-3 text-center '><label className='fw-bold'>{list.title}</label></div> : ''}
                     <div className='col'>
                         {list.items.map((item, j) => {
-                            return <>
+                            return <Fragment key={j}>
                                 <div className='row border'>
                                     <div className='col'><label>{item.desc}</label></div>
                                     <div className='col-3'>
@@ -1500,7 +1501,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                                             </select>}
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         })}
                     </div>
                     <div className='col-2 text-center'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[list.c])} name="s_34__hs_checks"
@@ -1527,11 +1528,13 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                 Number(value35[0] > 1000 ? ((_VALUE_ARRAY[2] ?? 0) * 0.25) : 0) +
                 Number(value35[0] > 1000 ? ((_VALUE_ARRAY[3] ?? 0) * 0.15) : 0);
             sumAreas = sumAreas.toFixed(2)
+            // Share of the required area; without a required area there is nothing to divide by.
+            const shareOfAreas = (value) => Number(sumAreas) > 0 ? `${(Number(value ?? 0) / sumAreas * 100).toFixed(2)}%` : '—';
             return <>
                 <div className="row">
                     <div className='col'>
                         {LIST.map(item => {
-                            return <div className="row border">
+                            return <div className="row border" key={item.c}>
                                 <div className='col-10'><label className=''>{item.name}</label></div>
                                 <div className='col'><select className={_GET_SELECT_COLOR_VALUE(_CHECK_ARRAY[item.c])}
                                     name="session_b_checks" id={"session_b_checks_" + item.c}
@@ -1665,13 +1668,13 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         <div className='col-3  fw-bold'><label>Proyecto</label></div>
                         <div className='col'><input type="text" onBlur={() => manage_ra_34(false)} className="form-control form-control-sm"
                             name="session_b_values" id={"session_b_values_" + 6} defaultValue={_VALUE_ARRAY[6] ?? 0} /></div>
-                        <div className='col'><label>{((_VALUE_ARRAY[6] ?? 0) / sumAreas * 100).toFixed(2)}%</label></div>
+                        <div className='col'><label>{shareOfAreas(_VALUE_ARRAY[6])}</label></div>
                         <div className='col'><label><input type="text" onBlur={() => manage_ra_34(false)} className="form-control form-control-sm"
                             name="session_b_values" id={"session_b_values_" + 7} defaultValue={_VALUE_ARRAY[7] ?? 0} /></label></div>
-                        <div className='col'><label>{((_VALUE_ARRAY[7] ?? 0) / sumAreas * 100).toFixed(2)}%</label></div>
+                        <div className='col'><label>{shareOfAreas(_VALUE_ARRAY[7])}</label></div>
                         <div className='col'><label><input type="text" onBlur={() => manage_ra_34(false)} className="form-control form-control-sm"
                             name="session_b_values" id={"session_b_values_" + 8} defaultValue={_VALUE_ARRAY[8] ?? 0} /></label></div>
-                        <div className='col'><label>{((_VALUE_ARRAY[8] ?? 0) / sumAreas * 100).toFixed(2)}%</label></div>
+                        <div className='col'><label>{shareOfAreas(_VALUE_ARRAY[8])}</label></div>
                     </div>
                     <div className='row text-center'>
                         <div className='col-3  fw-bold'><label>Cumple</label></div>
@@ -2062,7 +2065,7 @@ function RECORD_ARC_34({ translation, swaMsg, globals, currentItem, currentVersi
                         {_COMPONENT_1()}
                         <div className="text-center">
                             <Button size="sm" className="my-3">
-                                <Icon name="share-square" size={16} /> AÑADIR NORMA
+                                <Icon name="share-square" size={16} /> Añadir norma
                             </Button>
                         </div>
                     </form>

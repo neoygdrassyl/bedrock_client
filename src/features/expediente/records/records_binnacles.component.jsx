@@ -12,6 +12,8 @@ export default function RECORDS_BINNACLE(props) {
     var [tacl, setTacl] = useState(4000 - Number(BINNACLE ? BINNACLE.length : 0));
     const [loadedRecord, setLoadedRecord] = useState(null);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    // The blur autosave is silent on success; a failed save must still be visible to the reviewer.
+    const [saveFailed, setSaveFailed] = useState(false);
     const textareaRef = useRef(null);
     const useRichTextEditor = AIM === 'Arquitectura';
     const inputId = ['binnable_ta', AIM, idSuffix].filter(Boolean).join('_');
@@ -54,8 +56,9 @@ export default function RECORDS_BINNACLE(props) {
                 <div className="op__static-header">
                     <div className="op__label">
                         <span className="op__title">Bitácora - {AIM ?? ''}</span>
+                        {readOnly ? <span className="op__static-meta">Solo lectura</span> : null}
                     </div>
-                    <button type="button" className="btn btn-outline-primary op__static-toggle" aria-expanded={!isCollapsed}
+                    <button type="button" className="op__static-toggle" aria-expanded={!isCollapsed}
                         aria-controls={contentId} onClick={() => setIsCollapsed((current) => !current)}>
                         {isCollapsed ? 'Maximizar' : 'Minimizar'}
                     </button>
@@ -75,8 +78,11 @@ export default function RECORDS_BINNACLE(props) {
                         onSave={(editorState) => setBinnacle(true, editorState)}
                     /></div>
                         : <textarea ref={textareaRef} className={textareaClassName} defaultValue={BINNACLE} rows={3}
-                            id={inputId} onChange={handlePlainTextChange} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}></textarea>}
-                    {!readOnly ? <div className={`op__helper ${compact ? 'fs-6 mb-0' : ''}`}>{tacl} caracteres restantes</div> : ''}
+                            id={inputId} onChange={handlePlainTextChange} maxLength="4000" onBlur={() => setBinnacle(false)} readOnly={readOnly}
+                            aria-label={`Bitácora - ${AIM ?? ''}`} placeholder={readOnly ? 'Sin anotaciones' : `Bitácora de ${AIM ?? 'evaluación'}`}></textarea>}
+                    {/* The rich text editor prints its own counter: show this one only for the plain textarea. */}
+                    {!readOnly && !useRichTextEditor ? <div className="op__helper">{tacl} caracteres restantes</div> : ''}
+                    {saveFailed ? <div className="op__helper ew-text-danger" role="alert">No se pudo guardar la bitácora. El texto sigue en pantalla; inténtalo de nuevo.</div> : null}
                 </div>
             </div>
         </>
@@ -103,15 +109,18 @@ export default function RECORDS_BINNACLE(props) {
             .then(response => {
                 if (response.data === 'OK') {
                     setBinn(binnacle);
+                    setSaveFailed(false);
                     if (useSwal) swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
                     props.requestUpdateRecord?.(currentItem.id);
                   
                 } else {
+                    setSaveFailed(true);
                     if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
                 }
             })
             .catch(e => {
                 console.log(e);
+                setSaveFailed(true);
                 if (useSwal) swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text, icon: 'warning' });
             });
     }

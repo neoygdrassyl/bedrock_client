@@ -4,8 +4,9 @@ import { formsParser1 } from '../../../../../shared/config/customClasses/typePar
 import { regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import './fun_moduleNav_enhanced.css';
 import { Icon } from '@/shared/components/icon';
+import { useIsInsideExpedienteWorkspace } from '../../../workspace/ExpedienteWorkspaceContext';
 
-function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
+function LegacyModuleNav({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
     // Check if CSS variable is already set to determine initial state
     const currentWidth = getComputedStyle(document.documentElement).getPropertyValue('--fun-sidebar-width').trim();
     const [isCollapsed, setIsCollapsed] = useState(currentWidth === '60px');
@@ -230,6 +231,18 @@ function FUN_MODULE_NAV({ currentItem, FROM, NAVIGATION, pqrsxfun }) {
                 )}
             </>
         );
+}
+
+/**
+ * Legacy section navigation of the expediente modules (fixed left sidebar).
+ * Inside the expediente workspace the top bar owns section navigation, so this
+ * renders nothing there (and skips its `--fun-sidebar-width` side effect). The old
+ * modal flows (fun.jsx, funmanage.page.jsx) still get the sidebar.
+ */
+function FUN_MODULE_NAV(props) {
+    const insideWorkspace = useIsInsideExpedienteWorkspace();
+    if (insideWorkspace) return null;
+    return <LegacyModuleNav {...props} />;
 }
 
 export default FUN_MODULE_NAV;

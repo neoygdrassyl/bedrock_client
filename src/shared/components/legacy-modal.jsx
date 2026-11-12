@@ -23,6 +23,7 @@ function getModalStackBase() {
     return {
       overlay: FULLSCREEN_WORKSPACE_BASE_Z_INDEX,
       content: FULLSCREEN_WORKSPACE_BASE_Z_INDEX + 1,
+      insideWorkspace: true,
     };
   }
 
@@ -158,6 +159,9 @@ export function LegacyModal({
       <div
         className={cn(
           'ReactModal__Content absolute z-10 min-w-0 bg-background border border-border rounded-[var(--radius)] shadow-lg overflow-auto animate-in fade-in-0 zoom-in-95 duration-200',
+          // The portal leaves the workspace DOM: re-apply its legacy-bridge scope so the modal body
+          // (Bootstrap buttons, forms, tables, legends) gets the same governed look as the module behind it.
+          stackBase.insideWorkspace && 'expediente-workspace',
           className,
         )}
         style={{

@@ -5,9 +5,11 @@ import FUN_SERVICE from '../../api/fun.service';
 import CLOCKS_CONTROL from './components/clocks_control.component';
 import EMAILS_COMPONENT from '../../../messaging/components/emails.component';
 import { swalError } from '@/shared/utils/swalAdapter';
+import { useIsInsideExpedienteWorkspace } from '../../workspace/ExpedienteWorkspaceContext';
 
 
 function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, requesRefresh, NAVIGATION }) {
+    const insideWorkspace = useIsInsideExpedienteWorkspace();
     const [currentItem, setCurrentItem] = useState(null);
     const [load, setLoad] = useState(false);
     const [pqrsxfun, setPqrsxfun] = useState(false);
@@ -39,7 +41,13 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
         return requesRefresh();
     }
     
+    // The module reloads its own item. The workspace header (status chip, term, pending
+    // records) reads its own copy of the expediente, so it is told to refresh too, at once:
+    // a clock write also asks the workspace to reload (api/clockWriteEvents), and both
+    // requests then share the same in-flight GET instead of running one after the other.
+    // The module does not wait for the workspace.
     const requestUpdateItem = () => {
+        if (insideWorkspace) Promise.resolve(requesRefresh?.()).catch(() => {});
         return retrieveItem(currentId);
     }
 
@@ -80,17 +88,17 @@ function FUNCLOCK({ currentId, swaMsg, translation, globals, currentVersion, req
 
     if (!currentItem) {
         return (
-            <fieldset className="p-3 text-center">
-                <h3 className="fw-bold">CARGANDO INFORMACIÓN...</h3>
-            </fieldset>
+            <p className="m-0 p-6 text-center text-sm text-muted-foreground" role="status">Cargando tiempos del expediente…</p>
         );
     }
 
     return (
-        <div className="w-full min-w-0 overflow-hidden">
-            <div className="bg-primary text-primary-foreground p-2 mb-3 h5 text-center">
-                Control de Tiempos y Fechas
-            </div>
+        <div className="w-full min-w-0">
+            {insideWorkspace ? null : (
+                <div className="bg-primary text-primary-foreground p-2 mb-3 h5 text-center">
+                    Control de Tiempos y Fechas
+                </div>
+            )}
             
             <CLOCKS_CONTROL 
                 translation={translation} 

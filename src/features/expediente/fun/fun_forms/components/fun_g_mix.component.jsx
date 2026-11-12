@@ -1,5 +1,7 @@
 import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import FUN_REPORT_DATA from './fun_report_data';
+import dayjs from 'dayjs';
+import { SectionCard, SectionSubheading, DataGrid, DataField } from '@/shared/components/SectionCard';
 
 function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }) {
 
@@ -66,14 +68,6 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
         }
 
         // DATA CONVERTERS
-        let _CHILD_6_SELECT = () => {
-            let _LIST = _SET_CHILD_6();
-            let _COMPONENT = [];
-            for (var i = 0; i < _LIST.length; i++) {
-                _COMPONENT.push(<option key={_LIST[i].id} value={_LIST[i].id}>{_LIST[i].description}</option>)
-            }
-            return <>{_COMPONENT}</>
-        }
         let _GET_SIGN = () => {
             var _CHILD = _SET_CHILD_LAW()
             var sign = [];
@@ -96,62 +90,48 @@ function FUN_G_MIX({ translation, swaMsg, globals, currentItem, currentVersion }
 
         // COMPONENT JSX
         let _COMPONENT_SIGN = () => {
-            return <div className="row mb-3">
-                <div className="col-7">
-                    <label>Foto de Valla o aviso</label>
-                    <select className="form-select" id="alert_sign_select" defaultValue={_GET_SIGN()[0]} disabled>
-                        <option value="-1">APORTADO FISICAMENTE</option>
-                        <option value="0">SIN DOCUMENTO</option>
-                        {_CHILD_6_SELECT()}
-                    </select>
-                </div>
-                <div className="col-4">
-                    <label>Fecha de Radicación</label>
-                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
-                        disabled />
-                </div>
-                <div className="col-1">
-                    <br />
-                    {_GET_SIGN()[0] > 0
-                        ?
-                        <VIZUALIZER url={_FIND_6(_GET_SIGN()[0]).path + "/" + _FIND_6(_GET_SIGN()[0]).filename}
-                            apipath={'/files/'} />
-                        : ""}
-                </div>
-            </div>
+            const signDocument = _GET_SIGN()[0];
+            const signDate = _GET_SIGN()[1];
+            // Same options the "Publicidad" form offers for this field.
+            let signLabel = '';
+            if (signDocument == -1) signLabel = 'Aportado físicamente';
+            else if (signDocument == 0) signLabel = 'Sin documento';
+            else if (signDocument > 0) signLabel = _FIND_6(signDocument).description || 'Documento anexo';
+            return <DataGrid>
+                <DataField label="Foto de valla o aviso">
+                    {signLabel ? <span className="inline-flex items-center gap-2">
+                        {signLabel}
+                        {signDocument > 0
+                            ?
+                            <VIZUALIZER url={_FIND_6(signDocument).path + "/" + _FIND_6(signDocument).filename}
+                                apipath={'/files/'} />
+                            : ""}
+                    </span> : null}
+                </DataField>
+                <DataField label="Fecha de radicación" mono value={signDate && dayjs(signDate).isValid() ? dayjs(signDate).format('DD/MM/YYYY') : signDate} />
+            </DataGrid>
         }
         let rules = currentItem ? currentItem.rules ? currentItem.rules.split(';') : [] : [];
+        const notApplicable = <p className="m-0 text-sm text-muted-foreground">No aplica.</p>;
         return (
-            <div className="fun_g_mix">
-                <fieldset className="p-3" id="fung_mix">
-                    <legend className="my-2 px-3 Collapsible text-white">
-                        <label className="app-p lead text-center fw-normal">8. DATOS VARIOS</label>
-                    </legend>
+            <SectionCard id="fung_mix" className="fun_g_mix" title="8. Datos varios">
+                <SectionSubheading id="fung_mix_sign" className="ew-subheading--first">8.1 Publicidad</SectionSubheading>
+                {rules[0] != 1 ?
+                    _COMPONENT_SIGN()
+                    : notApplicable
+                }
 
-                    <legend className="my-2 px-3 bg-light" id="fung_mix_sign">
-                        <label className="app-p lead text-center fw-normal">8.1 PUBLICIDAD</label>
-                    </legend>
-                    {rules[0] != 1 ?
-                        _COMPONENT_SIGN()
-                        : <label className="fw-bold text-danger">NO APLICA</label>
-                    }
-
-                    <legend className="my-2 px-3 bg-light" id="fung_mix_report">
-                        <label className="app-p lead text-center fw-normal">8.2 REPORTE DE PLANEACION</label>
-                    </legend>
-                    {_SET_CHILD_1().item_1.includes('F')
-                        ? <>
-                            <FUN_REPORT_DATA
-                                translation={translation} swaMsg={swaMsg} globals={globals}
-                                currentItem={currentItem}
-                                currentVersion={currentVersion} />
-                        </>
-                        : <label className="fw-bold text-danger">NO APLICA</label>
-                    }
-
-
-                </fieldset>
-            </div>
+                <SectionSubheading id="fung_mix_report">8.2 Reporte de planeación</SectionSubheading>
+                {_SET_CHILD_1().item_1.includes('F')
+                    ? <>
+                        <FUN_REPORT_DATA
+                            translation={translation} swaMsg={swaMsg} globals={globals}
+                            currentItem={currentItem}
+                            currentVersion={currentVersion} />
+                    </>
+                    : notApplicable
+                }
+            </SectionCard>
         );
 }
 

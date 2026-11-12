@@ -1,3 +1,4 @@
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import { useEffect, useState } from 'react';
 import { REVIEW_DOCS_2 } from '../../../../shared/config/jsons/arcReviewDocs';
 import RECORD_ARCSERVICE from '../../api/record_arc.service';
@@ -29,7 +30,7 @@ export default function RECORD_ARC_GEN_2_REVIEW(props) {
         if (!STEP.id) return {};
         var value = STEP['json']
         if (!value) return {};
-        value = JSON.parse(JSON.parse(value));
+        value = parseLegacyJson(value, {}, `record_arc_gem2_review:step.${_id_public}.json`);
         return value
     }
     let _GET_SELECT_COLOR_VALUE = (_VALUE) => {

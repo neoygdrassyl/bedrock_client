@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SETTLE_DEBOUNCE_MS, resetSubmitGuard } from '@/shared/utils/submitGuard';
 
 const {
   getMissingRequirementsMock,
@@ -59,6 +60,8 @@ vi.mock('@/shared/utils/swalAdapter', () => ({
 }));
 
 import FUN_DOC_CONFIRM_INCOMPLETE from './fun_doc_confirminc.jsx';
+import FUNService from '../../../api/fun.service';
+import { swalError } from '@/shared/utils/swalAdapter';
 
 function buildCurrentItem(overrides = {}) {
   return {
@@ -202,5 +205,79 @@ describe('FUN_DOC_CONFIRM_INCOMPLETE', () => {
 
     await waitFor(() => expect(screen.getByText('No fue posible consultar los documentos faltantes.')).toBeInTheDocument());
     expect(screen.queryByRole('note')).not.toBeInTheDocument();
+  });
+});
+
+describe('FUN_DOC_CONFIRM_INCOMPLETE: "Guardar datos" is guarded while the save is in flight', () => {
+  function deferred() {
+    let resolve;
+    let reject;
+    const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+    return { promise, resolve, reject };
+  }
+
+  const elapse = (ms) => vi.setSystemTime(Date.now() + ms);
+
+  async function renderLoadedForm() {
+    const user = userEvent.setup();
+    render(
+      <FUN_DOC_CONFIRM_INCOMPLETE currentItem={buildCurrentItem()} currentVersion={1} edit requestUpdate={vi.fn()} swaMsg={swaMsg} />,
+    );
+    await waitFor(() => expect(getMissingRequirementsMock).toHaveBeenCalledWith(77));
+    return { user, save: screen.getByRole('button', { name: /Guardar datos/ }) };
+  }
+
+  beforeEach(() => {
+    // Only the clock is faked: the guard measures with Date.now(), the UI keeps real timers.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    resetSubmitGuard();
+    [getIdRelatedMock, getByFUNMock, getMissingRequirementsMock, getLastCubMock].forEach((mock) => mock.mockReset());
+    getIdRelatedMock.mockResolvedValue({ data: [{ id: 1, id_public: 'VR26-2330' }] });
+    getByFUNMock.mockResolvedValue({ data: [] });
+    getLastCubMock.mockResolvedValue({ data: [{ cub: 'CUB-1' }] });
+    getMissingRequirementsMock.mockResolvedValue(canonical([]));
+    FUNService.create_law.mockReset();
+    swalError.mockClear();
+  });
+
+  afterEach(() => {
+    resetSubmitGuard();
+    vi.useRealTimers();
+  });
+
+  it('sends one save for two clicks while the request is pending for more than 2 s', async () => {
+    const request = deferred();
+    FUNService.create_law.mockReturnValue(request.promise);
+    const { user, save } = await renderLoadedForm();
+
+    await user.click(save);
+    expect(FUNService.create_law).toHaveBeenCalledTimes(1);
+
+    elapse(2500); // well past the legacy 1500 ms window
+    await user.click(save);
+    await user.click(save);
+    expect(FUNService.create_law).toHaveBeenCalledTimes(1);
+
+    request.resolve({ data: 'OK' });
+  });
+
+  it('accepts the next click after the save failed', async () => {
+    const request = deferred();
+    FUNService.create_law.mockReturnValueOnce(request.promise).mockResolvedValue({ data: 'OK' });
+    const { user, save } = await renderLoadedForm();
+
+    await user.click(save);
+    elapse(2500);
+    await user.click(save);
+    expect(FUNService.create_law).toHaveBeenCalledTimes(1);
+
+    request.reject(new Error('503'));
+    await waitFor(() => expect(swalError).toHaveBeenCalledTimes(1));
+
+    // The handler reports the failure itself, so the guard sees a settled action and only
+    // keeps the short post-settle debounce.
+    elapse(SETTLE_DEBOUNCE_MS);
+    await user.click(save);
+    expect(FUNService.create_law).toHaveBeenCalledTimes(2);
   });
 });

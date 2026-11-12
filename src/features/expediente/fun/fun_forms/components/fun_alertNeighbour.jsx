@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { DateInput } from '@/shared/components/DateInput';
 import { Button } from '@/shared/ui/button';
 import FUNService from '../../../api/fun.service'
 import dayjs from 'dayjs';
@@ -176,13 +177,13 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                 <div className="row mb-3">
                     <div className="col">
                         <label>2.1.1. Fecha de documento</label>
-                        <input type="date" className="form-control" max='2100-01-01' id="gen_alert_date" required
+                        <DateInput className="form-control" max='2100-01-01' id="gen_alert_date" required
                             defaultValue={dayjs().format('YYYY-MM-DD')} />
                     </div>
                     <div className="col">
                         <label>2.1.2 Fecha de Pago</label>
                         <div className="input-group my-1">
-                            <input type="date" className="form-control" max='2100-01-01' id="gen_pay_date"
+                            <DateInput className="form-control" max='2100-01-01' id="gen_pay_date"
                                 defaultValue={_GET_CLOCK_STATE(3).date_start} />
                         </div>
                     </div>
@@ -221,7 +222,7 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                         <div className="input-group">
                             <input type="text" className="form-control" id="gen_alert_address"
                                 defaultValue={_CHILD_2.item_211} />
-                            <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>DIRECCIÓN COMPLETA</button>
+                            <button className='inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors' type='button' onClick={() => _ADDRESS_SET_FULL("gen_alert_address", _CHILD_2)}>Dirección completa</button>
                         </div>
                     </div>
                     <div className="col-6">
@@ -281,16 +282,10 @@ function FUN_ALERT_NEIGHBOUR({ translation, swaMsg, globals, currentItem, curren
                         </div>
                     </div>
                 </div>
-                <div className="row text-center">
-                    <div className="col-4">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> GENERAR CARTA</Button>
-                    </div>
-                    <div className="col-4">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> GENERAR CARTA Y LISTA</Button>
-                    </div>
-                    <div className="col-4">
-                        <Button variant="destructive" size="sm" className="my-3" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> GENERAR PUBLICACIÓN</Button>
-                    </div>
+                <div className="ew-actions">
+                    <Button variant="outline" size="sm" onClick={() => gen_doc_npublish()}><Icon name="file-download" size={16} /> Generar publicación</Button>
+                    <Button variant="outline" size="sm" onClick={() => gen_doc_nconfirm(true)}><Icon name="file-download" size={16} /> Generar carta y lista</Button>
+                    <Button size="sm" onClick={() => gen_doc_nconfirm(false)}><Icon name="file-download" size={16} /> Generar carta</Button>
                 </div>
             </>
         }

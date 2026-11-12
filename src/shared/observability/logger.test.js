@@ -222,7 +222,7 @@ describe('client logger', () => {
   });
 
   it('logs uncaught errors and non-HTTP unhandled rejections from global listeners', () => {
-    const target = new EventTarget();
+    const target = new window.EventTarget();
     installGlobalErrorListeners(target);
 
     const errorEvent = new Event('error');

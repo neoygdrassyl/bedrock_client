@@ -55,7 +55,7 @@ function initialEntryNote(request) {
  * consecutives (same rules as Radicar / Nueva entrada); the server revalidates them. The pending
  * initial document entry is received with the same VR in the same transaction.
  */
-export function RadicateDialog({ open, onOpenChange, request, onRadicated, onStale, onSuccessFocus }) {
+export function RadicateDialog({ open, onOpenChange, request, approvePayment = false, onRadicated, onStale, onSuccessFocus }) {
   const formId = useId();
   const [values, setValues] = useState(EMPTY_VALUES);
   const [computing, setComputing] = useState({ funIdPublic: false, vr: false });
@@ -135,7 +135,10 @@ export function RadicateDialog({ open, onOpenChange, request, onRadicated, onSta
     setSaving(true);
     setFormError('');
     try {
-      const item = await OnlineRadicationService.radicate(request.id, { funIdPublic, vr, date: values.date });
+      const command = { funIdPublic, vr, date: values.date };
+      const item = approvePayment
+        ? await OnlineRadicationService.approvePayment(request.id, command)
+        : await OnlineRadicationService.radicate(request.id, command);
       succeededRef.current = true;
       onRadicated(item);
       onOpenChange(false);
@@ -170,9 +173,9 @@ export function RadicateDialog({ open, onOpenChange, request, onRadicated, onSta
       >
         <DialogHeading
           icon={FolderPlus}
-          title="Llevar a radicación"
+          title={approvePayment ? 'Aprobar pago y radicar' : 'Llevar a radicación'}
           request={request}
-          description="Se creará el expediente (FUN 0) y su radicado VR en Ventanilla, y la solicitud quedará marcada como radicada. Los documentos de la radicación inicial se reciben con ese VR."
+          description={`${approvePayment ? 'Al aprobar el pago se radica la solicitud. ' : ''}Se creará el expediente (FUN 0) y su radicado VR en Ventanilla, y la solicitud quedará marcada como radicada. Los documentos de la radicación inicial se reciben con ese VR.`}
         />
 
         <form id={formId} noValidate onSubmit={submit} className="grid gap-[1rem]" aria-busy={saving || undefined}>
@@ -263,7 +266,7 @@ export function RadicateDialog({ open, onOpenChange, request, onRadicated, onSta
             loadingLabel="Radicando…"
             disabled={computing.funIdPublic || computing.vr}
           >
-            Radicar solicitud
+            {approvePayment ? 'Aprobar pago y radicar' : 'Radicar solicitud'}
           </DovelaButton>
         </DialogFooter>
       </DialogContent>

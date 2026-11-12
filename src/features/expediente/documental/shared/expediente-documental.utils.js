@@ -19,6 +19,13 @@ export {
 const YES_REVIEW_VALUES = new Set(['SI', 'S', '1', 'TRUE']);
 const INTERNAL_EVALUATION_DOCUMENT_CODE_PATTERN = /^(law|arc|eng|rew)\d+$/i;
 
+/** ISO dates (AAAA-MM-DD, with or without time) read as dd/mm/aaaa; anything else is shown as stored. */
+export function formatDocumentDisplayDate(value) {
+    const text = String(value || '').trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})(.*)$/.exec(text);
+    return match ? `${match[3]}/${match[2]}/${match[1]}${match[4].replace('T', ' ')}` : text;
+}
+
 export function splitValue(value, separator) {
     if (Array.isArray(value)) {
         return value;

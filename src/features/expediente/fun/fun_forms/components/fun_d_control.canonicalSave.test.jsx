@@ -45,7 +45,7 @@ describe('control sheets in canonical expedientes', () => {
     expect(document.getElementById('folio_998_12').value).toBe('4');
     expect(document.getElementById('folio_916_3').value).toBe('3');
     fireEvent.change(document.getElementById('user_retrieve'), { target: { value: 'Luis' } });
-    fireEvent.click(screen.getByRole('button', { name: /GUARDAR CAMBIOS/ }));
+    fireEvent.click(screen.getByRole('button', { name: /guardar cambios/i }));
     await waitFor(() => expect(mocks.saveSheet).toHaveBeenCalledTimes(1));
     const [fun0Id, command] = mocks.saveSheet.mock.calls[0];
     expect(fun0Id).toBe(5);
@@ -58,7 +58,7 @@ describe('control sheets in canonical expedientes', () => {
   it('refuses to save the inventory sheet when the user cannot write it', async () => {
     mocks.legalForm = { requirements: [], actions: { sheet: false }, sheet: null };
     render(<FUN_D_CONTROL_2 currentItem={CANONICAL_ITEM} swaMsg={swaMsg} requestUpdate={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: /GUARDAR CAMBIOS/ }));
+    fireEvent.click(screen.getByRole('button', { name: /guardar cambios/i }));
     expect(mocks.saveSheet).not.toHaveBeenCalled();
     expect(mocks.swalError).toHaveBeenCalledWith(expect.objectContaining({ text: expect.stringMatching(/no puede guardar/) }));
   });

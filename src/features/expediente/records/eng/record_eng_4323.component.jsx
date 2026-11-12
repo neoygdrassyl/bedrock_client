@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue } from './calcFieldValue';
 
 function RECORD_ENG_STEP_4323(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, requestUpdateRecord } = props;
@@ -59,7 +60,7 @@ function RECORD_ENG_STEP_4323(props) {
         else if (j195 < j189) op = "1,2*Av*Fv*I/T";
         else op = "1,2*Av*Fv*TL*I/T^2"
 
-        if (document.getElementById('h196')) document.getElementById('h196').value = op
+        if (document.getElementById('h196')) setCalcValue('h196', op);
         }, []);
         const SUBCATEGORIES = currentRecord.subcategory ? currentRecord.subcategory.split(';') : [];
         //  CONST
@@ -230,28 +231,28 @@ function RECORD_ENG_STEP_4323(props) {
         // FUNCTIONS & VARIABLES
         let _set_step4_values = (value) => {
             const newValue = coelfmpor[value];
-            document.getElementById('h135').value = newValue.grupo;
-            document.getElementById('h136').value = newValue.coeficiente;
+            setCalcValue('h135', newValue.grupo);
+            setCalcValue('h136', newValue.coeficiente);
             update_values();
         }
         let _set_irregPlanta = (value) => {
             const newValue = irregPlanta[value];
-            document.getElementById('h151').value = newValue.n;
+            setCalcValue('h151', newValue.n);
             update_values();
         }
         let _set_irreAltura = (value) => {
             const newValue = irreAltura[value];
-            document.getElementById('h152').value = newValue.n;
+            setCalcValue('h152', newValue.n);
             update_values();
         }
         let _set_irreRedundancia_1 = (value) => {
             const newValue = irreRedundancia[value];
-            document.getElementById('h153').value = newValue.n;
+            setCalcValue('h153', newValue.n);
             update_values();
         }
         let _set_irreRedundancia_2 = (value) => {
             const newValue = irreRedundancia[value];
-            document.getElementById('h154').value = newValue.n;
+            setCalcValue('h154', newValue.n);
             update_values();
         }
         let _set_analSismic = (value) => {
@@ -263,7 +264,7 @@ function RECORD_ENG_STEP_4323(props) {
             let list = list_159 ?? [];
             return <>
                 {list.map((value, i) => (
-                    <li className="list-group-item">{value}</li>
+                    <li className="list-group-item" key={i}>{value}</li>
                 ))}
             </>
         }
@@ -285,7 +286,7 @@ function RECORD_ENG_STEP_4323(props) {
             else if (e61 == 'BAJA') op = 'DMI';
             else op = 'DMO';
 
-            if (document.getElementById('h137')) document.getElementById('h137').value = op;
+            if (document.getElementById('h137')) setCalcValue('h137', op);
         }
         let _set_h156 = () => {
             let h149 = document.getElementById('h149') ? document.getElementById('h149').value : 0;
@@ -295,7 +296,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = h149 * h151 * h152 * h153;
 
             op = Number(op).toFixed(2)
-            if (document.getElementById('h156')) document.getElementById('h156').value = op;
+            if (document.getElementById('h156')) setCalcValue('h156', op);
         }
         let _set_h157 = () => {
             let h149 = document.getElementById('h149') ? document.getElementById('h149').value : 0;
@@ -305,18 +306,18 @@ function RECORD_ENG_STEP_4323(props) {
             let op = h149 * h151 * h152 * h154;
 
             op = Number(op).toFixed(2)
-            if (document.getElementById('h157')) document.getElementById('h157').value = op;
+            if (document.getElementById('h157')) setCalcValue('h157', op);
         }
         let _set_e1712 = () => {
             let h143 = (document.getElementById('h143') ? document.getElementById('h143').value : 'No');
             const newValue = { ...step07_1 };
-            if (document.getElementById('e171')) document.getElementById('e171').value = newValue[h143][0];
-            if (document.getElementById('e172')) document.getElementById('e172').value = newValue[h143][1];
+            if (document.getElementById('e171')) setCalcValue('e171', newValue[h143][0]);
+            if (document.getElementById('e172')) setCalcValue('e172', newValue[h143][1]);
         }
         let _set_h149 = () => {
             let sistema_est = (document.getElementById('sistema_est') ? document.getElementById('sistema_est').value : 'No');
             const ro_value = { ...ro_values };
-            if (document.getElementById('h149')) document.getElementById('h149').value = ro_value[sistema_est];
+            if (document.getElementById('h149')) setCalcValue('h149', ro_value[sistema_est]);
         }
         let _set_j175 = () => {
             let e172 = document.getElementById('e172') ? document.getElementById('e172').value : 0;
@@ -328,7 +329,7 @@ function RECORD_ENG_STEP_4323(props) {
             else op = e171 * Math.pow(e173, e172);
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j175')) document.getElementById('j175').value = op
+            if (document.getElementById('j175')) setCalcValue('j175', op);
         }
         let _set_j176 = () => {
             let j60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 10) ?? 0;
@@ -337,7 +338,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 1.75 - 1.2 * j60 * j66;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j176')) document.getElementById('j176').value = op
+            if (document.getElementById('j176')) setCalcValue('j176', op);
         }
         let _set_j177 = () => {
             let j176 = document.getElementById('j176') ? document.getElementById('j176').value : 0;
@@ -347,7 +348,7 @@ function RECORD_ENG_STEP_4323(props) {
             else op = j176;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j177')) document.getElementById('j177').value = op
+            if (document.getElementById('j177')) setCalcValue('j177', op);
         }
         let _set_j178 = () => {
             let j177 = document.getElementById('j177') ? document.getElementById('j177').value : 0;
@@ -355,7 +356,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = j177 * j175;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j178')) document.getElementById('j178').value = op
+            if (document.getElementById('j178')) setCalcValue('j178', op);
         }
         let _set_j179 = () => {
             let j178 = document.getElementById('j178') ? document.getElementById('j178').value : 0;
@@ -366,7 +367,7 @@ function RECORD_ENG_STEP_4323(props) {
             else op = j175;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j179')) document.getElementById('j179').value = op
+            if (document.getElementById('j179')) setCalcValue('j179', op);
         }
         let _set_j180 = () => {
             let e174 = document.getElementById('e174') ? document.getElementById('e174').value : 0;
@@ -374,7 +375,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = e174 * 0.1;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j180')) document.getElementById('j180').value = op
+            if (document.getElementById('j180')) setCalcValue('j180', op);
         }
         let _set_j183 = () => {
             let e60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 9) ?? 0;
@@ -385,7 +386,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 0.1 * j60 * j66 / (e60 * e66);
             console.log(op)
             op = Number(op).toFixed(3)
-            if (document.getElementById('j183')) document.getElementById('j183').value = op
+            if (document.getElementById('j183')) setCalcValue('j183', op);
         }
         let _set_j184 = () => {
             let e60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 9) ?? 0;
@@ -395,7 +396,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 2.5 * e60 * e66 * h136;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j184')) document.getElementById('j184').value = op
+            if (document.getElementById('j184')) setCalcValue('j184', op);
         }
         let _set_j186 = () => {
             let e60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 9) ?? 0;
@@ -406,7 +407,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 0.48 * (j60 * j66) / (e66 * e60);
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j186')) document.getElementById('j186').value = op
+            if (document.getElementById('j186')) setCalcValue('j186', op);
         }
         let _set_j187 = () => {
             let e60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 9) ?? 0;
@@ -416,7 +417,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 2.5 * e60 * e66 * h136;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j187')) document.getElementById('j187').value = op
+            if (document.getElementById('j187')) setCalcValue('j187', op);
         }
         let _set_j189 = () => {
             let j66 = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) ?? 0;
@@ -424,7 +425,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 2.4 * j66;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j189')) document.getElementById('j189').value = op
+            if (document.getElementById('j189')) setCalcValue('j189', op);
         }
         let _set_j190 = () => {
             let j60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 10) ?? 0;
@@ -435,7 +436,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = (1.2 * j60 * j66 * h136) / j179;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j190')) document.getElementById('j190').value = op
+            if (document.getElementById('j190')) setCalcValue('j190', op);
         }
         let _set_j192 = () => {
             let j66 = _GET_STEP_TYPE_INDEX('s4313', 'value', 20) ?? 0;
@@ -443,7 +444,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = 2.4 * j66;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j192')) document.getElementById('j192').value = op
+            if (document.getElementById('j192')) setCalcValue('j192', op);
         }
         let _set_j193 = () => {
             let j60 = _GET_STEP_TYPE_INDEX('s4313', 'value', 10) ?? 0;
@@ -455,7 +456,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = (1.2 * j60 * j66 * j189 * h136) / Math.pow(j179, 2)
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j193')) document.getElementById('j193').value = op
+            if (document.getElementById('j193')) setCalcValue('j193', op);
         }
         let _set_j195 = () => {
             let j179 = document.getElementById('j179') ? document.getElementById('j179').value : 0;
@@ -463,7 +464,7 @@ function RECORD_ENG_STEP_4323(props) {
             let op = j179;
 
             op = Number(op).toFixed(3)
-            document.getElementById('j195').value = op
+            setCalcValue('j195', op);
         }
         let _set_h_196_text = () => {
             let j183 = document.getElementById('j183') ? document.getElementById('j183').value : 0;
@@ -477,7 +478,7 @@ function RECORD_ENG_STEP_4323(props) {
             else if (j195 < j189) op = "1,2*Av*Fv*I/T";
             else op = "1,2*Av*Fv*TL*I/T^2"
 
-            if (document.getElementById('h196')) document.getElementById('h196').value = op
+            if (document.getElementById('h196')) setCalcValue('h196', op);
         }
         let _set_j196 = () => {
             let j183 = document.getElementById('j183') ? document.getElementById('j183').value : 0;
@@ -496,7 +497,7 @@ function RECORD_ENG_STEP_4323(props) {
             else op = j192;
 
             op = Number(op).toFixed(3)
-            if (document.getElementById('j196')) document.getElementById('j196').value = op
+            if (document.getElementById('j196')) setCalcValue('j196', op);
         }
         let update_values = () => {
             _set_h137();
@@ -1284,7 +1285,7 @@ function RECORD_ENG_STEP_4323(props) {
                     <div className="col-3"></div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s07" id='j195' disabled style={{ background: 'DarkKhaki' }}
+                            className="form-control" name="recprd_eng_s07" id='j195' disabled style={{ background: 'hsl(var(--warning) / 0.22)' }}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 18) ?? ''} />
                     </div>
                     <div className="col-2">
@@ -1298,7 +1299,7 @@ function RECORD_ENG_STEP_4323(props) {
                         defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 19) ?? ''} /></div>
                     <div className="col-2">
                         <input type="number" step="0.01"
-                            className="form-control" name="recprd_eng_s07" id='j196' disabled style={{ background: 'DarkKhaki' }}
+                            className="form-control" name="recprd_eng_s07" id='j196' disabled style={{ background: 'hsl(var(--warning) / 0.22)' }}
                             defaultValue={_GET_STEP_TYPE_INDEX('s4237', 'value', 20) ?? ''} />
                     </div>
                     <div className="col-2">

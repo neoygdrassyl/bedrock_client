@@ -1,24 +1,23 @@
+import { IllustratedState } from '@/shared/components/feedback/IllustratedState.jsx';
 import { cn } from '@/shared/lib/utils';
 
-const TONE_CLASSES = {
-  neutral: 'bg-muted text-muted-foreground',
-  success: 'bg-[hsl(var(--accent)/0.12)] text-[hsl(var(--accent))]',
-  warning: 'bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--operational-warning-text))] dark:text-[hsl(var(--warning))]',
-  danger: 'bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]',
-};
-
-/** Centered empty / error / unavailable state of the inbox. */
-export function InboxState({ icon: Icon, tone = 'neutral', title, description, action, role = 'status', className }) {
+/**
+ * Empty / error / unavailable state of the inbox, drawn with the shared IllustratedState.
+ * `variant`: empty | load-error | not-found | offline. Errors (`role="alert"`) are announced
+ * assertively by the wrapper; the illustration itself keeps its polite status role.
+ */
+export function InboxState({ variant = 'empty', title, description, onRetry, action, role, className }) {
   return (
-    <div role={role} className={cn('flex flex-col items-center justify-center px-6 py-14 text-center', className)}>
-      {Icon ? (
-        <span className={cn('mb-[1rem] grid h-12 w-12 place-items-center rounded-full', TONE_CLASSES[tone] || TONE_CLASSES.neutral)}>
-          <Icon className="h-5 w-5" aria-hidden="true" />
-        </span>
-      ) : null}
-      <p className="mb-0 text-sm font-semibold leading-5 text-foreground">{title}</p>
-      {description ? <p className="mb-0 mt-1 max-w-md text-sm leading-5 text-muted-foreground">{description}</p> : null}
-      {action ? <div className="mt-[1rem] flex flex-wrap items-center justify-center gap-2">{action}</div> : null}
+    <div role={role === 'alert' ? 'alert' : undefined} className={cn('px-[1.25rem]', className)}>
+      <IllustratedState
+        variant={variant}
+        size="compact"
+        title={title}
+        description={description}
+        onRetry={onRetry}
+        actions={action}
+        className="max-w-[26rem] py-[2.5rem]"
+      />
     </div>
   );
 }

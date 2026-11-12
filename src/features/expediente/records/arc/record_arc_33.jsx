@@ -1,3 +1,5 @@
+import { DateInput } from '@/shared/components/DateInput';
+import { parseLegacyJson } from '@/shared/utils/parseLegacyJson';
 import { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 
@@ -153,7 +155,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             if (!STEP.id) return {};
             var value = STEP['json']
             if (!value) return {};
-            value = JSON.parse(JSON.parse(value));
+            value = parseLegacyJson(value, {}, `record_arc_33:step.${_id_public}.json`);
             return value
         }
         let _GET_BLUEPRINT_REVIEW_DOCUMENT = () => {
@@ -199,7 +201,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                     <div className="col-2">
                         <div className="form-group">
                             <label>Fecha</label>
-                            <input type="date" className="form-control form-control-sm" id={"r_a_33_blueprint_6" + edit} />
+                            <DateInput className="form-control form-control-sm" id={"r_a_33_blueprint_6" + edit} />
                         </div>
                     </div>
                     <div className="col">
@@ -372,7 +374,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
             if (print) index_6003 = fun_rc.lastIndexOf('6603&') + 5;
             if (print) check_6003 = fun_rc[index_6003];
             if (print) return <>
-                <div className="row border" style={{ backgroundColor: 'lightgray' }}>
+                <div className="row border" style={{ backgroundColor: 'hsl(var(--muted))' }}>
                     <div className='col '><label className='fw-bold'>6.6 DOCUMENTOS ADICIONALES EN LICENCIA DE CONSTRUCCIÓN - Proyecto Arquitectónico (6603)</label></div>
                     <div className='col-2'><select className={_GET_SELECT_COLOR_VALUE(check_6003)}
                         id={"fun_r_6003"}
@@ -1046,15 +1048,15 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             {_COMPONENT_3()}
                             <div className="text-center">
                                 <Button size="sm" className="my-3">
-                                    <Icon name="share-square" size={16} /> AÑADIR PLANO
+                                    <Icon name="share-square" size={16} /> Añadir plano
                                 </Button>
                             </div>
                         </form>
                         : ""}
                     {_COMPONENT_3_LIST()}
                     <div className="my-3 text-center">
-                        <Button type="button" size="sm" onClick={() => setBlueprintReviewOpen(true)}><Icon name="clipboard-list" size={16} className="me-1" />EVALUACIÓN</Button>
-                        <Button type="button" size="sm" variant="outline" className="ms-2" onClick={() => { setBlueprintHistorySnapshot(null); setBlueprintHistoryOpen(true); }}><Icon name="history" size={16} className="me-1" />HISTÓRICO</Button>
+                        <Button type="button" size="sm" onClick={() => setBlueprintReviewOpen(true)}><Icon name="clipboard-list" size={16} className="me-1" />Evaluación</Button>
+                        <Button type="button" size="sm" variant="outline" className="ms-2" onClick={() => { setBlueprintHistorySnapshot(null); setBlueprintHistoryOpen(true); }}><Icon name="history" size={16} className="me-1" />Histórico</Button>
                     </div>
                     <Modal
                         contentLabel="Evaluación de planos"
@@ -1077,7 +1079,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                         />
                     </Modal>
                     <Modal contentLabel="Histórico de revisiones de planos" isOpen={blueprintHistoryOpen} onRequestClose={() => setBlueprintHistoryOpen(false)} ariaHideApp={false} className="!left-1/2 !top-1/2 !w-[calc(100vw-2rem)] !max-w-3xl !-translate-x-1/2 !-translate-y-1/2" style={{ content: { top: '50%', left: '50%', right: 'auto', bottom: 'auto', width: 'calc(100vw - 2rem)', maxWidth: '48rem', maxHeight: 'calc(100dvh - 2rem)' } }}>
-                        {blueprintHistorySnapshot ? <div className="space-y-3"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(null)}><Icon name="arrow-left" size={14} className="me-1" />VOLVER AL HISTÓRICO</Button><BlueprintReviewMatrix blueprints={blueprintHistorySnapshot.blueprints || []} professionals={currentItem.fun_52s} savedReview={blueprintHistorySnapshot.review || {}} readOnly onClose={() => setBlueprintHistoryOpen(false)} /></div> : <div className="space-y-3"><div className="flex items-center justify-between gap-3"><div><h3 className="mb-1 text-base font-semibold">Histórico de revisiones</h3><p className="mb-0 text-sm text-muted-foreground">Las versiones finalizadas no pueden modificarse.</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}><Icon name="times-circle" size={14} /></Button></div>{_GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.length ? _GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.map(snapshot => <div key={snapshot.number} className="flex items-center justify-between gap-3 rounded-md border border-border p-3"><div><strong>Versión {snapshot.number}</strong><p className="mb-0 text-xs text-muted-foreground">Finalizada: {new Date(snapshot.finalizedAt).toLocaleString()}</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(snapshot)}>VER RESULTADO</Button></div>) : <p className="mb-0 rounded-md border border-border p-3 text-sm text-muted-foreground">Aún no hay versiones finalizadas.</p>}<div className="flex justify-end"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}>Cerrar</Button></div></div>}
+                        {blueprintHistorySnapshot ? <div className="space-y-3"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(null)}><Icon name="arrow-left" size={14} className="me-1" />Volver al histórico</Button><BlueprintReviewMatrix blueprints={blueprintHistorySnapshot.blueprints || []} professionals={currentItem.fun_52s} savedReview={blueprintHistorySnapshot.review || {}} readOnly onClose={() => setBlueprintHistoryOpen(false)} /></div> : <div className="space-y-3"><div className="flex items-center justify-between gap-3"><div><h3 className="mb-1 text-base font-semibold">Histórico de revisiones</h3><p className="mb-0 text-sm text-muted-foreground">Las versiones finalizadas no pueden modificarse.</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}><Icon name="times-circle" size={14} /></Button></div>{_GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.length ? _GET_BLUEPRINT_REVIEW_DOCUMENT().snapshots.map(snapshot => <div key={snapshot.number} className="flex items-center justify-between gap-3 rounded-md border border-border p-3"><div><strong>Versión {snapshot.number}</strong><p className="mb-0 text-xs text-muted-foreground">Finalizada: {new Date(snapshot.finalizedAt).toLocaleString()}</p></div><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistorySnapshot(snapshot)}>Ver resultado</Button></div>) : <p className="mb-0 rounded-md border border-border p-3 text-sm text-muted-foreground">Aún no hay versiones finalizadas.</p>}<div className="flex justify-end"><Button type="button" size="sm" variant="outline" onClick={() => setBlueprintHistoryOpen(false)}>Cerrar</Button></div></div>}
                     </Modal>
                     {edit_blueprint
                         ? <form id="form_ra_33_blueprint_edit" onSubmit={edit_ra_33_blueprint}>
@@ -1085,7 +1087,7 @@ function RECORD_ARC_33({ translation, swaMsg, globals, currentItem, currentVersi
                             {_COMPONENT_3('_edit')}
                             <div className="text-center">
                                 <Button size="sm" className="my-3">
-                                    <Icon name="share-square" size={16} /> GUARDAR CAMBIOS
+                                    <Icon name="share-square" size={16} /> Guardar cambios
                                 </Button>
                             </div>
                         </form>

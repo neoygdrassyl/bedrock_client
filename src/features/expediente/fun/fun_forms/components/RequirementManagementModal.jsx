@@ -4,6 +4,7 @@ import Icon from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
 import { ProtectedDocumentPreview } from '@/shared/components/ProtectedDocument';
 import { buildDocumentPreviewUrl } from '@/features/expediente/documental/shared/expediente-documental.utils';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import './fun_modal_shared.css';
 
 function splitDelimited(value, separator = ',') {
@@ -237,7 +238,7 @@ export default function RequirementManagementModal({ open, requirement, vrs, dig
                   <p className="max-h-10 overflow-hidden break-words text-[13px] font-semibold leading-5 text-foreground" title={entry.documentName || entry.documentCode || 'Documento sin nombre'}>
                     {entry.documentName || entry.documentCode || 'Documento sin nombre'}
                   </p>
-                  <p className="text-xs text-muted-foreground">VR entrada: {entry.vrId || 'Sin VR'} · {entry.vrDate || 'sin fecha'} · folios {entry.pages || 'N/D'}</p>
+                  <p className="text-xs text-muted-foreground">VR entrada: {entry.vrId || 'Sin VR'} · {formatDisplayDate(entry.vrDate, { empty: 'sin fecha' })} · folios {entry.pages || 'N/D'}</p>
                 </div>
                 <div className="flex shrink-0 justify-end gap-2">
                   <Button

@@ -1,4 +1,5 @@
 import FUNService from '../../api/fun.service'
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import DataTable from '@/shared/components/data-table-bridge';
@@ -320,7 +321,6 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     name: 'NOMBRE',
                     selector: row => `${row.name || ''} ${row.surname || ''}`.trim(),
                     sortable: true,
-                    center: true,
                     minWidth: '180px',
                     cell: row => <span className="text-sm">{row.name} {row.surname}</span>,
                 },
@@ -328,40 +328,34 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     name: 'IDENTIFICACIÓN',
                     selector: row => row.id_number,
                     sortable: true,
-                    center: true,
                     cell: row => <span className="text-sm">{row.id_number}</span>,
                 },
                 {
                     name: 'CALIDAD',
                     selector: row => row.role,
-                    center: true,
                     cell: row => <span className="text-sm">{row.role}</span>,
                 },
                 {
                     name: 'TELÉFONO',
                     selector: row => row.number,
-                    center: true,
                     cell: row => <span className="text-sm">{row.number}</span>,
                 },
                 {
                     name: 'CORREO',
                     selector: row => row.email,
-                    center: true,
                     minWidth: '180px',
                     cell: row => <span className="text-sm">{row.email}</span>,
                 },
                 {
                     name: 'DIRECCIÓN',
                     selector: row => row.address,
-                    center: true,
                     minWidth: '220px',
                     cell: row => <span className="text-sm">{row.address}</span>,
                 },
                 {
                     name: 'DOCUMENTOS',
                     selector: row => row.docs,
-                    center: true,
-                    cell: row => <span className="text-sm">{row.docs || 'SIN DOCUMENTOS'}</span>,
+                    cell: row => <span className="text-sm">{String(row.docs || '').split(',').some((id) => Number(id) > 0) ? row.docs : 'Sin documentos'}</span>,
                 },
                 {
                     name: 'ACCIÓN',
@@ -399,10 +393,10 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
 
             if (responsable?.id) {
-                FUNService.update_53(responsable.id, formData)
+                return FUNService.update_53(responsable.id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             setIsFormOpen(false);
                             requestUpdate(currentItem.id)
                         } else {
@@ -415,10 +409,10 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
                     })
                     .finally(() => setIsSaving(false));
             } else {
-                FUNService.create_fun53(formData)
+                return FUNService.create_fun53(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             setIsFormOpen(false);
                             requestUpdate(currentItem.id)
                         } else {
@@ -434,6 +428,10 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
         }
 
         let new_53 = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_n_53:new_53')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             let fun0Id = currentItem.id;
@@ -461,7 +459,7 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
             docs.push(document.getElementById("f_53_doc2").value);
             formData.set('docs', docs.join());
 
-            manage_53();
+            holdSubmit('fun_n_53:new_53', manage_53());
 
         }
 
@@ -470,13 +468,13 @@ const FUNN53 = ({ translation, swaMsg, globals, currentItem, currentVersion, req
             <fieldset className="p-3">
                 <FunUpdateSectionLegend id="funn_53" step="5.3">Responsable de la Solicitud</FunUpdateSectionLegend>
                 {hasEffectiveResponsable ? _CHILD_53_LIST() : !isFormOpen && <Button type="button" size="sm" className="my-3" onClick={() => setIsFormOpen(true)}>
-                    <Icon name="user" size={16} /> REGISTRAR RESPONSABLE
+                    <Icon name="user" size={16} /> Registrar responsable
                 </Button>}
                 {isFormOpen && <form id="form_fun_53_manage" onSubmit={new_53}>
                     {_CHILD_53_COMPONENT()}
                     <div className="row mb-3 text-center">
                         <div className="col-12">
-                            <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> ACTUALIZAR ITEM </Button>
+                            <Button size="sm" className="my-3" disabled={isSaving}><Icon name="file-alt" size={16} /> Actualizar ítem</Button>
                         </div>
                     </div>
                 </form>}

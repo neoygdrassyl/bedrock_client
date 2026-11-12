@@ -1,4 +1,6 @@
-import { Icon } from '@/shared/components/icon';
+import dayjs from 'dayjs';
+import { SectionCard } from '@/shared/components/SectionCard';
+import { DovelaBadge } from '@/shared/dovela-ui';
 
 function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, currentVersion, nomenclature, noLaw, noArc, noEng, id }) {
         const empty_model = { version: '', worker_name: '', worker_id: '', date_asign: '', worker_prev: '' }
@@ -57,55 +59,48 @@ function FUN_G_REPORT_MASTER({ translation, swaMsg, globals, currentItem, curren
             return false;
         }
         // COMPONENT JSX
-        let _COMPONENT_REPORT_MASTER = () => {
-            return <>
-                <div className="row mb-2">
-                    <div className="col-6">
-                        <div className="input-group">
-                            <input type="text" className="form-control me-1" id="r_l_review_1"
-                                defaultValue={'Acta de Observaciones'} disabled />
-                        </div>
-                    </div>
-                    <div className="col-3">
-                        <input type="text" className="form-control me-1" id="r_l_review_1"
-                            defaultValue={_GET_CLOCK_STATE(30).desc ? _GET_CLOCK_STATE(30).desc.includes('NO CUMPLE')
-                            ? 'NO CUMPLE' : _GET_CLOCK_STATE(30).desc.includes('CUMPLE')
-                                ? 'CUMPLE' : '': ''} disabled />
-                    </div>
-                    <div className="col-3">
-                        <input type="date" className="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
-                            defaultValue={_GET_CLOCK_STATE(30).date_start ?? ''} />
-                    </div>
-                </div>
-                <div className="row mb-2">
-                    <div className="col-6">
-                        <div className="input-group">
-                            <input type="text" className="form-control me-1" id="r_l_review_1"
-                                defaultValue={'Acta de Correciones'} disabled />
-                        </div>
-                    </div>
-                    <div className="col-3">
-                        <input type="text" className="form-control me-1" id="r_l_review_1"
-                            defaultValue={_GET_CLOCK_STATE(49).desc ? _GET_CLOCK_STATE(49).desc.includes('NO CUMPLE')
-                                ? 'NO CUMPLE' : _GET_CLOCK_STATE(49).desc.includes('CUMPLE')
-                                    ? 'CUMPLE' : '': ''} disabled />
-                    </div>
-                    <div className="col-3">
-                        <input type="date" className="form-control me-1" id="r_l_review_3" max="2100-01-01" disabled
-                            defaultValue={_GET_CLOCK_STATE(49).date_start ?? ''} />
-                    </div>
-                </div>
-            </>
+        let _GET_ACT_RESULT = (_state) => {
+            const desc = _GET_CLOCK_STATE(_state).desc;
+            if (!desc) return '';
+            if (desc.includes('NO CUMPLE')) return 'NO CUMPLE';
+            if (desc.includes('CUMPLE')) return 'CUMPLE';
+            return '';
+        }
+        let _ACT_ROW = (label, _state) => {
+            const result = _GET_ACT_RESULT(_state);
+            const date = _GET_CLOCK_STATE(_state).date_start ?? '';
+            return <tr>
+                <th scope="row" className="fw-normal">{label}</th>
+                <td>
+                    {result === 'CUMPLE' ? <DovelaBadge tone="success">Cumple</DovelaBadge> : null}
+                    {result === 'NO CUMPLE' ? <DovelaBadge tone="danger">No cumple</DovelaBadge> : null}
+                    {result === '' ? <span className="text-muted-foreground">Sin resultado</span> : null}
+                </td>
+                <td className="ew-num">
+                    {date
+                        ? (dayjs(date).isValid() ? dayjs(date).format('DD/MM/YYYY') : date)
+                        : <span className="text-muted-foreground">Sin fecha</span>}
+                </td>
+            </tr>
         }
         return (
-            <div className="fun_g_mix">
-
-                <legend className="my-2 px-3 Collapsible" id="fung_report_master">
-                    <label className="app-p lead text-center fw-normal">10. ACTA <Icon name="file-contract" size={16} className="me-2" /></label>
-                </legend>
-
-                {_COMPONENT_REPORT_MASTER()}
-            </div >
+            <SectionCard id="fung_report_master" className="fun_g_mix" title="10. Acta">
+                <div className="rdt_Table overflow-auto rounded-[var(--radius)] border border-border">
+                    <table className="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Acta</th>
+                                <th scope="col">Resultado</th>
+                                <th scope="col">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {_ACT_ROW('Acta de observaciones', 30)}
+                            {_ACT_ROW('Acta de correcciones', 49)}
+                        </tbody>
+                    </table>
+                </div>
+            </SectionCard>
         );
 }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DataTable from '@/shared/components/data-table-bridge';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import VIZUALIZER from '../../../../shared/components/vizualizer.component';
 import RECORD_PH_SERVICE from '../../api/record_ph.service';
 
@@ -89,7 +90,7 @@ function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {}, 
         {
             name: 'MATRICULA',
             minWidth: '130px',
-            cell: row => <span>{row.professional?.registration_date || '-'}</span>,
+            cell: row => <span>{formatDisplayDate(row.professional?.registration_date, { empty: '-' })}</span>,
         },
         {
             name: 'EXPERIENCIA',
@@ -121,10 +122,9 @@ function RECORD_PH_PROFESIONAL({ _FUN_52 = [], _FUN_6 = [], currentRecord = {}, 
             <div className="app-p lead fw-bold mb-1">PROFESIONAL RESPONSABLE DE LOS PLANOS</div>
             <p className="small text-muted mb-0">Datos recuperados desde el formulario FUN 5.2.</p>
         </div>
-        <DataTable
+        <DataTable pagination={false}
             paginationComponentOptions={{ rowsPerPageText: 'Filas por pagina:', rangeSeparatorText: 'de' }}
             noDataComponent="No hay profesional configurado"
-            striped="true"
             columns={columns}
             data={rows}
             dense

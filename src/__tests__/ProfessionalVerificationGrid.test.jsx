@@ -35,7 +35,11 @@ describe('ProfessionalVerificationGrid', () => {
     expect(screen.getAllByRole('columnheader', { name: 'Estado' }).find(header => header.getAttribute('rowspan') === '2')).toBeTruthy();
     expect(screen.getByRole('columnheader', { name: 'Acción' })).toHaveAttribute('rowspan', '2');
     expect(screen.getByRole('columnheader', { name: 'Se reconoce para la actuación' })).toBeTruthy();
-    screen.getAllByRole('columnheader').forEach(header => expect(header).toHaveClass('border-slate-400'));
+    // The redesign moved the grid lines from a fixed slate colour to the `border` design token.
+    screen.getAllByRole('columnheader').forEach(header => {
+      expect(header).toHaveClass('border-border');
+      expect(header).not.toHaveClass('border-slate-400');
+    });
     expect(screen.getAllByText('Sin registro')).toHaveLength(2);
     expect(screen.getAllByText('Pendiente')).toHaveLength(2);
     expect(screen.getByText('30 año(s)')).toBeTruthy();
@@ -59,7 +63,8 @@ describe('ProfessionalVerificationGrid', () => {
     }]} onEdit={vi.fn()} />);
 
     expect(screen.getByText('CPN-2026-123')).toBeTruthy();
-    expect(screen.getByText('2026-08-24')).toBeTruthy();
+    expect(screen.getByText('24/08/2026')).toBeTruthy();
+    expect(screen.getByText('07/12/1995')).toBeTruthy();
   });
 
   test('derives certificate validity from six calendar months and the legal filing date', () => {

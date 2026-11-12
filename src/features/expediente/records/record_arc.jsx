@@ -204,20 +204,20 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
         let _SUBCATEGORY_COMPONENT = () => {
 
             let subcategories = [
-                { desc: 'ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO', v: subc[0], id: 0, },
-                { desc: 'PARQUEADEROS', v: subc[1], id: 1, },
-                { desc: 'ESPACIO PUBLICO', v: subc[2], id: 2, },
-                { desc: 'NSR10', v: subc[3], id: 3, },
+                { desc: 'Análisis de las determinantes urbanas del predio', v: subc[0], id: 0, },
+                { desc: 'Parqueaderos', v: subc[1], id: 1, },
+                { desc: 'Espacio público', v: subc[2], id: 2, },
+                { desc: 'NSR-10', v: subc[3], id: 3, },
             ]
             let contentControls = [
-                { id: 'identification', desc: '3.2. IDENTIFICACIÓN DE LA SOLICITUD', locked: true },
-                { id: 'description', desc: '3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA', locked: true },
+                { id: 'identification', desc: '3.2. Identificación de la solicitud', locked: true },
+                { id: 'description', desc: '3.3. Descripción de la actuación urbanística', locked: true },
             ];
 
             if (_GET_CHILD_1().item_1.includes('F')) {
                 contentControls.push(
-                    { id: 'decree-1077', desc: 'CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO', locked: true },
-                    { id: 'planning-secretariat', desc: 'INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL', locked: true },
+                    { id: 'decree-1077', desc: 'Consideraciones del Decreto 1077 de 2015 frente a la procedibilidad del reconocimiento', locked: true },
+                    { id: 'planning-secretariat', desc: 'Intervención de la Secretaría de Planeación Municipal', locked: true },
                 );
             }
 
@@ -226,7 +226,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                 desc: `3.${i + 4}. ${itemm.desc}`,
                 checked: itemm.v == '1',
             })));
-            contentControls.push({ id: 'viability', desc: '3.8 VIABILIDAD ARQUITECTÓNICA', locked: true });
+            contentControls.push({ id: 'viability', desc: '3.8. Viabilidad arquitectónica', locked: true });
 
             return <div className="record-arc-content-control-list">
                 {contentControls.map((item) => {
@@ -293,7 +293,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                             ? <>
                                 <fieldset className="p-3">
                                     <legend className="my-2 px-3 Collapsible" id="record_arc_32">
-                                        <label className="app-p lead fw-normal">3.2. IDENTIFICACIÓN DE LA SOLICITUD</label>
+                                        <label className="app-p lead fw-normal">3.2 Identificación de la solicitud</label>
                                     </legend>
                                     <RECORD_ARC_32
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -336,7 +336,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 </fieldset>
                                 <fieldset className="p-3">
                                     <legend className="my-2 px-3 Collapsible" id="record_arc_31">
-                                        <label className="app-p lead fw-normal">3.1 DOCUMENTACIÓN Y PROFESIONALES DEL PROYECTO</label>
+                                        <label className="app-p lead fw-normal">3.1 Documentación y profesionales del proyecto</label>
                                     </legend>
                                     <RecordReviewWorkspace
                                         inventoryLabel="3.1.1 Inventario de Información Aportada"
@@ -387,8 +387,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                 </fieldset>
                                 {_GLOBAL_ID == 'cb1' ?
                                     <fieldset className="p-3">
-                                        <legend className="my-2 px-3 bg-success" id="record_arc_sub">
-                                            <label className="app-p lead fw-normal text-light">CONTROL DE CONTENIDO</label>
+                                        <legend className="my-2 px-3" id="record_arc_sub">
+                                            <label className="app-p lead fw-normal">Control de contenido</label>
                                         </legend>
                                         {_SUBCATEGORY_COMPONENT()}
                                     </fieldset>
@@ -399,7 +399,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                         <fieldset className="p-3">
                                             <legend className="my-2 px-3 Collapsible" id="record_arc_33">
-                                                <label className="app-p lead fw-normal">3.3. DESCRIPCIÓN DE LA ACTUACIÓN URBANÍSTICA</label>
+                                                <label className="app-p lead fw-normal">3.3 Descripción de la actuación urbanística</label>
                                             </legend>
                                             <RECORD_ARC_33
                                                 translation={translation} swaMsg={swaMsg} globals={globals}
@@ -415,8 +415,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         {_GET_CHILD_1().item_1.includes("F")
                                             ? <>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_1">
-                                                        <label className="app-p lead fw-normal text-light">CONSIDERACIONES DECRETO 1077 DE 2015 FRENTE A LA PROCEDIBILIDAD DEL RECONOCIMIENTO. OBLIGATORIO</label>
+                                                    <legend className="my-2 px-3" id="record_arc_extra_1">
+                                                        <label className="app-p lead fw-normal">Consideraciones Decreto 1077 de 2015 frente a la procedibilidad del reconocimiento (obligatorio)</label>
                                                     </legend>
                                                     <RECORD_ARC_EXTRA_1
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -428,8 +428,8 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                                     />
                                                 </fieldset>
                                                 <fieldset className="p-3">
-                                                    <legend className="my-2 px-3 bg-success" id="record_arc_extra_2">
-                                                        <label className="app-p lead fw-normal text-light">INTERVENCIÓN DE LA SECRETARIA DE PLANEACIÓN MUNICIPAL. -SPM- INFORME VISITA AL PREDIO</label>
+                                                    <legend className="my-2 px-3" id="record_arc_extra_2">
+                                                        <label className="app-p lead fw-normal">Intervención de la Secretaría de Planeación Municipal (SPM): informe de visita al predio</label>
                                                     </legend>
                                                     <RECORD_ARC_EXTRA_2
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -446,7 +446,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ? <>
                                                 <fieldset className="p-3">
                                                     <legend className="my-2 px-3 Collapsible" id="record_arc_34">
-                                                        <label className="app-p lead fw-normal">3.4 ANÁLISIS DE LAS DETERMINANTES URBANAS DEL PREDIO</label>
+                                                        <label className="app-p lead fw-normal">3.4 Análisis de las determinantes urbanas del predio</label>
                                                     </legend>
                                                     <RECORD_ARC_34
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -463,7 +463,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ? <>
                                                 <fieldset className="p-3">
                                                     <legend className="my-2 px-3 Collapsible" id="record_arc_35">
-                                                        <label className="app-p lead fw-normal">3.5 PARQUEADEROS</label>
+                                                        <label className="app-p lead fw-normal">3.5 Parqueaderos</label>
                                                     </legend>
                                                     <RECORD_ARC_35
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -480,7 +480,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             ? <>
                                                 <fieldset className="p-3">
                                                     <legend className="my-2 px-3 Collapsible" id="record_arc_36">
-                                                        <label className="app-p lead fw-normal">3.6 ESPACIO PUBLICO</label>
+                                                        <label className="app-p lead fw-normal">3.6 Espacio público</label>
                                                     </legend>
                                                     <RECORD_ARC_36
                                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -516,7 +516,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                     <fieldset className="p-3">
 
                                         <legend className="my-2 px-3 Collapsible" id="record_arc_32">
-                                            <label className="app-p lead fw-normal">3.2.1 Antecedentes y Descripción del Proyecto a licencias</label>
+                                            <label className="app-p lead fw-normal">3.2.1 Antecedentes y descripción del proyecto a licenciar</label>
                                         </legend>
 
                                         <RECORD_ARC_DESC
@@ -529,7 +529,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                             requestUpdate={requestUpdate}
                                         />
                                         <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
-                                            <label className="app-p lead fw-normal">3.3 DATOS DE CONTROL</label>
+                                            <label className="app-p lead fw-normal">3.3 Datos de control</label>
                                         </legend>
                                         <RECORD_ARC_CONTROL
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -543,7 +543,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                                         />
 
                                         <legend className="my-2 px-3 Collapsible mt-5" id="record_arc_34">
-                                            <label className="app-p lead fw-normal">3.4 EVALUACIÓN</label>
+                                            <label className="app-p lead fw-normal">3.4 Evaluación</label>
                                         </legend>
                                         <RECORD_ARC_GEN_REVIEW
                                             translation={translation} swaMsg={swaMsg} globals={globals}
@@ -569,7 +569,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <fieldset className="p-3">
                                     <legend className="my-2 px-3 Collapsible" id="record_arc_38">
-                                        <label className="app-p lead fw-normal">3.8 VIABILIDAD ARQUITECTÓNICA</label>
+                                        <label className="app-p lead fw-normal">3.8 Viabilidad arquitectónica</label>
                                     </legend>
                                     <RECORD_ARC_38
                                         translation={translation} swaMsg={swaMsg} globals={globals}
@@ -587,12 +587,13 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
 
                                 <fieldset className="p-3">
                                     {recordLoadFailed ? (
-                                        <div className="text-center" role="alert">
+                                        <div role="alert">
                                             <p className="text-sm text-muted-foreground">No fue posible cargar el informe arquitectónico.</p>
                                             <Button size="sm" variant="outline" onClick={() => setItem_RecordArc()}><Icon name="RefreshCw" size={14} /> Reintentar</Button>
                                         </div>
                                     ) : (
-                                        <div className="text-center">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Este expediente aún no tiene informe arquitectónico.</p>
                                             <Button size="sm" onClick={() => new_record_arc()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                         </div>
                                     )}
@@ -600,7 +601,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
 
                             </>}
                     </> : <fieldset className="p-3" id="fung_0">
-                        <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
+                        <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
                     </fieldset>}
                     <FUN_VERSION_NAV
                         translation={translation}
@@ -618,7 +619,7 @@ function RECORD_ARC({ translation, swaMsg, globals, currentVersion, currentId, N
                         pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACIÓN...</h3></div>
+                    <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
                 </fieldset>}
             </div >
         );

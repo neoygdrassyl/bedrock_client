@@ -36,19 +36,9 @@ vi.mock('../features/expediente/api/fun.service.js', () => ({
   default: hoisted.mockFunService,
 }));
 
-vi.mock('../features/expediente/clocks/components/ClockRow', () => ({
-  DEFAULT_CLOCK_COLUMN_VISIBILITY: {
-    scheduledLimit: false,
-    scheduledAlarm: false,
-    nextStep: false,
-  },
-  getClockTableWidth: (visibleColumns = {}) => {
-    let width = 750;
-    if (visibleColumns.scheduledLimit) width += 150;
-    if (visibleColumns.scheduledAlarm) width += 150;
-    if (visibleColumns.nextStep) width += 220;
-    return width;
-  },
+// Row and header are replaced; the column helpers (grid template, widths, column count) stay real.
+vi.mock('../features/expediente/clocks/components/ClockRow', async (importOriginal) => ({
+  ...(await importOriginal()),
   ClockTableHeader: () => <div data-testid='clock-table-header'>Clock table header</div>,
   ClockRow: ({ value, clock }) => {
     if (value?.title) return null;
@@ -62,7 +52,9 @@ vi.mock('../features/expediente/clocks/components/ClockRow', () => ({
   },
 }));
 
-vi.mock('../features/expediente/clocks/components/SidebarInfo', () => ({
+// The term strip reads its figures through the helpers of this module: keep them real.
+vi.mock('../features/expediente/clocks/components/SidebarInfo', async (importOriginal) => ({
+  ...(await importOriginal()),
   SidebarInfo: ({ manager }) => (
     <aside data-testid='sidebar-info-mock'>
       <div data-testid='curaduria-status'>{manager?.curaduriaDetails?.status || 'N/A'}</div>
@@ -95,6 +87,7 @@ vi.mock('../features/expediente/clocks/components/AlarmsWidget', () => ({
 
 vi.mock('../features/expediente/clocks/components/gantt/GanttModal', () => ({
   GanttModal: () => <div data-testid='gantt-modal-mock' />,
+  GanttLegend: () => <div data-testid='gantt-legend-mock' />,
 }));
 
 vi.mock('../features/expediente/clocks/components/ToolsMenu', () => ({

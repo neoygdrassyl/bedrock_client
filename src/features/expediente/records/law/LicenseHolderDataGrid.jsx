@@ -25,14 +25,14 @@ const activeStatus = holder => holder?.active === true || holder?.active === 1 |
 function documentCell(holder, position, filesById) {
   const id = String(holder?.docs || '').split(',')[position]?.trim();
   if (!id || id === '0') return <span className="text-destructive">No</span>;
-  if (id === '-1') return <span className="text-emerald-700" title="Aportado físicamente">Sí</span>;
+  if (id === '-1') return <span className="ew-text-success" title="Aportado físicamente">Sí</span>;
 
   const file = filesById.get(id);
   if (!file?.path || !file?.filename) return <span className="text-muted-foreground" title="El archivo relacionado no está disponible">No disponible</span>;
 
   return <span className="inline-flex items-center gap-1 whitespace-nowrap">
     <VIZUALIZER url={`${file.path}/${file.filename}`} apipath="/files/" icon={position === 0 ? 'IdCard' : 'BadgeCheck'} color="DeepSkyBlue" />
-    <span className="text-emerald-700">Sí</span>
+    <span className="ew-text-success">Sí</span>
   </span>;
 }
 
@@ -101,28 +101,27 @@ export default function LicenseHolderDataGrid({ currentItem, currentRecord, curr
     }
   };
 
-  return <section className="mt-3 rounded-lg border border-border bg-card p-3" aria-label="Tabla consolidada de titulares de la licencia">
-    <div className="mb-3">
-      <h3 className="mb-1 text-sm font-semibold">5.1. Titulares de la licencia</h3>
-      <p className="mb-0 text-xs text-muted-foreground">Información consolidada para consulta y verificación.</p>
+  return <section className="ew-card" aria-label="Tabla consolidada de titulares de la licencia">
+    <div className="ew-card__header">
+      <h3 className="ew-card__title">5.1. Titulares de la licencia</h3>
     </div>
     {error ? <p className="mb-2 text-xs text-destructive" role="alert">{error}</p> : null}
     <div className="max-h-[70vh] overflow-auto rounded-md border border-border">
       <table className="w-max border-separate border-spacing-0 text-[11px] text-foreground" aria-label="Titulares de la licencia">
-        <thead className="sticky top-0 z-20 bg-slate-200 text-foreground/80 dark:bg-slate-800 dark:text-slate-300">
+        <thead className="sticky top-0 z-20 bg-muted text-foreground/80 ">
           <tr>
-            <th rowSpan="2" className="sticky left-0 z-30 border-b border-r border-slate-400 bg-slate-200 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600 dark:bg-slate-800">Nombre</th>
-            {['CC / NIT', 'Tipo persona', 'Calidad'].map(column => <th key={column} rowSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">{column}</th>)}
-            <th colSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Documentos aportados</th>
-            <th colSpan="3" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Validación titularidad</th>
-            <th colSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Firmas</th>
-            <th rowSpan="2" className="border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Estado</th>
-            <th rowSpan="2" className="w-20 border-b border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">Acción</th>
+            <th rowSpan="2" className="sticky left-0 z-30 border-b border-r border-border bg-muted px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Nombre</th>
+            {['CC / NIT', 'Tipo persona', 'Calidad'].map(column => <th key={column} rowSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">{column}</th>)}
+            <th colSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Documentos aportados</th>
+            <th colSpan="3" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Validación titularidad</th>
+            <th colSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Firmas</th>
+            <th rowSpan="2" className="border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Estado</th>
+            <th rowSpan="2" className="w-20 border-b border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">Acción</th>
           </tr>
           <tr>
-            {['Doc. identidad', 'Cert. exist. / rep. legal'].map(column => <th key={column} className="w-24 whitespace-normal border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">{column}</th>)}
-            {CHECKS.slice(0, 3).map(check => <th key={check.label} title={check.description} className="w-20 whitespace-normal border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">{check.label}</th>)}
-            {CHECKS.slice(3).map(check => <th key={check.label} title={check.description} className="w-20 whitespace-normal border-b border-r border-slate-400 px-0.5 py-1 text-center text-[9px] font-semibold uppercase leading-tight dark:border-slate-600">{check.label}</th>)}
+            {['Doc. identidad', 'Cert. exist. / rep. legal'].map(column => <th key={column} className="w-24 whitespace-normal border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">{column}</th>)}
+            {CHECKS.slice(0, 3).map(check => <th key={check.label} title={check.description} className="w-20 whitespace-normal border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">{check.label}</th>)}
+            {CHECKS.slice(3).map(check => <th key={check.label} title={check.description} className="w-20 whitespace-normal border-b border-r border-border px-0.5 py-1 text-center text-[11px] font-semibold uppercase leading-tight ">{check.label}</th>)}
           </tr>
         </thead>
         <tbody>
@@ -131,7 +130,7 @@ export default function LicenseHolderDataGrid({ currentItem, currentRecord, curr
             const canEdit = holder?.id !== undefined && holder?.id !== null && holder.id !== '' && typeof onEdit === 'function';
             const holderActiveStatus = activeStatus(holder);
             return <tr key={holder.id || `${holder.id_number || fullName}-${holderIndex}`}>
-              <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold dark:bg-slate-900">{fullName}</td>
+              <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-2 py-1 font-semibold ">{fullName}</td>
               <td className="border-b border-r border-border px-2 py-1 text-center">{text(holder.id_number)}</td>
               <td className="w-20 border-b border-r border-border px-2 py-1 text-center">{personType(holder.type)}</td>
               <td className="border-b border-r border-border px-2 py-1 text-center">{text(holder.role)}</td>
@@ -144,7 +143,7 @@ export default function LicenseHolderDataGrid({ currentItem, currentRecord, curr
                 return <td key={check.label} className="border-b border-r border-border px-2 py-1 text-center">
                   <select
                     aria-label={`${check.description} — ${fullName}`}
-                    className={`h-7 w-auto cursor-pointer rounded-md border border-border bg-background px-2 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${value === '1' ? 'text-emerald-700' : 'text-destructive'}`}
+                    className={`h-7 w-auto cursor-pointer rounded-md border border-border bg-background px-2 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-wait disabled:opacity-60 ${value === '1' ? 'ew-text-success' : 'text-destructive'}`}
                     value={value}
                     disabled={saving || !canPersist}
                     aria-busy={saving}
@@ -155,7 +154,7 @@ export default function LicenseHolderDataGrid({ currentItem, currentRecord, curr
                   </select>
                 </td>;
               })}
-              <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${holderActiveStatus === 'ACTIVO' ? 'text-emerald-700' : 'text-destructive'}`}>{holderActiveStatus}</td>
+              <td className={`border-b border-r border-border px-2 py-1 text-center font-semibold ${holderActiveStatus === 'ACTIVO' ? 'ew-text-success' : 'text-destructive'}`}>{holderActiveStatus}</td>
               <td className="w-20 border-b border-border px-2 py-1 text-center"><Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0" aria-label={`Actualizar ${fullName}`} title={canEdit ? undefined : 'No es posible actualizar este titular'} disabled={!canEdit} onClick={() => onEdit(holder.id)}><Icon name="edit" size={14} /></Button></td>
             </tr>;
           }) : <tr><td colSpan="13" className="h-24 px-4 text-center text-sm text-muted-foreground">No hay titulares registrados. Añádalos desde el submódulo Actualizar.</td></tr>}

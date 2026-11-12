@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, LayoutGroup, m } from 'motion/react';
-import { ChevronsUpDown, LogOut, UserCircle2 } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Moon, Sun, UserCircle2 } from 'lucide-react';
 import { Icon } from '@/shared/components/icon';
 import { infoCud } from '@/shared/config/jsons/vars';
 import { useCuraduriaLogo } from '@/shared/branding/useCuraduriaLogo';
 import { cn } from '@/shared/lib/utils';
+import { useShellTier } from '@/shared/hooks/use-mobile';
+import { useTheme } from '@/shared/components/theme-provider';
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +32,10 @@ import { useNavigationPending } from './navigation-pending-context';
 const UTILITY_START_INDEX = 7;
 const OPEN_GROUPS_STORAGE_KEY = 'dovela-sidebar-closed-items';
 const FLYOUT_CLOSE_DELAY_MS = 140;
+// Any other open menu, popover or dialog: a rail flyout never opens next to one.
+const OPEN_OVERLAY_SELECTOR = '[role="menu"][data-state="open"], [role="dialog"][data-state="open"]';
+// One rail flyout at a time: opening one closes the previous one right away.
+let closeActiveFlyout = null;
 
 // Shared spring for the active pill so it glides between items instead of jumping.
 const PILL_TRANSITION = { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 };
@@ -128,6 +134,8 @@ function NavRow({ item, active, showPill, pending, collapsedRail, trailing }) {
 
 function SubmenuList({ item, location, activeChildId }) {
   const { pendingRoute, linkProps } = useNavHandlers();
+  // Off-canvas sheet (tablet and mobile tiers): 40px rows.
+  const { isMobile } = useSidebar();
 
   return (
     <ul className="mb-0 ml-[20px] mr-0 mt-1 list-none space-y-0.5 py-0 pl-2 pr-0" style={SUBMENU_GUIDE_STYLE}>
@@ -140,7 +148,8 @@ function SubmenuList({ item, location, activeChildId }) {
               {...linkProps(child.route)}
               aria-current={isChildActive(location, child) ? 'page' : undefined}
               className={cn(
-                'relative flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] no-underline outline-none hover:no-underline',
+                'relative flex items-center gap-2.5 rounded-lg px-2.5 text-[13px] no-underline outline-none hover:no-underline',
+                isMobile ? 'h-10' : 'h-8',
                 'transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-sidebar-ring',
                 childActive
                   ? 'font-medium text-sidebar-accent-foreground'
@@ -166,12 +175,29 @@ function CollapsedFlyout({ item, location, active, pending }) {
   const closeTimer = useRef(null);
   const { pendingRoute, linkProps } = useNavHandlers();
 
-  const show = () => { clearTimeout(closeTimer.current); setOpen(true); };
+  const contentRef = useRef(null);
+  const closeNow = useRef(null);
+  closeNow.current = () => { clearTimeout(closeTimer.current); setOpen(false); };
+
+  const show = () => {
+    clearTimeout(closeTimer.current);
+    if (open) return;
+    const otherOverlay = Array.from(document.querySelectorAll(OPEN_OVERLAY_SELECTOR))
+      .some((node) => node !== contentRef.current && !node.hasAttribute('data-rail-flyout'));
+    if (otherOverlay) return;
+    if (closeActiveFlyout && closeActiveFlyout !== closeNow) closeActiveFlyout.current?.();
+    closeActiveFlyout = closeNow;
+    setOpen(true);
+  };
+  // The short delay keeps the panel open while the pointer crosses the gap diagonally.
   const hide = () => {
     clearTimeout(closeTimer.current);
     closeTimer.current = setTimeout(() => setOpen(false), FLYOUT_CLOSE_DELAY_MS);
   };
-  useEffect(() => () => clearTimeout(closeTimer.current), []);
+  useEffect(() => () => {
+    clearTimeout(closeTimer.current);
+    if (closeActiveFlyout === closeNow) closeActiveFlyout = null;
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -182,15 +208,18 @@ function CollapsedFlyout({ item, location, active, pending }) {
         </div>
       </PopoverAnchor>
       <PopoverContent
+        ref={contentRef}
+        data-rail-flyout=""
         side="right"
         align="start"
         sideOffset={14}
+        collisionPadding={8}
         onPointerEnter={show}
         onPointerLeave={hide}
         onFocus={show}
         onBlur={hide}
         onOpenAutoFocus={(event) => event.preventDefault()}
-        className="w-56 rounded-2xl border-white/10 bg-sidebar p-1.5 text-sidebar-foreground shadow-2xl"
+        className="max-h-[var(--radix-popover-content-available-height)] w-56 overflow-y-auto rounded-2xl border-white/10 bg-sidebar p-1.5 text-sidebar-foreground shadow-2xl"
       >
         <p className="m-0 px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/45">
           {item.label}
@@ -263,7 +292,7 @@ function SidebarNavItem({ item, location, closedItems, onToggleItem }) {
       onClick={(event) => { event.preventDefault(); event.stopPropagation(); onToggleItem(item.id); }}
       aria-label={expanded ? `Contraer ${item.label}` : `Desplegar ${item.label}`}
       aria-expanded={expanded}
-      className={cn('relative z-10 -mr-1 flex size-6 items-center justify-center rounded-md hover:bg-white/10', LABEL_CLASS)}
+      className={cn('relative z-10 flex items-center justify-center rounded-md hover:bg-white/10', isMobile ? '-mr-2 size-10' : '-mr-1 size-6', LABEL_CLASS)}
     >
       <Icon
         name="ChevronDown"
@@ -333,9 +362,13 @@ function SidebarAccount({ user, onLogout }) {
   const collapsedRail = state === 'collapsed' && !isMobile;
   const fullName = [user?.name, user?.surname].filter(Boolean).join(' ');
   const initials = user ? `${user.name?.[0] || ''}${user.surname?.[0] || ''}` : '?';
+  const { resolvedTheme, setTheme } = useTheme();
+  const darkTheme = resolvedTheme === 'dark';
+  // Remounting on a tier change closes the menu, so it is never left orphaned by a resize.
+  const tier = useShellTier();
 
   return (
-    <DropdownMenu>
+    <DropdownMenu key={tier}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -358,6 +391,7 @@ function SidebarAccount({ user, onLogout }) {
         side={collapsedRail ? 'right' : 'top'}
         align={collapsedRail ? 'end' : 'start'}
         sideOffset={collapsedRail ? 14 : 8}
+        collisionPadding={8}
         className="w-56 rounded-2xl p-1.5"
       >
         <div className="px-2.5 py-1.5">
@@ -370,6 +404,13 @@ function SidebarAccount({ user, onLogout }) {
             <UserCircle2 size={16} className="mr-2" />
             Mi perfil
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => setTheme(darkTheme ? 'light' : 'dark')}
+          className="min-h-8 rounded-xl touch:min-h-11"
+        >
+          {darkTheme ? <Sun size={16} className="mr-2" /> : <Moon size={16} className="mr-2" />}
+          {darkTheme ? 'Modo claro' : 'Modo oscuro'}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onLogout} className="min-h-8 rounded-xl text-destructive touch:min-h-11">

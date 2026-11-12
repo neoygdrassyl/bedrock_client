@@ -1,9 +1,13 @@
 import { Fragment } from 'react';
+import { DateInput, formatDateInputValue } from '@/shared/components/DateInput';
 import Icon from '@/shared/components/icon';
 import { dateParser_finalDate, regexChecker_isOA_2 } from '../../../../../shared/config/customClasses/typeParse';
 import VIZUALIZER from '../../../../../shared/components/vizualizer.component';
 import FUN_SERVICE from '../../../api/fun.service';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+
+// Legal limits are computed as ISO dates; they read as dd/mm/yyyy like the rest of the module.
+const shortDate = (value) => formatDateInputValue(value) || value;
 
 export default function FUN_C_CLOCKS(props) {
     const { swaMsg, translation, globals, currentItem, currentVersion } = props;
@@ -119,18 +123,18 @@ export default function FUN_C_CLOCKS(props) {
                     </div>
                     <div className="col border py-1">
                         {value.state ?
-                            <input type="date" className="form-control" id={'clock_acta_date_' + i} max="2100-01-01"
+                            <DateInput className="form-control" id={'clock_acta_date_' + i} max="2100-01-01" aria-label={`Fecha de ${value.name}`}
                                 defaultValue={_GET_CLOCK_STATE(value.state).date_start ?? ''} onBlur={(e) => save_clock2(value, i)} />
                             : ''}
                     </div>
                     <div className="col text-center border py-1">
                         {value.limit != undefined
-                            ? dateParser_finalDate(get_map_clock(value.limit_id).date_start, value.limit)
+                            ? shortDate(dateParser_finalDate(get_map_clock(value.limit_id).date_start, value.limit))
                             : ''}
                     </div>
                     <div className="col border py-1">
                         {value.types
-                            ? <select className='form-select' id={'clock_acta_res_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
+                            ? <select className='form-select' id={'clock_acta_res_' + i} aria-label={`Forma de ${value.name}`} defaultValue={_GET_CLOCK_STATE(value.state).resolver_context ?? 0}
                                 onChange={(e) => save_clock2(value, i)}>
                                 {value.types.map((v, idx) => <option key={idx}>{v}</option>)}
                             </select>
@@ -138,7 +142,7 @@ export default function FUN_C_CLOCKS(props) {
                     </div>
 
                     <div className="col border py-1">
-                        <select className='form-select' id={'clock_acta_id6_' + i} defaultValue={_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0}
+                        <select className='form-select' id={'clock_acta_id6_' + i} aria-label={`Anexo de ${value.name}`} defaultValue={_GET_CLOCK_STATE(value.state).resolver_id6 ?? 0}
                             onChange={(e) => save_clock2(value, i)}>
                             <option value="-1">APORTADO FISICAMENTE</option>
                             <option value="0">SIN DOCUMENTO</option>
@@ -165,18 +169,18 @@ export default function FUN_C_CLOCKS(props) {
             <label className="fw-bold mt-2">{get_clockExistIcon(4)} Vencimiento Licencia Inicial</label>
         </div>
         <div className="col border py-1">
-        <input type="date" className="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01"
+        <DateInput className="form-control" id={'clock_acta_date_' + 'pro'} max="2100-01-01" aria-label="Fecha de vencimiento de la licencia inicial"
                     defaultValue={_GET_CLOCK_STATE(4).date_start ?? ''} onBlur={(e) => save_clock2(PRO_CLOCK, 'pro')} />
         </div>
         <div className="col text-center border py-1">
-          {dateParser_finalDate(get_map_clock(5).date_start, 30)}
+          {shortDate(dateParser_finalDate(get_map_clock(5).date_start, 30))}
         </div>
         <div className="col border py-1">
            
         </div>
 
         <div className="col border py-1">
-            <select className='form-select' id={'clock_acta_id6_' + 'pro'} defaultValue={_GET_CLOCK_STATE(4).resolver_id6 ?? 0}
+            <select className='form-select' id={'clock_acta_id6_' + 'pro'} aria-label="Anexo de vencimiento de la licencia inicial" defaultValue={_GET_CLOCK_STATE(4).resolver_id6 ?? 0}
                 onChange={(e) => save_clock2(PRO_CLOCK, 'pro')}>
                 <option value="-1">APORTADO FISICAMENTE</option>
                 <option value="0">SIN DOCUMENTO</option>
@@ -224,10 +228,10 @@ export default function FUN_C_CLOCKS(props) {
                     <label className="fw-bold mt-2 ">{get_clockExistIcon(5)} LyDF</label>
                 </div>
                 <div className="col border py-1 text-center">
-                    <label className="fw-bold mt-2 ">{_GET_CLOCK_STATE(5).date_start ?? <label className='text-danger'>NO ESTA EN LyDF</label>}</label>
+                    <label className="fw-bold mt-2 ">{_GET_CLOCK_STATE(5).date_start != null ? shortDate(_GET_CLOCK_STATE(5).date_start) : <label className='text-danger'>NO ESTA EN LyDF</label>}</label>
                 </div>
                 <div className="col text-center border py-1">
-                {regexChecker_isOA_2(_GET_CHILD_1()) ? dateParser_finalDate(_GET_CLOCK_STATE(4).date_start, -30) : null}
+                {regexChecker_isOA_2(_GET_CHILD_1()) ? shortDate(dateParser_finalDate(_GET_CLOCK_STATE(4).date_start, -30)) : null}
                 </div>
                 <div className="col border py-1">
                 </div>
@@ -257,6 +261,15 @@ export default function FUN_C_CLOCKS(props) {
         let resolver_context = document.getElementById("clock_acta_res_" + i) ? document.getElementById("clock_acta_res_" + i).value : false;
         let resolver_id6 = document.getElementById("clock_acta_id6_" + i).value;
 
+        // Leaving the date field without changing anything must not post: the save runs on blur.
+        const stored = _GET_CLOCK_STATE(value.state) || null;
+        const defaultContext = value.types ? value.types[0] : false;
+        const storedContext = stored?.resolver_context ?? defaultContext;
+        const unchanged = (stored?.date_start ?? '') === date_start
+            && String(stored?.resolver_id6 ?? 0) === String(resolver_id6)
+            && (!resolver_context || storedContext === resolver_context);
+        if (unchanged) return;
+
         formDataClock.set('date_start', date_start);
         if (resolver_context) formDataClock.set('resolver_context', resolver_context);
         formDataClock.set('resolver_id6', resolver_id6);
@@ -282,9 +295,9 @@ export default function FUN_C_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         }
-                        props.requestUpdate(currentItem.id)
+                        props.requestUpdate(currentItem.id, true)
                     } else {
                         if (useMySwal) {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -303,9 +316,9 @@ export default function FUN_C_CLOCKS(props) {
                 .then(response => {
                     if (response.data === 'OK') {
                         if (useMySwal) {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         }
-                        props.requestUpdate(currentItem.id)
+                        props.requestUpdate(currentItem.id, true)
                     } else {
                         if (useMySwal) {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });

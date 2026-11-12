@@ -331,7 +331,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
         },
       ]
       _COMPONENT.push(<>
-        <DataTable
+        <DataTable pagination={false}
           noDataComponent="No hay mensajes"
           striped="true"
           columns={columns}

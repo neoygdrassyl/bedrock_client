@@ -6,6 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
 import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/utils';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import ListJson from '@/shared/config/jsons/fun6DocsList.json';
 import {
     DOCUMENT_ORIGIN_LABEL,
@@ -389,6 +390,7 @@ function UnifiedDocumentCreateModal({
     const [selectedVrValues, setSelectedVrValues] = useState([]);
     const [dragOverRowId, setDragOverRowId] = useState(null);
     const [previewFile, setPreviewFile] = useState(null);
+    const closeButtonRef = useRef(null);
     const pendingGroups = useMemo(() => groupPendingDocuments(pendingPhysicalDocs), [pendingPhysicalDocs]);
     const pendingRowKeys = useMemo(() => new Set(rows.map((row) => row.pendingEntryId).filter(Boolean)), [rows]);
     const selectedCount = rows.filter((row) => row.selected).length;
@@ -407,6 +409,28 @@ function UnifiedDocumentCreateModal({
             URL.revokeObjectURL(previewFile.url);
         }
     }, [previewFile?.url]);
+
+    // Hand-rolled dialog: focus moves in on open and returns to the opener on close.
+    useEffect(() => {
+        if (!open) return undefined;
+        const opener = document.activeElement;
+        closeButtonRef.current?.focus();
+        return () => { if (opener && typeof opener.focus === 'function' && document.contains(opener)) opener.focus(); };
+    }, [open]);
+
+    // Hand-rolled dialog: Escape closes the topmost layer (file preview first), never while saving
+    // or while an alert dialog is on top.
+    useEffect(() => {
+        if (!open) return undefined;
+        const onKeyDown = (event) => {
+            if (event.key !== 'Escape' || event.defaultPrevented || saving) return;
+            if ([...document.querySelectorAll('.swal2-container, [role="alertdialog"]')].some((layer) => layer.getClientRects().length)) return;
+            if (previewFile) setPreviewFile(null);
+            else onClose?.();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [open, previewFile, saving, onClose]);
 
     if (!open) {
         return null;
@@ -578,14 +602,14 @@ function UnifiedDocumentCreateModal({
     };
 
     return <>
-    <div className="fixed inset-0 z-[1065] flex items-center justify-center bg-black/50 px-4 py-5" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[1065] flex items-center justify-center bg-black/50 px-4 py-5" role="dialog" aria-modal="true" aria-label="Crear entrada de documentos">
         <div className="flex max-h-[90dvh] w-[min(92vw,1680px)] flex-col overflow-hidden rounded-xl border border-border bg-background shadow-2xl">
             <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-3">
                 <div>
                     <p className="mb-0 text-base font-semibold text-foreground">Crear entrada de documentos</p>
                     <p className="mb-0 text-xs text-muted-foreground">{currentItem?.id_public || currentId || 'Expediente'} · filas seleccionadas: {selectedCount}</p>
                 </div>
-                <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Cerrar creación documental" disabled={saving}>
+                <Button ref={closeButtonRef} type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Cerrar creación documental" disabled={saving}>
                     <Icon name="times" size={14} />
                 </Button>
             </div>
@@ -752,7 +776,7 @@ function UnifiedDocumentCreateModal({
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="min-w-0 text-[10px] text-muted-foreground">
                                                         <p className="mb-0 font-mono text-foreground">{entry.vr || 'SIN VR'}</p>
-                                                        <p className="mb-0">Fecha: {entry.date || 'Sin fecha'} · Folios: {entry.pages ?? entry.page ?? '0'}</p>
+                                                        <p className="mb-0">Fecha: {formatDisplayDate(entry.date, { empty: 'Sin fecha' })} · Folios: {entry.pages ?? entry.page ?? '0'}</p>
                                                     </div>
                                                     <Button
                                                         type="button"

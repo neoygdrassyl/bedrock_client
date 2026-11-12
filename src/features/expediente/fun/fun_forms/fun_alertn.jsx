@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
+import { DateInput } from '@/shared/components/DateInput';
 import FUNService from '../../api/fun.service'
 import { isEmptyEntity } from '../../../../shared/utils/isEmptyEntity';
 
@@ -19,10 +21,13 @@ import { _MANAGE_IDS } from '../../../../shared/config/customClasses/typeParse';
 import CubXVrDataService from '../../api/cubXvr.service'
 import { Icon } from '@/shared/components/icon';
 import { Button } from '@/shared/ui/button';
+import { DovelaBadge } from '@/shared/dovela-ui';
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { useIsInsideExpedienteWorkspace } from '../../workspace/ExpedienteWorkspaceContext';
 
 
 function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NAVIGATION_VERSION, NAVIGATION, requestUpdate: requestUpdateProp }) {
+    const insideWorkspace = useIsInsideExpedienteWorkspace();
     const [new_neighbour, setNewNeighbour] = useState(false);
     const [confirm, setConfirm] = useState(false);
     const [edit_type, setEditType] = useState(false);
@@ -318,18 +323,18 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             let _CHILD = _GET_CHILD_3(0);
             return <>
                 <form id="form_alter_address">
-                    <ul>
-                        <li><label className="fw-bold">Hay un total de {_CONFIRMED[2]} direcciones</label></li>
+                    <div className="mb-3 flex flex-wrap items-center gap-2" role="status">
+                        <DovelaBadge tone="neutral"><span className="ew-num">{_CONFIRMED[2]}</span> direcciones en total</DovelaBadge>
                         {_CONFIRMED[2] - _CONFIRMED[1] - _CONFIRMED[0] > 0
-                            ? <li><label className="fw-bold text-danger">Faltan  {_CONFIRMED[2] - _CONFIRMED[1] - _CONFIRMED[0]} direcciones(s) pendiente(s)</label></li>
+                            ? <DovelaBadge tone="danger"><span className="ew-num">{_CONFIRMED[2] - _CONFIRMED[1] - _CONFIRMED[0]}</span> pendiente(s)</DovelaBadge>
                             : ""}
                         {_CONFIRMED[0] > 0
-                            ? <li><label className="fw-bold text-success">Hay {_CONFIRMED[0]} direcciones(s) con CITACIÓN POSITIVA</label></li>
+                            ? <DovelaBadge tone="success"><span className="ew-num">{_CONFIRMED[0]}</span> con citación positiva</DovelaBadge>
                             : ""}
                         {_CONFIRMED[1] > 0
-                            ? <li><label className="fw-bold text-warning">Hay {_CONFIRMED[1]} direcciones(s) con CITACIÓN NEGATIVA</label></li>
+                            ? <DovelaBadge tone="warning"><span className="ew-num">{_CONFIRMED[1]}</span> con citación negativa</DovelaBadge>
                             : ""}
-                    </ul>
+                    </div>
 
                     <div className="row mb-3">
                         <div className="col-4">
@@ -357,7 +362,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             <div className="input-group my-1">
                                 <input type="text" className="form-control" id="alert_id_cub"
                                     defaultValue={_CHILD.id_cub || cubSelected || ""} />
-                                   <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>GENERAR</button>
+                                   <button type="button" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition-colors" onClick={() => _GET_LAST_ID()}>Generar</button>
                             </div>
                         </div>
                     </div>
@@ -379,15 +384,15 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         </div>
                         <div className="col-3">
                             <label>2.2.6 Fecha de Confirmación</label>
-                            <input type="date" className="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
+                            <DateInput className="form-control mb-3" max='2100-01-01' id="alert_date_confirm" required
                                 defaultValue={_CHILD.alerted ?? dayjs().format('YYYY-MM-DD')} />
                         </div>
                     </div>
 
-                    <div className="form-check my-3 px-5">
+                    <div className="form-check my-3">
                         <input className="form-check-input" type="checkbox" id="confirm_cb" onChange={(e) => setCb0(e.target.checked)}
                         />
-                        <p className="form-check-label text-start" > NO FUE POSIBLE CITAR (Se negó a recibir - no reside - no se encontró dirección - otra)</p>
+                        <label className="form-check-label text-start" htmlFor="confirm_cb">No fue posible citar (se negó a recibir, no reside, no se encontró dirección u otra)</label>
                     </div>
                     {cb0
                         ? <>
@@ -430,7 +435,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Periódico</label>
                                                     <input type="hidden" readOnly value="ALERT_1" name="neighbbour_inforalert_name" />
-                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
+                                                    <DateInput className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb1_nd" />
                                                     <label>Soporte Periódico</label>
                                                     <select className="form-select" name="neighbbour_inforalert_id6" id="cb1_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -444,7 +449,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Radio</label>
                                                     <input type="hidden" readOnly value="ALERT_2" name="neighbbour_inforalert_name" />
-                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
+                                                    <DateInput className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb2_nd" />
                                                     <label>Soporte Radio</label>
                                                     <select className="form-select" name="neighbbour_inforalert_id6" id="cb2_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -458,7 +463,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Pagina Web</label>
                                                     <input type="hidden" readOnly value="ALERT_3" name="neighbbour_inforalert_name" />
-                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
+                                                    <DateInput className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb3_nd" />
                                                     <label>Soporte Pagina Web</label>
                                                     <select className="form-select" name="neighbbour_inforalert_id6" id="cb3_ni"  >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -472,7 +477,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                                 ? <>
                                                     <label>Fecha Físico</label>
                                                     <input type="hidden" readOnly value="ALERT_4" name="neighbbour_inforalert_name" />
-                                                    <input type="date" className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
+                                                    <DateInput className="form-control mb-3" max='2100-01-01' name="neighbbour_inforalert_date" id="cb4_nd" />
                                                     <label>Soporte Físico</label>
                                                     <select className="form-select" name="neighbbour_inforalert_id6" id="cb4_ni" >
                                                         <option value="-1">APORTADO FÍSICAMENTE</option>
@@ -488,7 +493,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
 
                     <div className="row text-center">
                         <div className="col-12">
-                            <Button type="button" size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => alertAddress()}><Icon name="check-square" size={14} /> Confirmar</Button>
+                            <Button type="button" size="sm" className="my-3" onClick={() => alertAddress()}><Icon name="check-square" size={14} /> Confirmar</Button>
                         </div>
                     </div>
                 </form>
@@ -496,7 +501,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
         }
         let _COMPONENT_FUNXPQRS = () => {
             var objectsPQRS = Array.isArray(pqrsxfun) ? pqrsxfun : [];
-            if (objectsPQRS.length === 0) return <label className="fw-bold">No hay solicitudes PQRS asociadas a este trámite.</label>;
+            if (objectsPQRS.length === 0) return <p className="m-0 text-sm text-muted-foreground">No hay solicitudes PQRS asociadas a este trámite.</p>;
             var map = objectsPQRS.map((value, index) => { // FIX: Added index parameter for key
                 var solicitors = {
                     names: value.solicitors_names ? value.solicitors_names.split(';') : [],
@@ -603,6 +608,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
         var formData = new FormData();
 
         let uploadSign = (e) => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_alertn:uploadSign')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             formData = new FormData();
             // FILE DATA
@@ -615,7 +624,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             if (!isEmptyEntity(currentItem.fun_law)) {
                 let law_id = currentItem.fun_law.id;
                 swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-                FUNService.update_sign(law_id, formData)
+                holdSubmit('fun_alertn:uploadSign', FUNService.update_sign(law_id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
@@ -628,9 +637,9 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             } else {
-                FUNService.create_sign(formData)
+                holdSubmit('fun_alertn:uploadSign', FUNService.create_sign(formData)
                     .then(response => {
                         if (response.data === 'OK') {
                             swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text });
@@ -642,11 +651,13 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             }
 
         };
         let new_3 = (e) => {
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+            if (isRepeatedSubmit('fun_alertn:new_3')) { e?.preventDefault?.(); return; }
             e.preventDefault();
             let fun0Id = null;
             //
@@ -660,10 +671,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             formData.set('extra', 1);
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.create_fun3(formData)
+            holdSubmit('fun_alertn:new_3', FUNService.create_fun3(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         document.getElementById("app-form_neighbour").reset();
                         requestUpdate(currentItem.id);
                     } else {
@@ -673,10 +684,14 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         }
 
         let createVRxCUB_relation = (cub_selected) => {
+
+            // Without a consecutive there is no CUB-VR relation to create (the API rejects an empty one).
+
+            if (!idCUBxVr && !String(cub_selected ?? '').trim()) return;
             let cub = cub_selected;
             let formatData = new FormData();
 
@@ -686,7 +701,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             formatData.set('process', 'PUBLICIDAD COMUNICACION A VECINOS');
 
             if (idCUBxVr) {
-                CubXVrDataService.updateCubVr(idCUBxVr, formatData)
+                return CubXVrDataService.updateCubVr(idCUBxVr, formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -699,7 +714,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             }
             else {
                 // Crear relación
-                CubXVrDataService.createCubXVr(formatData)
+                return CubXVrDataService.createCubXVr(formatData)
                     .then((response) => {
                         if (response.data === 'OK') {
                             // Refrescar la UI
@@ -713,6 +728,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
         }
 
         let alertAddress = () => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_alertn:alertAddress')) return;
             console.log(document.getElementById(''));
             console.log("--------------------");
             console.log(document.getElementById('alert_address'));
@@ -734,7 +753,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             let prev_id = _SET_CHILD_3()[child_i].id_cub;
             formData.set('prev_id', prev_id);
 
-            createVRxCUB_relation(new_id)
+            holdSubmit('fun_alertn:alertAddress', createVRxCUB_relation(new_id));
 
             let alerted = document.getElementById("alert_date_confirm").value;
             if (alerted) formData.set('alerted', alerted);
@@ -768,10 +787,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             }
 
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
-            FUNService.update_3(id, formData)
+            holdSubmit('fun_alertn:alertAddress', FUNService.update_3(id, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         requestUpdate(currentItem.id)
                     } else if (response.data === 'ERROR_DUPLICATE') {
                         swalError({ title: "ERROR DE DUPLICACION", text: "El consecutivo de radicado de este formulario ya existe, debe de elegir un consecutivo nuevo" });
@@ -783,7 +802,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                 .catch(e => {
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
             retrieveItem(currentId);
         };
 
@@ -791,10 +810,10 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
             <div>
                 {currentItem != null ? <>
                     <FUN6DATALIST />
-                    <h2 className="text-center py-2" id="fund_1">PUBLICIDAD</h2>
+                    {insideWorkspace ? null : <h2 className="text-center py-2" id="fund_1">PUBLICIDAD</h2>}
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 Collapsible" id="fun_alert_1">
-                            <label className="app-p lead fw-normal">1. VALLA O AVISO</label>
+                            <label className="app-p lead fw-normal">1. Valla o aviso</label>
                         </legend>
                         <form onSubmit={uploadSign} id="app-form_sign">
                             <div className="row mb-3">
@@ -808,7 +827,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                                 <div className="col-4">
                                     <label>1.2. Fecha de Radicación</label>
-                                    <input type="date" className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
+                                    <DateInput className="form-control" max="2100-01-01" id="alert_sign_date" defaultValue={_GET_SIGN()[1]}
                                         required />
                                 </div>
                                 <div className="col-1">
@@ -821,21 +840,21 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                             </div>
                             {_SET_CHILD_LAW().sign
-                                ? <><label className="text-success fw-bold my-2">YA SE HA RELACIONADO EL AVISO  A ESTA SOLICITUD, REPETIR ESTA ACCIÓN REEMPLAZARÁ EL AVISO ANTERIOR</label>
+                                ? <><div className="alert alert-success mb-0" role="status">Ya hay un aviso relacionado con esta solicitud. Anexar uno nuevo reemplaza el anterior.</div>
                                 </>
-                                : <label className="text-danger fw-bold my-2">NO SE HA RELACIONADO LA FOTO DE LA VALLA A ESTA SOLICITUD</label>
+                                : <div className="alert alert-danger mb-0" role="status">No se ha relacionado la foto de la valla con esta solicitud.</div>
                             }
 
                             <div className="row text-center">
                                 <div className="col-12">
-                                    <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" id="btn-review"><Icon name="file-alt" size={14} /> Anexar aviso</Button>
+                                    <Button size="sm" className="my-3" id="btn-review"><Icon name="file-alt" size={14} /> Anexar aviso</Button>
                                 </div>
                             </div>
                         </form>
 
-                        <div className="form-check my-3 px-5">
-                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={(e) => setSignPdf(e.target.checked)} />
-                            <p className="form-check-label text-start" >Generar PDF de la Valla.</p>
+                        <div className="form-check my-3">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" id="alert_sign_pdf_cb" onChange={(e) => setSignPdf(e.target.checked)} />
+                            <label className="form-check-label text-start" htmlFor="alert_sign_pdf_cb">Generar PDF de la valla</label>
                         </div>
 
                         {sign_pdf
@@ -850,16 +869,16 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                     </fieldset>
                     <fieldset className="p-3">
                         <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
-                            <label className="app-p lead fw-normal">2. COMUNICACIÓN A VECINOS</label>
+                            <label className="app-p lead fw-normal">2. Comunicación a vecinos</label>
                         </legend>
                         <FUN_3_G_VIEW
                             _FUN_3={_SET_CHILD_3()}
                             _FUN_6={_SET_CHILD_6()}
                         />
 
-                        <div className="form-check my-3 px-5">
-                            <input className="form-check-input" type="checkbox" name="licence_checkbox" onChange={() => setNewNeighbour(!new_neighbour)} />
-                            <p className="form-check-label text-start" >Añadir nuevos vecinos a esta solicitud.</p>
+                        <div className="form-check my-3">
+                            <input className="form-check-input" type="checkbox" name="licence_checkbox" id="alert_new_neighbour_cb" onChange={() => setNewNeighbour(!new_neighbour)} />
+                            <label className="form-check-label text-start" htmlFor="alert_new_neighbour_cb">Añadir nuevos vecinos a esta solicitud</label>
                         </div>
                         {new_neighbour
                             ? <> <form onSubmit={new_3} id="app-form_neighbour">
@@ -885,13 +904,13 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                                 </div>
                                 <div className="row mb-3 text-center">
                                     <div className="col-12">
-                                        <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3"><Icon name="file-alt" size={16} /> AÑADIR ITEM </Button>
+                                        <Button size="sm" className="my-3"><Icon name="file-alt" size={16} /> Añadir ítem</Button>
                                     </div>
                                 </div>
                             </form>
                             </> : ""}
 
-                        <label className="app-p lead fw-normal my-3" id="fun_alert_21">2.1 GENERAR DOCUMENTOS DE CITACIÓN</label>
+                        <h3 className="ew-subheading" id="fun_alert_21">2.1 Generar documentos de citación</h3>
                         <FUN_ALERT_NEIGHBOUR
                             translation={translation}
                             swaMsg={swaMsg}
@@ -902,7 +921,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                             setVr={(item) => setVr(item)}
                         />
 
-                        <label className="app-p lead fw-normal my-3" id="fun_alert_22">2.2 CONFIRMACIÓN DE AVISOS</label>
+                        <h3 className="ew-subheading" id="fun_alert_22">2.2 Confirmación de avisos</h3>
                         {_CONFIRM_COMPONENT()}
 
                     </fieldset>
@@ -911,7 +930,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         ? <>
                             <fieldset className="p-3">
                                 <legend className="my-2 px-3 Collapsible" id="fun_alert_2">
-                                    <label className="app-p lead fw-normal">3. PETICIONES RELACIONADAS</label>
+                                    <label className="app-p lead fw-normal">3. Peticiones relacionadas</label>
                                 </legend>
                                 {_COMPONENT_FUNXPQRS()}
                             </fieldset>
@@ -935,7 +954,7 @@ function FUN_ALERT({ translation, swaMsg, globals, currentVersion, currentId, NA
                         pqrsxfun={pqrsxfun}
                     />
                 </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
+                    <p className="m-0 py-8 text-center text-sm text-muted-foreground" role="status">Cargando información de la solicitud…</p>
                 </fieldset>}
             </div>
         );

@@ -12,6 +12,12 @@ import { Icon } from '@/shared/components/icon';
 import { cn } from '@/shared/lib/utils';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 
+// Display only: ISO dates read dd/mm/yyyy like the rest of the Tiempos module.
+const formatNegativeDate = (value) => {
+    const match = typeof value === 'string' ? value.match(/^(\d{4})-(\d{2})-(\d{2})/) : null;
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : (value || '');
+};
+
 const NEGATIVE_PROCESS_START_STATE = -50;
 const LEGACY_VOLUNTARY_DESISTIMIENTO_STATE = -5;
 const NEGATIVE_PROCESS_END_STATE = -30;
@@ -140,11 +146,11 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
         const ClockDictionary = {
             '-3': {
                 "name": 'RECORDATORIO INICIAL',
-                "desc": 'Se enviá un email al solicitante 20 días antes de iniciar el proceso de desistimiento.',
+                "desc": 'Se envía un email al solicitante 20 días antes de iniciar el proceso de desistimiento.',
             },
             '-4': {
                 "name": 'RECORDATORIO RATIFICACIÓN',
-                "desc": 'Se enviá un email al solicitante 10 días antes de iniciar el proceso de desistimiento.',
+                "desc": 'Se envía un email al solicitante 10 días antes de iniciar el proceso de desistimiento.',
             },
             '-50': {
                 "name": 'INICIO DEL PROCESO DE DESISTIMIENTO',
@@ -160,7 +166,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             },
             "-7": {
                 "name": "NOTIFICACIÓN",
-                "desc": "El responsable de la solicitud es contactado de forma personal, electrónica or certificada",
+                "desc": "El responsable de la solicitud es contactado de forma personal, electrónica o certificada",
             },
             "-8": {
                 "name": "NOTIFICACIÓN POR AVISO",
@@ -196,7 +202,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
             },
             "-22": {
                 "name": "NOTIFICACIÓN (2° Vez)",
-                "desc": "El responsable de la solicitud es contactado de forma personal, electrónica or certificada (2° Vez)",
+                "desc": "El responsable de la solicitud es contactado de forma personal, electrónica o certificada (2° Vez)",
             },
             "-21": {
                 "name": "NOTIFICACIÓN POR AVISO (2° Vez)",
@@ -431,7 +437,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                             </select>
                         </div>
                         <div className="col-md-4 text-center">
-                            <Button type="submit" variant="outline" size="sm" className="border-danger text-danger hover:bg-red-50">
+                            <Button type="submit" variant="outline" size="sm" className="border-danger text-danger hover:bg-destructive/5">
                                 <Icon name="times" size={16} /> CANCELAR PROCESO DE DESISTIMIENTO
                             </Button>
                         </div>
@@ -549,7 +555,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
             const columns = [
                 {
-                    name: 'EVENTO',
+                    name: 'Evento',
                     selector: row => row.name,
                     sortable: true,
                     filterable: true,
@@ -557,33 +563,33 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                     cell: row => <span className="text-sm">{row.name}</span>
                 },
                 {
-                    name: 'OBSERVACIONES',
+                    name: 'Observaciones',
                     minWidth: '330px',
                     cell: row => <span className="text-sm">{(row.desc)}</span>
                 },
                 {
-                    name: 'FECHA EVENTO',
+                    name: 'Fecha del evento',
                     selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <span className="text-sm">{(row.date_start)}</span>
+                    cell: row => <span className="font-mono text-[13px] tabular-nums">{formatNegativeDate(row.date_start)}</span>
                 },
                 {
-                    name: 'FECHA LIMITE',
+                    name: 'Fecha límite',
                     selector: row => row.date_start,
                     sortable: true,
                     filterable: true,
                     center: true,
-                    cell: row => <span className="text-sm">{_GET_LIMITE_DATE(row.state, row.version)}</span>
+                    cell: row => <span className="font-mono text-[13px] tabular-nums">{formatNegativeDate(_GET_LIMITE_DATE(row.state, row.version))}</span>
                 },
                 {
-                    name: 'RESULTADO',
+                    name: 'Resultado',
                     center: true,
                     cell: row => <span className="text-sm">{resolveStatusIcon[row.resolver_sattus ?? '-1']}</span>
                 },
                 {
-                    name: 'SOPORTE DOCUMENTO',
+                    name: 'Soporte',
                     center: true,
                     cell: row => {
                         let id6 = row.resolver_id6;
@@ -649,13 +655,13 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                 let badgeClass = 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ';
                 let ogl;
                 if (archived) {
-                    ogl = <span className={badgeClass + 'bg-slate-100 text-slate-800 border border-slate-200'}>ARCHIVADO</span>;
+                    ogl = <span className={badgeClass + 'bg-muted/50 text-foreground border border-border'}>ARCHIVADO</span>;
                 } else if (op == NegativeState) {
-                    ogl = <span className={badgeClass + 'bg-red-50 text-red-700 border border-red-200'}>EN EJECUCIÓN</span>;
+                    ogl = <span className={badgeClass + 'bg-destructive/5 ew-text-danger border border-destructive/30'}>EN EJECUCIÓN</span>;
                 } else if (finished) {
-                    ogl = <span className={badgeClass + 'bg-green-50 text-green-700 border border-green-200'}>FINALIZADO</span>;
+                    ogl = <span className={badgeClass + 'bg-accent/10 ew-text-success border border-accent/30'}>FINALIZADO</span>;
                 } else {
-                    ogl = <span className={badgeClass + 'bg-gray-50 text-gray-600 border border-gray-200'}>SIN INICIAR</span>;
+                    ogl = <span className={badgeClass + 'bg-muted/50 text-muted-foreground border border-border'}>SIN INICIAR</span>;
                 }
                 return <div className="flex items-center gap-2">DESISTIDO: {NegativePRocessTitle[NegativeState]} {ogl}</div>
             }
@@ -759,7 +765,7 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
                         manage_fun_0(true, formData);
                     };
                     if (startClock?.id) {
-            FUN_SERVICE.delete_clock(startClock.id)
+            FUN_SERVICE.delete_clock(startClock.id, currentItem.id)
                 .then(doStateChange)
                 .catch(() => {
                     swalError({
@@ -989,16 +995,12 @@ function FUN_CLOCKS_NEGATIVE({ currentItem, requestRefresh, requestUpdate, swaMs
 
                 {hasActiveProcess ? (
                     <>
-                        <legend className="my-2 px-3 bg-danger text-white" id="cancel_process">
-                            <label className="app-p lead text-center fw-normal">PROCESO DE DESISTIMIENTO EN CURSO — CANCELAR</label>
-                        </legend>
+                        <h4 className="tc-card-title my-3" id="cancel_process">Proceso de desistimiento en curso: cancelar</h4>
                         {_CANCEL_PROCESS()}
                     </>
                 ) : currentItem.state < 101 ? (
                     <>
-                        <legend className="my-2 px-3 bg-danger text-white" id="new_process">
-                            <label className="app-p lead text-center fw-normal">NUEVO PROCESO DE DESESTIMIENTO</label>
-                        </legend>
+                        <h4 className="tc-card-title my-3" id="new_process">Nuevo proceso de desistimiento</h4>
                         {_NEW_PROCESS()}
                     </>
                 ) : null}

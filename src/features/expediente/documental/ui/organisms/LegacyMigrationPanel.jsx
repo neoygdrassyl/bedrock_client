@@ -12,6 +12,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Textarea } from '@/shared/ui/textarea';
 import { cn } from '@/shared/lib/utils';
+import { formatDisplayDate } from '@/shared/utils/formatDisplayDate';
 import { useLegacyMigration } from '../../hooks/useLegacyMigration';
 import {
   CHECKLIST_STATUS_LABELS, CLASS_LABELS, EXCLUDE_VALUE, FILE_STATUS_LABELS, deliveryMedium, groupIssues, pendingDigitalFiles, releaseLabel, summaryFacts,
@@ -104,7 +105,7 @@ function DigitalResolutions({ preview, choices, onChoose, disabled }) {
                       <Select value={choices[file.id] || ''} onValueChange={(value) => onChoose(file.id, value)} disabled={disabled}>
                         <SelectTrigger aria-label={`Decisión para el archivo ${file.id}`} className="h-8 w-[11rem] px-2 text-sm"><SelectValue placeholder="Elegir…" /></SelectTrigger>
                         <SelectContent>
-                          {preview.vrs.map((vr) => <SelectItem key={vr.submitId} value={String(vr.submitId)} className="text-xs">{`${vr.vrLabel}${vr.date ? ` · ${vr.date}` : ''}`}</SelectItem>)}
+                          {preview.vrs.map((vr) => <SelectItem key={vr.submitId} value={String(vr.submitId)} className="text-xs">{`${vr.vrLabel}${vr.date ? ` · ${formatDisplayDate(vr.date)}` : ''}`}</SelectItem>)}
                           <SelectItem value={EXCLUDE_VALUE} className="text-xs">Excluir</SelectItem>
                         </SelectContent>
                       </Select>

@@ -1,59 +1,56 @@
-import { useState, useEffect, useRef } from 'react';
-
+import { ChevronDown, Wrench } from 'lucide-react';
 import Icon from '@/shared/components/icon';
+import { Button } from '@/shared/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu';
+
+/**
+ * Labeled "Herramientas" menu of the Tiempos module (it replaces the floating toolbox
+ * button). Same actions and ids as before; `onAction(id)` is handled by the module.
+ */
 export const ToolsMenu = ({ onAction, canAddSuspension, canAddExtension, isDesisted }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const menuRef = useRef(null);
-
-    // Cerrar menú al hacer clic fuera
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const handleAction = (action) => {
-        setIsOpen(false);
-        onAction(action);
-    };
-
     const menuItems = [
-        { id: 'schedule', label: 'Programar Tiempos', icon: 'CalendarCheck', show: true },
-        { id: 'breakdown', label: 'Desglose de Días', icon: 'PieChart', show: true },
-        { id: 'gantt', label: 'Ver Gantt', icon: 'Network', show: true },
-        { id: 'time-travel', label: 'Emulador de Fecha', icon: 'UserClock', show: true },
-        { id: 'calendar', label: 'Calendario', icon: 'Calendar', show: true },
+        { id: 'schedule', label: 'Programar tiempos', icon: 'CalendarCheck', show: true },
+        { id: 'breakdown', label: 'Desglose de días', icon: 'PieChart', show: true },
+        { id: 'gantt', label: 'Ver Gantt completo', icon: 'Network', show: true },
+        { id: 'time-travel', label: 'Emulador de fecha', icon: 'UserClock', show: true },
+        { id: 'calendar', label: 'Calendario de días hábiles', icon: 'Calendar', show: true },
         { isDivider: true, show: !isDesisted && (canAddSuspension || canAddExtension) },
-        { id: 'suspension', label: 'Añadir Suspensión', icon: 'Pause', show: !isDesisted && canAddSuspension, isDynamic: true },
-        { id: 'extension', label: 'Añadir Prórroga', icon: 'Clock', show: !isDesisted && canAddExtension, isDynamic: true },
+        { id: 'suspension', label: 'Añadir suspensión', icon: 'Pause', show: !isDesisted && canAddSuspension },
+        { id: 'extension', label: 'Añadir prórroga', icon: 'Clock', show: !isDesisted && canAddExtension },
     ];
 
     return (
-        <div className="tools-menu-container" ref={menuRef}>
-            {isOpen && (
-                <div className="tools-menu">
-                    {menuItems.map((item, index) => {
-                        if (!item.show) return null;
-                        if (item.isDivider) return <div key={`divider-${index}`} className="tools-menu-divider"></div>;
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button type="button" variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg px-3 text-[13px] font-medium" data-tiempos-tools-trigger="">
+                    <Wrench className="h-4 w-4" aria-hidden="true" />
+                    Herramientas
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" sideOffset={6} className="min-w-[14rem]">
+                {menuItems.map((item, index) => {
+                    if (!item.show) return null;
+                    if (item.isDivider) return <DropdownMenuSeparator key={`divider-${index}`} />;
 
-                        return (
-                            <button key={item.id} className="tools-menu-item" onClick={() => handleAction(item.id)}>
-                                <Icon name={item.icon} size={16} />
-                                <span>{item.label}</span>
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-            <button className="tools-fab" onClick={() => setIsOpen(!isOpen)} title="Herramientas">
-                <Icon name={isOpen ? 'times' : 'toolbox'} size={16} />
-            </button>
-        </div>
+                    return (
+                        <DropdownMenuItem
+                            key={item.id}
+                            className="cursor-pointer text-[13px]"
+                            onSelect={() => onAction(item.id)}
+                        >
+                            <Icon name={item.icon} size={15} aria-hidden="true" />
+                            {item.label}
+                        </DropdownMenuItem>
+                    );
+                })}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };

@@ -41,8 +41,8 @@ pdfgen(data) {
   new_record(data) {
     return http.post(`/${route}/newrecord`, data);
   }
-  create_step(data) {
-    return http.post(`/${route}/createStep`, data);
+  create_step(data, config) {
+    return http.post(`/${route}/createStep`, data, config);
   }
  
  
@@ -68,8 +68,8 @@ pdfgen(data) {
   update_law_licence(id, data) {
     return http.put(`/${route}/updatelicence/${id}`, data);
   }
-  update_step(id, data) {
-    return http.put(`/${route}/updateStep/${id}`, data);
+  update_step(id, data, config) {
+    return http.put(`/${route}/updateStep/${id}`, data, config);
   }
 
   delete(id) {

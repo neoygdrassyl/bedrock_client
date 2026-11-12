@@ -43,7 +43,10 @@ export function matchesDocumentalColumnFilters(row = {}, filters = {}) {
 
   if (dateFilter) {
     const dateValue = normalizeText(row.latestDocumentDate).toLocaleLowerCase('es');
-    if (!dateValue.includes(dateFilter)) return false;
+    // The table shows dd/mm/aaaa; the stored value is AAAA-MM-DD. Either form matches.
+    const isoMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateValue);
+    const displayValue = isoMatch ? `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}` : '';
+    if (!dateValue.includes(dateFilter) && !displayValue.includes(dateFilter)) return false;
   }
 
   if (folioFilter) {

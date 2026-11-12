@@ -154,7 +154,7 @@ function MediumIconSet({ row }) {
                 <Icon name={option.meta.icon} size={13} />
             </span>)}
         </div>
-        <span className="text-[11px] font-medium leading-tight text-muted-foreground">{label}</span>
+        <span className="text-[11px] font-medium leading-tight text-foreground/70">{label}</span>
     </div>;
 }
 
@@ -166,7 +166,7 @@ function ScannedStatus({ row }) {
     }
 
     return <span
-        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${row.scanned.value ? meta.activeClassName : meta.inactiveClassName}`}
+        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${row.scanned.value ? meta.activeClassName : 'border-border bg-muted/40 text-foreground/75'}`}
         title={row.scanned.value ? 'El documento físico tiene archivo escaneado asociado por VR.' : 'No hay archivo escaneado asociado a este VR físico.'}
     >
         <Icon name={meta.icon} size={12} /> {row.scanned.value ? 'Sí' : 'No'}
@@ -177,21 +177,24 @@ function FolioSplit({ row }) {
     const digital = row.folios?.digital ?? 0;
     const physical = row.folios?.physical ?? 0;
 
-    return <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-border text-xs" title="Folios digitales / folios físicos">
-        <div className="border-r border-border bg-primary/5 px-2 py-1">
-            <div className="text-[10px] uppercase text-muted-foreground">Digitales</div>
-            <div className="font-mono font-semibold text-foreground">{digital || 0}</div>
+    return <dl className="m-0 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-xs" title="Folios digitales / folios físicos">
+        <div className="flex items-baseline gap-1">
+            <dd className="m-0 min-w-[2ch] text-right font-mono text-sm font-semibold text-foreground">{digital || 0}</dd>
+            <dt className="text-[11px] font-normal text-foreground/70">digitales</dt>
         </div>
-        <div className="bg-warning/5 px-2 py-1">
-            <div className="text-[10px] uppercase text-muted-foreground">Físicos</div>
-            <div className="font-mono font-semibold text-foreground">{physical || 0}</div>
+        <div className="flex items-baseline gap-1">
+            <dd className="m-0 min-w-[2ch] text-right font-mono text-sm font-semibold text-foreground">{physical || 0}</dd>
+            <dt className="text-[11px] font-normal text-foreground/70">físicos</dt>
         </div>
-    </div>;
+    </dl>;
 }
 
 function DateOnly({ value }) {
     const date = String(value || '').split(/[T ]/)[0];
-    return <span className="font-mono text-xs" title="Fecha de la última entrada que define el VR mostrado">{date || 'Sin fecha'}</span>;
+    // ISO dates read as dd/mm/yyyy; anything else is shown as stored.
+    const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+    const display = isoMatch ? `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}` : date;
+    return <span className={date ? 'font-mono text-xs' : 'text-xs text-foreground/70'} title="Fecha de la última entrada que define el VR mostrado">{display || 'Sin fecha'}</span>;
 }
 
 function UnifiedDocumentTable({
@@ -225,6 +228,18 @@ function UnifiedDocumentTable({
     const hasFilters = Boolean(filters.document || filters.vr || filters.mediums.length || filters.statuses.length || filters.legalForm !== LEGAL_FORM_FILTER.ALL);
 
     const openModal = (group, mode) => setModalState({ open: true, group, mode });
+    // The modal shows the live row: after an entry is edited or deleted the rows are rebuilt (and can
+    // merge into another VR group), so the opened group is resolved again by id or by its entries.
+    const modalGroup = useMemo(() => {
+        const opened = modalState.group;
+        if (!opened) return null;
+        // A consolidated entry changes its own id when it merges, so its sources are matched too.
+        const idsOf = (entry) => [entry?.entryId, ...(entry?.sources || []).map((source) => source?.entryId)].filter(Boolean);
+        const entryIds = new Set((opened.entries || []).flatMap(idsOf));
+        return rows.find((row) => row.id === opened.id)
+            || rows.find((row) => (row.entries || []).some((entry) => idsOf(entry).some((id) => entryIds.has(id))))
+            || (rows.length ? null : opened);
+    }, [modalState.group, rows]);
     const closeModal = () => setModalState({ open: false, group: null, mode: 'history' });
     const resetFilters = () => setFilters({ document: '', vr: '', mediums: [], statuses: [], legalForm: LEGAL_FORM_FILTER.ALL });
     const updateFilter = (key, value) => {
@@ -347,7 +362,7 @@ function UnifiedDocumentTable({
         <div className="max-h-[calc(100vh-280px)] min-h-[260px] overflow-auto rounded-xl border border-border">
             <table className="min-w-[1180px] w-full table-fixed text-sm">
                 <thead className="sticky top-0 z-10 bg-muted shadow-sm">
-                    <tr className="text-muted-foreground">
+                    <tr className="text-foreground/80">
                         <th className="w-[27%] px-3 py-2 text-left align-top">
                             <div className="space-y-1">
                                 <div className="text-[11px] font-semibold uppercase tracking-wide">Documento</div>
@@ -357,7 +372,7 @@ function UnifiedDocumentTable({
                                         value={filters.document}
                                         onChange={(event) => updateFilter('document', event.target.value)}
                                         placeholder="Buscar..."
-                                        className="pl-8"
+                                        className="!pl-8"
                                     />
                                 </div>
                             </div>
@@ -407,12 +422,12 @@ function UnifiedDocumentTable({
                     </tr>
                 </thead>
                 <tbody>
-                    {loading ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={7}>CARGANDO...</td></tr> : null}
+                    {loading ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={7} role="status">Cargando documentos…</td></tr> : null}
                     {!loading && visibleRows.length === 0 ? <tr><td className="px-3 py-8 text-center text-muted-foreground" colSpan={7}>No hay documentos registrados</td></tr> : null}
                     {!loading && visibleRows.map((group) => <tr key={group.id} className={`border-t border-border align-middle hover:bg-muted/30 ${getLegalFormRowClass(group.legalForm?.status, group.isPreviewRow)}`.trim()}>
                         <td className="px-3 py-2">
                             <div className="font-medium leading-snug text-foreground" title={group.documentName}>{group.documentName}</div>
-                            {group.documentCode ? <div className="text-xs font-mono text-muted-foreground">{group.documentCode}</div> : null}
+                            {group.documentCode ? <div className="text-xs font-mono text-foreground/70">{group.documentCode}</div> : null}
                             {group.legalForm ? <div className="mt-1 flex flex-wrap items-center gap-1.5">
                                 <LegalFormStatusPill className={getLegalFormToneClass(group.legalForm.status)}>{group.legalForm.statusLabel}</LegalFormStatusPill>
                                 <LegalFormStatusPill className="border-border bg-background text-foreground">{group.legalForm.sourceLabel}</LegalFormStatusPill>
@@ -454,7 +469,7 @@ function UnifiedDocumentTable({
 
         <UnifiedDocumentEntryModal
             open={modalState.open}
-            group={modalState.group}
+            group={modalGroup}
             mode={modalState.mode}
             canManage={canManage}
             onClose={closeModal}

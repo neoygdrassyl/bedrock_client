@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import FUNService from '../../api/fun.service'
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
@@ -352,6 +353,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
         }
 
         let new_2 = () => {
+
+            // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+
+            if (isRepeatedSubmit('fun_n_2:new_2')) return;
             if (metadataState.error) {
                 swalError({ title: swaMsg.generic_eror_title, text: metadataState.error });
                 return;
@@ -378,10 +383,10 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
             }
             swalLoading({ title: swaMsg.title_wait, text: swaMsg.text_wait });
             if (!fun2Id) {
-                FUNService.create_fun2(formData)
+                holdSubmit('fun_n_2:new_2', FUNService.create_fun2(formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -390,12 +395,12 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             } else {
-                FUNService.update_2(fun2Id, formData)
+                holdSubmit('fun_n_2:new_2', FUNService.update_2(fun2Id, formData)
                     .then(response => {
                         if (response.data === 'OK') {
-                            swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                            swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                             requestUpdate(currentItem.id)
                         } else {
                             swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -404,7 +409,7 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     .catch(e => {
                         console.log(e);
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                    });
+                    }));
             }
         }
 
@@ -425,13 +430,9 @@ const FUNN2 = ({ translation, swaMsg, globals, currentItem, currentVersion, requ
                     onPersistedChange={handlePersistedChange}
                     onDelete={handleDeleteChangeLogEntry}
                 />
-                <div className="row mb-3 text-center">
-                    <div className="col-6">
-                        <Button size="sm" className="my-3" onClick={() => new_2()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
-                    </div>
-                    <div className="col-6">
-                            <Button size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90 my-3" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> LIMPIAR (2.4 y 2.5) </Button>
-                        </div>
+                <div className="ew-actions">
+                    <Button variant="outline" size="sm" onClick={() => _RESET_FORM_2()}><Icon name="eraser" size={16} /> Limpiar (2.4 y 2.5)</Button>
+                    <Button size="sm" onClick={() => new_2()}><Icon name="file-alt" size={16} /> Actualizar</Button>
                 </div>
             </fieldset>
         </>);

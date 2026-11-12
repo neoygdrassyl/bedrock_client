@@ -1,8 +1,18 @@
+import { DateInput } from '@/shared/components/DateInput';
 import FUN_SERVICE from '../api/fun.service';
 import { Button } from '@/shared/ui/button';
 import { Icon } from '@/shared/components/icon';
 import { swalConfirm, swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
 import { getLicenseCompletionClock } from '../documental/shared/processClosure.helpers';
+import { SectionCard, DataGrid, DataField } from '@/shared/components/SectionCard';
+import dayjs from 'dayjs';
+
+/** Screen format of a stored `YYYY-MM-DD` date; anything else is shown as stored. */
+function formatCloseDate(value) {
+    if (!value) return '';
+    const parsed = dayjs(value);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY') : String(value);
+}
 
 export default function EXP_LIC(props) {
     const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR } = props;
@@ -32,42 +42,37 @@ export default function EXP_LIC(props) {
         return <>
 
             {currentItem.state == 200 ?
-                <div className='row text-center'>
-                    <div className='col'><label className='fw-bold text-danger'>ESTA SOLICITUD FUE DESISTIDA Y DEBE SER ARCHIVADA EN LA PESTAÑA DE "TIEMPOS"</label></div>
-                </div>
+                <p className="ew-notice ew-notice--danger m-0" role="status">Esta solicitud fue desistida y debe ser archivada en la pestaña de «Tiempos».</p>
                 :
                 <>
-                    <div className="row mx-2 my-0">
-                        <div className="col-3 border">
-                            <label className="fw-bold mt-2 text-end ">{completionClock.label?.toUpperCase() || 'FECHA DE LICENCIA'}:</label>
+                    <DataGrid>
+                        <DataField label={completionClock.label || 'Fecha de licencia'} mono>
+                            {formatCloseDate(completionClock.dateStart)}
+                        </DataField>
+                        <DataField label="Fecha de archivo" mono emptyText={currentItem.state == 100 ? 'Pendiente' : 'Sin archivar'}>
+                            {currentItem.state != 100 ? formatCloseDate(_GET_CLOCK_STATE(101)?.date_start) : ''}
+                        </DataField>
+                    </DataGrid>
+                    {currentItem.state < 100 ?
+                        <div className="ew-actions">
+                            <Button type="button" size="sm" onClick={() => close()}><Icon name="unlock-alt" size={16} /> Finalizar proceso</Button>
                         </div>
-                        <div className="col border py-1">
-                            <label className="fw-bold mt-2 text-end ">{completionClock.dateStart}</label>
-                        </div>
-                        <div className="col border py-1 text-center">
-                            {currentItem.state < 100 ?
-                                <Button variant="destructive" size="sm" onClick={() => close()}><Icon name="unlock-alt" size={16} /> FINALIZAR PROCESO</Button>
-                                : ''}
-                        </div>
-                    </div>
+                        : ''}
                     <form id="archive_form" onSubmit={archive}>
-                        <div className="row mx-2 my-0">
-                            <div className="col-3 border">
-                                <label className="fw-bold mt-2 text-end ">FECHA DE ARCHIVACIÓN:</label>
-                            </div>
-                            <div className="col border py-1">
-                                {currentItem.state == 100 ?
-                                    <input type="date" className="form-control" id={'clock_arch_date'} max="2100-01-01" required
-                                        defaultValue={_GET_CLOCK_STATE(101)?.date_start ?? ''} />
-                                    : ''}
-                            </div>
-                            <div className="col border py-1 text-center">
-                                {currentItem.state == 100 ?
-                                    <Button size="sm"><Icon name="file-archive" size={16} /> ARCHIVAR SOLICITUD</Button>
-                                    : ''}
-
-                            </div>
-                        </div>
+                        {currentItem.state == 100 ?
+                            <>
+                                <div className="ew-form-grid mt-3">
+                                    <div>
+                                        <label htmlFor="clock_arch_date">Fecha de archivación <span className="text-destructive" aria-hidden="true">*</span></label>
+                                        <DateInput className="form-control" id={'clock_arch_date'} max="2100-01-01" required
+                                            defaultValue={_GET_CLOCK_STATE(101)?.date_start ?? ''} />
+                                    </div>
+                                </div>
+                                <div className="ew-actions">
+                                    <Button type="submit" size="sm"><Icon name="file-archive" size={16} /> Archivar solicitud</Button>
+                                </div>
+                            </>
+                            : ''}
                     </form>
                 </>
             }
@@ -200,15 +205,19 @@ export default function EXP_LIC(props) {
         }
 
     }
+    const closeChip = currentItem.state == 200
+        ? <span className="ew-status-chip ew-status-chip--danger">Desistida</span>
+        : currentItem.state >= 101
+            ? <span className="ew-status-chip ew-status-chip--success">Archivada</span>
+            : currentItem.state == 100
+                ? <span className="ew-status-chip ew-status-chip--info">Proceso finalizado</span>
+                : <span className="ew-status-chip">Abierta</span>;
     return (
-        <div>
-            <legend className="my-2 px-3 Collapsible text-center" id="nav_expedition_4">
-                <label className="app-p lead fw-normal">CERRAR SOLICITUD</label>
-            </legend>
+        <SectionCard id="nav_expedition_4" title={`${props.step ? `${props.step}. ` : ''}Cierre de la solicitud`} meta={closeChip}>
             {completionClock.dateStart
                 ? _COMPONENT_LIC()
-                : <div className='row text-center'><label className="app-p lead fw-normal text-danger">Para cerrar y archivar la solicitud es necesario determinar la Fecha de expedición o Entrega de Licencia en Tiempos</label></div>}
+                : <p className="ew-notice ew-notice--warning m-0" role="status">Para cerrar y archivar la solicitud es necesario determinar la fecha de expedición o de entrega de la licencia en Tiempos.</p>}
 
-        </div >
+        </SectionCard>
     );
 }

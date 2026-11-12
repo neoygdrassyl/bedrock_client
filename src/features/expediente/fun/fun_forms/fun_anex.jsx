@@ -1,8 +1,11 @@
 
 import { useEffect, useState } from 'react';
+import { holdSubmit, isRepeatedSubmit } from '@/shared/utils/submitGuard';
 import { appendDocumentarySourceCommand, documentaryVersionIndex, recoverDocumentarySourceConflict } from '@/features/expediente/api/documentaryOperations.service';
 import { Button } from '@/shared/ui/button';
 import Icon from '@/shared/components/icon';
+import { SectionSubheading } from '@/shared/components/SectionCard';
+import FunUpdateSectionLegend from './components/FunUpdateSectionLegend.jsx';
 import { _FUN_101_PARSER, _FUN_102_PARSER, _FUN_1_PARSER, _FUN_24_PARSER, _FUN_25_PARSER, _FUN_2_PARSER, _FUN_3_PARSER, _FUN_4_PARSER, _FUN_5_PARSER, _FUN_6_PARSER, _FUN_7_PARSER, _FUN_8_PARSER, _FUN_9_PARSER } from '../../../../shared/config/customClasses/funCustomArrays';
 import { getJSON } from '../../../../shared/config/customClasses/typeParse';
 import FUN_SERVICE from '../../api/fun.service';
@@ -42,9 +45,7 @@ export default function FUN_ANEX(props) {
         let VAR = _CHILD_VARS.anex1 ? _CHILD_VARS.anex1.split(';') : [];
 
         return <>
-            <legend className="my-2 px-3 bg-light" id="funn_1_a1">
-                <label className="app-p lead fw-normal">1. TIPO DE USO</label>
-            </legend>
+            <SectionSubheading id="funn_1_a1" className="ew-subheading--first">1. Tipo de uso</SectionSubheading>
             <div className='row mx-3'>
                 <div className='col'>
                     <div className="form-check">
@@ -110,11 +111,9 @@ export default function FUN_ANEX(props) {
     }
     let _CHILD_A2 = () => {
         return <>
-            <legend className="my-2 px-3 bg-light" id="funn_1_a2">
-                <label className="app-p lead fw-normal">2. REGLAMENTACIÓN DE CONSTRUCCIÓN SOSTENIBLE</label>
-            </legend>
-            <div className='row text-center my-2'>
-                <label className='fw-bold'>2.1 DECLARACIÓN SOBRE MEDIDAS DE AHORRO EN ENERGIA</label>
+            <SectionSubheading id="funn_1_a2">2. Reglamentación de construcción sostenible</SectionSubheading>
+            <div className='row my-2'>
+                <p className='fw-bold mb-0'>2.1 Declaración sobre medidas de ahorro en energía</p>
             </div>
             <div className='row my-2'>
                 <div className='col'>
@@ -659,9 +658,7 @@ export default function FUN_ANEX(props) {
         let _CHILD_VARS = _GET_CHILD_1();
         let VAR = _CHILD_VARS.anex3 ? _CHILD_VARS.anex3.split(';') : [];
         return <>
-            <legend className="my-2 px-3 bg-light" id="funn_1_a3">
-                <label className="app-p lead fw-normal">3. ÁREA DEL PROYECTO</label>
-            </legend>
+            <SectionSubheading id="funn_1_a3">3. Área del proyecto</SectionSubheading>
             <div className='row mx-3'>
                 <div className="form-group row">
                     <label className="col-sm-8 col-form-label">Área neta de urbanismo y paisajismo (si aplica)</label>
@@ -696,6 +693,8 @@ export default function FUN_ANEX(props) {
     // ******************************* APIS **************************** // 
     var formData = new FormData();
     let manage_a = () => {
+        // Double-submit guard: a second click before the loading dialog covers the form must not post again.
+        if (isRepeatedSubmit('fun_anex:manage_a')) return;
         formData = new FormData();
         let version = currentVersion;
         let fun0Id = currentItem.id;
@@ -814,10 +813,10 @@ export default function FUN_ANEX(props) {
 
         appendDocumentarySourceCommand(formData, currentItem);
         if (!_CHILD.item_0) {
-            FUN_SERVICE.create_fun1(formData)
+            holdSubmit('fun_anex:manage_a', FUN_SERVICE.create_fun1(formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     } else {
                         swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
@@ -827,12 +826,12 @@ export default function FUN_ANEX(props) {
                     if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                     console.log(e);
                     swalError({ title: swaMsg.generic_eror_title, text: swaMsg.generic_error_text });
-                });
+                }));
         } else {
-            FUN_SERVICE.update_1(_CHILD.item_0, formData)
+            holdSubmit('fun_anex:manage_a', FUN_SERVICE.update_1(_CHILD.item_0, formData)
                 .then(response => {
                     if (response.data === 'OK') {
-                        swalSuccess({ title: swaMsg.publish_success_title, text: swaMsg.publish_success_text, footer: swaMsg.text_footer });
+                        swalSuccess({ title: swaMsg.generic_success_title, text: swaMsg.generic_success_text, footer: swaMsg.text_footer });
                         props.requestUpdate(currentItem.id)
                     } else {
                         if (response.status == 500) {
@@ -843,16 +842,14 @@ export default function FUN_ANEX(props) {
                 .catch(async e => {
                     if (await recoverDocumentarySourceConflict(e,{root:currentItem,formData,reload:props.requestUpdate,notify:swalError})) return;
                     console.log(e);
-                });
+                }));
         }
 
     }
 
     return (
         <fieldset className="p-3">
-            <legend className="my-2 px-3 Collapsible" id="funn_a">
-                <label className="app-p lead fw-normal">ANEXO DE CONSTRUCCIÓN SOSTENIBLE</label>
-            </legend>
+            <FunUpdateSectionLegend id="funn_a">Anexo de construcción sostenible</FunUpdateSectionLegend>
 
             {_CHILD_A1()}
             {_CHILD_A2()}
@@ -861,7 +858,7 @@ export default function FUN_ANEX(props) {
             <div className="row mb-3 text-center">
                 <hr />
                 <div className="col">
-                    <Button size="sm" className="my-3" onClick={() => manage_a()}><Icon name="file-alt" size={16} /> ACTUALIZAR </Button>
+                    <Button size="sm" className="my-3" onClick={() => manage_a()}><Icon name="file-alt" size={16} /> Actualizar </Button>
                 </div>
             </div>
         </fieldset>

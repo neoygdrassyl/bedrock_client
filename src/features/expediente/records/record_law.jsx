@@ -39,6 +39,7 @@ import RECORDS_BINNACLE from './records_binnacles.component';
 import funService from '../api/fun.service';
 import { swalError, swalSuccess } from '@/shared/utils/swalAdapter';
 import RecordReviewWorkspace from './components/RecordReviewWorkspace';
+import { SectionCard } from '@/shared/components/SectionCard';
 import { buildFunInformationViewModel } from './law/funInformationViewModel';
 
 // Render the replacement legal-information tables while their legacy versions remain available in code.
@@ -296,9 +297,7 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                         {currentRecord
                             ? <>
 
-                                <legend className="my-2 px-3 Collapsible" id="record_law_gen">
-                                    <label className="app-p lead fw-normal">I. CONTROL DEL DEBIDO PROCESO DE LA SOLICITUD</label>
-                                </legend>
+                                <h2 className="ew-group-title ew-group-title--first" id="record_law_gen">I. Control del debido proceso de la solicitud</h2>
                                 {
                                     /**
                                      * <SHORT_INFO translation={translation} swaMsg={swaMsg} globals={globals}
@@ -315,13 +314,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     currentVersion={currentVersion}
                                 />
 
-                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_2">
-                                    <label className="app-p lead fw-normal">II. Observaciones Jurídicas</label>
-                                </legend>
+                                <h2 className="ew-group-title" id="record_law_gen_2">II. Observaciones jurídicas</h2>
 
-                                <legend className="my-2 px-3 bg-light" id="record_law_21">
-                                    <label className="app-p lead fw-normal">2.1 TIPO DE SOLICITUD</label>
-                                </legend>
+                                <SectionCard id="record_law_21" title="2.1 Tipo de solicitud" headingLevel="h3">
                                 <RECORD_ARC_32 translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
                                     currentVersion={currentVersion} />
@@ -356,10 +351,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                         AIM={"Estructural"}
                                         readOnly />
                                 </> : null}
+                                </SectionCard>
 
-                                <legend className="my-2 px-3 bg-light" id="record_law_22">
-                                    <label className="app-p lead fw-normal">2.2 Revisión documental</label>
-                                </legend>
+                                <SectionCard id="record_law_22" title="2.2 Revisión documental" headingLevel="h3">
                                 <RecordReviewWorkspace
                                     inventoryLabel="2.2 Inventario de Información Aportada"
                                     documentsLabel="2.3 Expediente documental"
@@ -395,10 +389,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                         _FUN_52={_GET_CHILD_52()}
                                     />}
                                 />
+                                </SectionCard>
 
-                                <legend className="my-2 px-3 bg-light" id="record_law_25">
-                                    <label className="app-p lead fw-normal">2.5 Formulario Único Nacional</label>
-                                </legend>
+                                <h3 className="ew-group-title" id="record_law_25">2.5 Formulario Único Nacional</h3>
 
                                 <RECORD_LAW_STEP_1
                                     translation={translation} swaMsg={swaMsg} globals={globals}
@@ -537,19 +530,14 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                     quickModalStyle={quickModalStyle}
                                 />
 
-                                <legend className="my-2 px-3 bg-light" id="record_law_26">
-                                    <label className="app-p lead fw-normal">2.6 ACCIONES DE PUBLICIDAD DEL PROCESO</label>
-                                </legend>
-
-                                <div className="row border my-2 py-4 border border-warning bg-body-secondary" style={{ borderWidth: '3px' }}>
-                                    <div className="col-4"></div>
-                                    <div className="col-4">
-                                        <div className="form-check">
-                                            <input className="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1} 
-                                            onChange={() => save_fun0()}/>
-                                            <h2 className="form-check-label">No usar Publicidad</h2>
-                                        </div>
+                                <SectionCard id="record_law_26" title="2.6 Acciones de publicidad del proceso" headingLevel="h3">
+                                <div className="ew-toggle-row">
+                                    <div className="form-check m-0">
+                                        <input className="form-check-input" type="checkbox" value="1" id="fun_0_rules" defaultChecked={rules[0] == 1}
+                                        onChange={() => save_fun0()}/>
+                                        <label className="form-check-label" htmlFor="fun_0_rules">No usar publicidad</label>
                                     </div>
+                                    <span className="ew-toggle-row__hint">Al marcarla se guarda al instante y se ocultan las acciones de publicidad del proceso.</span>
                                 </div>
 
                                 {rules[0] != 1 ? <>
@@ -564,10 +552,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                         quickModalStyle={quickModalStyle}
                                     />
                                 </> : ''}
+                                </SectionCard>
 
-                                <legend className="my-2 px-3 Collapsible" id="record_law_gen_3">
-                                    <label className="app-p lead fw-normal">III. Viabilidad Jurídica</label>
-                                </legend>
+                                <h2 className="ew-group-title" id="record_law_gen_3">III. Viabilidad jurídica</h2>
                                 <RECORD_LAW_EVALUATION
                                     translation={translation} swaMsg={swaMsg} globals={globals}
                                     currentItem={currentItem}
@@ -581,17 +568,17 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                                 {/* {NAV_FUNA(_GET_CHILD_1())} */}
                             </> : <>
 
-                                <fieldset className="p-3">
-                                    {reviewLinkError ? <p className="text-center text-sm text-muted-foreground" role="status">{reviewLinkError}</p> : null}
-                                    <div className="text-center">
+                                <SectionCard title="Informe jurídico" meta="Este expediente aún no tiene informe jurídico.">
+                                    {reviewLinkError ? <p className="text-sm text-muted-foreground" role="status">{reviewLinkError}</p> : null}
+                                    <div className="ew-actions ew-actions--start">
                                         <Button size="sm" onClick={() => new_record_law()}><Icon name="FilePlus" size={14} /> Generar informe en blanco</Button>
                                     </div>
-                                </fieldset>
+                                </SectionCard>
 
                             </>}
-                    </> : <div className="text-center">
-                        <h3 className="fw-bold ">CARGANDO INFORMACION...</h3>
-                    </div>}
+                    </> : <SectionCard>
+                        <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                    </SectionCard>}
                     <FUN_VERSION_NAV
                         translation={translation}
                         currentItem={currentRecord}
@@ -607,9 +594,9 @@ function RECORD_LAW({ translation, swaMsg, globals, currentVersion, currentId, N
                         NAVIGATION={NAVIGATION}
                         pqrsxfun={pqrsxfun}
                     />
-                </> : <fieldset className="p-3" id="fung_0">
-                    <div className="text-center"> <h3 className="fw-bold ">CARGANDO INFORMACION...</h3></div>
-                </fieldset>}
+                </> : <SectionCard id="fung_0">
+                    <p className="m-0 text-sm text-muted-foreground" role="status">Cargando información del informe…</p>
+                </SectionCard>}
             </div >
         );
 }

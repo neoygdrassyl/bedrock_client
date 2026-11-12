@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DataTable from '@/shared/components/data-table-bridge';
 
@@ -30,11 +30,14 @@ function renderServerTable(overrides = {}) {
   );
 }
 
+const pager = () => screen.getByRole('navigation', { name: 'Paginación de la tabla' });
+const pagerButton = (name) => within(pager()).getByRole('button', { name });
+
 describe('DataTable bridge server-side pagination', () => {
   it('reports the server total, not the length of the page it was handed', () => {
-    const { getByText } = renderServerTable();
+    renderServerTable();
 
-    expect(getByText(/21984 registros/)).toBeInTheDocument();
+    expect(pager()).toHaveTextContent('1–20 de 21984');
   });
 
   it('derives the page count from the server total so the last page is reachable', () => {
@@ -54,12 +57,35 @@ describe('DataTable bridge server-side pagination', () => {
   it('notifies the parent with a 1-based page number when moving forward', async () => {
     const user = userEvent.setup();
     const onChangePage = vi.fn();
-    const { container } = renderServerTable({ onChangePage });
+    renderServerTable({ onChangePage });
 
-    const nextButton = container.querySelectorAll('.rdt_Pagination button');
-    await user.click(nextButton[nextButton.length - 1]);
+    expect(pagerButton('Primera página')).toBeDisabled();
+    expect(pagerButton('Página anterior')).toBeDisabled();
 
+    await user.click(pagerButton('Página siguiente'));
+
+    expect(onChangePage).toHaveBeenCalledTimes(1);
     expect(onChangePage).toHaveBeenCalledWith(2, 21984);
+    expect(pager()).toHaveTextContent('21–40 de 21984');
+  });
+
+  it('jumps to the last and back to the first page reporting each to the parent', async () => {
+    const user = userEvent.setup();
+    const onChangePage = vi.fn();
+    renderServerTable({ onChangePage });
+
+    await user.click(pagerButton('Última página'));
+
+    expect(onChangePage).toHaveBeenLastCalledWith(1100, 21984);
+    // 21984 rows: the last page holds rows 21981 to 21984.
+    expect(pager()).toHaveTextContent('21981–21984 de 21984');
+    expect(pagerButton('Página siguiente')).toBeDisabled();
+    expect(pagerButton('Última página')).toBeDisabled();
+
+    await user.click(pagerButton('Primera página'));
+
+    expect(onChangePage).toHaveBeenLastCalledWith(1, 21984);
+    expect(pager()).toHaveTextContent('1–20 de 21984');
   });
 
   it('notifies the parent when rows per page changes and resets to page 1', async () => {
@@ -144,7 +170,7 @@ describe('DataTable bridge server-side pagination', () => {
       />,
     );
 
-    expect(getByText(/1 registros/)).toBeInTheDocument();
+    expect(pager()).toHaveTextContent('1–1 de 1');
     expect(getByText(/Página 1 de 1$/)).toBeInTheDocument();
   });
 
@@ -153,7 +179,7 @@ describe('DataTable bridge server-side pagination', () => {
     const onChangePage = vi.fn();
     const twentyFive = Array.from({ length: 25 }, (_, i) => ({ id: i + 1, name: `Registro ${i + 1}` }));
 
-    const { container, getByText, queryByText } = render(
+    const { getByText, queryByText } = render(
       <DataTable
         columns={columns}
         data={twentyFive}
@@ -163,14 +189,15 @@ describe('DataTable bridge server-side pagination', () => {
       />,
     );
 
-    expect(getByText(/25 registros/)).toBeInTheDocument();
+    expect(pager()).toHaveTextContent('1–20 de 25');
     expect(queryByText('Registro 21')).not.toBeInTheDocument();
 
-    const buttons = container.querySelectorAll('.rdt_Pagination button');
-    await user.click(buttons[buttons.length - 1]);
+    await user.click(pagerButton('Página siguiente'));
 
     // Client mode slices locally and must not call the server callback.
     expect(getByText('Registro 21')).toBeInTheDocument();
+    expect(queryByText('Registro 20')).not.toBeInTheDocument();
+    expect(pager()).toHaveTextContent('21–25 de 25');
     expect(onChangePage).not.toHaveBeenCalled();
   });
 });

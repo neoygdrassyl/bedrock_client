@@ -110,7 +110,8 @@ describe('acta de observaciones review rules', () => {
         const manageReviewHandler = sliceSource(source, 'let manage_review =', 'let save_clock_exp =');
 
         expect(reviewHandler).toContain('then(async SweetAlertResult =>');
-        expect(reviewHandler).toContain('await save_review(reviewValues);');
+        // The main save is awaited through the double-submit guard, which holds the action until it settles.
+        expect(reviewHandler).toContain("await guard.hold('review', save_review(reviewValues));");
         expect(reviewHandler).not.toContain('retrieveItem(currentItem.id);');
         expect(saveReviewHandler).toContain('return manage_review(true);');
         expect(manageReviewHandler).toContain('return RECORD_REVIEW_SERVICE.update(_CHILD.id, formData)');
@@ -222,7 +223,7 @@ describe('acta de observaciones review rules', () => {
         const source = readRecordReviewSource();
         const saveClockHandler = sliceSource(source, 'let save_clock =', 'let save_clock2 =');
 
-        expect(saveClockHandler).toContain('clear_clock(49, version);');
-        expect(saveClockHandler).not.toContain('clear_clock(30, version);');
+        expect(saveClockHandler).toContain('pending.push(clear_clock(49, version));');
+        expect(saveClockHandler).not.toContain('clear_clock(30, version)');
     });
 });

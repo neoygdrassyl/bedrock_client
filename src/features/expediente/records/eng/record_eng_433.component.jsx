@@ -1,5 +1,7 @@
+import { Fragment } from 'react';
 import RECORD_ENG_SERVICE from '../../api/record_eng.service'
 import { swalError, swalLoading, swalSuccess } from '@/shared/utils/swalAdapter';
+import { setCalcValue } from './calcFieldValue';
 
 function RECORD_ENG_STEP_433(props) {
         const { translation, swaMsg, globals, currentItem, currentVersion, currentRecord, currentVersionR, version, requestUpdateRecord } = props;
@@ -842,7 +844,7 @@ function RECORD_ENG_STEP_433(props) {
 
 
         // COMPONENT JSX
-        let ESTRUCTURAL_COMPONENT = (item, id, save) => <div className="row">
+        let ESTRUCTURAL_COMPONENT = (item, id, save, index) => <div className="row" key={`${id}_${index}`}>
             <div className={"col-3 mb-1" + (item.bold ? " fw-bold" : "")}>{item.name}</div>
             <div className="col-3 mb-1">
                 <div className='form-group row'>
@@ -851,7 +853,7 @@ function RECORD_ENG_STEP_433(props) {
                             <select className={"form-control form-control-sm form-select"}
                                 name={id} id={id + "_" + + item.i2}
                                 defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i2) ?? "N3"} onChange={() => save()} >
-                                {OPS_VARILLAS_SELECT.map(o => <option>{o}</option>)}
+                                {OPS_VARILLAS_SELECT.map((o, oIndex) => <option key={oIndex}>{o}</option>)}
                             </select>
                         </div>
 
@@ -861,9 +863,9 @@ function RECORD_ENG_STEP_433(props) {
                             <select className={"form-control form-control-sm form-select"}
                                 name={id} id={id + "_" + + item.i}
                                 defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? item.options[0]} onChange={() => save()} >
-                                {item.options.map(o => <option>{o}</option>)}
+                                {item.options.map((o, oIndex) => <option key={oIndex}>{o}</option>)}
                             </select> :
-                            <input type={item.open ? "number" : "text"} step={item.open ? false : "0.01"}
+                            <input type={item.open ? "number" : "text"} step={item.open ? undefined : "0.01"}
                                 className="form-control form-control-sm" name={id} id={id + "_" + + item.i} disabled={item.open ? false : true}
                                 onBlur={() => save()}
                                 defaultValue={_GET_STEP_TYPE_INDEX(id, 'value', item.i) ?? (item.calc ? item.calc() : '')} />}
@@ -907,7 +909,7 @@ function RECORD_ENG_STEP_433(props) {
 
                     {version === 2 ?
                         <div className="row">
-                            {PASO_10_VERSION_2.map(item => <>
+                            {PASO_10_VERSION_2.map(item => <Fragment key={`s43310_21_${item.i ?? item.name}`}>
                                 <div className="col-4 mb-1">{item.name}</div>
                                 <div className="col-4 mb-1">
                                     <input type="number" step="0.01"
@@ -925,7 +927,7 @@ function RECORD_ENG_STEP_433(props) {
                                 </div>
                                     : <div className="col-4 mb-1"></div>}
 
-                            </>)}
+                            </Fragment>)}
                         </div>
                         : null}
 
@@ -1431,7 +1433,7 @@ function RECORD_ENG_STEP_433(props) {
                             <label className="fw-bold">Requisitos geometricos (Articulo C.21 NSR10)</label>
                         </div>
                     </div>
-                    {ESTRUCTURAL_P1.map(i => ESTRUCTURAL_COMPONENT(i, "estructural_p1", manage_step_ESTRUCTURAL_P1))}
+                    {ESTRUCTURAL_P1.map((i, index) => ESTRUCTURAL_COMPONENT(i, "estructural_p1", manage_step_ESTRUCTURAL_P1, index))}
 
 
                 </> : null}
@@ -1450,7 +1452,7 @@ function RECORD_ENG_STEP_433(props) {
                 </div>
 
                 {_GET_STEP_TYPE_INDEX('use_estructural', 'check', 1) == 1 ? <>
-                    {ESTRUCTURAL_P2.map(i => ESTRUCTURAL_COMPONENT(i, "estructural_p2", manage_step_ESTRUCTURAL_P2))}
+                    {ESTRUCTURAL_P2.map((i, index) => ESTRUCTURAL_COMPONENT(i, "estructural_p2", manage_step_ESTRUCTURAL_P2, index))}
                 </> : null}
 
                 <div className="row border py-2 my-2">
@@ -1467,7 +1469,7 @@ function RECORD_ENG_STEP_433(props) {
                 </div>
 
                 {_GET_STEP_TYPE_INDEX('use_estructural', 'check', 2) == 1 ? <>
-                    {ESTRUCTURAL_P3.map(i => ESTRUCTURAL_COMPONENT(i, "estructural_p3", manage_step_ESTRUCTURAL_P3))}
+                    {ESTRUCTURAL_P3.map((i, index) => ESTRUCTURAL_COMPONENT(i, "estructural_p3", manage_step_ESTRUCTURAL_P3, index))}
                 </> : null}
             </>
         }
@@ -1486,14 +1488,14 @@ function RECORD_ENG_STEP_433(props) {
             ESTRUCTURAL_P1.map(paso => {
                 if (document.getElementById('estructural_p1_c_' + paso.c)) checks.push(document.getElementById('estructural_p1_c_' + paso.c).value)
                 if (paso.i) {
-                    if (paso.calc) document.getElementById('estructural_p1_' + paso.i).value = paso.calc()
+                    if (paso.calc) setCalcValue('estructural_p1_' + paso.i, paso.calc());
                     max_i += 1
                 }
                 if (paso.i2) {
                     max_i += 1
                 }
                 if (paso.i3) {
-                    if (paso.cacl3) document.getElementById('estructural_p1_' + paso.i3).value = paso.cacl3()
+                    if (paso.cacl3) setCalcValue('estructural_p1_' + paso.i3, paso.cacl3());
                     max_i += 1
                 }
             })
@@ -1524,7 +1526,7 @@ function RECORD_ENG_STEP_433(props) {
             ESTRUCTURAL_P2.map(paso => {
                 if (document.getElementById('estructural_p2_c_' + paso.c)) checks.push(document.getElementById('estructural_p2_c_' + paso.c).value)
                 if (paso.i) {
-                    if (paso.calc) document.getElementById('estructural_p2_' + paso.i).value = paso.calc()
+                    if (paso.calc) setCalcValue('estructural_p2_' + paso.i, paso.calc());
                     max_i += 1
                 }
                 if (paso.i2) {
@@ -1557,7 +1559,7 @@ function RECORD_ENG_STEP_433(props) {
             ESTRUCTURAL_P3.map(paso => {
                 if (document.getElementById('estructural_p3_c_' + paso.c)) checks.push(document.getElementById('estructural_p3_c_' + paso.c).value)
                 if (paso.i) {
-                    if (paso.calc) document.getElementById('estructural_p3_' + paso.i).value = paso.calc()
+                    if (paso.calc) setCalcValue('estructural_p3_' + paso.i, paso.calc());
                     max_i += 1
                 }
             })
