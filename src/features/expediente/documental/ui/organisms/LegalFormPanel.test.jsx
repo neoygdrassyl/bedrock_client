@@ -93,7 +93,7 @@ describe('LegalFormPanel', () => {
     expect(within(detail).getByText('Documento requerido')).toBeInTheDocument();
     expect(within(detail).getByTestId('ldf-requirement-context')).toHaveTextContent('Requisito general de la solicitud.');
     expect(within(detail).getByTestId('ldf-requirement-controls')).toHaveTextContent('Al recibirlo se verifican 3 controles de Central.');
-    fireEvent.click(within(detail).getByRole('button', { name: 'Cerrar' }));
+    fireEvent.click(within(detail).getAllByRole('button', { name: 'Cerrar' })[0]);
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     fireEvent.click(screen.getByRole('button', { name: /^511 Formulario único: Elección de VR inválida/ }));
     const sheet = await screen.findByRole('dialog');
