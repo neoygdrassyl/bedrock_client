@@ -69,6 +69,8 @@ export function RadicateDialog({ open, onOpenChange, request, approvePayment = f
   const succeededRef = useRef(false);
   const pendingFocusRef = useRef(null);
   const entryNote = initialEntryNote(request);
+  // Requests received with their VR (assigned when the citizen sent them) keep it.
+  const receivedVr = request?.vr || null;
 
   // Focus the first invalid field once the inputs are enabled again (after saving).
   const focusField = useCallback((field) => {
@@ -102,13 +104,13 @@ export function RadicateDialog({ open, onOpenChange, request, approvePayment = f
     if (!open) return;
     openingRef.current += 1;
     succeededRef.current = false;
-    setValues(EMPTY_VALUES());
+    setValues({ ...EMPTY_VALUES(), vr: receivedVr || '' });
     setErrors({});
     setFormError('');
     setSaving(false);
     compute('funIdPublic');
-    compute('vr');
-  }, [open, compute]);
+    if (!receivedVr) compute('vr');
+  }, [open, compute, receivedVr]);
 
   function update(field, value) {
     setValues((current) => ({ ...current, [field]: field === 'vr' ? value.toUpperCase() : value }));
@@ -206,8 +208,13 @@ export function RadicateDialog({ open, onOpenChange, request, approvePayment = f
               label="Radicado VR"
               required
               error={errors.vr?.message}
-              helperText={errors.vr ? undefined : 'Siguiente radicado de Ventanilla, con formato VR{AA}-NNNN.'}
+              helperText={errors.vr ? undefined : receivedVr
+                ? 'Asignado por Ventanilla cuando el ciudadano envió la solicitud; se conserva al radicar.'
+                : 'Siguiente radicado de Ventanilla, con formato VR{AA}-NNNN.'}
             >
+              {receivedVr ? (
+                <DovelaInput id={`${formId}-vr`} ref={vrRef} value={receivedVr} readOnly className="font-mono" />
+              ) : (
               <ConsecutiveInput
                 id={`${formId}-vr`}
                 inputRef={vrRef}
@@ -219,8 +226,9 @@ export function RadicateDialog({ open, onOpenChange, request, approvePayment = f
                 required
                 disabled={saving}
               />
+              )}
             </DovelaField>
-            <FieldAction error={errors.vr} disabled={computing.vr || saving} onClick={() => compute('vr')} />
+            {receivedVr ? null : <FieldAction error={errors.vr} disabled={computing.vr || saving} onClick={() => compute('vr')} />}
           </div>
 
           <DovelaField label="Fecha de radicación" required error={errors.date?.message}>
