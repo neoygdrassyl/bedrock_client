@@ -9,8 +9,8 @@ import { DetailCard, EmptyNote, Fact, FactGrid } from './DetailPrimitives';
 const MAX_INVOICE_BYTES = 10 * 1024 * 1024;
 const STATUS_LABELS = {
   awaiting_payment: 'En espera de pago',
-  receipt_submitted: 'Recibo en revisión',
-  receipt_rejected: 'Recibo rechazado',
+  receipt_submitted: 'Comprobante en revisión',
+  receipt_rejected: 'Comprobante rechazado',
   approved: 'Pago aprobado',
 };
 const STATUS_TONE = {
@@ -43,7 +43,7 @@ export function LiquidationSection({ item, liquidation, loaded, error, onRetry, 
     requestId: item.id,
     liquidationKind: kind,
     name: kind === 'invoice' ? liquidation.invoice?.fileName : liquidation.receipt?.fileName,
-    label: kind === 'invoice' ? 'Preliquidación' : 'Recibo de pago',
+    label: kind === 'invoice' ? 'Preliquidación' : 'Comprobante de pago',
     mimeType: kind === 'invoice' ? liquidation.invoice?.mimeType : null,
     byteSize: kind === 'invoice' ? liquidation.invoice?.byteSize : liquidation.receipt?.byteSize,
   });
@@ -84,8 +84,8 @@ export function LiquidationSection({ item, liquidation, loaded, error, onRetry, 
 
       {!liquidation ? (
         <EmptyNote>
-          Esta solicitud aún no tiene preliquidación. Cargue el PDF de la primera factura: la ciudadanía recibirá un aviso,
-          verá el estado «En espera de pago» y podrá descargarla y enviar el recibo.
+          Esta solicitud aún no tiene preliquidación. Cargue el PDF de la preliquidación: la ciudadanía recibirá un aviso,
+          verá el estado «En espera de pago» y podrá descargarla y enviar el comprobante de pago.
         </EmptyNote>
       ) : (
         <>
@@ -97,7 +97,7 @@ export function LiquidationSection({ item, liquidation, loaded, error, onRetry, 
               <span className="ml-2 text-xs text-muted-foreground">{formatBytes(liquidation.invoice?.byteSize)}</span>
             </Fact>
             <Fact label="Emitida" value={formatDateTime(liquidation.issuedAt)} />
-            <Fact label="Recibo de pago">
+            <Fact label="Comprobante de pago">
               {liquidation.receipt ? (
                 <>
                   <button type="button" onClick={() => view('receipt')} className="inline-flex cursor-pointer items-center gap-1.5 bg-transparent p-0 text-left text-sm font-medium text-[hsl(var(--primary))] underline-offset-2 hover:underline">
@@ -107,17 +107,17 @@ export function LiquidationSection({ item, liquidation, loaded, error, onRetry, 
                 </>
               ) : null}
             </Fact>
-            <Fact label="Recibo enviado" value={formatDateTime(liquidation.receipt?.submittedAt)} />
+            <Fact label="Comprobante enviado" value={formatDateTime(liquidation.receipt?.submittedAt)} />
             {liquidation.receipt?.rejectionReason ? (
-              <Fact label={`Recibo rechazado${liquidation.receipt.rejectedAt ? ` el ${formatDateTime(liquidation.receipt.rejectedAt)}` : ''}`} value={liquidation.receipt.rejectionReason} wide />
+              <Fact label={`Comprobante rechazado${liquidation.receipt.rejectedAt ? ` el ${formatDateTime(liquidation.receipt.rejectedAt)}` : ''}`} value={liquidation.receipt.rejectionReason} wide />
             ) : null}
             {liquidation.approvedAt ? <Fact label="Pago aprobado" value={formatDateTime(liquidation.approvedAt)} /> : null}
           </FactGrid>
 
           {pending && status === 'receipt_submitted' ? (
             <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/50 px-[0.875rem] py-2.5 text-xs leading-5 text-muted-foreground">
-              <span>Revise el recibo. Si es correcto, apruebe el pago y radique desde el pie; si no, rechácelo con un motivo.</span>
-              <DovelaButton tone="neutral" onClick={onRejectReceipt}>Rechazar recibo</DovelaButton>
+              <span>Revise el comprobante. Si es correcto, apruebe el pago y radique desde el pie; si no, rechácelo con un motivo.</span>
+              <DovelaButton tone="neutral" onClick={onRejectReceipt}>Rechazar comprobante</DovelaButton>
             </div>
           ) : null}
         </>

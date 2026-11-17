@@ -29,8 +29,8 @@ describe('inboxModel', () => {
   it('builds one row status from the request and its liquidation stage', () => {
     expect(rowStatus('pending', null)).toMatchObject({ key: 'pending', label: 'Pendiente', tone: 'warning' });
     expect(rowStatus('pending', { liquidation: { status: 'awaiting_payment' } })).toMatchObject({ label: 'En espera de pago', tone: 'info' });
-    expect(rowStatus('pending', 'receipt_submitted')).toMatchObject({ label: 'Recibo en revisión', tone: 'warning' });
-    expect(rowStatus('pending', 'receipt_rejected')).toMatchObject({ label: 'Recibo rechazado', tone: 'danger' });
+    expect(rowStatus('pending', 'receipt_submitted')).toMatchObject({ label: 'Comprobante en revisión', tone: 'warning' });
+    expect(rowStatus('pending', 'receipt_rejected')).toMatchObject({ label: 'Comprobante rechazado', tone: 'danger' });
     // A decided request shows its own outcome whatever the liquidation says.
     expect(rowStatus('radicated', 'approved')).toMatchObject({ label: 'Radicada', tone: 'success' });
     expect(rowStatus('rejected', 'awaiting_payment')).toMatchObject({ label: 'Rechazada', tone: 'danger' });

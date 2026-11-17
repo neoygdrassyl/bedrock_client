@@ -96,7 +96,7 @@ describe('InboxTable', () => {
     renderWithTooltips(<InboxTable items={ITEMS} now={NOW} onOpen={() => {}} label="Solicitudes" />);
     const [, first, second, third, fourth] = screen.getAllByRole('row');
     expect(within(first).getByText('Pendiente')).toBeInTheDocument();
-    expect(within(second).getByText('Recibo en revisión')).toBeInTheDocument();
+    expect(within(second).getByText('Comprobante en revisión')).toBeInTheDocument();
     expect(within(third).getByText('En espera de pago')).toBeInTheDocument();
     expect(within(fourth).getByText('Radicada')).toBeInTheDocument();
     expect(within(fourth).getByText('VR-2026-0042')).toBeInTheDocument();
@@ -153,7 +153,7 @@ describe('InboxCards', () => {
     renderWithTooltips(<InboxCards items={ITEMS} now={NOW} onOpen={onOpen} label="Solicitudes" />);
     const cards = within(screen.getByRole('list', { name: 'Solicitudes' })).getAllByRole('listitem');
     expect(cards).toHaveLength(4);
-    expect(within(cards[1]).getByText('Recibo en revisión')).toBeInTheDocument();
+    expect(within(cards[1]).getByText('Comprobante en revisión')).toBeInTheDocument();
     expect(within(cards[0]).getByText('2/4')).toBeInTheDocument();
 
     fireEvent.click(within(cards[0]).getByText('Ana Gómez'));
@@ -171,6 +171,6 @@ describe('StatusBadge', () => {
     rerender(<StatusBadge status="rejected" size="md" />);
     expect(screen.getByText('Rechazada')).toBeInTheDocument();
     rerender(<StatusBadge status="pending" liquidation="receipt_rejected" />);
-    expect(screen.getByText('Recibo rechazado')).toBeInTheDocument();
+    expect(screen.getByText('Comprobante rechazado')).toBeInTheDocument();
   });
 });

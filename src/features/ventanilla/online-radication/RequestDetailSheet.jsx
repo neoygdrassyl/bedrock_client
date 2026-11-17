@@ -91,8 +91,8 @@ export function RequestDetailSheet({ open, onOpenChange, summary, now, onChanged
 
   function handleReceiptRejected(updated) {
     liquidationState.replace(updated);
-    setLiveMessage('Recibo de pago rechazado.');
-    toast.success('Recibo rechazado', { description: 'La ciudadanía verá el motivo en el portal.' });
+    setLiveMessage('Comprobante de pago rechazado.');
+    toast.success('Comprobante rechazado', { description: 'La ciudadanía verá el motivo en el portal.' });
     onChanged?.();
   }
 
