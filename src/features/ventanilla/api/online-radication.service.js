@@ -124,9 +124,10 @@ export function normalizeCounts(counts) {
   const pending = toCount(counts.pending);
   const radicated = toCount(counts.radicated);
   const rejected = toCount(counts.rejected);
+  const archived = toCount(counts.archived);
   // Requests (not documents) with `update` entries waiting; they overlap the other buckets.
   const pendingEntries = toCount(counts.pendingEntries);
-  return { pending, radicated, rejected, pendingEntries, all: pending + radicated + rejected };
+  return { pending, radicated, rejected, archived, pendingEntries, all: pending + radicated + rejected + archived };
 }
 
 function integerAtLeast(value, min, message) {

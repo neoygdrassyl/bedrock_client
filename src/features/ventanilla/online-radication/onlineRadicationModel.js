@@ -13,6 +13,7 @@ export const STATUS_FILTERS = [
   { value: 'with_entries', label: 'Con entradas nuevas', countKey: 'pendingEntries' },
   { value: 'radicated', label: 'Radicadas', countKey: 'radicated' },
   { value: 'rejected', label: 'Rechazadas', countKey: 'rejected' },
+  { value: 'archived', label: 'Archivadas', countKey: 'archived' },
   { value: 'all', label: 'Todas', countKey: 'all' },
 ];
 
@@ -20,6 +21,7 @@ export const STATUS_META = {
   pending: { label: 'Pendiente', tone: 'warning' },
   radicated: { label: 'Radicada', tone: 'success' },
   rejected: { label: 'Rechazada', tone: 'danger' },
+  archived: { label: 'Archivada', tone: 'neutral' },
 };
 
 export const ORDER_HINTS = {
@@ -27,6 +29,7 @@ export const ORDER_HINTS = {
   with_entries: 'Solicitudes con entradas de documentos por recibir o rechazar.',
   radicated: 'Las radicadas más recientes primero.',
   rejected: 'Las rechazadas más recientes primero.',
+  archived: 'Preradicaciones vencidas sin radicar, las más recientes primero.',
   all: 'Las recibidas más recientes primero.',
 };
 
@@ -46,6 +49,10 @@ export const EMPTY_STATES = {
   rejected: {
     title: 'No hay solicitudes rechazadas',
     description: 'Las solicitudes rechazadas se conservan aquí con el motivo registrado.',
+  },
+  archived: {
+    title: 'No hay solicitudes archivadas',
+    description: 'El portal archiva aquí las preradicaciones que vencieron (15 días hábiles) sin volverse expediente. Su VR queda registrado.',
   },
   all: {
     title: 'Aún no han llegado solicitudes del portal',

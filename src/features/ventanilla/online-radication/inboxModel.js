@@ -48,6 +48,7 @@ const REQUEST_HINTS = {
   pending: 'Solicitud por revisar.',
   radicated: 'Solicitud radicada.',
   rejected: 'Solicitud rechazada.',
+  archived: 'Preradicación vencida sin radicar; el VR queda registrado.',
 };
 
 /**
