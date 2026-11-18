@@ -19,13 +19,14 @@ import { buildDocumentaryCommand } from '@/features/expediente/api/documentaryRe
 import { DetailFact } from '../molecules/DetailSection';
 import { CheckboxField, FormField } from '../molecules/FormField';
 import { DOCUMENTAL_SCOPE } from '../documentalScope';
-import { funFactLabel } from '../../funFactLabels';
+import { REVISION_FACT_FIELDS, funFactLabel } from '../../funFactLabels';
 import { RequirementAdditions } from './RequirementAdditions';
 
 export const LEGACY_VALUE = 'legacy';
 const REFRESH_REASON = 'Actualización de requisitos con los datos del expediente';
 
-// Labels of the FUN 1 fields that drive the requirement evaluation.
+// Labels of the expediente fields that drive the requirement evaluation: the FUN 1 columns and the
+// Formato de Revisión facts declared by the citizen in the portal (REVISION_FACT_FIELDS).
 export const SOURCE_FIELD_LABELS = {
   tipo: 'Tipo de actuación',
   tramite: 'Trámite',
@@ -36,7 +37,14 @@ export const SOURCE_FIELD_LABELS = {
   area: 'Área construida',
   vivienda: 'Tipo de vivienda',
   cultural: 'Bien de interés cultural',
+  propiedad_horizontal: 'Propiedad horizontal',
+  titulo_e: 'Título E de la NSR-10',
+  supervision_tecnica: 'Supervisión técnica independiente',
+  reforzamiento_riesgo: 'Reforzamiento por riesgo u orden',
+  cesion_anticipada: 'Equipamiento en cesión anticipada',
+  autoridad_distinta: 'Licencia anterior de otra autoridad',
 };
+const REVISION_FIELDS = new Set(REVISION_FACT_FIELDS);
 
 const LOCKED_REASONS = {
   EVIDENCE_RECEIVED: 'La configuración quedó fijada porque el expediente ya tiene evidencia recibida. Ya no puede cambiarse.',
@@ -82,8 +90,27 @@ function Notice({ role = 'status', variant = 'neutral', icon: Icon = Info, child
   );
 }
 
+function SourceFacts({ fields }) {
+  return (
+    <dl className="m-0 grid gap-x-[1.25rem] gap-y-[0.75rem] sm:grid-cols-2 xl:grid-cols-3">
+      {fields.map((item) => (
+        <DetailFact key={item.field} label={SOURCE_FIELD_LABELS[item.field] || item.field}>
+          {funFactLabel(item.field, item.value) ?? <span className="font-normal text-slate-600">Sin dato</span>}
+        </DetailFact>
+      ))}
+    </dl>
+  );
+}
+
+/**
+ * Read-only facts of the expediente used by the evaluation. The Formato de Revisión facts come from the
+ * portal (not from the FUN), so they are listed apart and are never offered for correction here.
+ */
 export function ReferencedExpedienteData({ source, onFixFun }) {
   if (!source) return null;
+  const fields = source.fields || [];
+  const funFields = fields.filter((item) => !REVISION_FIELDS.has(item.field));
+  const revisionFields = fields.filter((item) => REVISION_FIELDS.has(item.field));
   return (
     <section aria-label="Datos del expediente usados en la evaluación" className="min-w-0 rounded-lg border bg-[hsl(var(--card))]">
       <header className="border-b bg-muted/30 px-[1rem] py-2.5">
@@ -95,14 +122,12 @@ export function ReferencedExpedienteData({ source, onFixFun }) {
         </p>
       </header>
       <div className="flex flex-col gap-[0.75rem] p-[1rem]">
-        {(source.fields || []).length ? (
-          <dl className="m-0 grid gap-x-[1.25rem] gap-y-[0.75rem] sm:grid-cols-2 xl:grid-cols-3">
-            {source.fields.map((item) => (
-              <DetailFact key={item.field} label={SOURCE_FIELD_LABELS[item.field] || item.field}>
-                {funFactLabel(item.field, item.value) ?? <span className="font-normal text-slate-600">Sin dato</span>}
-              </DetailFact>
-            ))}
-          </dl>
+        {funFields.length ? <SourceFacts fields={funFields} /> : null}
+        {revisionFields.length ? (
+          <div className="flex min-w-0 flex-col gap-2">
+            <h5 className="mb-0 text-xs font-semibold leading-4 text-foreground">Formato de Revisión</h5>
+            <SourceFacts fields={revisionFields} />
+          </div>
         ) : null}
         {(source.diagnostics || []).length ? (
           <ul className="mb-0 list-disc space-y-1 pl-5 text-xs text-[hsl(var(--operational-warning-text))]">
@@ -110,9 +135,12 @@ export function ReferencedExpedienteData({ source, onFixFun }) {
           </ul>
         ) : null}
         <div className="flex flex-wrap items-center gap-x-[1rem] gap-y-2">
-          <p className="mb-0 min-w-0 flex-1 basis-[18rem] text-xs leading-4 text-slate-600">
-            Estos datos vienen del FUN y no se editan aquí. Si alguno es incorrecto, corríjalo en «Actualizar» y luego use «Actualizar requisitos».
-          </p>
+          <div className="flex min-w-0 flex-1 basis-[18rem] flex-col gap-1 text-xs leading-4 text-slate-600">
+            <p className="mb-0">
+              {revisionFields.length ? 'Los datos del FUN no se editan aquí.' : 'Estos datos vienen del FUN y no se editan aquí.'} Si alguno es incorrecto, corríjalo en «Actualizar» y luego use «Actualizar requisitos».
+            </p>
+            {revisionFields.length ? <p className="mb-0">Los datos del Formato de Revisión los declaró el ciudadano en el portal.</p> : null}
+          </div>
           {onFixFun ? <Button type="button" variant="outline" size="sm" onClick={onFixFun}>Corregir datos del FUN</Button> : null}
         </div>
       </div>

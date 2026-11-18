@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { funFactLabel } from './funFactLabels';
+import { REVISION_FACT_FIELDS, funFactLabel } from './funFactLabels';
 
 describe('funFactLabel', () => {
   it('maps single codes to the FUN 1 option names without the letter prefix', () => {
@@ -18,6 +18,17 @@ describe('funFactLabel', () => {
   it('keeps the G.1 / G.2 demolition codes of m_lic apart', () => {
     expect(funFactLabel('m_lic', 'G')).toBe('Demolición: Total');
     expect(funFactLabel('m_lic', 'g')).toBe('Demolición Parcial');
+  });
+
+  it('names the answers of the Formato de Revisión facts as Sí / No', () => {
+    expect(REVISION_FACT_FIELDS).toEqual(['propiedad_horizontal', 'titulo_e', 'supervision_tecnica', 'reforzamiento_riesgo', 'cesion_anticipada', 'autoridad_distinta']);
+    REVISION_FACT_FIELDS.forEach((field) => {
+      expect(funFactLabel(field, 'A')).toBe('Sí');
+      expect(funFactLabel(field, 'B')).toBe('No');
+      expect(funFactLabel(field, null)).toBeNull();
+    });
+    // A value that is neither A nor B is shown as stored, never guessed.
+    expect(funFactLabel('titulo_e', 'C')).toBe('C');
   });
 
   it('returns null for empty values and the stored text for unknown codes or fields', () => {

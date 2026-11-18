@@ -87,11 +87,36 @@ it('shows the referenced expediente data read-only and refreshes from it',async(
   expect(within(panel).getByText('Formulario FUN 1 · versión 3 · registro 40')).toBeInTheDocument();
   expect(within(panel).getByText('Tipo de actuación')).toBeInTheDocument();expect(within(panel).getByText('Licencia de Construcción')).toBeInTheDocument();
   expect(within(panel).getByText('Sin dato')).toBeInTheDocument();
-  expect(within(panel).getByText(/no se editan aquí/)).toBeInTheDocument();
+  expect(within(panel).getByText('Estos datos vienen del FUN y no se editan aquí. Si alguno es incorrecto, corríjalo en «Actualizar» y luego use «Actualizar requisitos».')).toBeInTheDocument();
+  // Without revision facts in the source the panel is the FUN one, unchanged.
+  expect(within(panel).queryByText(/Formato de Revisión/)).not.toBeInTheDocument();
   expect(within(panel).queryByRole('button',{name:'Corregir datos del FUN'})).not.toBeInTheDocument();
   expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();expect(within(panel).queryByRole('checkbox')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button',{name:'Actualizar requisitos'}));
   await waitFor(()=>expect(api.refreshDocumentaryRequirements).toHaveBeenCalledWith(1,{expectedInputRevision:2,idempotencyKey:expect.any(String),reason:expect.any(String)}));
+});
+
+it('lists the Formato de Revisión facts declared in the portal apart from the FUN, read-only',async()=>{
+  // Shape of loadRevisionFacts (backend): alias as field, A = Sí, B = No, null when the portal did not ask it.
+  const revision=[{field:'propiedad_horizontal',sourceKey:'propiedadHorizontalAny',value:'A',tokens:['A']},{field:'titulo_e',sourceKey:'tituloEAny',value:'B',tokens:['B']},{field:'supervision_tecnica',sourceKey:'supervisionTecnicaAny',value:null,tokens:[]},{field:'autoridad_distinta',sourceKey:'autoridadDistintaAny',value:'A',tokens:['A']}];
+  api.getDocumentaryGovernance.mockResolvedValue({...governance({selected:3}),source:{...source,fields:[...source.fields,...revision]}});
+  render(<DocumentaryGovernance origin={canonicalOrigin} canManage onFixFun={vi.fn()}/>);
+  const panel=await screen.findByRole('region',{name:'Datos del expediente usados en la evaluación'});
+  const fact=label=>within(panel).getByText(label,{selector:'dt'}).nextElementSibling;
+  expect(fact('Tipo de actuación')).toHaveTextContent('Licencia de Construcción');
+  expect(fact('Propiedad horizontal')).toHaveTextContent(/^Sí$/);
+  expect(fact('Título E de la NSR-10')).toHaveTextContent(/^No$/);
+  expect(fact('Supervisión técnica independiente')).toHaveTextContent(/^Sin dato$/);
+  expect(fact('Licencia anterior de otra autoridad')).toHaveTextContent(/^Sí$/);
+  // Listed under their own heading, apart from the FUN fields.
+  const group=within(panel).getByRole('heading',{name:'Formato de Revisión'}).nextElementSibling;
+  expect(within(group).getAllByRole('term').map(term=>term.textContent)).toEqual(['Propiedad horizontal','Título E de la NSR-10','Supervisión técnica independiente','Licencia anterior de otra autoridad']);
+  expect(within(panel).getByText('Los datos del Formato de Revisión los declaró el ciudadano en el portal.')).toBeInTheDocument();
+  expect(within(panel).getByText(/^Los datos del FUN no se editan aquí\./)).toBeInTheDocument();
+  expect(within(panel).queryByText(/Estos datos vienen del FUN/)).not.toBeInTheDocument();
+  // Backoffice does not edit the declared facts: the only action is the FUN correction.
+  expect(within(panel).getAllByRole('button').map(button=>button.textContent)).toEqual(['Corregir datos del FUN']);
+  expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();expect(within(panel).queryByRole('radio')).not.toBeInTheDocument();expect(within(panel).queryByRole('checkbox')).not.toBeInTheDocument();
 });
 
 it('lets users without the manage permission see the selection but not change it',async()=>{
