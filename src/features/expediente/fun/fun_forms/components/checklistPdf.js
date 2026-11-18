@@ -126,7 +126,6 @@ export async function buildChecklistPdf({ currentItem, currentVersion, review, c
             item_533: "",
             item_534: "",
             item_535: "",
-            item_536: "",
             docs: "",
         }
         if (_CHILD) {
@@ -138,11 +137,18 @@ export async function buildChecklistPdf({ currentItem, currentVersion, review, c
                 _CHILD_VARS.item_533 = _CHILD[_CURRENT_VERSION].role ? _CHILD[_CURRENT_VERSION].role : " ";
                 _CHILD_VARS.item_534 = _CHILD[_CURRENT_VERSION].number ? _CHILD[_CURRENT_VERSION].number : " ";
                 _CHILD_VARS.item_535 = _CHILD[_CURRENT_VERSION].email ? _CHILD[_CURRENT_VERSION].email : " ";
-                _CHILD_VARS.item_536 = _CHILD[_CURRENT_VERSION].address ? _CHILD[_CURRENT_VERSION].address : " ";
                 _CHILD_VARS.docs = _CHILD[_CURRENT_VERSION].docs ? _CHILD[_CURRENT_VERSION].docs : " ";
             }
         }
         return _CHILD_VARS;
+    }
+    // «Dirección de Inmueble» is the property address (fun_2.direccion), never the correspondence address of
+    // the 5.3 responsible (fun_53.address). fun_2 is a hasOne association but may arrive as an array.
+    let _GET_PROPERTY_ADDRESS = () => {
+        const child = currentItem.fun_2;
+        const item = Array.isArray(child) ? child.find((entry) => entry && entry.id) : child;
+        const value = item && typeof item.direccion === 'string' ? item.direccion.trim() : '';
+        return value || ' ';
     }
     let _GET_CHILD_C = () => {
         var _CHILD = currentItem.fun_cs;
@@ -379,12 +385,12 @@ export async function buildChecklistPdf({ currentItem, currentVersion, review, c
     _child = _GET_CHILD_53();
     if (m_2022) {
         page.moveTo(80, 352); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
-        page.moveTo(370, 352); page.drawText(_child.item_536, { size: 9 });
+        page.moveTo(370, 352); page.drawText(_GET_PROPERTY_ADDRESS(), { size: 9 });
         page.moveTo(100, 340); page.drawText(_child.item_534, { size: 9 });
         page.moveTo(350, 340); page.drawText(_child.item_535, { size: 9 });
     } else {
         page.moveTo(90, 415); page.drawText(_child.item_5311 + ' ' + _child.item_5312, { size: 9 });
-        page.moveTo(400, 415); page.drawText(_child.item_536, { size: 9 });
+        page.moveTo(400, 415); page.drawText(_GET_PROPERTY_ADDRESS(), { size: 9 });
         page.moveTo(110, 400); page.drawText(_child.item_534, { size: 9 });
         page.moveTo(400, 400); page.drawText(_child.item_535, { size: 9 });
     }
