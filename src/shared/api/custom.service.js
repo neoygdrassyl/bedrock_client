@@ -97,7 +97,7 @@ class CustomlDataService {
     return http.get(`/consult/consult_OutDictionary`);
   }
   loadDictionary_oc() {
-    return http.get(`/consult/consult_OcDictionary`);
+    return http.get(`/consult/consult_OcDictionary`, { params: { fields: "lite" } });
   }
 
 }
