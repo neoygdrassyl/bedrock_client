@@ -5,15 +5,14 @@ import { FunPage } from '../pages/fun.page';
 /**
  * E2E: RECORD_ENG (Informe Estructural) — create + read + update.
  *
- * Before this spec, record_eng had zero e2e coverage. record_arc and
- * record_ph already have e2e guards (subdivision-qgis-approve-reject,
- * ph-report / ph-report-workspace), so this fills the remaining gap for the
- * "one representative record type" item of Fase 3.
+ * Before this spec, record_eng had zero e2e coverage. record_ph already
+ * has e2e guards (ph-report / ph-report-workspace), so this fills the gap
+ * for the "one representative record type" item of Fase 3.
  *
  * Camino: /licencias -> buscar expediente -> "Inf. Estructural" (abre
- * workspace en pestaña nueva, mismo patrón que subdivision-qgis-approve-reject
- * y ph-report-workspace) -> generar informe en blanco (create) -> el panel
- * recién creado se lee de vuelta (read) -> seleccionar categoría (update).
+ * workspace en pestaña nueva, mismo patrón que ph-report-workspace) ->
+ * generar informe en blanco (create) -> el panel recién creado se lee de
+ * vuelta (read) -> seleccionar categoría (update).
  *
  * Usa el expediente id_public '68001-1-26-0002' (Propietario Expedicion),
  * distinto del usado por el flujo de subdivisión (...-0003) y el de P.H.
@@ -99,8 +98,7 @@ test.describe('E2E: RECORD_ENG — Informe Estructural', () => {
     const workspacePage = await workspacePromise;
 
     // page.route() doesn't propagate to windows opened via window.open —
-    // reinstall the shared mocks + this spec's record_eng mocks there too
-    // (same requirement documented in subdivision-qgis-approve-reject).
+    // reinstall the shared mocks + this spec's record_eng mocks there too.
     await installE2EMocks(workspacePage);
     await installRecordEngMocks(workspacePage);
 

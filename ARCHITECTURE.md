@@ -23,17 +23,15 @@ flowchart LR
   FO["FrontOffice<br/>portal ciudadano"]
   CEN["Dovela Central<br/>catálogo documental"]
   WEB["Sitio web público<br/>(otra app)"]
-  QGIS["Plugin QGIS"]
 
   SPA -->|"HTTP /api + JWT"| API
   API --> DB
   API -->|"C1: release activo"| CEN
   FO -->|"C3/C4/C7/C8/C9<br/>token de integración"| API
   WEB -->|"endpoints públicos<br/>(checkstatus, consult, citas)"| API
-  QGIS -->|"C6: subdivision-qgis"| API
 ```
 
-El frontend sólo habla con su backend. Todo lo demás (Central, FrontOffice, sitio público, QGIS) se integra en el backend.
+El frontend sólo habla con su backend. Todo lo demás (Central, FrontOffice, sitio público) se integra en el backend.
 
 ---
 

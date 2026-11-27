@@ -85,7 +85,7 @@ const E2E_FUN_RECORDS = [
     rules: '0;0',
     clock_payment: '2026-03-14',
     owner: 'Propietario Subdivision',
-    description: 'Subdivision con envio QGIS',
+    description: 'Subdivision',
   },
 ];
 
