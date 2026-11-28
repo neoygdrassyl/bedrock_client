@@ -2,7 +2,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
 import { Button } from '@/shared/ui/button';
 import { TabPane } from '@/shared/ui/tab-pane';
 import { Card, CardContent } from '@/shared/ui/card';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import SERVICE_CUSTOM from '../../shared/api/custom.service';
 import {
@@ -112,29 +112,29 @@ export default function DICTIONARY(props) {
         var _array = _item.split(',');
         var _COMPONENT = [];
 
-        _COMPONENT.push(<>{_array[0] > 0
+        _COMPONENT.push(<Fragment key={0}>{_array[0] > 0
             ?
             <VIZUALIZER id={_array[0]} apipath={'/files/'}
                 icon={'IdCard'} color={'DeepSkyBlue'} />
-            : ""}</>)
+            : ""}</Fragment>)
 
-        _COMPONENT.push(<>{_array[1] > 0
+        _COMPONENT.push(<Fragment key={1}>{_array[1] > 0
             ?
             <VIZUALIZER id={_array[1]} apipath={'/files/'}
                 icon={'BadgeCheck'} color={'DarkOrchid'} />
-            : ""}</>)
+            : ""}</Fragment>)
 
-        _COMPONENT.push(<>{_array[2] > 0
+        _COMPONENT.push(<Fragment key={2}>{_array[2] > 0
             ?
             <VIZUALIZER id={_array[2]} apipath={'/files/'}
                 icon={'BookOpen'} color={'GoldenRod'} />
-            : ""}</>)
+            : ""}</Fragment>)
 
-        _COMPONENT.push(<>{_array[3] > 0
+        _COMPONENT.push(<Fragment key={3}>{_array[3] > 0
             ?
             <VIZUALIZER id={_array[3]} apipath={'/files/'}
                 icon={'FileText'} color={'LimeGreen'} />
-            : ""}</>)
+            : ""}</Fragment>)
 
         return <>{_COMPONENT}</>
     }
@@ -278,7 +278,7 @@ export default function DICTIONARY(props) {
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {filterOptions.map((filter) => (
                                 <li key={filter.label}>
-                                    <span className="dropdown-item" href=""
+                                    <span className="dropdown-item" role="button"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setProccessSelected(filter.value);
@@ -352,10 +352,10 @@ export default function DICTIONARY(props) {
         return <div className='m-4 p-2'>
             <div className='row'>
                 {LIST.map(el => {
-                    if (el.key != '0') return <>
+                    if (el.key != '0') return <Fragment key={el.key}>
                         <div className='col-2 text-end border'><h5 className='lead'>{el.key}</h5></div>
                         <div className='col-4 border'><h5 className='lead fw-bold'>{el.element}</h5></div>
-                    </>
+                    </Fragment>
                 })}
             </div>
         </div>
@@ -382,10 +382,10 @@ export default function DICTIONARY(props) {
         return <div className='m-4 p-2'>
             <div className='row'>
                 {LIST.map(el => {
-                    if (el.key != '0') return <>
+                    if (el.key != '0') return <Fragment key={el.key}>
                         <div className='col-2 text-end border'><h5 className=''>{el.key}</h5></div>
                         <div className='col-4 border'><h5 className=''>{el.element}</h5></div>
-                    </>
+                    </Fragment>
                 })}
             </div>
         </div>
@@ -511,14 +511,13 @@ export default function DICTIONARY(props) {
         }
         return <>
             <div className="d-flex flex-wrap m-3">
-                {LIST.filter((arr, i) => Math.ceil((i + 1) / _limit) == _page).map(it => {
-                    return <>
-                        <div className={it.id_related ? '' : ''}>
-                            <div className="input-group-text">
-                                {_COMPONENT_POP(it)}
-                            </div>
+                {LIST.filter((arr, i) => Math.ceil((i + 1) / _limit) == _page).map((it, i) => {
+                    // The search field is not unique (e.g. repeated CUBs), so the position disambiguates.
+                    return <div key={`${it[_key] ?? ''}-${i}`} className={it.id_related ? '' : ''}>
+                        <div className="input-group-text">
+                            {_COMPONENT_POP(it)}
                         </div>
-                    </>
+                    </div>
                 })}
             </div>
 
