@@ -47,7 +47,7 @@ export const HISTORY_PQRS_INFO = (props) => {
                 selector: row => row.type,
                 sortable: true,
                 filterable: true,
-                cell: row => <h6 className="pt-3">{row.status === 0 ? <h6 className='text-danger'>Activa</h6> : row.status === 1 ? <h6 className='text-success'>Cerrada</h6> : ''}</h6>
+                cell: row => <h6 className="pt-3">{row.status === 0 ? <span className='text-danger'>Activa</span> : row.status === 1 ? <span className='text-success'>Cerrada</span> : ''}</h6>
             },
             {
                 name: <h5>Tipo de peticion</h5>,
