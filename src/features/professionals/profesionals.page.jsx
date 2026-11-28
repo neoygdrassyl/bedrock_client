@@ -250,7 +250,7 @@ export default function PROFESIONALS(props) {
         paginationRowsPerPageOptions={[20, 50, 100]}
         paginationComponentOptions={{ rowsPerPageText: 'Publicaciones por Pagina:', rangeSeparatorText: 'de' }}
 
-        noDataComponent="NO HAY PROGESIONALES"
+        noDataComponent="NO HAY PROFESIONALES"
         striped="true"
         columns={columns}
         data={data}
