@@ -123,20 +123,20 @@ function OSHA({ translation, swaMsg }) {
             var _COMPONENT = [];
             console.log(_DOCS_INFO.length)
             for (const i in _DOCS_INFO) {
-                _COMPONENT.push(<>
-                    <tr>
+                _COMPONENT.push(
+                    <tr key={i}>
                         <td><label className="">{_DOCS_INFO[i].path}</label></td>
                         <td><label className="fw-bold">{_DOCS_INFO[i].name}</label></td>
                         <td><a href={HOMEPATH + _DOCS_INFO[i].path + "/" + _DOCS_INFO[i].name + "." + _DOCS_INFO[i].ext} target="_blank">{_GET_EXT_ICON(_DOCS_INFO[i].ext)}</a>
                         </td>
                     </tr>
-                </>)
+                )
             }
             return <>{_COMPONENT}</>
         }
         let _TABLE_COMPONENT_INTRANET = () => {
             return _DOCS_2_INFO.map(doc => {
-                return <tr>
+                return <tr key={doc.name}>
                     <td><label className="">{doc.category}</label></td>
                     <td><label className="fw-bold">{doc.name}</label></td>
                     <td><a href={HOMEPATH2 + doc.name + "." + doc.ext} target="_blank">{_GET_EXT_ICON(doc.ext)}</a>
@@ -146,7 +146,7 @@ function OSHA({ translation, swaMsg }) {
         }
         let _TABLE_COMPONENT_TUTORIALS = () => {
             return _DOCS_3_INFO.map(doc => {
-                return <tr>
+                return <tr key={doc.name}>
                     <td><label className="">{doc.category}</label></td>
                     <td><label className="fw-bold">{doc.name}</label></td>
                     <td><a href={HOMEPATH3 + doc.name + "." + doc.ext} target="_blank">{_GET_EXT_ICON(doc.ext)}</a>
