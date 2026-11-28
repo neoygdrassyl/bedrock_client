@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import DataTable from '@/shared/components/data-table-bridge';
 import { Link } from "react-router-dom";
@@ -330,8 +330,8 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           </>,
         },
       ]
-      _COMPONENT.push(<>
-        <DataTable pagination={false}
+      _COMPONENT.push(
+        <DataTable key="liquidation-table" pagination={false}
           noDataComponent="No hay mensajes"
           striped="true"
           columns={columns}
@@ -340,7 +340,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
           className="data-table-component"
           noHeader
         />
-      </>)
+      )
       return <>{_COMPONENT}</>
 
     }
@@ -568,12 +568,12 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
         <div className="row py-4 d-flex justify-content-center">
           <div className="col-lg-10">
-            <h2 class="text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
+            <h2 className="text-center pb-2" id='title'>{translation.title} {<Button_navigation Iddown={'title2'} Idup={null} />}</h2>
             <hr />
             {useSelector
-              ? <div class="form-group my-2 col-4">
-                <h4 for="exampleFormControlSelect1">VERSION DE LA CALCULADORA</h4>
-                <select class="form-select" onChange={(e) => setVersion(e.target.value)}
+              ? <div className="form-group my-2 col-4">
+                <h4 htmlFor="exampleFormControlSelect1">VERSION DE LA CALCULADORA</h4>
+                <select className="form-select" onChange={(e) => setVersion(e.target.value)}
                   defaultValue={version}>
                   <option>2021</option>
                   <option>2022</option>
@@ -602,11 +602,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                     <hr />
                     <form onSubmit={handleSubmit} id="app-form">
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground">
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                           <Icon name="Home" size={14} />
                         </span>
-                        <select class="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
+                        <select className="form-select" id="project-liquidator" required onChange={e => setType(e.target.value)}>
                           <option value="" disabled>{translation.form_project_0}</option>
                           <option value="0">{translation.form_project_1}</option>
                           <option value="1">{translation.form_project_2}</option>
@@ -617,11 +617,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </select>
                       </div>
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground" >
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground" >
                           <Icon name="ListTodo" size={14} />
                         </span>
-                        <select class="form-select" id="select_type" required >
+                        <select className="form-select" id="select_type" required >
                           <option value="" disabled>{translation.form_module_0}</option>
                           <option value="Obra Nueva" disabled={type == 2 ? true : false}>{translation.form_module_1}</option>
                           <option value="Ampliacion" disabled={type == 2 ? true : false}>{translation.form_module_2}</option>
@@ -638,11 +638,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </select>
                       </div>
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground" >
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground" >
                           <Icon name="Home" size={14} />
                         </span>
-                        <select class="form-select" id="use-liquidator" required
+                        <select className="form-select" id="use-liquidator" required
                           onChange={handleUse}>
                           <option value="" disabled>{translation.form_use_0}</option>
                           <option value="0">{translation.form_use_1}</option>
@@ -650,11 +650,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </select>
                       </div>
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground">
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                           <Icon name="Home" size={14} />
                         </span>
-                        <select class="form-select" id="social-liquidator" required>
+                        <select className="form-select" id="social-liquidator" required>
                           <option value="" disabled>{translation.form_social_0}</option>
                           <option value="0">{translation.form_social_1}</option>
                           <option value="1">{translation.form_social_2}</option>
@@ -662,11 +662,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         </select>
                       </div>
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground" >
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground" >
                           <Icon name="DollarSign" size={14} />
                         </span>
-                        <select class="form-select" id="strata-liquidator" required>
+                        <select className="form-select" id="strata-liquidator" required>
                           <option value="" disabled>{translation.form_strata_0}</option>
                           <option value="0">{translation.form_strata_1}</option>
                           <option value="1">{translation.form_strata_2}</option>
@@ -678,11 +678,11 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
 
 
 
-                      <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-primary-foreground">
+                      <div className="input-group mb-3">
+                        <span className="input-group-text bg-primary text-primary-foreground">
                           <Icon name="Box" size={14} />
                         </span>
-                        <input type="number" class="form-control" placeholder={translation.form_area} id="area-liquidator" min="0.01" step="0.01" />
+                        <input type="number" className="form-control" placeholder={translation.form_area} id="area-liquidator" min="0.01" step="0.01" />
                       </div>
 
                       <div className="text-center py-4 mt-3">
@@ -694,7 +694,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                   <div className="col-md-6">
                     <h3 className="text-center" >{translation.subTitle_2}</h3>
                     <hr />
-                    <table class="table">
+                    <table className="table">
                       <thead>
                         <tr>
                           <th scope="col"></th>
@@ -728,7 +728,7 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                 </div>
               </div>
             </div>
-            <h2 class="text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
+            <h2 className="text-center my-3" id='title4'>Tabla de Liquidacion  {<Button_navigation Iddown={'title5'} Idup={'title3'} />}</h2>
             {table.length > 0
               ? <>
                 {_TABLE_INFO()}
@@ -764,15 +764,16 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
             <table className="table table-bordered table-sm table-hover text-start">
               <tbody>
                 {model2Table.map(value => {
-                  if (value.list) return <><tr className="bg-warning">
+                  if (value.list) return <Fragment key={value.title}><tr className="bg-warning">
                     <td colSpan="2"><h4 className="text-justify fw-normal" >{value.title}</h4></td>
                     {console.log(value.Ids == undefined ? 'Id_1' : value.Ids)}
                     <td><h4 className="text-justify fw-normal">Expensas</h4></td>
                     <td><h4 className="text-justify fw-normal">IVA</h4></td>
                     <td><h4 className="text-justify fw-normal">Total</h4></td>
                   </tr>
-                    {value.list.map(valuel => {
-                      if (valuel.const[version]) return <tr>
+                    {value.list.map((valuel, index) => {
+                      // Static rows with repeated names: the position is the only stable identity.
+                      if (valuel.const[version]) return <tr key={index}>
                         <td><h4 className="text-justify fw-normal">{valuel.name}</h4></td>
                         <td><h4 className="text-justify fw-normal">
                           {valuel.const[version][1]
@@ -783,8 +784,8 @@ function Liquidator({ translation, breadCrums, hideInfo, useSelector }) {
                         <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getIva_m(valuel.const[version][0])}</h4></td>
                         <td className='bg-primary text-primary-foreground'><h4 className="text-justify fw-normal">$ {getTotal_m(valuel.const[version][0])}</h4></td>
                       </tr>
-                    })} </>
-                  else return <tr className="bg-light">
+                    })}</Fragment>
+                  else return <tr key={value.title} className="bg-light">
                     <td colSpan="5"><h4 className="text-justify fw-normal">{value.title}</h4></td>
                   </tr>
                 })}
